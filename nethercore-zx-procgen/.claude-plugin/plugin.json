@@ -1,0 +1,31 @@
+{
+  "name": "nethercore-zx-procgen",
+  "version": "2.0.0",
+  "description": "Procedural asset generation for Nethercore ZX. Generate textures (Albedo, MRE, SSE, Matcaps), meshes (with UVs and vertex colors), skeletal animations (walk cycles, attacks, IK), rigid body animations (vehicles, robots), and sounds using any language or tool. Fully supports ZX GPU skinning, render modes 0-3, dither transparency, and the nether-cli asset pipeline.",
+  "author": {
+    "name": "Nethercore Team"
+  },
+  "keywords": [
+    "nethercore",
+    "nethercore-zx",
+    "procedural-generation",
+    "procgen",
+    "textures",
+    "matcap",
+    "meshes",
+    "vertex-colors",
+    "audio",
+    "game-assets",
+    "creative-coding",
+    "skeletal-animation",
+    "bone-weights",
+    "skinning",
+    "walk-cycle",
+    "inverse-kinematics",
+    "IK",
+    "rigid-body-animation",
+    "vehicle-animation",
+    "character-animation",
+    "locomotion"
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "name": "nethercore-zx-game-design",
+  "version": "0.1.0",
+  "description": "Game design workflow for Nethercore ZX - create GDDs, validate constraints, and orchestrate full game development across zx-dev and procgen plugins",
+  "author": {
+    "name": "Nethercore Systems",
+    "email": "dev@nethercore.systems"
+  },
+  "repository": "https://github.com/nethercore-systems/nethercore-ai-plugins",
+  "license": "MIT",
+  "keywords": [
+    "game-design",
+    "nethercore",
+    "zx",
+    "gdd",
+    "orchestration",
+    "constraints"
+  ]
+}
