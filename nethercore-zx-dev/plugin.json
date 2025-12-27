@@ -1,0 +1,9 @@
+{
+  "name": "nethercore-zx-dev",
+  "version": "1.0.0",
+  "description": "Comprehensive game development skill for Nethercore ZX fantasy console. Provides FFI specifications for Rust/C/Zig, asset pipeline guidance, project structure templates, and CLI tooling knowledge.",
+  "author": {
+    "name": "Nethercore Team"
+  },
+  "keywords": ["nethercore", "zx", "game-development", "fantasy-console", "wasm", "ffi"]
+}
