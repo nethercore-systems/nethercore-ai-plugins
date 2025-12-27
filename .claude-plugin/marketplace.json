@@ -2,17 +2,20 @@
   "name": "nethercore-ai-plugins",
   "displayName": "Nethercore AI Plugins",
   "description": "Official AI-powered development plugins for Nethercore game development. Comprehensive tooling for ZX fantasy console game development, procedural asset generation, and game design workflows.",
-  "author": {
+  "owner": {
     "name": "Nethercore Team",
     "email": "dev@nethercore.systems"
   },
   "repository": "https://github.com/nethercore-systems/nethercore-ai-plugins",
   "homepage": "https://nethercore.systems",
-  "version": "1.0.0",
+  "metadata": {
+    "version": "1.0.0",
+    "license": "MIT"
+  },
   "plugins": [
     {
       "name": "nethercore-zx-dev",
-      "path": "nethercore-zx-dev",
+      "source": "../nethercore-zx-dev",
       "displayName": "ZX Game Development",
       "description": "Comprehensive game development skill for Nethercore ZX fantasy console. Provides FFI specifications for Rust/C/Zig, asset pipeline guidance, project structure templates, and CLI tooling knowledge.",
       "version": "1.0.0",
@@ -20,7 +23,7 @@
     },
     {
       "name": "nethercore-zx-procgen",
-      "path": "nethercore-zx-procgen",
+      "source": "../nethercore-zx-procgen",
       "displayName": "ZX Procedural Asset Generation",
       "description": "Procedural asset generation for Nethercore ZX. Generate textures (Albedo, MRE, SSE, Matcaps), meshes (with UVs and vertex colors), skeletal animations (walk cycles, attacks, IK), rigid body animations (vehicles, robots), and sounds using any language or tool.",
       "version": "2.0.0",
@@ -28,12 +31,11 @@
     },
     {
       "name": "nethercore-zx-game-design",
-      "path": "nethercore-zx-game-design",
+      "source": "../nethercore-zx-game-design",
       "displayName": "ZX Game Design Workflow",
       "description": "Game design workflow for Nethercore ZX - create GDDs, validate constraints, and orchestrate full game development across zx-dev and procgen plugins.",
       "version": "0.1.0",
       "keywords": ["game-design", "nethercore", "zx", "gdd", "orchestration", "constraints"]
     }
-  ],
-  "license": "MIT"
+  ]
 }
