@@ -243,9 +243,85 @@ When reporting orchestration status:
 - Provide clear next actions
 - Reference the right plugin for each task
 - Keep the user informed of progress
+- **NEVER use `cargo run` - always use `nether run`**
+- **NEVER declare "done" without verification**
+
+**CRITICAL: Completion Verification**
+
+**Before declaring ANY task or phase complete, you MUST:**
+
+1. **Verify no incomplete code:**
+   ```bash
+   grep -r "TODO\|FIXME\|unimplemented!\|todo!\|stub\|placeholder" src/
+   ```
+   If ANY results, the task is NOT complete.
+
+2. **Verify build succeeds:**
+   ```bash
+   nether build
+   ```
+   If build fails, fix the errors before continuing.
+
+3. **Verify no missing implementations:**
+   - Check all match arms have real logic
+   - Check all functions have bodies
+   - Check all structs are properly initialized
+
+4. **Track incomplete items:**
+   Use TodoWrite to maintain a list of ALL remaining tasks.
+   Do NOT remove items until they are ACTUALLY complete.
+
+**NEVER say "the game is done" or "implementation complete" if:**
+- There are TODO comments in code
+- There are unimplemented!() macros
+- There are placeholder functions
+- There are missing assets
+- The build fails
+- Tests fail
+
+**Instead, report:**
+- What IS complete
+- What REMAINS to be done
+- What the NEXT steps are
+
+**Continuing After Long Tasks**
+
+When resuming work or after completing a sub-task:
+
+1. **Re-scan the project state:**
+   - Check `docs/design/` for GDD and asset specs
+   - Check `src/` for implemented code
+   - Check `assets/` for generated assets
+   - Check for TODO markers in code
+
+2. **Update progress tracking:**
+   - Mark completed items
+   - Add newly discovered tasks
+   - Identify blockers
+
+3. **Continue with next task:**
+   - Don't stop after one sub-task
+   - Keep working through the pipeline
+   - Ask user if unclear on priorities
 
 **Edge Cases:**
 - If user wants to skip phases, warn about dependencies
 - If user has partial work, assess before continuing
 - If plugins conflict, prioritize user's explicit request
 - If constraints are exceeded, escalate to constraint-analyzer
+- If task seems complete, VERIFY before declaring done
+
+**ZX Execution Model**
+
+**CRITICAL: ZX games are WASM libraries, NOT executables.**
+
+```bash
+# CORRECT - Use nether CLI
+nether build              # Compile WASM + pack assets
+nether run                # Launch in Nethercore player
+nether run --sync-test    # Test determinism
+
+# WRONG - Never do this
+cargo run                 # ❌ WRONG
+./target/release/game     # ❌ WRONG
+```

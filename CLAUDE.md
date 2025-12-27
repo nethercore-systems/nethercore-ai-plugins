@@ -29,6 +29,9 @@ Core game development plugin for Nethercore ZX.
 
 **Agents:**
 - `rollback-reviewer` - Reviews code for GGRS rollback netcode compatibility
+- `code-scaffolder` - Generates boilerplate game code for common patterns (player controllers, state machines, entity pools)
+- `feature-implementer` - Implements complete game features end-to-end across multiple files and systems
+- `integration-assistant` - Connects generated assets to game code with nether.toml and handle constants
 
 ### nethercore-zx-game-design
 
@@ -53,6 +56,9 @@ Game design workflow plugin.
 
 **Agents:**
 - `constraint-analyzer` - Proactively checks design feasibility
+- `gdd-generator` - Autonomously generates complete Game Design Documents from concepts
+- `mechanic-designer` - Designs detailed game mechanics with physics, timing, and feel parameters
+- `scope-advisor` - Assesses project scope, identifies overambition, defines MVPs
 
 ### nethercore-zx-procgen
 
@@ -95,12 +101,17 @@ Publishing workflow plugin.
 - `/publish-game` - Full publishing workflow
 - `/prepare-platform-assets` - Generate marketing assets
 
+**Agents:**
+- `publish-preparer` - Autonomously prepares games for release (validation, optimization, packaging)
+- `release-validator` - Validates all release requirements and identifies blockers
+
 ### nethercore-zx-orchestrator
 
 Meta-orchestration plugin coordinating multi-plugin workflows.
 
 **Agents:**
-- `game-orchestrator` - Coordinates full development pipeline
+- `game-orchestrator` - Coordinates full development pipeline from GDD to published ROM
+- `parallel-coordinator` - Analyzes task dependencies and coordinates parallel agent execution
 
 ### nethercore-zx-test
 
@@ -135,6 +146,8 @@ CI/CD automation plugin for ZX games.
 
 **Agents:**
 - `ci-scaffolder` - Creates `.github/workflows/` with build and release pipelines
+- `pipeline-optimizer` - Optimizes CI/CD pipeline performance with caching and parallelization
+- `quality-gate-enforcer` - Adds and configures quality checks to prevent bad code from merging
 
 ### game-design
 
@@ -162,6 +175,9 @@ Platform-agnostic game design frameworks for fantasy console development. Compan
 **Agents:**
 - `design-reviewer` - Reviews GDDs for coherence, completeness, scope
 - `genre-advisor` - Suggests genre-appropriate design patterns
+- `narrative-generator` - Generates story content, dialogue, lore, and item descriptions
+- `balance-analyzer` - Analyzes game balance (stats, difficulty curves, economy)
+- `accessibility-auditor` - Audits designs for accessibility barriers and suggests improvements
 
 ## Installation
 
