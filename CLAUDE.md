@@ -1,10 +1,15 @@
 # Nethercore AI Plugins
 
-Claude Code plugins for Nethercore ZX game development.
+Claude Code plugins for Nethercore fantasy console game development.
 
 ## Overview
 
-This repository contains a collection of Claude Code plugins that assist with developing games for the Nethercore ZX fantasy console. The plugins provide skills, commands, and agents covering the full game development lifecycle.
+This repository contains Claude Code plugins for developing games on Nethercore fantasy consoles. Plugins are organized into:
+
+- **Platform-specific** (ZX): Implementation-focused plugins for the ZX console
+- **Platform-agnostic**: Conceptual design frameworks applicable to all Nethercore consoles
+
+The plugins provide skills, commands, and agents covering the full game development lifecycle from concept to publication.
 
 ## Plugins
 
@@ -105,6 +110,33 @@ Meta-orchestration plugin coordinating multi-plugin workflows.
 **Agents:**
 - `game-orchestrator` - Coordinates full development pipeline
 
+### game-design
+
+Platform-agnostic game design frameworks for fantasy console development. Companion to zx-game-design for conceptual design work.
+
+**Skills:**
+- `world-building` - World design, lore, factions, geography, consistency
+- `character-design` - Player characters, NPCs, antagonists, companions
+- `narrative-design` - Story structure, quests, dialogue, environmental storytelling
+- `core-loop-design` - Gameplay loops, progression, economy systems
+- `level-design` - Flow, pacing, challenge curves, spatial design
+- `game-balance` - Difficulty, stat scaling, playtesting frameworks
+- `player-psychology` - Motivation, engagement, onboarding, retention
+- `genre-patterns` - RPG, platformer, roguelike, metroidvania conventions
+- `multiplayer-design` - Co-op, competitive, asymmetric, controller sharing
+- `accessibility-ux` - Controls, difficulty options, UI/UX accessibility
+- `replayability-engineering` - Run-based design, meta-progression, emergent systems, procedural variety
+
+**Commands:**
+- `/worldbuild` - Interactive world building wizard
+- `/character` - Character design worksheet wizard
+- `/design-loop` - Core loop analysis and design tool
+- `/balance-review` - Game balance review framework
+
+**Agents:**
+- `design-reviewer` - Reviews GDDs for coherence, completeness, scope
+- `genre-advisor` - Suggests genre-appropriate design patterns
+
 ## Installation
 
 Add to your `.claude/settings.local.json`:
@@ -125,7 +157,8 @@ Add to your `.claude/settings.local.json`:
     "nethercore-zx-game-design@nethercore-ai-plugins": true,
     "nethercore-zx-procgen@nethercore-ai-plugins": true,
     "nethercore-zx-publish@nethercore-ai-plugins": true,
-    "nethercore-zx-orchestrator@nethercore-ai-plugins": true
+    "nethercore-zx-orchestrator@nethercore-ai-plugins": true,
+    "game-design@nethercore-ai-plugins": true
   }
 }
 ```
