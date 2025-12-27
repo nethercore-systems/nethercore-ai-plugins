@@ -1,6 +1,6 @@
 # Gap 17: Camera Implementation
 
-**Status:** `[ ]` Not Started
+**Status:** `[x]` Completed
 **Priority:** MEDIUM
 **Plugin:** nethercore-zx-dev
 **Type:** Skill

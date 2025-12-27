@@ -1,6 +1,6 @@
 # Refactor A2: Skeletal Rigging Skill
 
-**Status:** `[ ]` Not Started
+**Status:** `[x]` COMPLETED
 **Priority:** MEDIUM
 **Action:** Split procedural-animations into separate skeletal-rigging skill
 

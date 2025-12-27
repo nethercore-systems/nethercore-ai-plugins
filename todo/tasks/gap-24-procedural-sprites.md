@@ -1,6 +1,6 @@
 # Gap 24: 2D Sprite & Pixel Art Generation
 
-**Status:** `[ ]` Not Started
+**Status:** `[x]` Completed
 **Priority:** MEDIUM
 **Plugin:** nethercore-zx-procgen
 **Type:** Skill

@@ -1,6 +1,6 @@
 # Gap 9: Split-Screen / Viewport
 
-**Status:** `[ ]` Not Started
+**Status:** `[x]` Completed
 **Priority:** MEDIUM
 **Plugin:** nethercore-zx-game-design
 **Type:** Skill

@@ -1,6 +1,6 @@
 # Gap 5: Game Feel / Polish
 
-**Status:** `[ ]` Not Started
+**Status:** `[x]` Completed
 **Priority:** MEDIUM
 **Plugin:** nethercore-zx-game-design
 **Type:** Skill

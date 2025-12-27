@@ -1,6 +1,6 @@
 # Gap 3: Platform Page Assets
 
-**Status:** `[ ]` Not Started
+**Status:** `[x]` Completed
 **Priority:** HIGH
 **Plugin:** nethercore-zx-publish
 **Type:** Skill

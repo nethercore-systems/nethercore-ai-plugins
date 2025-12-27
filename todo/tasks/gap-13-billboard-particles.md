@@ -1,6 +1,6 @@
 # Gap 13: 3D Billboards & Particles
 
-**Status:** `[ ]` Not Started
+**Status:** `[x]` Completed
 **Priority:** LOW
 **Plugin:** nethercore-zx-dev
 **Type:** Skill

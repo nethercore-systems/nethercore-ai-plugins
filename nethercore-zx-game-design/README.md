@@ -1,6 +1,6 @@
 # Nethercore ZX Game Design Plugin
 
-Game design workflow for Nethercore ZX console. Create Game Design Documents (GDDs), validate against console constraints, and orchestrate full game development across the nethercore plugin suite.
+Game design workflow for Nethercore ZX console. Create Game Design Documents (GDDs), validate against console constraints, and plan asset requirements for the procgen plugin.
 
 ## Overview
 
@@ -9,7 +9,7 @@ This plugin bridges the gap between game concept and implementation by providing
 - **Constraint-aware design**: Understand what's possible within ZX's 16MB ROM, 4MB RAM limits
 - **Modular GDD templates**: Quick, Standard, or Comprehensive documentation
 - **Perspective-based patterns**: Side-scroller, Top-down, Third-person, First-person templates
-- **Full orchestration**: Coordinate design → procgen assets → zx-dev implementation
+- **Physics & collision**: AABB, SAT, spatial partitioning, and rollback-safe patterns
 
 ## Plugin Suite Integration
 
@@ -96,8 +96,7 @@ Extract asset requirements from GDD and generate specs for the procgen plugin.
 ### constraint-analyzer
 Proactively validates game concepts against ZX limits when constraint issues are detected in conversation.
 
-### game-orchestrator
-Coordinates full agentic game development workflow across all three nethercore plugins.
+> **Note:** For full workflow orchestration across all ZX plugins, use the `nethercore-zx-orchestrator` plugin.
 
 ## Output Location
 
@@ -148,12 +147,13 @@ If working within the nethercore-project workspace, the plugin is pre-configured
 
 ## Requirements
 
-For full orchestration, install the complete plugin suite:
+For full end-to-end game development, install the complete plugin suite:
 - `nethercore-zx-game-design` - This plugin (design phase)
 - `nethercore-zx-procgen` - Procedural asset generation (asset phase)
 - `nethercore-zx-dev` - Implementation and code scaffolding (implementation phase)
+- `nethercore-zx-orchestrator` - Coordinates the full workflow across all plugins
 
-All three plugins are available from the same marketplace.
+All plugins are available from the same marketplace.
 
 ## Quick Start
 
@@ -172,10 +172,11 @@ All three plugins are available from the same marketplace.
    /plan-assets
    ```
 
-4. Let the game-orchestrator coordinate the full workflow:
+4. For full workflow orchestration, use the orchestrator plugin:
    ```
-   "I want to build my game agentically"
+   "I want to build my game from start to finish"
    ```
+   (Requires `nethercore-zx-orchestrator` plugin)
 
 ## Plugin Files
 
@@ -188,14 +189,16 @@ nethercore-zx-game-design/
 │   ├── console-constraints/     # ZX hardware specs
 │   ├── game-design-documents/   # GDD templates
 │   ├── multiplayer-design/      # Netcode patterns
-│   └── perspective-patterns/    # Camera/view patterns
+│   ├── perspective-patterns/    # Camera/view patterns
+│   ├── physics-collision/       # Physics & collision patterns
+│   ├── gameplay-mechanics/      # Combat, platformer, dialogue
+│   └── multiplayer-rendering/   # Split-screen & viewports
 ├── commands/
 │   ├── design-game.md           # /design-game
 │   ├── validate-design.md       # /validate-design
 │   └── plan-assets.md           # /plan-assets
 └── agents/
-    ├── constraint-analyzer.md   # Validates constraints
-    └── game-orchestrator.md     # Full workflow coordination
+    └── constraint-analyzer.md   # Validates constraints
 ```
 
 ## License

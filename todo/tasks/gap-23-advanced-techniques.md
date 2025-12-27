@@ -1,6 +1,6 @@
 # Gap 23: Advanced Techniques & Decision Guides
 
-**Status:** `[ ]` Not Started
+**Status:** `[x]` Completed
 **Priority:** MEDIUM
 **Plugin:** nethercore-zx-procgen
 **Type:** Skill

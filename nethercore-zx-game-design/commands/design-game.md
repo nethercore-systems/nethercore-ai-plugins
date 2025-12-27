@@ -107,4 +107,8 @@ After GDD is complete, suggest next steps:
 - Use `/plan-assets` to generate asset specs for procgen
 - Use `nethercore-zx-dev` `/new-game` to scaffold the project
 
-The game-orchestrator agent can coordinate the full workflow if the user wants to proceed directly to implementation.
+When the game is ready for release:
+- Use `nethercore-zx-publish` `/prepare-platform-assets` to create marketing assets
+- Use `nethercore-zx-publish` `/publish-game` to package ROM and upload
+
+For full workflow orchestration from design through publishing, the user can enable the `nethercore-zx-orchestrator` plugin.

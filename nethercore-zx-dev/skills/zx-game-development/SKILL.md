@@ -336,3 +336,11 @@ For detailed documentation, consult these locations in the nethercore repository
 - **`examples/hello-world-zig.md`** - Complete Zig hello world
 - **`examples/game-with-assets.md`** - Game with textures, meshes, sounds
 - **`examples/nether-toml-examples.md`** - Manifest examples
+
+### Publishing Your Game
+
+When your game is ready for release, use the `nethercore-zx-publish` plugin:
+- **`/prepare-platform-assets`** - Create icon (64x64), screenshots, and banner
+- **`/publish-game`** - Package ROM with `nether pack` and guide platform upload
+- **`publishing-workflow` skill** - ROM packaging and nethercore.systems upload
+- **`platform-assets` skill** - Marketing asset specifications

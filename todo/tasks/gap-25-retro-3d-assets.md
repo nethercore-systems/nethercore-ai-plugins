@@ -1,6 +1,6 @@
 # Gap 25: Low-Poly Pixel Art 3D (Retro 3D Style)
 
-**Status:** `[ ]` Not Started
+**Status:** `[x]` Completed
 **Priority:** MEDIUM
 **Plugin:** nethercore-zx-procgen
 **Type:** Skill

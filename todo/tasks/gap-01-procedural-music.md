@@ -1,6 +1,6 @@
 # Gap 1: Procedural Music (XM Tracker)
 
-**Status:** `[ ]` Not Started
+**Status:** `[x]` Completed
 **Priority:** HIGH
 **Plugin:** nethercore-zx-procgen
 **Type:** Skill

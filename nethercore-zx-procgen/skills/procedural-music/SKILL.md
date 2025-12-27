@@ -1,0 +1,254 @@
+---
+name: Procedural Music Composition
+description: This skill should be used when the user asks to "create music", "XM tracker", "compose", "soundtrack", "tracker module", "game music", "make a song", "music for my game", "create an XM file", "FastTracker", "MilkyTracker module", or mentions music composition, tracker patterns, XM effects, or game soundtrack creation. Provides comprehensive guidance for creating tracker-based music using XM modules for Nethercore ZX games.
+version: 1.0.0
+---
+
+# Procedural Music Composition
+
+## Overview
+
+XM (Extended Module) tracker music enables creating complete game soundtracks in a fraction of the ROM space required by raw audio. A full song typically uses 10-50KB for patterns versus 7.9MB for an equivalent 3-minute PCM recording.
+
+**Key advantages:**
+- **Compact:** Pattern data only, samples shared with SFX
+- **Dynamic:** Jump to sections, change tempo during gameplay
+- **Era-authentic:** FastTracker 2 format (1994) matches ZX's 5th-gen aesthetic
+- **Rollback-safe:** Deterministic playback from any position
+
+## ZX Audio Constraints
+
+| Constraint | Value |
+|------------|-------|
+| Sample rate | 22,050 Hz |
+| Channels | Up to 32 (in XM module) |
+| ROM budget | 16 MB total (shared with all assets) |
+| Sample format | 16-bit mono WAV |
+| Music channel | 1 dedicated looping channel |
+
+**Typical music budget:**
+- Pattern data: 60-150 KB for 3-5 songs
+- Shared samples: 200-500 KB
+- Total: ~300-650 KB for complete soundtrack
+
+## XM Module Structure
+
+An XM module contains:
+
+```
+XM Module
+├── Header (metadata, tempo, speed)
+├── Order Table (which patterns play in sequence)
+├── Patterns (rows × channels of note data)
+└── Instruments (envelope + sample mapping)
+```
+
+**Terminology:**
+- **Pattern:** A grid of notes (typically 64 rows × N channels)
+- **Order:** A sequence of pattern indices defining song structure
+- **Row:** A horizontal slice across all channels (plays simultaneously)
+- **Tick:** Subdivisions within a row (controlled by speed)
+- **Speed:** Ticks per row (lower = faster)
+- **Tempo/BPM:** Beats per minute
+
+### Pattern Data Format
+
+Each cell in a pattern contains:
+
+| Field | Range | Purpose |
+|-------|-------|---------|
+| Note | C-0 to B-7, or note-off | Pitch to play |
+| Instrument | 1-128 | Which sample/envelope |
+| Volume | 0-64 | Volume level |
+| Effect | 0-35 | Effect command |
+| Effect Param | 00-FF | Effect parameter |
+
+## Sample Integration with ROM
+
+**Key concept:** XM instrument names map to ROM sample IDs.
+
+In the XM tracker, name instruments to match `[[assets.sounds]]` IDs:
+- Instrument named `"kick"` → resolves to `rom_sound("kick")`
+- Instrument named `"bass_synth"` → resolves to `rom_sound("bass_synth")`
+
+**Workflow:**
+
+1. Generate samples using procedural-sounds skill (or record/import WAVs)
+2. Add samples to ROM in `nether.toml`:
+```toml
+[[assets.sounds]]
+id = "kick"
+path = "samples/kick.wav"
+
+[[assets.sounds]]
+id = "snare"
+path = "samples/snare.wav"
+
+[[assets.sounds]]
+id = "bass"
+path = "samples/bass.wav"
+```
+
+3. Create XM module in tracker (MilkyTracker/OpenMPT)
+4. Name instruments exactly as ROM sample IDs
+5. Add tracker to manifest:
+```toml
+[[assets.trackers]]
+id = "main_theme"
+path = "music/main_theme.xm"
+```
+
+6. Pack and test: `nether pack && nether run`
+
+## Essential Effects
+
+XM provides 20+ effect commands. The most commonly used:
+
+| Effect | Hex | Name | Usage |
+|--------|-----|------|-------|
+| Arpeggio | 0xy | Rapid note switching | Chiptune chords |
+| Porta Up | 1xx | Slide pitch up | Rising synths |
+| Porta Down | 2xx | Slide pitch down | Drops, dives |
+| Tone Porta | 3xx | Glide to note | Smooth melodies |
+| Vibrato | 4xy | Pitch wobble | Expression |
+| Volume Slide | Axy | Fade in/out | Dynamics |
+| Position Jump | Bxx | Jump to order | Song sections |
+| Set Volume | Cxx | Immediate volume | Accents |
+| Pattern Break | Dxx | Next pattern | Transitions |
+| Set Speed/Tempo | Fxx | Speed (<32) or BPM | Tempo changes |
+
+For complete effect reference, see `references/xm-effects.md`.
+
+## Composition Patterns
+
+### Basic Song Structure
+
+```
+Order Table: [0, 1, 1, 2, 1, 2, 3, 1]
+
+Pattern 0: Intro (build-up)
+Pattern 1: Main (verse/loop)
+Pattern 2: Variation (chorus/intensity)
+Pattern 3: Breakdown (tension release)
+```
+
+Use order table repeats to extend song length without duplicating patterns.
+
+### Channel Roles
+
+| Channel(s) | Role | Typical Instruments |
+|------------|------|---------------------|
+| 1 | Drums - Kick | Low, punchy |
+| 2 | Drums - Snare | Mid, snappy |
+| 3 | Drums - Hi-hat | High, short |
+| 4 | Bass | Low synth/guitar |
+| 5-6 | Lead melody | Main theme |
+| 7-8 | Pads/harmony | Sustained chords |
+
+### Loop Point Design
+
+For seamless looping:
+1. Ensure first and last patterns have matching elements
+2. Use volume slides at loop boundary to prevent clicks
+3. Set restart position in XM header to skip intro
+4. Test loop transitions extensively
+
+For detailed composition patterns and genre templates, see `references/composition-patterns.md`.
+
+## Tracker Workflow
+
+### Recommended Tools
+
+| Tool | Platform | Best For |
+|------|----------|----------|
+| MilkyTracker | Cross-platform | Authentic XM editing |
+| OpenMPT | Windows | Advanced features, effects |
+| Renoise | Cross-platform | Modern workflow, XM export |
+
+### Quick Start
+
+1. **Create samples** using procedural-sounds skill or import WAVs
+2. **Open tracker** and create new XM module
+3. **Import samples** and name instruments to match ROM IDs
+4. **Set tempo** (typically 120-150 BPM for action, 80-100 for ambient)
+5. **Compose patterns** for intro, main, variation, breakdown
+6. **Arrange order table** to create full song structure
+7. **Export XM** (samples will be stripped during pack)
+
+For step-by-step workflow details, see `references/workflow-guide.md`.
+
+## Game Integration
+
+### Loading and Playing
+
+```rust
+// In init()
+let music = rom_tracker(b"main_theme".as_ptr(), 11);
+
+// Start playback (looping)
+music_play(music, 0.8, 1);  // handle, volume, loop
+```
+
+### Dynamic Music Control
+
+```rust
+// Jump to pattern order (e.g., boss phase)
+music_jump(5, 0);  // order 5, row 0
+
+// Check position for sync
+let pos = music_position();
+let order = (pos >> 16) as u32;
+let row = (pos & 0xFFFF) as u32;
+
+// Adjust during gameplay
+music_set_tempo(140);  // Speed up for action
+music_set_volume(0.5); // Duck for dialogue
+```
+
+### Runtime FFI Functions
+
+| Function | Purpose |
+|----------|---------|
+| `rom_tracker(id, len)` | Load from ROM |
+| `music_play(h, vol, loop)` | Start playback |
+| `music_stop()` | Stop playback |
+| `music_pause(paused)` | Pause/resume |
+| `music_set_volume(vol)` | Adjust volume |
+| `music_jump(order, row)` | Seek position |
+| `music_position()` | Get current position |
+| `music_set_tempo(bpm)` | Change tempo |
+| `music_set_speed(ticks)` | Change speed |
+
+## Sample Creation Integration
+
+Use the procedural-sounds skill to generate instrument samples:
+
+```rust
+use proc_gen::audio::*;
+
+// Generate bass sample
+let bass = synth.tone(Waveform::Saw, 110.0, 0.5, Envelope::pluck());
+low_pass(&mut bass, 800.0, SAMPLE_RATE);
+write_wav(&to_pcm_i16(&bass), SAMPLE_RATE, "samples/bass.wav");
+
+// Generate kick
+let kick = synth.coin();  // Or custom design
+write_wav(&to_pcm_i16(&kick), SAMPLE_RATE, "samples/kick.wav");
+```
+
+The procedural-sounds skill provides complete synthesis guidance.
+
+## Additional Resources
+
+### Reference Files
+
+For detailed information, consult:
+- **`references/xm-effects.md`** - Complete effect command reference
+- **`references/composition-patterns.md`** - Genre templates and song structures
+- **`references/workflow-guide.md`** - Step-by-step tracker workflow
+
+### External Resources
+
+- [MilkyTracker](https://milkytracker.org/) - Cross-platform XM tracker
+- [OpenMPT](https://openmpt.org/) - Windows tracker with XM export
+- [XM Format Spec](https://github.com/milkytracker/MilkyTracker/wiki/XM-file-format) - Technical reference

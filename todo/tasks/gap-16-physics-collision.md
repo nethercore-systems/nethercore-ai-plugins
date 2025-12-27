@@ -1,6 +1,6 @@
 # Gap 16: Physics & Collision
 
-**Status:** `[ ]` Not Started
+**Status:** `[x]` Completed
 **Priority:** HIGH (CRITICAL)
 **Plugin:** nethercore-zx-game-design
 **Type:** Skill

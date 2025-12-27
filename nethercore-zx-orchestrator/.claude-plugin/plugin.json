@@ -1,0 +1,20 @@
+{
+  "name": "nethercore-zx-orchestrator",
+  "version": "1.0.0",
+  "description": "Game development orchestrator for Nethercore ZX. Coordinates the full development pipeline across game-design, procgen, and zx-dev plugins - from GDD creation through asset generation to playable ROM.",
+  "author": {
+    "name": "Nethercore Systems",
+    "email": "nethercore.systems@gmail.com"
+  },
+  "repository": "https://github.com/nethercore-systems/nethercore-ai-plugins",
+  "license": "MIT/Apache-2.0",
+  "keywords": [
+    "nethercore",
+    "zx",
+    "orchestration",
+    "game-development",
+    "workflow",
+    "pipeline",
+    "coordinator"
+  ]
+}

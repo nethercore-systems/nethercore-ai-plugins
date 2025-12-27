@@ -1,6 +1,6 @@
 # Gap 21: BVH/Motion Capture Integration
 
-**Status:** `[ ]` Not Started
+**Status:** `[x]` Completed
 **Priority:** HIGH
 **Plugin:** nethercore-zx-procgen
 **Type:** Skill

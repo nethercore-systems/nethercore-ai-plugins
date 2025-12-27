@@ -1,6 +1,6 @@
 # Gap 14: UV-Aware Texturing & Atlasing
 
-**Status:** `[ ]` Not Started
+**Status:** `[x]` COMPLETED
 **Priority:** MEDIUM
 **Plugin:** nethercore-zx-procgen
 **Type:** Skill

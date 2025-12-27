@@ -4,10 +4,13 @@ Official AI-powered development plugins for Nethercore game development. Current
 
 ## Available Plugins
 
-| Plugin | Description | AI Platform |
-|--------|-------------|-------------|
-| [nethercore-zx-dev](./nethercore-zx-dev/) | ZX fantasy console game development | Claude Code |
-| [nethercore-zx-procgen](./nethercore-zx-procgen/) | ZX procedural asset generation (textures, meshes, sounds) | Claude Code |
+| Plugin | Description |
+|--------|-------------|
+| [nethercore-zx-dev](./nethercore-zx-dev/) | Core game development - FFI specs, project templates, debugging |
+| [nethercore-zx-game-design](./nethercore-zx-game-design/) | Game design workflow - GDDs, constraints, multiplayer patterns |
+| [nethercore-zx-procgen](./nethercore-zx-procgen/) | Procedural asset generation - textures, meshes, sounds, animations |
+| [nethercore-zx-publish](./nethercore-zx-publish/) | Publishing workflow - ROM packaging, platform upload |
+| [nethercore-zx-orchestrator](./nethercore-zx-orchestrator/) | Meta-orchestration - coordinates full development pipeline |
 
 ## Installation
 
@@ -27,7 +30,10 @@ Add to your global Claude settings (`~/.claude/settings.json` on macOS/Linux, `%
   },
   "enabledPlugins": {
     "nethercore-zx-dev@nethercore-ai-plugins": true,
-    "nethercore-zx-procgen@nethercore-ai-plugins": true
+    "nethercore-zx-game-design@nethercore-ai-plugins": true,
+    "nethercore-zx-procgen@nethercore-ai-plugins": true,
+    "nethercore-zx-publish@nethercore-ai-plugins": true,
+    "nethercore-zx-orchestrator@nethercore-ai-plugins": true
   }
 }
 ```
@@ -48,7 +54,10 @@ For nethercore contributors who have cloned the workspace, add to `.claude/setti
   },
   "enabledPlugins": {
     "nethercore-zx-dev@nethercore-ai-plugins": true,
-    "nethercore-zx-procgen@nethercore-ai-plugins": true
+    "nethercore-zx-game-design@nethercore-ai-plugins": true,
+    "nethercore-zx-procgen@nethercore-ai-plugins": true,
+    "nethercore-zx-publish@nethercore-ai-plugins": true,
+    "nethercore-zx-orchestrator@nethercore-ai-plugins": true
   }
 }
 ```
@@ -67,50 +76,79 @@ nether run                # Build and launch
 
 ### nethercore-zx-dev
 
-**Features:**
-- Complete FFI reference (250+ functions)
-- Project scaffolding (`/new-game` command)
-- Rollback safety code review (automatic agent)
-- Templates for Rust, C, and Zig
-- Asset pipeline guidance
+Core game development plugin for Nethercore ZX.
 
-**Usage:**
-- `/new-game [language] [name]` - Create new game project
-- Ask "check my game for rollback issues" - Analyze for netcode safety
-- Ask about ZX FFI, input handling, graphics, audio, etc.
+**Skills:** `zx-game-development`, `camera-systems`, `debugging-guide`, `environment-effects`, `stencil-effects`, `custom-fonts`
 
-See [nethercore-zx-dev/README.md](./nethercore-zx-dev/README.md) for full documentation.
+**Commands:**
+- `/new-game` - Scaffold a new ZX game project
+
+**Agents:**
+- `rollback-reviewer` - Reviews code for GGRS rollback netcode compatibility
+
+### nethercore-zx-game-design
+
+Game design workflow plugin.
+
+**Skills:** `game-design-documents`, `console-constraints`, `multiplayer-design`, `multiplayer-rendering`, `perspective-patterns`, `physics-collision`, `gameplay-mechanics`, `ui-patterns`, `game-feel`, `save-systems`, `ai-patterns`, `split-screen-rendering`
+
+**Commands:**
+- `/design-game` - Interactive GDD builder wizard
+- `/plan-assets` - Generate asset specs from GDD
+- `/validate-design` - Validate design against ZX constraints
+
+**Agents:**
+- `constraint-analyzer` - Proactively checks design feasibility
 
 ### nethercore-zx-procgen
 
-**Features:**
-- 4 knowledge skills (textures, meshes, animations, sounds)
-- Full ZX render mode support (Modes 0-3: Lambert, Matcap, MRE, SSE)
-- Matcap texture generation with blend modes (Multiply, Add, HSV)
-- Alpha/dither transparency support
-- Vertex color mesh generation
-- Project scaffolding (`/new-asset-project` command)
-- Quick generation (`/generate-asset` command)
-- Asset quality review (automatic agent)
-- Language agnostic (Rust, Python, Processing, Blender, etc.)
+Procedural asset generation plugin.
 
-**Usage:**
-- `/new-asset-project [name]` - Scaffold asset generation project
-- `/generate-asset [type] [description]` - Quick asset generation
-- Ask about procedural textures, meshes, sounds, animations
-- Ask about matcaps, vertex colors, dither transparency
-- Ask "review my assets" for quality feedback
+**Skills:** `procedural-textures`, `procedural-meshes`, `procedural-sounds`, `procedural-music`, `procedural-animations`, `skeletal-rigging`, `mocap-integration`, `advanced-techniques`, `semantic-asset-language`, `retro-3d-assets`, `mesh-texturing-workflows`, `character-pipeline`
 
-See [nethercore-zx-procgen/README.md](./nethercore-zx-procgen/README.md) for full documentation.
+**Commands:**
+- `/generate-asset` - Quick single-asset generation
+- `/new-asset-project` - Scaffold asset generation project
+
+**Agents:**
+- `asset-designer` - Translates creative vision to SADL specs
+- `asset-generator` - Produces procedural generation code
+- `asset-critic` - Reviews asset quality against specs
+- `asset-quality-reviewer` - Validates assets meet ZX budgets
+- `procgen-optimizer` - Optimizes generation code and output
+- `creative-orchestrator` - Coordinates full asset pipeline
+- `character-generator` - End-to-end character creation
+
+### nethercore-zx-publish
+
+Publishing workflow plugin.
+
+**Skills:** `publishing-workflow`, `platform-assets`
+
+**Commands:**
+- `/publish-game` - Full publishing workflow
+- `/prepare-platform-assets` - Generate marketing assets
+
+### nethercore-zx-orchestrator
+
+Meta-orchestration plugin coordinating multi-plugin workflows.
+
+**Agents:**
+- `game-orchestrator` - Coordinates full development pipeline from GDD to playable ROM
 
 ## Contributing
 
 Plugins are developed in this repository. Each plugin has its own directory with:
-- `plugin.json` - Plugin manifest
+- `.claude-plugin/plugin.json` - Plugin manifest
 - `skills/` - Auto-triggering knowledge skills
 - `commands/` - Slash commands
 - `agents/` - Specialized sub-agents
 
 ## License
 
-Part of the Nethercore project.
+Licensed under either of:
+
+- Apache License, Version 2.0 ([LICENSE-APACHE](LICENSE-APACHE))
+- MIT license ([LICENSE-MIT](LICENSE-MIT))
+
+at your option.

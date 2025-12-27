@@ -1,6 +1,6 @@
 # Gap 8: Environment Processing Unit (EPU)
 
-**Status:** `[ ]` Not Started
+**Status:** `[x]` Completed
 **Priority:** MEDIUM
 **Plugin:** nethercore-zx-dev
 **Type:** Skill

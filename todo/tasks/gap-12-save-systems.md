@@ -1,6 +1,6 @@
 # Gap 12: Save Data Patterns
 
-**Status:** `[ ]` Not Started
+**Status:** `[x]` Completed
 **Priority:** MEDIUM
 **Plugin:** nethercore-zx-game-design
 **Type:** Skill

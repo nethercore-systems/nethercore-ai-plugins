@@ -1,9 +1,34 @@
 # Gap 20: Multiplayer Rendering Patterns
 
-**Status:** `[ ]` Not Started
+**Status:** `[x]` Completed
 **Priority:** HIGH (CRITICAL)
 **Plugin:** nethercore-zx-game-design
 **Type:** Skill
+**Completed:** 2025-12-28
+
+## Implementation Summary
+
+Created new skill `multiplayer-rendering` in `nethercore-zx-game-design/skills/multiplayer-rendering/`:
+
+- **SKILL.md** (~1500 words) - Core skill covering:
+  - Critical update() vs render() determinism rule
+  - `player_count()` and `local_player_mask()` FFI documentation
+  - Pattern 1: Split-Screen (Local Multiplayer) with viewport per local player
+  - Pattern 2: Same-Screen (Shared Camera) with dynamic zoom
+  - Pattern 3: Asymmetric (Role-Based Views)
+  - Correct input handling in update()
+  - Common mistakes section with WRONG/CORRECT examples
+  - Integration notes with multiplayer-design skill
+
+- **references/viewport-layouts.md** - Complete viewport configurations for:
+  - 2-player horizontal and vertical splits
+  - 3-player layouts (one+two, columns)
+  - 4-player quadrants
+  - Dynamic layout function
+  - Mixed local/remote examples
+  - Aspect ratio considerations
+
+---
 
 ---
 

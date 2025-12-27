@@ -32,13 +32,35 @@
     },
     {
       "name": "nethercore-zx-game-design",
-      "description": "Game design workflow for Nethercore ZX - create GDDs, validate constraints, and orchestrate full game development across zx-dev and procgen plugins.",
-      "version": "0.1.0",
+      "description": "Game design workflow for Nethercore ZX - create GDDs, validate console constraints, and plan asset requirements.",
+      "version": "1.0.0",
       "author": {
         "name": "Nethercore Team",
         "email": "nethercore.systems@gmail.com"
       },
       "source": "./nethercore-zx-game-design",
+      "category": "development"
+    },
+    {
+      "name": "nethercore-zx-orchestrator",
+      "description": "Game development orchestrator for Nethercore ZX. Coordinates the full development pipeline across game-design, procgen, and zx-dev plugins.",
+      "version": "1.0.0",
+      "author": {
+        "name": "Nethercore Team",
+        "email": "nethercore.systems@gmail.com"
+      },
+      "source": "./nethercore-zx-orchestrator",
+      "category": "development"
+    },
+    {
+      "name": "nethercore-zx-publish",
+      "description": "Publishing workflow for Nethercore ZX games. Covers ROM packaging with nether CLI, nether.toml manifest creation, platform upload, and marketing asset preparation (thumbnails, screenshots, descriptions).",
+      "version": "1.0.0",
+      "author": {
+        "name": "Nethercore Team",
+        "email": "nethercore.systems@gmail.com"
+      },
+      "source": "./nethercore-zx-publish",
       "category": "development"
     }
   ]

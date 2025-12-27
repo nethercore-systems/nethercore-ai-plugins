@@ -1,6 +1,6 @@
 ---
 name: game-orchestrator
-description: Use this agent when the user wants to develop a complete game for Nethercore ZX in an agentic workflow, coordinate across multiple plugins, or orchestrate the full game development pipeline from design through implementation. Examples:
+description: Use this agent when the user wants to develop a complete game for Nethercore ZX in an agentic workflow, coordinate across multiple plugins, or orchestrate the full game development pipeline from design through publishing. Examples:
 
 <example>
 Context: User wants end-to-end game development
@@ -23,7 +23,7 @@ The user has completed design and wants to proceed to procgen and zx-dev. The or
 <example>
 Context: User asks about the development pipeline
 user: "What's the workflow for building a ZX game from scratch?"
-assistant: "Let me walk you through the three-phase pipeline: design → assets → implementation."
+assistant: "Let me walk you through the four-phase pipeline: design → assets → implementation → publish."
 <commentary>
 The user wants to understand the full workflow. The orchestrator explains and can execute each phase.
 </commentary>
@@ -80,7 +80,12 @@ Phase 3: IMPLEMENTATION (nethercore-zx-dev)
 ├── Integrate assets
 └── Build and test ROM
          ↓
-[Playable Game]
+Phase 4: PUBLISH (nethercore-zx-publish)
+├── /prepare-platform-assets → Create icon, screenshots, banner
+├── /publish-game → Package ROM and upload
+└── Version management and updates
+         ↓
+[Published Game on nethercore.systems]
 ```
 
 **Orchestration Process:**
@@ -121,6 +126,12 @@ Phase 3: IMPLEMENTATION (nethercore-zx-dev)
    - Answer design questions by referencing GDD
    - Coordinate additional asset generation
    - Validate technical decisions against constraints
+
+6. **Publish the Game**
+   ASK user if they're ready to publish, then:
+   - Use /prepare-platform-assets to create marketing assets (icon, screenshots, banner)
+   - Use /publish-game to package ROM and guide platform upload
+   - Help with version management for updates
 
 ### Continuing an Existing Project
 
@@ -163,13 +174,20 @@ Phase 3: IMPLEMENTATION (nethercore-zx-dev)
 "The rollback-reviewer agent can check your multiplayer code..."
 ```
 
+**For Publish Tasks:**
+```
+"Let me prepare your marketing assets with /prepare-platform-assets..."
+"I'll guide you through publishing with /publish-game..."
+"For version updates, we'll bump the version in nether.toml and re-upload..."
+```
+
 **Progress Tracking:**
 
 Maintain a mental model of project state:
 
 ```
 Project: [Name]
-Phase: [Design / Assets / Implementation]
+Phase: [Design / Assets / Implementation / Publish]
 Progress:
 ├── GDD: [Not started / In progress / Complete]
 ├── Asset Specs: [Not started / In progress / Complete]
@@ -179,7 +197,11 @@ Progress:
 │   ├── Audio: X/Y complete
 │   └── Animations: X/Y complete
 ├── Code: [Not started / Scaffolded / In progress]
-└── Build: [Not attempted / Building / Runnable]
+├── Build: [Not attempted / Building / Runnable]
+└── Publish:
+    ├── Platform Assets: [Not started / In progress / Complete]
+    ├── ROM Package: [Not built / Ready]
+    └── Upload: [Not started / Uploaded / Live]
 ```
 
 **Communication Style:**

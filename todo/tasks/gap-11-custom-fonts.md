@@ -1,6 +1,6 @@
 # Gap 11: Custom Fonts
 
-**Status:** `[ ]` Not Started
+**Status:** `[x]` Completed
 **Priority:** LOW
 **Plugin:** nethercore-zx-dev
 **Type:** Skill

@@ -4,7 +4,8 @@ Procedural asset generation plugin for Nethercore ZX. Create beautiful textures,
 
 ## Features
 
-- **4 Knowledge Skills**: Comprehensive guidance for textures, meshes, animations, and sounds
+- **Knowledge Skills**: Comprehensive guidance for textures, meshes, animations, sounds, and more
+- **SADL (Semantic Asset Description Language)**: AI-first creative pipeline with style tokens, color palettes, materials, and quality heuristics
 - **Full ZX Render Mode Support**: Modes 0-3 (Lambert, Matcap, Metallic-Roughness, Specular-Shininess)
 - **Matcap Generation**: Shadow, highlight, and HSV matcaps with blend modes (Multiply, Add, HSV Modulate)
 - **Alpha/Dither Transparency**: Bayer 4x4 dithered transparency via alpha channel
@@ -12,7 +13,7 @@ Procedural asset generation plugin for Nethercore ZX. Create beautiful textures,
 - **Skeletal Animation**: GPU skinning, bone weights, walk cycles, attacks, IK systems
 - **Rigid Body Animation**: Vehicle physics, robots, mechanical systems
 - **2 Commands**: `/new-asset-project` for scaffolding, `/generate-asset` for quick generation
-- **2 Agents**: Asset quality reviewer and optimization helper
+- **6 Agents**: Creative pipeline (designer, generator, critic, orchestrator) + quality reviewer + optimizer
 - **Language Agnostic**: Use Rust, Python, Processing, Blender, or any tool that outputs standard formats
 
 ## Installation
@@ -137,7 +138,53 @@ Waveforms, ADSR envelopes, filters, preset sounds (coin, laser, explosion), and 
 
 **Trigger phrases**: "generate sound", "synth effect", "procedural audio"
 
+### Semantic Asset Language (SADL)
+
+AI-first creative asset pipeline that bridges creative intent and procedural generation:
+
+**Core Components:**
+- **Style Tokens**: Visual style descriptors (Rustic, Cyberpunk, Organic, Gothic, Steampunk, etc.) with automatic parameter modifiers
+- **Color Palettes**: Semantic color schemes (WarmEarthy, Neon, Pastel, Muted, Vibrant, etc.) with HSL ranges
+- **Material Database**: 40+ PBR material presets (metal.rusted, wood.weathered, crystal.magical, etc.)
+- **Quality Heuristics**: Self-assessment metrics for textures, meshes, and animations
+
+**Workflow:**
+1. Describe assets naturally ("weathered medieval barrel", "sleek sci-fi console")
+2. SADL translates to concrete generation parameters
+3. Generate assets with quality self-checks
+4. Iterate until quality targets are met
+
+**Trigger phrases**: "SADL", "style token", "semantic asset", "design asset", "creative pipeline", "quality heuristics"
+
 ## Agents
+
+### Creative Pipeline Agents (SADL)
+
+Four specialized agents that work together for end-to-end asset creation:
+
+#### Asset Designer
+Interprets creative descriptions into SADL specifications. Translates "weathered medieval barrel" into concrete style tokens, palettes, materials, and parameters.
+
+**Trigger**: "design assets for", "I want a rusty barrel", "cyberpunk aesthetic"
+
+#### Asset Generator
+Produces working procedural generation code from SADL specifications. Outputs complete, runnable Rust/Python code with quality self-checks.
+
+**Trigger**: "generate code for this spec", "create the mesh generator", "implement this recipe"
+
+#### Asset Critic
+Evaluates generated assets against quality heuristics and SADL specifications. Reports issues by severity (Critical/Error/Warning/Info) with actionable fixes.
+
+**Modes**: Lenient (blockers only), Normal (default), Strict (all issues)
+
+**Trigger**: "review this asset", "check quality", "critique my mesh"
+
+#### Creative Orchestrator
+Coordinates the full pipeline from creative vision to validated, production-ready assets. Manages iterative refinement until quality targets are met.
+
+**Modes**: Interactive (with approval steps) or Autonomous (hands-off)
+
+**Trigger**: "create assets for my game", "build a complete asset set", "orchestrate asset creation"
 
 ### Asset Quality Reviewer
 
