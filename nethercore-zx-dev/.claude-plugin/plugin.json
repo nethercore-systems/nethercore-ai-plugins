@@ -1,12 +1,39 @@
 {
   "name": "nethercore-zx-dev",
-  "version": "1.0.0",
-  "description": "Comprehensive game development skill for Nethercore ZX fantasy console. Provides FFI specifications for Rust/C/Zig, asset pipeline guidance, project structure templates, and CLI tooling knowledge.",
+  "version": "2.0.0",
+  "description": "Core game development plugin for Nethercore ZX fantasy console. Provides FFI specifications for Rust/C/Zig, camera systems with perspective-based design, rendering techniques (stencil, fonts, particles), debugging workflows, and environment effects.",
   "author": {
     "name": "Nethercore Systems",
     "email": "nethercore.systems@gmail.com"
   },
   "repository": "https://github.com/nethercore-systems/nethercore-ai-plugins",
   "license": "MIT/Apache-2.0",
-  "keywords": ["nethercore", "zx", "game-development", "fantasy-console", "wasm", "ffi"]
+  "keywords": [
+    "nethercore",
+    "zx",
+    "game-development",
+    "fantasy-console",
+    "wasm",
+    "ffi",
+    "camera",
+    "orbit-camera",
+    "first-person",
+    "third-person",
+    "side-scroller",
+    "top-down",
+    "perspective",
+    "stencil",
+    "portal",
+    "mirror",
+    "mask",
+    "font",
+    "text-rendering",
+    "billboard",
+    "particles",
+    "vfx",
+    "debugging",
+    "environment",
+    "fog",
+    "lighting"
+  ]
 }

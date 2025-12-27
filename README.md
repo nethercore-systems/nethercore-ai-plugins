@@ -4,13 +4,17 @@ Official AI-powered development plugins for Nethercore game development. Current
 
 ## Available Plugins
 
-| Plugin | Description |
-|--------|-------------|
-| [nethercore-zx-dev](./nethercore-zx-dev/) | Core game development - FFI specs, project templates, debugging |
-| [nethercore-zx-game-design](./nethercore-zx-game-design/) | Game design workflow - GDDs, constraints, multiplayer patterns |
-| [nethercore-zx-procgen](./nethercore-zx-procgen/) | Procedural asset generation - textures, meshes, sounds, animations |
-| [nethercore-zx-publish](./nethercore-zx-publish/) | Publishing workflow - ROM packaging, platform upload |
-| [nethercore-zx-orchestrator](./nethercore-zx-orchestrator/) | Meta-orchestration - coordinates full development pipeline |
+| Plugin | Description | Skills |
+|--------|-------------|--------|
+| [nethercore-zx-dev](./nethercore-zx-dev/) | Core game development - FFI specs, cameras, rendering | 5 |
+| [nethercore-zx-game-design](./nethercore-zx-game-design/) | Game design workflow - GDDs, multiplayer, mechanics | 10 |
+| [nethercore-zx-procgen](./nethercore-zx-procgen/) | Procedural asset generation - textures, meshes, sounds | 10 |
+| [nethercore-zx-publish](./nethercore-zx-publish/) | Publishing workflow - ROM packaging, platform upload | 2 |
+| [nethercore-zx-orchestrator](./nethercore-zx-orchestrator/) | Meta-orchestration - coordinates full pipeline | 0 |
+| [nethercore-zx-test](./nethercore-zx-test/) | Testing and QA - sync tests, replay regression | 2 |
+| [nethercore-zx-optimize](./nethercore-zx-optimize/) | Optimization - resource budgets, performance tuning | 2 |
+| [nethercore-zx-cicd](./nethercore-zx-cicd/) | CI/CD automation - GitHub Actions, quality gates | 1 |
+| [game-design](./game-design/) | Platform-agnostic design - world building, narrative | 11 |
 
 ## Installation
 
@@ -33,7 +37,11 @@ Add to your global Claude settings (`~/.claude/settings.json` on macOS/Linux, `%
     "nethercore-zx-game-design@nethercore-ai-plugins": true,
     "nethercore-zx-procgen@nethercore-ai-plugins": true,
     "nethercore-zx-publish@nethercore-ai-plugins": true,
-    "nethercore-zx-orchestrator@nethercore-ai-plugins": true
+    "nethercore-zx-orchestrator@nethercore-ai-plugins": true,
+    "nethercore-zx-test@nethercore-ai-plugins": true,
+    "nethercore-zx-optimize@nethercore-ai-plugins": true,
+    "nethercore-zx-cicd@nethercore-ai-plugins": true,
+    "game-design@nethercore-ai-plugins": true
   }
 }
 ```
@@ -57,7 +65,11 @@ For nethercore contributors who have cloned the workspace, add to `.claude/setti
     "nethercore-zx-game-design@nethercore-ai-plugins": true,
     "nethercore-zx-procgen@nethercore-ai-plugins": true,
     "nethercore-zx-publish@nethercore-ai-plugins": true,
-    "nethercore-zx-orchestrator@nethercore-ai-plugins": true
+    "nethercore-zx-orchestrator@nethercore-ai-plugins": true,
+    "nethercore-zx-test@nethercore-ai-plugins": true,
+    "nethercore-zx-optimize@nethercore-ai-plugins": true,
+    "nethercore-zx-cicd@nethercore-ai-plugins": true,
+    "game-design@nethercore-ai-plugins": true
   }
 }
 ```
@@ -78,7 +90,12 @@ nether run                # Build and launch
 
 Core game development plugin for Nethercore ZX.
 
-**Skills:** `zx-game-development`, `camera-systems`, `debugging-guide`, `environment-effects`, `stencil-effects`, `custom-fonts`
+**Skills (5):**
+- `zx-game-development` - FFI specifications, project templates, CLI tooling
+- `camera-systems` - 3D camera implementation and perspective-based design
+- `rendering-techniques` - Stencil effects, custom fonts, billboard particles
+- `debugging-guide` - Debugging and sync testing workflows
+- `environment-effects` - Fog, lighting, and atmospheric effects
 
 **Commands:**
 - `/new-game` - Scaffold a new ZX game project
@@ -90,7 +107,17 @@ Core game development plugin for Nethercore ZX.
 
 Game design workflow plugin.
 
-**Skills:** `game-design-documents`, `console-constraints`, `multiplayer-design`, `multiplayer-rendering`, `perspective-patterns`, `physics-collision`, `gameplay-mechanics`, `ui-patterns`, `game-feel`, `save-systems`, `ai-patterns`, `split-screen-rendering`
+**Skills (10):**
+- `game-design-documents` - GDD templates and examples
+- `console-constraints` - ZX hardware limits and budgets
+- `multiplayer-patterns` - Netcode, determinism, viewport management, split-screen
+- `physics-collision` - Collision detection patterns
+- `gameplay-mechanics` - Movement, combat, inventory, dialogue
+- `ui-patterns` - UI/UX design for ZX
+- `game-feel` - Juice, polish, and feedback
+- `save-systems` - Serialization and save patterns
+- `ai-patterns` - FSM, pathfinding, behavior trees
+- `level-design` - Level design patterns and procedural generation
 
 **Commands:**
 - `/design-game` - Interactive GDD builder wizard
@@ -104,7 +131,17 @@ Game design workflow plugin.
 
 Procedural asset generation plugin.
 
-**Skills:** `procedural-textures`, `procedural-meshes`, `procedural-sounds`, `procedural-music`, `procedural-animations`, `skeletal-rigging`, `mocap-integration`, `advanced-techniques`, `semantic-asset-language`, `retro-3d-assets`, `mesh-texturing-workflows`, `character-pipeline`
+**Skills (10):**
+- `procedural-textures` - Texture generation (Albedo, MRE, SSE, Matcaps)
+- `procedural-meshes` - 3D mesh generation with UVs and vertex colors
+- `procedural-sounds` - Audio synthesis and SFX
+- `procedural-music` - XM tracker music composition
+- `procedural-animations` - Walk cycles, attacks, locomotion
+- `procedural-sprites` - 2D sprites, pixel art, tilesets, UI elements
+- `skeletal-rigging` - Bone weights and skinning
+- `mocap-integration` - BVH parsing and retargeting
+- `semantic-asset-language` - SADL for AI-first creative workflows
+- `mesh-texturing-workflows` - UV projection techniques
 
 **Commands:**
 - `/generate-asset` - Quick single-asset generation
@@ -123,7 +160,9 @@ Procedural asset generation plugin.
 
 Publishing workflow plugin.
 
-**Skills:** `publishing-workflow`, `platform-assets`
+**Skills (2):**
+- `publishing-workflow` - ROM packaging and platform upload
+- `platform-assets` - Marketing assets (thumbnails, screenshots)
 
 **Commands:**
 - `/publish-game` - Full publishing workflow
@@ -135,6 +174,67 @@ Meta-orchestration plugin coordinating multi-plugin workflows.
 
 **Agents:**
 - `game-orchestrator` - Coordinates full development pipeline from GDD to playable ROM
+
+### nethercore-zx-test
+
+Testing and quality assurance plugin for ZX games.
+
+**Skills (2):**
+- `testing-fundamentals` - Sync testing, replay regression, determinism rules
+- `benchmarking` - Performance metrics, profiling, state size analysis
+
+**Agents:**
+- `test-runner` - Runs sync tests and replay regression tests
+- `desync-investigator` - Analyzes sync failures to find non-deterministic code
+
+### nethercore-zx-optimize
+
+Optimization plugin for ZX games.
+
+**Skills (2):**
+- `resource-budgets` - Console limits, budget templates, state sizing
+- `optimization-techniques` - WASM, textures, meshes, audio, state optimization
+
+**Agents:**
+- `build-analyzer` - Analyzes build output to identify largest assets
+- `optimizer` - Applies optimization techniques and reports savings
+
+### nethercore-zx-cicd
+
+CI/CD automation plugin for ZX games.
+
+**Skills (1):**
+- `ci-automation` - GitHub Actions workflows, quality gates, release automation
+
+**Agents:**
+- `ci-scaffolder` - Creates `.github/workflows/` with build and release pipelines
+
+### game-design
+
+Platform-agnostic game design frameworks for fantasy console development.
+
+**Skills (11):**
+- `world-building` - World design, lore, factions, geography
+- `character-design` - Player characters, NPCs, antagonists
+- `narrative-design` - Story structure, quests, dialogue
+- `core-loop-design` - Gameplay loops, progression, economy
+- `level-design` - Flow, pacing, challenge curves
+- `game-balance` - Difficulty, stat scaling, playtesting
+- `player-psychology` - Motivation, engagement, onboarding
+- `genre-patterns` - RPG, platformer, roguelike conventions
+- `multiplayer-design` - Co-op, competitive, asymmetric
+- `accessibility-ux` - Controls, difficulty options, UI/UX
+- `replayability-engineering` - Run-based design, meta-progression
+
+**Commands:**
+- `/worldbuild` - Interactive world building wizard
+- `/character` - Character design worksheet wizard
+- `/design-loop` - Core loop analysis and design tool
+- `/balance-review` - Game balance review framework
+
+**Agents:**
+- `design-reviewer` - Reviews GDDs for coherence, completeness, scope
+- `genre-advisor` - Suggests genre-appropriate design patterns
 
 ## Contributing
 

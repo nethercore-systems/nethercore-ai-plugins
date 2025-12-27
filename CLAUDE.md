@@ -17,14 +17,12 @@ The plugins provide skills, commands, and agents covering the full game developm
 
 Core game development plugin for Nethercore ZX.
 
-**Skills:**
+**Skills (5):**
 - `zx-game-development` - FFI specifications (Rust/C/Zig), project templates, CLI tooling
-- `camera-systems` - 3D camera implementation patterns
+- `camera-systems` - 3D camera implementation and perspective-based design patterns
+- `rendering-techniques` - Stencil effects, custom fonts, billboard particles
 - `debugging-guide` - Debugging and sync testing workflows
 - `environment-effects` - Fog, lighting, and atmospheric effects
-- `stencil-effects` - Stencil buffer techniques
-- `custom-fonts` - Font rendering and text display
-- `billboard-particles` - 3D billboards and particle systems
 
 **Commands:**
 - `/new-game` - Scaffold a new ZX game project
@@ -36,19 +34,16 @@ Core game development plugin for Nethercore ZX.
 
 Game design workflow plugin.
 
-**Skills:**
+**Skills (10):**
 - `game-design-documents` - GDD templates and examples
 - `console-constraints` - ZX hardware limits and budgets
-- `multiplayer-design` - Netplay patterns and determinism
-- `multiplayer-rendering` - Split-screen and viewport layouts
-- `perspective-patterns` - Camera and perspective design
+- `multiplayer-patterns` - Netcode, determinism, viewport management, split-screen
 - `physics-collision` - Collision detection patterns
 - `gameplay-mechanics` - Movement, combat, inventory, dialogue
 - `ui-patterns` - UI/UX design for ZX
 - `game-feel` - Juice, polish, and feedback
 - `save-systems` - Serialization and save patterns
 - `ai-patterns` - FSM, pathfinding, behavior trees
-- `split-screen-rendering` - Multi-viewport rendering
 - `level-design` - Level design patterns and procedural generation
 
 **Commands:**
@@ -63,7 +58,7 @@ Game design workflow plugin.
 
 Procedural asset generation plugin.
 
-**Skills:**
+**Skills (10):**
 - `procedural-textures` - Texture generation (Albedo, MRE, SSE, Matcaps)
 - `procedural-meshes` - 3D mesh generation with UVs and vertex colors
 - `procedural-sounds` - Audio synthesis and SFX
@@ -72,11 +67,8 @@ Procedural asset generation plugin.
 - `procedural-sprites` - 2D sprites, pixel art, tilesets, UI elements
 - `skeletal-rigging` - Bone weights and skinning
 - `mocap-integration` - BVH parsing and retargeting
-- `advanced-techniques` - Algorithm selection and quality benchmarks
 - `semantic-asset-language` - SADL for AI-first creative workflows
-- `retro-3d-assets` - Low-poly and pixel art 3D styles
 - `mesh-texturing-workflows` - UV projection techniques
-- `character-pipeline` - Full character creation workflow
 
 **Commands:**
 - `/generate-asset` - Quick single-asset generation
@@ -95,7 +87,7 @@ Procedural asset generation plugin.
 
 Publishing workflow plugin.
 
-**Skills:**
+**Skills (2):**
 - `publishing-workflow` - ROM packaging and platform upload
 - `platform-assets` - Marketing assets (thumbnails, screenshots)
 
@@ -110,11 +102,45 @@ Meta-orchestration plugin coordinating multi-plugin workflows.
 **Agents:**
 - `game-orchestrator` - Coordinates full development pipeline
 
+### nethercore-zx-test
+
+Testing and quality assurance plugin for ZX games.
+
+**Skills (2):**
+- `testing-fundamentals` - Sync testing, replay regression, determinism rules
+- `benchmarking` - Performance metrics, profiling, state size analysis
+
+**Agents:**
+- `test-runner` - Runs sync tests and replay regression tests
+- `desync-investigator` - Analyzes sync failures to find non-deterministic code
+
+### nethercore-zx-optimize
+
+Optimization plugin for ZX games.
+
+**Skills (2):**
+- `resource-budgets` - Console limits, budget templates, state sizing
+- `optimization-techniques` - WASM, textures, meshes, audio, state optimization
+
+**Agents:**
+- `build-analyzer` - Analyzes build output to identify largest assets
+- `optimizer` - Applies optimization techniques and reports savings
+
+### nethercore-zx-cicd
+
+CI/CD automation plugin for ZX games.
+
+**Skills (1):**
+- `ci-automation` - GitHub Actions workflows, quality gates, release automation
+
+**Agents:**
+- `ci-scaffolder` - Creates `.github/workflows/` with build and release pipelines
+
 ### game-design
 
 Platform-agnostic game design frameworks for fantasy console development. Companion to zx-game-design for conceptual design work.
 
-**Skills:**
+**Skills (11):**
 - `world-building` - World design, lore, factions, geography, consistency
 - `character-design` - Player characters, NPCs, antagonists, companions
 - `narrative-design` - Story structure, quests, dialogue, environmental storytelling
@@ -158,6 +184,9 @@ Add to your `.claude/settings.local.json`:
     "nethercore-zx-procgen@nethercore-ai-plugins": true,
     "nethercore-zx-publish@nethercore-ai-plugins": true,
     "nethercore-zx-orchestrator@nethercore-ai-plugins": true,
+    "nethercore-zx-test@nethercore-ai-plugins": true,
+    "nethercore-zx-optimize@nethercore-ai-plugins": true,
+    "nethercore-zx-cicd@nethercore-ai-plugins": true,
     "game-design@nethercore-ai-plugins": true
   }
 }

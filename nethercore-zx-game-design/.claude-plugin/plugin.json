@@ -1,7 +1,7 @@
 {
   "name": "nethercore-zx-game-design",
-  "version": "1.0.0",
-  "description": "Game design workflow for Nethercore ZX - create GDDs, validate console constraints, and plan asset requirements",
+  "version": "2.0.0",
+  "description": "Game design workflow plugin for Nethercore ZX. Create GDDs, validate console constraints, design multiplayer patterns with rollback netcode, plan game mechanics, and implement AI/physics/UI systems.",
   "author": {
     "name": "Nethercore Systems",
     "email": "nethercore.systems@gmail.com"
@@ -15,6 +15,20 @@
     "gdd",
     "constraints",
     "multiplayer",
-    "physics"
+    "netcode",
+    "rollback",
+    "GGRS",
+    "determinism",
+    "split-screen",
+    "viewport",
+    "couch-coop",
+    "physics",
+    "collision",
+    "gameplay-mechanics",
+    "ui-patterns",
+    "save-systems",
+    "ai-patterns",
+    "game-feel",
+    "level-design"
   ]
 }
