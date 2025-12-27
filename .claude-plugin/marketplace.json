@@ -62,6 +62,50 @@
       },
       "source": "./nethercore-zx-publish",
       "category": "development"
+    },
+    {
+      "name": "nethercore-zx-test",
+      "description": "Testing and quality assurance plugin for Nethercore ZX games. Provides sync testing, replay regression, benchmarking, and desync investigation workflows.",
+      "version": "1.0.0",
+      "author": {
+        "name": "Nethercore Systems",
+        "email": "nethercore.systems@gmail.com"
+      },
+      "source": "./nethercore-zx-test",
+      "category": "development"
+    },
+    {
+      "name": "nethercore-zx-optimize",
+      "description": "Optimization plugin for Nethercore ZX games. Provides resource budgeting guidance, optimization techniques, and automated analysis for ROM size, WASM, RAM, VRAM, and asset optimization.",
+      "version": "1.0.0",
+      "author": {
+        "name": "Nethercore Systems",
+        "email": "nethercore.systems@gmail.com"
+      },
+      "source": "./nethercore-zx-optimize",
+      "category": "development"
+    },
+    {
+      "name": "nethercore-zx-cicd",
+      "description": "CI/CD automation plugin for Nethercore ZX games. Provides GitHub Actions templates and workflow scaffolding for build, test, and release pipelines.",
+      "version": "1.0.0",
+      "author": {
+        "name": "Nethercore Systems",
+        "email": "nethercore.systems@gmail.com"
+      },
+      "source": "./nethercore-zx-cicd",
+      "category": "development"
+    },
+    {
+      "name": "game-design",
+      "description": "Platform-agnostic game design frameworks for fantasy console development - world building, character design, narrative, gameplay systems, and replayability engineering.",
+      "version": "1.0.0",
+      "author": {
+        "name": "Nethercore Systems",
+        "email": "nethercore.systems@gmail.com"
+      },
+      "source": "./game-design",
+      "category": "design"
     }
   ]
 }
