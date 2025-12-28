@@ -52,7 +52,32 @@ author = "Studio Name"
 version = "1.2.3"
 description = "An awesome game for Nethercore ZX"
 tags = ["action", "arcade", "multiplayer"]
+compress_textures = true  # Enable BC7 compression (recommended for Matcap/PBR modes)
 ```
+
+## Texture Compression
+
+Enable BC7 texture compression (4:1 ratio) for Matcap/PBR/Hybrid render modes:
+
+```toml
+[game]
+id = "my-game"
+title = "My Game"
+author = "Developer"
+version = "1.0.0"
+compress_textures = true  # Default: false
+```
+
+**When to use:**
+- ✅ Matcap (mode 1), PBR (mode 2), or Hybrid (mode 3) render modes
+- ✅ Reduce ROM size by ~75%
+- ✅ Production builds
+
+**When NOT to use:**
+- ❌ Lambert (mode 0) - works best with RGBA8
+- ❌ Rapid prototyping (faster builds)
+
+The packer will warn if compression doesn't match your render mode.
 
 ## With Textures
 

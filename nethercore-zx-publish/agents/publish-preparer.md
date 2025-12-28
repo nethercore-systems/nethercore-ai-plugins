@@ -185,6 +185,7 @@ Use `/publish-game` to complete the upload process.
 - [ ] Playtest the ROM one more time
 - [ ] Review description and metadata
 - [ ] Check screenshots represent the game well
+- [ ] Consider enabling `compress_textures = true` in nether.toml if using Matcap/PBR/Hybrid mode
 - [ ] Decide on pricing (if applicable)
 - [ ] Prepare release notes
 ```
