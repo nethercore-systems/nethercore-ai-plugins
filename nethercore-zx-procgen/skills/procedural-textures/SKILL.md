@@ -208,6 +208,80 @@ See `references/layer-system.md` for the complete layer system documentation inc
 
 ---
 
+## CRITICAL: Code Organization & File Size Limits
+
+**Generated code MUST follow these file size limits to prevent context bloat:**
+
+| Limit | Lines | Action |
+|-------|-------|--------|
+| Target | ≤300 | Ideal file size |
+| Soft limit | 400 | Consider splitting |
+| Hard limit | 500 | MUST split immediately |
+| Unacceptable | >500 | Never generate |
+
+### Mandatory Splitting Strategy
+
+When generating texture code, use this module structure:
+
+```
+generator/src/
+├── main.rs              # Entry point only (~50 lines)
+├── lib.rs               # Module exports (~30 lines)
+├── textures/
+│   ├── mod.rs           # Re-exports (~20 lines)
+│   ├── albedo.rs        # Albedo generation (~150-200 lines)
+│   ├── mre.rs           # MRE generation (~100-150 lines)
+│   ├── matcap.rs        # Matcap generation (~100-150 lines)
+│   └── noise.rs         # Noise utilities (~150-200 lines)
+├── layers/
+│   ├── mod.rs           # Layer system exports
+│   ├── base.rs          # Base layer
+│   ├── features.rs      # Scratches, cracks, grain
+│   └── weathering.rs    # Rust, stains, dust
+└── constants.rs         # Palettes, presets (~100 lines)
+```
+
+### What to Extract
+
+| Extract Into | Content |
+|--------------|---------|
+| `constants.rs` | Color palettes, material presets, noise parameters |
+| `noise.rs` | Perlin, simplex, voronoi, FBM functions |
+| `layers/*.rs` | Individual layer generators |
+| `materials/*.rs` | Per-material-type generators |
+
+### Large Function Pattern
+
+**NEVER** generate functions over 100 lines. Split into helpers:
+
+```rust
+// BAD: 200-line function
+fn generate_bark_texture(...) { /* everything inline */ }
+
+// GOOD: Composed from small functions
+fn generate_bark_texture(size: u32, seed: u64) -> TextureBuffer {
+    let mut tex = create_base_layer(size, BARK_COLORS);
+    add_noise_layer(&mut tex, seed);
+    add_crack_details(&mut tex, seed + 1);
+    add_weathering(&mut tex, seed + 2);
+    tex
+}
+```
+
+### Module Re-export Pattern
+
+```rust
+// generator/src/lib.rs
+pub mod textures;
+pub mod layers;
+pub mod constants;
+
+pub use textures::{generate_albedo, generate_mre};
+pub use constants::*;
+```
+
+---
+
 ## Reference Files
 
 - `references/layer-system.md` - **Multi-layer composition system (START HERE)**

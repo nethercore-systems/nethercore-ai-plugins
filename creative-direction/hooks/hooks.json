@@ -7,7 +7,7 @@
         "hooks": [
           {
             "type": "prompt",
-            "prompt": "File size and structure check. Analyze this Write operation:\n\nFile: $TOOL_INPUT\n\nCheck:\n1. Count lines in the written content. If source code exceeds 300 lines, flag as WARNING. If exceeds 500 lines, flag as CRITICAL.\n2. If this appears to be generated code or assets, check if it should be split into multiple files.\n3. For non-code files (docs, configs), different limits apply (500 soft, 1000 hard).\n\nRespond with a brief assessment:\n- If file size is acceptable: 'File size OK: [line count] lines'\n- If WARNING: 'WARNING: [line count] lines exceeds soft limit. Consider splitting: [brief suggestion]'\n- If CRITICAL: 'CRITICAL: [line count] lines exceeds hard limit. Must split into: [specific modules]'\n\nKeep response under 100 words.",
+            "prompt": "File size and structure check. Analyze this Write operation:\n\nFile: $TOOL_INPUT\n\nLimits by file type:\n- Procedural generation code (.rs in generator/): 300 soft, 400 HARD\n- Game code (.rs in game/src): 300 soft, 500 hard\n- Documentation (.md): 500 soft, 1000 hard\n- Config files: no limit\n\nCheck:\n1. Count lines. Apply appropriate limit based on file type.\n2. For procgen code, check for common bloat patterns:\n   - Large data tables (should be in constants.rs or data/ module)\n   - Functions over 80 lines (should be split)\n   - Monolithic generators (should be modular)\n\nRespond:\n- If OK: 'OK: [count] lines'\n- If WARNING: 'WARNING: [count] lines. Split: [suggestion]'\n- If CRITICAL: 'CRITICAL: [count] lines exceeds hard limit! MUST split into: [specific files]'\n\nFor procgen code over 400 lines, suggest specific module structure (textures/, meshes/, audio/ etc).\n\nKeep response under 80 words.",
             "timeout": 30
           }
         ]
@@ -17,7 +17,7 @@
         "hooks": [
           {
             "type": "prompt",
-            "prompt": "Post-edit file size check. The file was just edited.\n\nFile: $TOOL_INPUT\nResult: $TOOL_RESULT\n\nIf this edit significantly grew the file, check if the file now exceeds size limits (300 lines soft, 500 lines hard for code). If so, briefly note this for future splitting consideration.\n\nRespond only if there's a size concern, otherwise respond with empty string.",
+            "prompt": "Post-edit file size check.\n\nFile: $TOOL_INPUT\nResult: $TOOL_RESULT\n\nIf this edit grew the file past limits (procgen: 400 hard, game: 500 hard), flag it. Look for:\n- Data tables that should be extracted to constants.rs\n- Functions that should be split\n- Code that belongs in a separate module\n\nRespond only if there's a size concern (empty string otherwise).",
             "timeout": 20
           }
         ]
@@ -28,8 +28,8 @@
         "matcher": "*",
         "hooks": [
           {
-            "type": "command",
-            "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/scripts/load-direction.sh",
+            "type": "prompt",
+            "prompt": "Creative direction context check. At session start, briefly check for these project direction files:\n\n1. .claude/creative-direction.local.md - Art/sound/creative vision settings\n2. .claude/project-status.md - Previous session state\n3. .claude/architecture/ - Architecture Decision Records\n\nIf any exist, note their presence. If none exist and this appears to be a game project, suggest running /establish-vision to set up creative direction.\n\nKeep response under 50 words. If no direction files exist and project doesn't need them, respond with empty string.",
             "timeout": 10
           }
         ]

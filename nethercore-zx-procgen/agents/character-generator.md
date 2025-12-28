@@ -258,6 +258,82 @@ skeleton_bind(skeleton);
 ✅ Triangle count: 487 (budget: 500)
 ```
 
+---
+
+## ⚠️ CRITICAL: File Size Limits (MANDATORY)
+
+**Character generators are complex. MUST split into modules:**
+
+| Limit | Lines | Action |
+|-------|-------|--------|
+| Target | ≤300 | Ideal per file |
+| Soft limit | 400 | Must split |
+| Hard limit | 500 | NEVER exceed |
+
+### Mandatory Module Structure
+
+Character generation produces multiple file types. ALWAYS split:
+
+```
+generator/src/
+├── main.rs              # Entry point (~50 lines)
+├── lib.rs               # Module exports (~30 lines)
+├── character/
+│   ├── mod.rs           # Re-exports
+│   ├── mesh.rs          # Mesh generation (~150 lines)
+│   ├── skeleton.rs      # Skeleton creation (~100 lines)
+│   ├── weights.rs       # Bone weight calculation (~120 lines)
+│   └── export.rs        # GLTF export (~100 lines)
+├── textures/
+│   ├── mod.rs           # Re-exports
+│   ├── skin.rs          # Skin textures (~80 lines)
+│   └── clothing.rs      # Clothing textures (~80 lines)
+├── animations/
+│   ├── mod.rs           # Re-exports
+│   ├── locomotion.rs    # Walk/run cycles (~100 lines)
+│   ├── combat.rs        # Attack/hit anims (~100 lines)
+│   └── idle.rs          # Idle variations (~80 lines)
+└── constants.rs         # Bone hierarchies, proportions (~100 lines)
+```
+
+### Bone Data Extraction
+
+**CRITICAL:** Bone hierarchies and bind poses are DATA. Extract to constants:
+
+```rust
+// constants.rs
+pub const HUMANOID_BONE_NAMES: [&str; 22] = [
+    "root", "pelvis", "spine_01", "spine_02", "spine_03",
+    "neck", "head",
+    "clavicle_l", "upperarm_l", "lowerarm_l", "hand_l",
+    "clavicle_r", "upperarm_r", "lowerarm_r", "hand_r",
+    "thigh_l", "calf_l", "foot_l",
+    "thigh_r", "calf_r", "foot_r",
+    "root_offset",
+];
+
+pub const HUMANOID_HIERARCHY: [(usize, usize); 21] = [
+    (1, 0), (2, 1), // pelvis->root, spine_01->pelvis
+    // ... parent relationships
+];
+```
+
+### Animation Splitting
+
+Each animation type gets its own file. NEVER generate >300 lines of animation code in one file:
+
+```rust
+// animations/locomotion.rs (~100 lines)
+pub fn generate_walk_cycle(...) -> Animation { ... }
+pub fn generate_run_cycle(...) -> Animation { ... }
+
+// animations/combat.rs (~100 lines)
+pub fn generate_attack(...) -> Animation { ... }
+pub fn generate_hit_react(...) -> Animation { ... }
+```
+
+---
+
 ## Scope Boundaries
 
 **DO:**
@@ -265,12 +341,14 @@ skeleton_bind(skeleton);
 - Validate ZX compliance
 - Provide usage examples
 - Create nether.toml entries
+- **Split output into multiple focused files**
 
 **DO NOT:**
 - Modify existing game code
 - Make gameplay decisions
 - Generate non-character assets
 - Skip validation steps
+- **Generate files over 400 lines**
 
 ## REQUIRED: Gitignore for Generated Assets
 

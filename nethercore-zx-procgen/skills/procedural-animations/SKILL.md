@@ -527,6 +527,79 @@ For creating believable, appealing motion, see **`references/12-principles.md`**
 
 Each principle includes code examples across all animation types: locomotion, combat, organic motion, mechanical systems, and UI/game feel.
 
+---
+
+## CRITICAL: Code Organization & File Size Limits
+
+**Animation code compounds QUICKLY. MUST follow these limits strictly:**
+
+| Limit | Lines | Action |
+|-------|-------|--------|
+| Target | ≤300 | Ideal file size |
+| Soft limit | 400 | Consider splitting |
+| Hard limit | 500 | MUST split immediately |
+| Unacceptable | >500 | Never generate |
+
+### Mandatory Splitting Strategy
+
+Animation code bloats easily. Use this structure:
+
+```
+game/src/
+├── lib.rs               # Entry points only (~80 lines)
+├── animation/
+│   ├── mod.rs           # Re-exports (~30 lines)
+│   ├── locomotion.rs    # Walk, run, jump (~150 lines)
+│   ├── combat.rs        # Attack, hit, death (~120 lines)
+│   ├── organic.rs       # Breathing, sway, tail (~100 lines)
+│   ├── mechanical.rs    # Vehicles, robots (~100 lines)
+│   └── ik.rs            # IK solvers (~150 lines)
+├── state_machine/
+│   ├── mod.rs           # State machine core (~80 lines)
+│   ├── transitions.rs   # Blend/transition logic (~80 lines)
+│   └── states.rs        # State definitions (~100 lines)
+└── constants.rs         # Timing, easing curves (~50 lines)
+```
+
+### What to Extract
+
+| Extract Into | Content |
+|--------------|---------|
+| `locomotion.rs` | Walk/run/jump cycles |
+| `combat.rs` | Attack/hit/death animations |
+| `organic.rs` | Breathing, sway, tail physics |
+| `ik.rs` | Two-bone IK, foot placement, look-at |
+| `state_machine/*.rs` | Animation state logic |
+
+### Large Function Pattern - CRITICAL
+
+Animation functions grow fast. **NEVER exceed 50 lines per function:**
+
+```rust
+// BAD: 200-line animation state machine
+fn update_animation_state(...) { /* everything inline */ }
+
+// GOOD: Composed from focused functions
+fn update_animation_state(state: &mut AnimState, input: &Input, dt: f32) {
+    let target = determine_target_state(input);
+    update_blend_progress(state, target, dt);
+    let pose = sample_blended_pose(state);
+    apply_pose_to_bones(pose, &mut state.bones);
+}
+```
+
+### Bone Data Extraction
+
+**CRITICAL:** Bone hierarchies and bind poses are DATA, not code. Extract to constants:
+
+```rust
+// constants.rs
+pub const HUMANOID_BONES: [&str; 22] = ["root", "pelvis", "spine_01", ...];
+pub const HUMANOID_BIND_POSE: [[f32; 12]; 22] = [...];
+```
+
+---
+
 ## Additional Resources
 
 ### Reference Files

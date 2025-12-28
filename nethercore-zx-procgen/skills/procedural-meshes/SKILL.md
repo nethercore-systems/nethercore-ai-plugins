@@ -168,6 +168,80 @@ path = "assets/meshes/enemy.gltf"
 
 ---
 
+## CRITICAL: Code Organization & File Size Limits
+
+**Generated mesh code MUST follow these file size limits to prevent context bloat:**
+
+| Limit | Lines | Action |
+|-------|-------|--------|
+| Target | ≤300 | Ideal file size |
+| Soft limit | 400 | Consider splitting |
+| Hard limit | 500 | MUST split immediately |
+| Unacceptable | >500 | Never generate |
+
+### Mandatory Splitting Strategy
+
+When generating mesh code, use this module structure:
+
+```
+generator/src/
+├── main.rs              # Entry point only (~50 lines)
+├── lib.rs               # Module exports (~30 lines)
+├── meshes/
+│   ├── mod.rs           # Re-exports (~20 lines)
+│   ├── primitives.rs    # Cube, sphere, cylinder (~150 lines)
+│   ├── characters.rs    # Character meshes (~200 lines)
+│   ├── props.rs         # Prop meshes (~200 lines)
+│   └── modifiers.rs     # Transform, subdivide, etc (~150 lines)
+├── utils/
+│   ├── mod.rs           # Utilities exports
+│   ├── vertex_colors.rs # AO baking, gradients (~100 lines)
+│   └── export.rs        # OBJ/GLTF export (~100 lines)
+└── constants.rs         # Dimensions, ratios (~50 lines)
+```
+
+### What to Extract
+
+| Extract Into | Content |
+|--------------|---------|
+| `primitives.rs` | Basic shape generators |
+| `modifiers.rs` | Transform, subdivide, mirror, weld |
+| `vertex_colors.rs` | AO baking, lighting, gradients |
+| `constants.rs` | Standard dimensions, proportions |
+
+### Large Function Pattern
+
+**NEVER** generate functions over 80 lines. Mesh generators compound quickly:
+
+```rust
+// BAD: 300-line character generator
+fn generate_character(...) { /* all body parts inline */ }
+
+// GOOD: Composed from part generators
+fn generate_character(params: &CharacterParams) -> UnpackedMesh {
+    let head = generate_head(params);
+    let torso = generate_torso(params);
+    let arms = generate_arms(params);
+    let legs = generate_legs(params);
+
+    combine::merge(vec![head, torso, arms, legs])
+        .apply(WeldVertices { threshold: 0.001 })
+}
+```
+
+### Module Re-export Pattern
+
+```rust
+// generator/src/lib.rs
+pub mod meshes;
+pub mod utils;
+pub mod constants;
+
+pub use meshes::{generate_character, generate_prop};
+```
+
+---
+
 ## Reference Files (Language-Agnostic)
 
 All reference documentation includes algorithms in pseudocode with examples in Rust, Python, and JavaScript:

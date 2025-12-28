@@ -186,6 +186,87 @@ Generated code must:
 4. **Include Validation:** Self-check quality metrics
 5. **Use zx.rs module:** Never copy FFI declarations inline
 6. **Init-only loading:** All rom_*() calls in init() only
+7. **RESPECT FILE SIZE LIMITS:** See critical section below
+
+---
+
+## ⚠️ CRITICAL: File Size Limits (MANDATORY)
+
+**NEVER generate files over 400 lines. Files over 500 lines are UNACCEPTABLE.**
+
+| Limit | Lines | Action |
+|-------|-------|--------|
+| Target | ≤300 | Ideal - always aim for this |
+| Soft limit | 400 | Must consider splitting |
+| Hard limit | 500 | MUST split into modules |
+| Unacceptable | >500 | NEVER GENERATE |
+
+### Mandatory Module Structure
+
+**ALWAYS generate this structure, never a single large file:**
+
+```
+generator/src/
+├── main.rs              # Entry point ONLY (~30-50 lines)
+├── lib.rs               # Module exports (~20-40 lines)
+├── textures/            # If generating textures
+│   ├── mod.rs           # Re-exports
+│   ├── albedo.rs        # Albedo generation (~150 lines max)
+│   ├── mre.rs           # MRE generation (~100 lines max)
+│   └── layers.rs        # Layer utilities (~150 lines max)
+├── meshes/              # If generating meshes
+│   ├── mod.rs           # Re-exports
+│   ├── primitives.rs    # Shape generators (~150 lines max)
+│   ├── modifiers.rs     # Transform/subdivide (~100 lines max)
+│   └── characters.rs    # Character meshes (~200 lines max)
+├── audio/               # If generating sounds
+│   ├── mod.rs           # Re-exports
+│   ├── synth.rs         # Synthesis (~150 lines max)
+│   └── effects.rs       # Filters/mixing (~100 lines max)
+└── constants.rs         # Shared constants (~50-100 lines)
+```
+
+### Pre-Generation Checklist
+
+Before writing ANY code:
+
+1. **Count expected lines** - If >300 total, plan module split FIRST
+2. **Identify data vs logic** - Data tables go in `constants.rs` or `data/` modules
+3. **Plan function decomposition** - No function >80 lines
+
+### Large Function Decomposition
+
+```rust
+// ❌ BAD: 200-line monolithic function
+fn generate_all_assets(spec: &Spec) { /* everything */ }
+
+// ✅ GOOD: Composed from small functions
+fn generate_all_assets(spec: &Spec) {
+    let mesh = generate_mesh(&spec.mesh);
+    let textures = generate_textures(&spec.textures);
+    let materials = generate_materials(&spec.materials);
+    integrate_assets(mesh, textures, materials);
+}
+```
+
+### When Output Would Exceed Limits
+
+If generation requirements would produce >400 lines:
+
+1. **Split by asset type** - Separate files for mesh, texture, audio
+2. **Split by function** - Utilities, generators, exporters
+3. **Extract data** - Constants, presets, lookup tables
+4. **Use references** - Link to proc-gen library instead of inline
+
+**Example: Multi-asset project**
+```
+generator/src/
+├── main.rs              # Just calls generate_all()
+├── barrel.rs            # Barrel-specific generation
+├── crate_box.rs         # Crate generation
+├── textures.rs          # Shared texture utilities
+└── constants.rs         # Shared parameters
+```
 
 ---
 

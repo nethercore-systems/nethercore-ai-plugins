@@ -2,8 +2,13 @@
   "hooks": {
     "SessionStart": [
       {
-        "type": "prompt",
-        "prompt_content": "SESSION CONTINUITY CHECK\n\nBefore proceeding with any game development tasks:\n\n1. Check if .claude/project-status.md exists in the project\n2. If it exists, read it and summarize the current state to the user\n3. Ask if they want to continue from the last position or start fresh\n\nThis ensures seamless continuation across sessions.\n\nFormat: \"Project [Name] is at [Phase] ([X]% complete). Last action: [task]. Next: [task]. Continue from here?\""
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "prompt",
+            "prompt": "SESSION CONTINUITY CHECK\n\nBefore proceeding with any game development tasks:\n\n1. Check if .claude/project-status.md exists in the project\n2. If it exists, read it and summarize the current state to the user\n3. Ask if they want to continue from the last position or start fresh\n\nThis ensures seamless continuation across sessions.\n\nFormat: \"Project [Name] is at [Phase] ([X]% complete). Last action: [task]. Next: [task]. Continue from here?\""
+          }
+        ]
       }
     ]
   }

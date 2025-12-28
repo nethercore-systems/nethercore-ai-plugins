@@ -586,6 +586,85 @@ filter = "nearest"
 
 ---
 
+## CRITICAL: Code Organization & File Size Limits
+
+**Sprite generation code (especially autotile) bloats RAPIDLY. Strict limits required:**
+
+| Limit | Lines | Action |
+|-------|-------|--------|
+| Target | ≤300 | Ideal file size |
+| Soft limit | 400 | Consider splitting |
+| Hard limit | 500 | MUST split immediately |
+| Unacceptable | >500 | Never generate |
+
+### Mandatory Splitting Strategy
+
+Sprite code has massive data tables. Use this structure:
+
+```
+generator/src/
+├── main.rs              # Entry point only (~50 lines)
+├── lib.rs               # Module exports (~30 lines)
+├── sprites/
+│   ├── mod.rs           # Re-exports (~20 lines)
+│   ├── ui.rs            # Buttons, panels, bars (~150 lines)
+│   ├── tiles.rs         # Basic tile generation (~100 lines)
+│   ├── autotile.rs      # Autotile logic (~150 lines)
+│   └── characters.rs    # Sprite sheet generation (~150 lines)
+├── palette/
+│   ├── mod.rs           # Palette exports
+│   ├── quantize.rs      # Median cut, k-means (~100 lines)
+│   └── dither.rs        # Bayer, Floyd-Steinberg (~100 lines)
+├── data/
+│   ├── mod.rs           # Data exports
+│   ├── autotile_47.rs   # 47-tile neighbor map (~80 lines, DATA ONLY)
+│   ├── autotile_256.rs  # 256-tile blob map (~150 lines, DATA ONLY)
+│   └── palettes.rs      # NES, PICO-8, etc (~80 lines, DATA ONLY)
+└── constants.rs         # Dimensions, colors (~50 lines)
+```
+
+### CRITICAL: Data vs Code Separation
+
+Autotile neighbor maps and palettes are **DATA**, not code. Extract them:
+
+```rust
+// data/autotile_47.rs - DATA ONLY
+pub const AUTOTILE_47_MAP: [Neighbors; 47] = [
+    Neighbors { n: false, s: false, e: false, w: false, .. },
+    Neighbors { n: true,  s: false, e: false, w: false, .. },
+    // ... all 47 entries
+];
+
+// data/palettes.rs - DATA ONLY
+pub const PICO8_PALETTE: [u32; 16] = [
+    0x000000FF, 0x1D2B53FF, 0x7E2553FF, ...
+];
+```
+
+### Large Table Pattern
+
+**NEVER inline large lookup tables.** 47-tile and 256-tile maps go in data modules:
+
+```rust
+// BAD: Inline 256-entry table in function
+fn get_tile_index(neighbors: u8) -> usize {
+    match neighbors {
+        0b00000000 => 0,
+        0b00000001 => 1,
+        // ... 256 lines of matches
+    }
+}
+
+// GOOD: Lookup table in data module
+use crate::data::autotile_256::BLOB_TILE_MAP;
+
+fn get_tile_index(neighbors: u8) -> usize {
+    BLOB_TILE_MAP[neighbors as usize]
+}
+```
+
+---
+
 ## Additional Resources
 
 ### Reference Files

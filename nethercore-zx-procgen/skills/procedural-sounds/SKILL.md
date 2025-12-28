@@ -451,6 +451,69 @@ play_sound(coin);
 | High-mid | 2000-4000 Hz | Edge, bite |
 | High | 4000+ Hz | Air, sparkle |
 
+---
+
+## CRITICAL: Code Organization & File Size Limits
+
+**Generated audio code MUST follow these file size limits to prevent context bloat:**
+
+| Limit | Lines | Action |
+|-------|-------|--------|
+| Target | ≤300 | Ideal file size |
+| Soft limit | 400 | Consider splitting |
+| Hard limit | 500 | MUST split immediately |
+| Unacceptable | >500 | Never generate |
+
+### Mandatory Splitting Strategy
+
+When generating sound code, use this module structure:
+
+```
+generator/src/
+├── main.rs              # Entry point only (~50 lines)
+├── lib.rs               # Module exports (~30 lines)
+├── audio/
+│   ├── mod.rs           # Re-exports (~20 lines)
+│   ├── oscillators.rs   # Waveform generators (~100 lines)
+│   ├── envelopes.rs     # ADSR envelopes (~80 lines)
+│   ├── filters.rs       # Low-pass, high-pass (~100 lines)
+│   └── effects.rs       # Layering, mixing (~100 lines)
+├── sounds/
+│   ├── mod.rs           # Sound category exports
+│   ├── ui.rs            # Click, beep, confirm (~80 lines)
+│   ├── combat.rs        # Hit, explosion, laser (~100 lines)
+│   ├── gameplay.rs      # Coin, jump, powerup (~100 lines)
+│   └── ambient.rs       # Wind, water, etc (~80 lines)
+└── constants.rs         # Frequencies, durations (~50 lines)
+```
+
+### What to Extract
+
+| Extract Into | Content |
+|--------------|---------|
+| `oscillators.rs` | Sine, square, saw, noise generators |
+| `envelopes.rs` | ADSR presets and envelope logic |
+| `filters.rs` | Filter implementations |
+| `sounds/*.rs` | Category-specific sound generators |
+
+### Large Function Pattern
+
+```rust
+// BAD: 150-line layered explosion generator
+fn generate_explosion(...) { /* all layers inline */ }
+
+// GOOD: Composed from layer generators
+fn generate_explosion(synth: &Synth, seed: u32) -> Vec<f32> {
+    let rumble = generate_rumble_layer(synth);
+    let crunch = generate_crunch_layer(synth);
+    let sizzle = generate_sizzle_layer(synth);
+
+    synth.mix(&[(&rumble, 0.6), (&crunch, 0.8), (&sizzle, 0.4)])
+}
+```
+
+---
+
 ## Additional Resources
 
 - `references/synth-api.md` - Complete API reference

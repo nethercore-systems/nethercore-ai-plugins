@@ -63,6 +63,26 @@ Each cell in a pattern contains:
 | Effect | 0-35 | Effect command |
 | Effect Param | 00-FF | Effect parameter |
 
+## ⚠️ IMPORTANT: Nethercore XM Format Difference
+
+**Nethercore uses a MODIFIED XM format.** Unlike standard XM files which embed samples directly:
+
+| Standard XM | Nethercore XM |
+|-------------|---------------|
+| Samples embedded in .xm file | Samples stripped from .xm |
+| Large file sizes (MB) | Tiny pattern-only files (KB) |
+| Self-contained | References ROM samples by name |
+
+**How it works:**
+1. XM instrument **names** map to ROM `[[assets.sounds]]` IDs
+2. During `nether pack`, sample data is stripped from the XM
+3. At runtime, the player resolves instrument names to ROM samples
+
+This means:
+- **Same samples can be shared** between music tracks AND sound effects
+- **Much smaller ROM sizes** (no duplicate sample data)
+- **Instrument names MUST match** your `[[assets.sounds]]` IDs exactly
+
 ## Sample Integration with ROM
 
 **Key concept:** XM instrument names map to ROM sample IDs.
@@ -90,7 +110,7 @@ path = "samples/bass.wav"
 ```
 
 3. Create XM module in tracker (MilkyTracker/OpenMPT)
-4. Name instruments exactly as ROM sample IDs
+4. **Name instruments EXACTLY as ROM sample IDs** (case-sensitive!)
 5. Add tracker to manifest:
 ```toml
 [[assets.trackers]]
@@ -99,6 +119,8 @@ path = "music/main_theme.xm"
 ```
 
 6. Pack and test: `nether pack && nether run`
+
+**⚠️ Common Mistake:** If music plays but sounds wrong, check that instrument names in the XM match your `[[assets.sounds]]` IDs exactly.
 
 ## Essential Effects
 
@@ -254,6 +276,40 @@ For deep music theory knowledge, consult the **`sound-design`** plugin's music c
 - **Genre Patterns** - Orchestral, electronic, chiptune, ambient
 
 This skill (procedural-music) focuses on **XM tracker format and ZX integration**. For composition theory, use the sound-design plugin.
+
+---
+
+## CRITICAL: Code Organization & File Size Limits
+
+**When generating sample synthesis code (not XM files themselves), follow these limits:**
+
+| Limit | Lines | Action |
+|-------|-------|--------|
+| Target | ≤300 | Ideal file size |
+| Soft limit | 400 | Consider splitting |
+| Hard limit | 500 | MUST split immediately |
+| Unacceptable | >500 | Never generate |
+
+### Module Structure for Sample Generation
+
+```
+generator/src/
+├── main.rs              # Entry point only (~50 lines)
+├── lib.rs               # Module exports (~30 lines)
+├── samples/
+│   ├── mod.rs           # Re-exports (~20 lines)
+│   ├── drums.rs         # Kick, snare, hats (~150 lines)
+│   ├── bass.rs          # Bass instruments (~100 lines)
+│   ├── leads.rs         # Lead/melody (~100 lines)
+│   └── pads.rs          # Pads/ambient (~80 lines)
+└── constants.rs         # Note frequencies, patterns (~50 lines)
+```
+
+### XM Files Are Already Compact
+
+XM pattern data is inherently small (patterns are ~64 rows × channels). The concern is **sample generation code**, not the XM files themselves. Keep sample generators modular and each instrument generator under 100 lines.
+
+---
 
 ## Additional Resources
 
