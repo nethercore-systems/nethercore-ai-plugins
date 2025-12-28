@@ -29,7 +29,7 @@ Technical debt concern expressed. Tech-director assesses organization and qualit
 </commentary>
 </example>
 
-model: haiku
+model: sonnet
 color: green
 tools: ["Read", "Glob", "Grep"]
 ---

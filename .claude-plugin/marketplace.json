@@ -128,6 +128,17 @@
       },
       "source": "./sound-design",
       "category": "design"
+    },
+    {
+      "name": "ai-game-studio",
+      "description": "Intelligent game development studio for Nethercore. Provides request routing to domain experts, GDD-to-implementation tracking, asset quality analysis, semantic completion verification, and auto-dispatch for identified issues. Includes skills for request patterns, dependency chains, and verification checklists.",
+      "version": "0.1.0",
+      "author": {
+        "name": "Nethercore Systems",
+        "email": "nethercore.systems@gmail.com"
+      },
+      "source": "./ai-game-studio",
+      "category": "development"
     }
   ]
 }

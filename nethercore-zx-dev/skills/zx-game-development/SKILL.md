@@ -20,6 +20,9 @@ Nethercore ZX is a fantasy console targeting 5th-generation aesthetics (PS1/N64/
 - Players: 1-4 (local + remote mix)
 - Netcode: GGRS deterministic rollback
 
+**Coordinate System:** Y-up, right-handed. Forward is **-Z**, right is **+X**, up is **+Y**.
+See `references/coordinate-conventions.md` for camera formulas and angle conventions.
+
 ## Source Files for Current FFI Specs
 
 **IMPORTANT:** For complete and current FFI specifications, read the source files directly:

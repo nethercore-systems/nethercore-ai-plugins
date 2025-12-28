@@ -29,7 +29,7 @@ Milestone review requested. Art-director provides holistic visual coherence asse
 </commentary>
 </example>
 
-model: haiku
+model: sonnet
 color: magenta
 tools: ["Read", "Glob", "Grep"]
 ---

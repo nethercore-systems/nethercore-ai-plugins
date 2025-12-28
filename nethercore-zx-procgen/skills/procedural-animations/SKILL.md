@@ -10,6 +10,9 @@ version: 2.0.0
 
 Procedural animations enable infinite variation, runtime responsiveness, and reduced asset size. This skill covers **motion generation** - creating animation data that drives rigged characters and objects.
 
+**Coordinate Convention:** Nethercore uses Y-up, right-handed coordinates where **-Z is forward**, **+X is right**, **+Y is up**.
+See `nethercore-zx-dev/zx-game-development/references/coordinate-conventions.md` for full details.
+
 **This skill covers:**
 - Locomotion (walk, run, jump cycles)
 - Organic motion (tree sway, breathing, tail physics)
@@ -505,11 +508,31 @@ id = "attack"
 path = "assets/animations/attack.bin"
 ```
 
+## Animation Principles
+
+For creating believable, appealing motion, see **`references/12-principles.md`** which covers Disney's 12 principles of animation with procedural code examples for:
+
+- **Squash & Stretch** - Weight and flexibility through deformation
+- **Anticipation** - Wind-up before actions
+- **Staging** - Clear presentation of motion
+- **Straight Ahead / Pose to Pose** - Animation method selection
+- **Follow Through / Overlapping** - Secondary motion and settling
+- **Slow In / Slow Out** - Easing and acceleration
+- **Arcs** - Natural curved motion paths
+- **Secondary Action** - Supporting movements
+- **Timing** - Speed conveys weight and mood
+- **Exaggeration** - Push beyond realism for clarity
+- **Solid Drawing** - Volume and anatomical consistency
+- **Appeal** - Personality and visual interest
+
+Each principle includes code examples across all animation types: locomotion, combat, organic motion, mechanical systems, and UI/game feel.
+
 ## Additional Resources
 
 ### Reference Files
 
 For detailed implementations:
+- **`references/12-principles.md`** - Disney's 12 principles with procedural applications
 - **`references/animation-presets.md`** - Common animation parameters
 - **`references/ik-systems.md`** - Advanced IK implementations
 - **`references/rigid-body-animation.md`** - Vehicle/robot patterns

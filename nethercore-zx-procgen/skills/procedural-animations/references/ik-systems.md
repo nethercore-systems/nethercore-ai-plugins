@@ -401,14 +401,15 @@ impl EyeLookAt {
 
     fn eye_rotation(&self, eye_pos: Vec3, target: Vec3) -> Quat {
         let to_target = (target - eye_pos).normalize();
-        let angle = Vec3::Z.dot(to_target).acos();
+        // Eye forward is -Z
+        let angle = Vec3::NEG_Z.dot(to_target).acos();
 
         if angle > self.max_angle.to_radians() {
             // Clamp to maximum
-            let axis = Vec3::Z.cross(to_target).normalize();
+            let axis = Vec3::NEG_Z.cross(to_target).normalize();
             Quat::from_axis_angle(axis, self.max_angle.to_radians())
         } else {
-            Quat::from_rotation_arc(Vec3::Z, to_target)
+            Quat::from_rotation_arc(Vec3::NEG_Z, to_target)
         }
     }
 }
@@ -449,7 +450,8 @@ impl FootIK {
         );
 
         // Foot rotation to match ground
-        let foot_forward = (thigh_rot * shin_rot * Vec3::Z).normalize();
+        // Forward is -Z in world space
+        let foot_forward = (thigh_rot * shin_rot * Vec3::NEG_Z).normalize();
         let foot_up = ground_normal;
         let foot_right = foot_forward.cross(foot_up).normalize();
         let adjusted_forward = foot_up.cross(foot_right).normalize();

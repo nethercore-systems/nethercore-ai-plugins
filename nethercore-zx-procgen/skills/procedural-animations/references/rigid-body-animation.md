@@ -205,7 +205,8 @@ impl TankTrack {
     fn render(&self, link_mesh: u32) {
         for link in &self.links {
             let (pos, tangent) = self.sample_path(link.path_position);
-            let rotation = Quat::from_rotation_arc(Vec3::Z, tangent);
+            // Rotate link mesh's forward (-Z) to face tangent direction
+            let rotation = Quat::from_rotation_arc(Vec3::NEG_Z, tangent);
 
             unsafe {
                 push_identity();

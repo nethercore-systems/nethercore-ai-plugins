@@ -183,9 +183,10 @@ pub extern "C" fn update() {
 
         if move_x.abs() > 0.1 || move_z.abs() > 0.1 {
             // Move relative to camera yaw
+            // Forward is -Z when yaw=0, so negate sin/cos
             let yaw_rad = CAM_YAW.to_radians();
-            let forward_x = yaw_rad.sin();
-            let forward_z = yaw_rad.cos();
+            let forward_x = -yaw_rad.sin();
+            let forward_z = -yaw_rad.cos();
             let right_x = yaw_rad.cos();
             let right_z = -yaw_rad.sin();
 
@@ -208,10 +209,12 @@ pub extern "C" fn render() {
         draw_env();
 
         // Calculate orbit camera position
+        // Camera behind player: use -sin for X to orbit correctly
+        // When yaw=0: camera at +Z (behind player facing -Z)
         let yaw_rad = CAM_YAW.to_radians();
         let pitch_rad = CAM_PITCH.to_radians();
 
-        let cam_x = PLAYER_X + CAM_DIST * yaw_rad.sin() * pitch_rad.cos();
+        let cam_x = PLAYER_X - CAM_DIST * yaw_rad.sin() * pitch_rad.cos();
         let cam_y = PLAYER_Y + 1.5 + CAM_DIST * pitch_rad.sin();
         let cam_z = PLAYER_Z + CAM_DIST * yaw_rad.cos() * pitch_rad.cos();
 
@@ -306,11 +309,11 @@ pub extern "C" fn update() {
         if move_x.abs() > 0.1 || move_z.abs() > 0.1 {
             let yaw_rad = LOOK_YAW.to_radians();
 
-            // Forward/back
-            let fwd_x = yaw_rad.sin();
-            let fwd_z = yaw_rad.cos();
+            // Forward is -Z when yaw=0, so negate sin/cos
+            let fwd_x = -yaw_rad.sin();
+            let fwd_z = -yaw_rad.cos();
 
-            // Strafe
+            // Strafe (right is +X when yaw=0)
             let right_x = yaw_rad.cos();
             let right_z = -yaw_rad.sin();
 
@@ -329,12 +332,13 @@ pub extern "C" fn render() {
         draw_env();
 
         // Calculate look direction
+        // Forward is -Z when yaw=0, so negate sin/cos
         let yaw_rad = LOOK_YAW.to_radians();
         let pitch_rad = LOOK_PITCH.to_radians();
 
-        let look_x = yaw_rad.sin() * pitch_rad.cos();
+        let look_x = -yaw_rad.sin() * pitch_rad.cos();
         let look_y = pitch_rad.sin();
-        let look_z = yaw_rad.cos() * pitch_rad.cos();
+        let look_z = -yaw_rad.cos() * pitch_rad.cos();
 
         // Set camera at eye position looking in that direction
         let eye_y = PLAYER_Y + EYE_HEIGHT;

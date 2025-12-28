@@ -1,10 +1,25 @@
 ---
 name: Procedural Texture Generation for ZX
 description: This skill should be used when the user asks to "generate a texture", "create procedural texture", "make a noise pattern", "perlin noise texture", "voronoi pattern", "tile texture", "seamless texture", "material texture", "gradient texture", "generate tileable image", "procedural material", "MRE texture", "metallic roughness", "specular map", "albedo texture", "SSE texture", "Mode 2 textures", "Mode 3 textures", "generate PBR textures", "matcap texture", "generate matcap", "dither transparency", "alpha texture", or mentions texture generation, noise algorithms, pattern generation, UV mapping, or material channels for ZX game assets.
-version: 1.2.0
+version: 1.3.0
 ---
 
 # Procedural Texture Generation
+
+## Build Integration
+
+Texture generators are **native binaries** (not WASM). They run at build time via `nether.toml`'s `build.script`:
+
+```toml
+[build]
+script = "cargo run -p generator --release && cargo build -p game --target wasm32-unknown-unknown --release"
+
+[[assets.textures]]
+id = "bark"
+path = "../assets/textures/bark_albedo.png"
+```
+
+See the **Native Asset Pipeline** skill for full architecture details.
 
 ## Output Requirements
 
@@ -170,8 +185,32 @@ path = "assets/textures/armor_mre.png"
 
 ---
 
+## Multi-Layer Texture System
+
+**For professional quality, always use multi-layer composition instead of single-pass noise.**
+
+The workflow:
+```
+1. BASE: Solid color + subtle noise variation
+2. DETAIL: Perlin noise overlay for texture
+3. FEATURES: Scratches, cracks, grain (as appropriate)
+4. WEATHERING: Rust, stains, dust (based on style)
+5. EDGE WEAR: Curvature-based highlights (if available)
+6. FINAL: Dust + contrast boost
+7. QUALITY CHECK: Validate metrics
+```
+
+See `references/layer-system.md` for the complete layer system documentation including:
+- All layer types (base, noise, features, weathering, edge wear, final)
+- Feature generators: scratches, cracks, grain, pores, rust, dust, stains
+- Quality metrics and validation
+- Language-agnostic examples
+
+---
+
 ## Reference Files
 
+- `references/layer-system.md` - **Multi-layer composition system (START HERE)**
 - `references/texture-api.md` - API quick reference
 - `references/albedo-generation.md` - Albedo generation examples
 - `references/mre-sse-generation.md` - Material texture examples

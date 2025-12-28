@@ -296,14 +296,25 @@ fn radians_to_degrees(rad: f32) -> f32 {
 
 ## Spherical Coordinates
 
-Convert between spherical (yaw/pitch/distance) and Cartesian:
+Convert between spherical (yaw/pitch/distance) and Cartesian.
+
+**Convention:** See `zx-game-development/references/coordinate-conventions.md` for full details.
+- Forward direction is **-Z** (when yaw=0)
+- Right direction is **+X**
+- Up is **+Y**
+
+### Orbit Camera Position
+
+Position a camera at a distance behind a target (for third-person view):
 
 ```rust
-/// Convert spherical to Cartesian position
-/// yaw: horizontal angle in degrees (0 = +Z, 90 = +X)
-/// pitch: vertical angle in degrees (0 = horizontal, 90 = up)
-/// distance: radius from center
-fn spherical_to_cartesian(
+/// Convert spherical to Cartesian position for ORBIT CAMERA
+/// Places camera BEHIND target when yaw=0 (target facing -Z)
+/// yaw: horizontal angle in degrees (0 = behind target, 90 = right of target)
+/// pitch: vertical angle in degrees (0 = level, positive = above)
+/// distance: radius from target
+fn orbit_camera_position(
+    target: (f32, f32, f32),
     yaw_deg: f32,
     pitch_deg: f32,
     distance: f32
@@ -311,26 +322,72 @@ fn spherical_to_cartesian(
     let yaw = degrees_to_radians(yaw_deg);
     let pitch = degrees_to_radians(pitch_deg);
 
-    let x = distance * yaw.sin() * pitch.cos();
-    let y = distance * pitch.sin();
-    let z = distance * yaw.cos() * pitch.cos();
+    // Camera behind target: negative sin for X to orbit correctly
+    let x = target.0 - distance * yaw.sin() * pitch.cos();
+    let y = target.1 + distance * pitch.sin();
+    let z = target.2 + distance * yaw.cos() * pitch.cos();
+
+    (x, y, z)
+}
+```
+
+### Look Direction
+
+Calculate a look direction vector from yaw/pitch:
+
+```rust
+/// Get look direction vector from yaw/pitch
+/// When yaw=0, pitch=0: looking towards -Z (forward)
+fn look_direction(yaw_deg: f32, pitch_deg: f32) -> (f32, f32, f32) {
+    let yaw = degrees_to_radians(yaw_deg);
+    let pitch = degrees_to_radians(pitch_deg);
+
+    // Forward is -Z, so negate the sin/cos
+    let x = -yaw.sin() * pitch.cos();
+    let y = pitch.sin();
+    let z = -yaw.cos() * pitch.cos();
+
+    (x, y, z)
+}
+```
+
+### Spherical ↔ Cartesian Conversion
+
+For general spherical coordinate conversion (note: this uses math convention, not camera convention):
+
+```rust
+/// Convert spherical to Cartesian (math convention)
+/// theta: azimuthal angle from +Z axis (0 = +Z, 90 = +X)
+/// phi: polar angle from +Y axis (0 = up, 90 = horizontal)
+/// This is DIFFERENT from camera yaw/pitch - use orbit_camera_position instead
+fn spherical_to_cartesian_math(
+    theta_deg: f32,
+    phi_deg: f32,
+    radius: f32
+) -> (f32, f32, f32) {
+    let theta = degrees_to_radians(theta_deg);
+    let phi = degrees_to_radians(phi_deg);
+
+    let x = radius * phi.sin() * theta.sin();
+    let y = radius * phi.cos();
+    let z = radius * phi.sin() * theta.cos();
 
     (x, y, z)
 }
 
-/// Convert Cartesian to spherical (yaw, pitch, distance)
+/// Convert Cartesian to spherical (theta, phi, radius)
 fn cartesian_to_spherical(pos: (f32, f32, f32)) -> (f32, f32, f32) {
     let dist = vec3_length(pos);
     if dist < 0.0001 {
         return (0.0, 0.0, 0.0);
     }
 
-    let pitch = (pos.1 / dist).asin();
-    let yaw = pos.0.atan2(pos.2);
+    let phi = (pos.1 / dist).acos();  // Angle from Y axis
+    let theta = pos.0.atan2(pos.2);   // Angle in XZ plane from Z axis
 
     (
-        radians_to_degrees(yaw),
-        radians_to_degrees(pitch),
+        radians_to_degrees(theta),
+        radians_to_degrees(phi),
         dist,
     )
 }
@@ -408,5 +465,6 @@ mod constants {
 
 - All matrices use **column-major** order for `push_view_matrix()` and `push_projection_matrix()`
 - Nethercore uses **Y-up, right-handed** coordinate system
+- **Forward direction is -Z** (see `zx-game-development/references/coordinate-conventions.md`)
 - Angles in FFI functions use **degrees** (convert to radians for trig)
 - Use `random_f32()` for shake effects to maintain rollback safety

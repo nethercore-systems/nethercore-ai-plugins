@@ -1,67 +1,22 @@
 # Style Tokens Reference
 
-Complete style token definitions for SADL. Each token modifies base generation parameters to achieve a consistent visual style.
+Complete style token definitions for SADL. Each token modifies base generation parameters to achieve a consistent visual style. These definitions are language-agnostic.
 
 ## Token Definition Structure
 
-```rust
-pub enum StyleToken {
-    // Natural/Historical
-    Rustic,
-    Medieval,
-    Ancient,
-    Victorian,
+Style tokens modify these parameters:
 
-    // Modern/Futuristic
-    Cyberpunk,
-    Scifi,
-    Industrial,
-    Minimalist,
-
-    // Organic/Natural
-    Organic,
-    Overgrown,
-    Crystalline,
-    Elemental,
-
-    // Stylized
-    Fantasy,
-    Gothic,
-    Steampunk,
-    Dieselpunk,
-
-    // Abstract/Artistic
-    Geometric,
-    Abstract,
-    Baroque,
-    ArtDeco,
-
-    // Condition-based
-    PostApoc,
-    Pristine,
-    Corrupted,
-    Ethereal,
-}
-
-pub struct StyleModifiers {
-    pub roughness_offset: f32,      // Added to base roughness
-    pub saturation_scale: f32,      // Multiplied with saturation
-    pub detail_level: DetailLevel,  // Low, Medium, High, Extreme
-    pub edge_hardness: f32,         // 0.0 = soft, 1.0 = sharp
-    pub noise_octaves_offset: i32,  // Added to noise octaves
-    pub damage_amount: f32,         // 0.0 = pristine, 1.0 = destroyed
-    pub color_temperature: f32,     // -1.0 = cool, 1.0 = warm
-    pub pattern_scale: f32,         // Pattern size multiplier
-    pub emission_tendency: f32,     // Likelihood of emissive elements
-}
-
-pub enum DetailLevel {
-    Low,      // Flat, simple surfaces
-    Medium,   // Standard detail
-    High,     // Rich texturing
-    Extreme,  // Maximum detail
-}
-```
+| Parameter | Description | Range |
+|-----------|-------------|-------|
+| roughness_offset | Added to base roughness | -0.3 to 0.4 |
+| saturation_scale | Multiplied with saturation | 0.5 to 1.4 |
+| detail_level | Surface complexity | Low, Medium, High, Extreme |
+| edge_hardness | Edge sharpness | 0.0 (soft) to 1.0 (sharp) |
+| noise_octaves_offset | Added to noise octaves | -2 to 3 |
+| damage_amount | Wear and damage | 0.0 (pristine) to 1.0 (destroyed) |
+| color_temperature | Color warmth | -1.0 (cool) to 1.0 (warm) |
+| pattern_scale | Pattern size multiplier | 0.5 to 2.0 |
+| emission_tendency | Likelihood of glow | 0.0 to 0.7 |
 
 ---
 
@@ -71,19 +26,17 @@ pub enum DetailLevel {
 
 Aged, worn, natural materials with visible use and weathering.
 
-```rust
-StyleToken::Rustic => StyleModifiers {
-    roughness_offset: 0.3,
-    saturation_scale: 0.7,
-    detail_level: DetailLevel::Medium,
-    edge_hardness: 0.3,
-    noise_octaves_offset: 1,
-    damage_amount: 0.4,
-    color_temperature: 0.3,      // Warm
-    pattern_scale: 1.0,
-    emission_tendency: 0.0,
-}
-```
+| Parameter | Value |
+|-----------|-------|
+| roughness_offset | 0.3 |
+| saturation_scale | 0.7 |
+| detail_level | Medium |
+| edge_hardness | 0.3 |
+| noise_octaves_offset | 1 |
+| damage_amount | 0.4 |
+| color_temperature | 0.3 (warm) |
+| pattern_scale | 1.0 |
+| emission_tendency | 0.0 |
 
 **Use for:** Barns, wooden furniture, farm equipment, leather goods, handcrafted items.
 
@@ -95,19 +48,17 @@ StyleToken::Rustic => StyleModifiers {
 
 European medieval aesthetic - stone, iron, heavy construction.
 
-```rust
-StyleToken::Medieval => StyleModifiers {
-    roughness_offset: 0.25,
-    saturation_scale: 0.6,
-    detail_level: DetailLevel::Medium,
-    edge_hardness: 0.5,
-    noise_octaves_offset: 1,
-    damage_amount: 0.3,
-    color_temperature: 0.1,      // Slightly warm
-    pattern_scale: 1.2,
-    emission_tendency: 0.05,     // Torches, forges
-}
-```
+| Parameter | Value |
+|-----------|-------|
+| roughness_offset | 0.25 |
+| saturation_scale | 0.6 |
+| detail_level | Medium |
+| edge_hardness | 0.5 |
+| noise_octaves_offset | 1 |
+| damage_amount | 0.3 |
+| color_temperature | 0.1 |
+| pattern_scale | 1.2 |
+| emission_tendency | 0.05 |
 
 **Use for:** Castles, armor, weapons, taverns, markets, dungeons.
 
@@ -119,19 +70,17 @@ StyleToken::Medieval => StyleModifiers {
 
 Old civilizations - weathered stone, faded colors, archaeological feel.
 
-```rust
-StyleToken::Ancient => StyleModifiers {
-    roughness_offset: 0.4,
-    saturation_scale: 0.5,
-    detail_level: DetailLevel::Medium,
-    edge_hardness: 0.2,          // Eroded edges
-    noise_octaves_offset: 2,
-    damage_amount: 0.6,
-    color_temperature: 0.2,
-    pattern_scale: 1.5,
-    emission_tendency: 0.0,
-}
-```
+| Parameter | Value |
+|-----------|-------|
+| roughness_offset | 0.4 |
+| saturation_scale | 0.5 |
+| detail_level | Medium |
+| edge_hardness | 0.2 (eroded) |
+| noise_octaves_offset | 2 |
+| damage_amount | 0.6 |
+| color_temperature | 0.2 |
+| pattern_scale | 1.5 |
+| emission_tendency | 0.0 |
 
 **Use for:** Ruins, temples, tombs, artifacts, fossils.
 
@@ -143,19 +92,17 @@ StyleToken::Ancient => StyleModifiers {
 
 19th century elegance - ornate, rich, formal.
 
-```rust
-StyleToken::Victorian => StyleModifiers {
-    roughness_offset: -0.1,      // More polished
-    saturation_scale: 0.8,
-    detail_level: DetailLevel::High,
-    edge_hardness: 0.6,
-    noise_octaves_offset: 0,
-    damage_amount: 0.1,
-    color_temperature: 0.2,
-    pattern_scale: 0.8,          // Finer patterns
-    emission_tendency: 0.1,      // Gas lamps
-}
-```
+| Parameter | Value |
+|-----------|-------|
+| roughness_offset | -0.1 (polished) |
+| saturation_scale | 0.8 |
+| detail_level | High |
+| edge_hardness | 0.6 |
+| noise_octaves_offset | 0 |
+| damage_amount | 0.1 |
+| color_temperature | 0.2 |
+| pattern_scale | 0.8 (finer) |
+| emission_tendency | 0.1 |
 
 **Use for:** Mansions, furniture, clothing, gadgets, street scenes.
 
@@ -169,19 +116,17 @@ StyleToken::Victorian => StyleModifiers {
 
 Neon, chrome, high contrast, high-tech low-life.
 
-```rust
-StyleToken::Cyberpunk => StyleModifiers {
-    roughness_offset: -0.2,      // More reflective
-    saturation_scale: 1.4,       // Vivid colors
-    detail_level: DetailLevel::High,
-    edge_hardness: 0.9,          // Sharp edges
-    noise_octaves_offset: 0,
-    damage_amount: 0.2,
-    color_temperature: -0.3,     // Cool with neon accents
-    pattern_scale: 0.7,
-    emission_tendency: 0.7,      // Lots of neon/screens
-}
-```
+| Parameter | Value |
+|-----------|-------|
+| roughness_offset | -0.2 (reflective) |
+| saturation_scale | 1.4 (vivid) |
+| detail_level | High |
+| edge_hardness | 0.9 (sharp) |
+| noise_octaves_offset | 0 |
+| damage_amount | 0.2 |
+| color_temperature | -0.3 (cool with neon) |
+| pattern_scale | 0.7 |
+| emission_tendency | 0.7 (lots of neon) |
 
 **Use for:** Cities, tech, vehicles, clothing, weapons, UI elements.
 
@@ -193,19 +138,17 @@ StyleToken::Cyberpunk => StyleModifiers {
 
 Clean futuristic - sleek, minimal, advanced technology.
 
-```rust
-StyleToken::Scifi => StyleModifiers {
-    roughness_offset: -0.15,
-    saturation_scale: 0.9,
-    detail_level: DetailLevel::Medium,
-    edge_hardness: 0.85,
-    noise_octaves_offset: -1,    // Cleaner surfaces
-    damage_amount: 0.05,
-    color_temperature: -0.2,     // Cool
-    pattern_scale: 0.6,
-    emission_tendency: 0.4,
-}
-```
+| Parameter | Value |
+|-----------|-------|
+| roughness_offset | -0.15 |
+| saturation_scale | 0.9 |
+| detail_level | Medium |
+| edge_hardness | 0.85 |
+| noise_octaves_offset | -1 (cleaner) |
+| damage_amount | 0.05 |
+| color_temperature | -0.2 (cool) |
+| pattern_scale | 0.6 |
+| emission_tendency | 0.4 |
 
 **Use for:** Spaceships, stations, equipment, uniforms, interfaces.
 
@@ -217,19 +160,17 @@ StyleToken::Scifi => StyleModifiers {
 
 Factories, machinery, utilitarian design.
 
-```rust
-StyleToken::Industrial => StyleModifiers {
-    roughness_offset: 0.2,
-    saturation_scale: 0.5,       // Desaturated
-    detail_level: DetailLevel::Medium,
-    edge_hardness: 0.7,
-    noise_octaves_offset: 1,
-    damage_amount: 0.35,
-    color_temperature: -0.1,
-    pattern_scale: 1.3,
-    emission_tendency: 0.15,
-}
-```
+| Parameter | Value |
+|-----------|-------|
+| roughness_offset | 0.2 |
+| saturation_scale | 0.5 (desaturated) |
+| detail_level | Medium |
+| edge_hardness | 0.7 |
+| noise_octaves_offset | 1 |
+| damage_amount | 0.35 |
+| color_temperature | -0.1 |
+| pattern_scale | 1.3 |
+| emission_tendency | 0.15 |
 
 **Use for:** Factories, pipes, machinery, warehouses, tools.
 
@@ -241,19 +182,17 @@ StyleToken::Industrial => StyleModifiers {
 
 Simple, clean, essential forms only.
 
-```rust
-StyleToken::Minimalist => StyleModifiers {
-    roughness_offset: -0.1,
-    saturation_scale: 0.6,
-    detail_level: DetailLevel::Low,
-    edge_hardness: 0.8,
-    noise_octaves_offset: -2,    // Very clean
-    damage_amount: 0.0,
-    color_temperature: 0.0,      // Neutral
-    pattern_scale: 2.0,          // Large, simple shapes
-    emission_tendency: 0.1,
-}
-```
+| Parameter | Value |
+|-----------|-------|
+| roughness_offset | -0.1 |
+| saturation_scale | 0.6 |
+| detail_level | Low |
+| edge_hardness | 0.8 |
+| noise_octaves_offset | -2 (very clean) |
+| damage_amount | 0.0 |
+| color_temperature | 0.0 (neutral) |
+| pattern_scale | 2.0 (large shapes) |
+| emission_tendency | 0.1 |
 
 **Use for:** Modern furniture, UI, icons, architectural elements.
 
@@ -267,19 +206,17 @@ StyleToken::Minimalist => StyleModifiers {
 
 Natural, flowing, biological forms.
 
-```rust
-StyleToken::Organic => StyleModifiers {
-    roughness_offset: 0.1,
-    saturation_scale: 0.9,
-    detail_level: DetailLevel::Medium,
-    edge_hardness: 0.1,          // Very soft edges
-    noise_octaves_offset: 2,     // Natural variation
-    damage_amount: 0.0,
-    color_temperature: 0.1,
-    pattern_scale: 1.0,
-    emission_tendency: 0.05,
-}
-```
+| Parameter | Value |
+|-----------|-------|
+| roughness_offset | 0.1 |
+| saturation_scale | 0.9 |
+| detail_level | Medium |
+| edge_hardness | 0.1 (very soft) |
+| noise_octaves_offset | 2 (natural variation) |
+| damage_amount | 0.0 |
+| color_temperature | 0.1 |
+| pattern_scale | 1.0 |
+| emission_tendency | 0.05 |
 
 **Use for:** Creatures, plants, terrain, caves, coral.
 
@@ -291,19 +228,17 @@ StyleToken::Organic => StyleModifiers {
 
 Nature reclaiming - moss, vines, decay.
 
-```rust
-StyleToken::Overgrown => StyleModifiers {
-    roughness_offset: 0.25,
-    saturation_scale: 0.85,
-    detail_level: DetailLevel::High,
-    edge_hardness: 0.2,
-    noise_octaves_offset: 2,
-    damage_amount: 0.5,
-    color_temperature: 0.15,
-    pattern_scale: 0.9,
-    emission_tendency: 0.02,     // Bioluminescence
-}
-```
+| Parameter | Value |
+|-----------|-------|
+| roughness_offset | 0.25 |
+| saturation_scale | 0.85 |
+| detail_level | High |
+| edge_hardness | 0.2 |
+| noise_octaves_offset | 2 |
+| damage_amount | 0.5 |
+| color_temperature | 0.15 |
+| pattern_scale | 0.9 |
+| emission_tendency | 0.02 (bioluminescence) |
 
 **Use for:** Ruins, abandoned structures, forest floors, swamps.
 
@@ -315,19 +250,17 @@ StyleToken::Overgrown => StyleModifiers {
 
 Gemstones, ice, mineral formations.
 
-```rust
-StyleToken::Crystalline => StyleModifiers {
-    roughness_offset: -0.3,      // Very smooth
-    saturation_scale: 1.2,
-    detail_level: DetailLevel::Medium,
-    edge_hardness: 0.95,         // Sharp facets
-    noise_octaves_offset: 0,
-    damage_amount: 0.0,
-    color_temperature: -0.2,
-    pattern_scale: 0.5,
-    emission_tendency: 0.3,
-}
-```
+| Parameter | Value |
+|-----------|-------|
+| roughness_offset | -0.3 (very smooth) |
+| saturation_scale | 1.2 |
+| detail_level | Medium |
+| edge_hardness | 0.95 (sharp facets) |
+| noise_octaves_offset | 0 |
+| damage_amount | 0.0 |
+| color_temperature | -0.2 |
+| pattern_scale | 0.5 |
+| emission_tendency | 0.3 |
 
 **Use for:** Gems, ice caves, magical crystals, mineral veins.
 
@@ -339,19 +272,17 @@ StyleToken::Crystalline => StyleModifiers {
 
 Primal forces - fire, water, earth, air manifestations.
 
-```rust
-StyleToken::Elemental => StyleModifiers {
-    roughness_offset: 0.0,       // Varies by element
-    saturation_scale: 1.3,
-    detail_level: DetailLevel::High,
-    edge_hardness: 0.5,
-    noise_octaves_offset: 3,     // Chaotic natural patterns
-    damage_amount: 0.0,
-    color_temperature: 0.0,      // Varies by element
-    pattern_scale: 0.8,
-    emission_tendency: 0.5,      // Often glowing
-}
-```
+| Parameter | Value |
+|-----------|-------|
+| roughness_offset | 0.0 (varies by element) |
+| saturation_scale | 1.3 |
+| detail_level | High |
+| edge_hardness | 0.5 |
+| noise_octaves_offset | 3 (chaotic) |
+| damage_amount | 0.0 |
+| color_temperature | 0.0 (varies) |
+| pattern_scale | 0.8 |
+| emission_tendency | 0.5 (often glowing) |
 
 **Use for:** Elementals, magical effects, environmental hazards.
 
@@ -365,19 +296,17 @@ StyleToken::Elemental => StyleModifiers {
 
 Magical, colorful, exaggerated proportions.
 
-```rust
-StyleToken::Fantasy => StyleModifiers {
-    roughness_offset: 0.05,
-    saturation_scale: 1.2,
-    detail_level: DetailLevel::High,
-    edge_hardness: 0.4,
-    noise_octaves_offset: 1,
-    damage_amount: 0.1,
-    color_temperature: 0.2,
-    pattern_scale: 0.9,
-    emission_tendency: 0.25,
-}
-```
+| Parameter | Value |
+|-----------|-------|
+| roughness_offset | 0.05 |
+| saturation_scale | 1.2 |
+| detail_level | High |
+| edge_hardness | 0.4 |
+| noise_octaves_offset | 1 |
+| damage_amount | 0.1 |
+| color_temperature | 0.2 |
+| pattern_scale | 0.9 |
+| emission_tendency | 0.25 |
 
 **Use for:** Magic items, creatures, enchanted locations, artifacts.
 
@@ -389,19 +318,17 @@ StyleToken::Fantasy => StyleModifiers {
 
 Dark, ornate, dramatic shadows.
 
-```rust
-StyleToken::Gothic => StyleModifiers {
-    roughness_offset: 0.15,
-    saturation_scale: 0.6,
-    detail_level: DetailLevel::High,
-    edge_hardness: 0.7,
-    noise_octaves_offset: 1,
-    damage_amount: 0.25,
-    color_temperature: -0.2,     // Cool
-    pattern_scale: 0.7,
-    emission_tendency: 0.1,
-}
-```
+| Parameter | Value |
+|-----------|-------|
+| roughness_offset | 0.15 |
+| saturation_scale | 0.6 |
+| detail_level | High |
+| edge_hardness | 0.7 |
+| noise_octaves_offset | 1 |
+| damage_amount | 0.25 |
+| color_temperature | -0.2 (cool) |
+| pattern_scale | 0.7 |
+| emission_tendency | 0.1 |
 
 **Use for:** Cathedrals, crypts, vampires, spooky mansions.
 
@@ -413,19 +340,17 @@ StyleToken::Gothic => StyleModifiers {
 
 Victorian + steam technology - brass, gears, leather.
 
-```rust
-StyleToken::Steampunk => StyleModifiers {
-    roughness_offset: 0.1,
-    saturation_scale: 0.75,
-    detail_level: DetailLevel::Extreme,
-    edge_hardness: 0.6,
-    noise_octaves_offset: 1,
-    damage_amount: 0.2,
-    color_temperature: 0.4,      // Warm brass tones
-    pattern_scale: 0.6,          // Fine gears and details
-    emission_tendency: 0.15,
-}
-```
+| Parameter | Value |
+|-----------|-------|
+| roughness_offset | 0.1 |
+| saturation_scale | 0.75 |
+| detail_level | Extreme |
+| edge_hardness | 0.6 |
+| noise_octaves_offset | 1 |
+| damage_amount | 0.2 |
+| color_temperature | 0.4 (warm brass) |
+| pattern_scale | 0.6 (fine gears) |
+| emission_tendency | 0.15 |
 
 **Use for:** Gadgets, vehicles, clothing, cities, weapons.
 
@@ -437,19 +362,17 @@ StyleToken::Steampunk => StyleModifiers {
 
 1920s-40s + diesel tech - rivets, heavy machinery.
 
-```rust
-StyleToken::Dieselpunk => StyleModifiers {
-    roughness_offset: 0.2,
-    saturation_scale: 0.6,
-    detail_level: DetailLevel::High,
-    edge_hardness: 0.75,
-    noise_octaves_offset: 1,
-    damage_amount: 0.3,
-    color_temperature: 0.1,
-    pattern_scale: 0.9,
-    emission_tendency: 0.1,
-}
-```
+| Parameter | Value |
+|-----------|-------|
+| roughness_offset | 0.2 |
+| saturation_scale | 0.6 |
+| detail_level | High |
+| edge_hardness | 0.75 |
+| noise_octaves_offset | 1 |
+| damage_amount | 0.3 |
+| color_temperature | 0.1 |
+| pattern_scale | 0.9 |
+| emission_tendency | 0.1 |
 
 **Use for:** War machines, factories, cities, uniforms.
 
@@ -463,19 +386,17 @@ StyleToken::Dieselpunk => StyleModifiers {
 
 Mathematical precision, hard edges, patterns.
 
-```rust
-StyleToken::Geometric => StyleModifiers {
-    roughness_offset: -0.1,
-    saturation_scale: 0.9,
-    detail_level: DetailLevel::Medium,
-    edge_hardness: 1.0,          // Maximum sharpness
-    noise_octaves_offset: -2,
-    damage_amount: 0.0,
-    color_temperature: 0.0,
-    pattern_scale: 1.0,
-    emission_tendency: 0.2,
-}
-```
+| Parameter | Value |
+|-----------|-------|
+| roughness_offset | -0.1 |
+| saturation_scale | 0.9 |
+| detail_level | Medium |
+| edge_hardness | 1.0 (maximum) |
+| noise_octaves_offset | -2 |
+| damage_amount | 0.0 |
+| color_temperature | 0.0 |
+| pattern_scale | 1.0 |
+| emission_tendency | 0.2 |
 
 **Use for:** Abstract art, UI, tech, mathematical constructs.
 
@@ -483,47 +404,21 @@ StyleToken::Geometric => StyleModifiers {
 
 ---
 
-### Abstract
-
-Non-representational, artistic expression.
-
-```rust
-StyleToken::Abstract => StyleModifiers {
-    roughness_offset: 0.0,
-    saturation_scale: 1.1,
-    detail_level: DetailLevel::Medium,
-    edge_hardness: 0.5,          // Variable
-    noise_octaves_offset: 2,
-    damage_amount: 0.0,
-    color_temperature: 0.0,
-    pattern_scale: 0.7,
-    emission_tendency: 0.3,
-}
-```
-
-**Use for:** Art pieces, dream sequences, special effects.
-
-**Typical materials:** Variable - artistic choice
-
----
-
 ### Baroque
 
 Ornate, extravagant, richly detailed.
 
-```rust
-StyleToken::Baroque => StyleModifiers {
-    roughness_offset: -0.05,
-    saturation_scale: 0.9,
-    detail_level: DetailLevel::Extreme,
-    edge_hardness: 0.55,
-    noise_octaves_offset: 1,
-    damage_amount: 0.1,
-    color_temperature: 0.3,
-    pattern_scale: 0.5,          // Fine ornate details
-    emission_tendency: 0.1,
-}
-```
+| Parameter | Value |
+|-----------|-------|
+| roughness_offset | -0.05 |
+| saturation_scale | 0.9 |
+| detail_level | Extreme |
+| edge_hardness | 0.55 |
+| noise_octaves_offset | 1 |
+| damage_amount | 0.1 |
+| color_temperature | 0.3 |
+| pattern_scale | 0.5 (fine ornate) |
+| emission_tendency | 0.1 |
 
 **Use for:** Palaces, cathedrals, royal items, ornate frames.
 
@@ -535,19 +430,17 @@ StyleToken::Baroque => StyleModifiers {
 
 1920s-30s geometric elegance, symmetry.
 
-```rust
-StyleToken::ArtDeco => StyleModifiers {
-    roughness_offset: -0.15,
-    saturation_scale: 0.8,
-    detail_level: DetailLevel::High,
-    edge_hardness: 0.9,
-    noise_octaves_offset: -1,
-    damage_amount: 0.05,
-    color_temperature: 0.1,
-    pattern_scale: 0.8,
-    emission_tendency: 0.2,
-}
-```
+| Parameter | Value |
+|-----------|-------|
+| roughness_offset | -0.15 |
+| saturation_scale | 0.8 |
+| detail_level | High |
+| edge_hardness | 0.9 |
+| noise_octaves_offset | -1 |
+| damage_amount | 0.05 |
+| color_temperature | 0.1 |
+| pattern_scale | 0.8 |
+| emission_tendency | 0.2 |
 
 **Use for:** Buildings, furniture, jewelry, posters.
 
@@ -561,19 +454,17 @@ StyleToken::ArtDeco => StyleModifiers {
 
 Post-apocalyptic - damaged, improvised, scavenged.
 
-```rust
-StyleToken::PostApoc => StyleModifiers {
-    roughness_offset: 0.35,
-    saturation_scale: 0.55,
-    detail_level: DetailLevel::High,
-    edge_hardness: 0.4,
-    noise_octaves_offset: 2,
-    damage_amount: 0.7,          // Heavy damage
-    color_temperature: 0.15,
-    pattern_scale: 1.1,
-    emission_tendency: 0.05,
-}
-```
+| Parameter | Value |
+|-----------|-------|
+| roughness_offset | 0.35 |
+| saturation_scale | 0.55 |
+| detail_level | High |
+| edge_hardness | 0.4 |
+| noise_octaves_offset | 2 |
+| damage_amount | 0.7 (heavy) |
+| color_temperature | 0.15 |
+| pattern_scale | 1.1 |
+| emission_tendency | 0.05 |
 
 **Use for:** Wasteland, ruins, improvised weapons, survivors.
 
@@ -585,19 +476,17 @@ StyleToken::PostApoc => StyleModifiers {
 
 Brand new, factory fresh, untouched.
 
-```rust
-StyleToken::Pristine => StyleModifiers {
-    roughness_offset: -0.2,
-    saturation_scale: 1.0,
-    detail_level: DetailLevel::Medium,
-    edge_hardness: 0.8,
-    noise_octaves_offset: -1,
-    damage_amount: 0.0,          // No damage
-    color_temperature: 0.0,
-    pattern_scale: 1.0,
-    emission_tendency: 0.1,
-}
-```
+| Parameter | Value |
+|-----------|-------|
+| roughness_offset | -0.2 |
+| saturation_scale | 1.0 |
+| detail_level | Medium |
+| edge_hardness | 0.8 |
+| noise_octaves_offset | -1 |
+| damage_amount | 0.0 (none) |
+| color_temperature | 0.0 |
+| pattern_scale | 1.0 |
+| emission_tendency | 0.1 |
 
 **Use for:** New products, showrooms, clean environments.
 
@@ -609,19 +498,17 @@ StyleToken::Pristine => StyleModifiers {
 
 Tainted, infected, wrong - horror elements.
 
-```rust
-StyleToken::Corrupted => StyleModifiers {
-    roughness_offset: 0.2,
-    saturation_scale: 0.7,
-    detail_level: DetailLevel::High,
-    edge_hardness: 0.3,
-    noise_octaves_offset: 3,     // Chaotic patterns
-    damage_amount: 0.5,
-    color_temperature: -0.3,     // Sickly cool
-    pattern_scale: 0.6,
-    emission_tendency: 0.35,     // Unnatural glow
-}
-```
+| Parameter | Value |
+|-----------|-------|
+| roughness_offset | 0.2 |
+| saturation_scale | 0.7 |
+| detail_level | High |
+| edge_hardness | 0.3 |
+| noise_octaves_offset | 3 (chaotic) |
+| damage_amount | 0.5 |
+| color_temperature | -0.3 (sickly cool) |
+| pattern_scale | 0.6 |
+| emission_tendency | 0.35 (unnatural glow) |
 
 **Use for:** Infected areas, evil artifacts, monsters, blight.
 
@@ -633,19 +520,17 @@ StyleToken::Corrupted => StyleModifiers {
 
 Otherworldly, ghostly, spiritual.
 
-```rust
-StyleToken::Ethereal => StyleModifiers {
-    roughness_offset: -0.25,
-    saturation_scale: 0.7,
-    detail_level: DetailLevel::Low,
-    edge_hardness: 0.2,
-    noise_octaves_offset: 1,
-    damage_amount: 0.0,
-    color_temperature: -0.1,
-    pattern_scale: 1.5,
-    emission_tendency: 0.6,      // Glowing, transparent
-}
-```
+| Parameter | Value |
+|-----------|-------|
+| roughness_offset | -0.25 |
+| saturation_scale | 0.7 |
+| detail_level | Low |
+| edge_hardness | 0.2 |
+| noise_octaves_offset | 1 |
+| damage_amount | 0.0 |
+| color_temperature | -0.1 |
+| pattern_scale | 1.5 |
+| emission_tendency | 0.6 (glowing) |
 
 **Use for:** Ghosts, spirits, magical effects, dreams.
 
@@ -657,27 +542,98 @@ StyleToken::Ethereal => StyleModifiers {
 
 Style tokens can be blended for hybrid aesthetics:
 
-```rust
-pub fn blend_styles(a: StyleToken, b: StyleToken, weight: f32) -> StyleModifiers {
-    let ma = a.modifiers();
-    let mb = b.modifiers();
-    let w = weight.clamp(0.0, 1.0);
-    let inv = 1.0 - w;
+**Algorithm (pseudocode):**
+```
+function blend_styles(style_a, style_b, weight):
+    modifiers_a = get_modifiers(style_a)
+    modifiers_b = get_modifiers(style_b)
+    w = clamp(weight, 0.0, 1.0)
+    inv = 1.0 - w
 
-    StyleModifiers {
-        roughness_offset: ma.roughness_offset * inv + mb.roughness_offset * w,
-        saturation_scale: ma.saturation_scale * inv + mb.saturation_scale * w,
-        detail_level: if w > 0.5 { mb.detail_level } else { ma.detail_level },
-        edge_hardness: ma.edge_hardness * inv + mb.edge_hardness * w,
-        noise_octaves_offset: ((ma.noise_octaves_offset as f32 * inv) +
-                               (mb.noise_octaves_offset as f32 * w)).round() as i32,
-        damage_amount: ma.damage_amount * inv + mb.damage_amount * w,
-        color_temperature: ma.color_temperature * inv + mb.color_temperature * w,
-        pattern_scale: ma.pattern_scale * inv + mb.pattern_scale * w,
-        emission_tendency: ma.emission_tendency * inv + mb.emission_tendency * w,
+    return {
+        roughness_offset: modifiers_a.roughness_offset * inv + modifiers_b.roughness_offset * w,
+        saturation_scale: modifiers_a.saturation_scale * inv + modifiers_b.saturation_scale * w,
+        detail_level: modifiers_b.detail_level if w > 0.5 else modifiers_a.detail_level,
+        edge_hardness: modifiers_a.edge_hardness * inv + modifiers_b.edge_hardness * w,
+        noise_octaves_offset: round(modifiers_a.noise_octaves_offset * inv + modifiers_b.noise_octaves_offset * w),
+        damage_amount: modifiers_a.damage_amount * inv + modifiers_b.damage_amount * w,
+        color_temperature: modifiers_a.color_temperature * inv + modifiers_b.color_temperature * w,
+        pattern_scale: modifiers_a.pattern_scale * inv + modifiers_b.pattern_scale * w,
+        emission_tendency: modifiers_a.emission_tendency * inv + modifiers_b.emission_tendency * w,
     }
+
+# Example: 70% Steampunk, 30% Gothic
+hybrid = blend_styles("steampunk", "gothic", 0.3)
+```
+
+---
+
+## Language Examples
+
+### Rust
+
+```rust
+use proc_gen::sadl::*;
+
+let style = StyleToken::Cyberpunk;
+let modifiers = style.modifiers();
+
+// Apply to generation
+let recipe = GenerationRecipe::new("crate")
+    .with_style(style)
+    .with_material(MaterialId::from_str("metal.chrome"));
+```
+
+### Python
+
+```python
+STYLE_TOKENS = {
+    "cyberpunk": {
+        "roughness_offset": -0.2,
+        "saturation_scale": 1.4,
+        "detail_level": "high",
+        "edge_hardness": 0.9,
+        "noise_octaves_offset": 0,
+        "damage_amount": 0.2,
+        "color_temperature": -0.3,
+        "pattern_scale": 0.7,
+        "emission_tendency": 0.7,
+    },
+    # ... other styles
 }
 
-// Example: 70% Steampunk, 30% Gothic
-let hybrid = blend_styles(StyleToken::Steampunk, StyleToken::Gothic, 0.3);
+def apply_style(base_params, style_name):
+    style = STYLE_TOKENS[style_name]
+    return {
+        "roughness": base_params["roughness"] + style["roughness_offset"],
+        "saturation": base_params["saturation"] * style["saturation_scale"],
+        # ... apply other modifiers
+    }
+```
+
+### JSON Schema
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "style": {
+      "enum": ["rustic", "medieval", "cyberpunk", "scifi", "..."]
+    },
+    "modifiers": {
+      "type": "object",
+      "properties": {
+        "roughness_offset": { "type": "number", "minimum": -0.3, "maximum": 0.4 },
+        "saturation_scale": { "type": "number", "minimum": 0.5, "maximum": 1.4 },
+        "detail_level": { "enum": ["low", "medium", "high", "extreme"] },
+        "edge_hardness": { "type": "number", "minimum": 0, "maximum": 1 },
+        "noise_octaves_offset": { "type": "integer", "minimum": -2, "maximum": 3 },
+        "damage_amount": { "type": "number", "minimum": 0, "maximum": 1 },
+        "color_temperature": { "type": "number", "minimum": -1, "maximum": 1 },
+        "pattern_scale": { "type": "number", "minimum": 0.5, "maximum": 2 },
+        "emission_tendency": { "type": "number", "minimum": 0, "maximum": 0.7 }
+      }
+    }
+  }
+}
 ```

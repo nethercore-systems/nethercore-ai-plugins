@@ -374,9 +374,11 @@ SADL is implemented by four specialized agents:
 
 ---
 
-## Additional Resources
+## Additional Resources (Language-Agnostic)
 
-- `references/style-tokens.md` - Complete style token definitions
+All reference files use data tables and pseudocode algorithms that work across any language:
+
+- `references/style-tokens.md` - Complete style token definitions with tables and multi-language examples
 - `references/color-palettes.md` - Full palette specifications
 - `references/material-database.md` - All material PBR values
-- `references/quality-heuristics.md` - Quality measurement code
+- `references/quality-heuristics.md` - Quality measurement algorithms

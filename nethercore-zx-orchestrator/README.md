@@ -107,6 +107,23 @@ Launch the orchestrator with optional action:
 - Tracks parallel execution progress
 - Aggregates results from multiple agents
 
+## Skills
+
+### agent-registry
+
+Complete registry of all available agents with their fully-qualified subagent_type identifiers. Essential for Task tool invocation patterns.
+
+**Trigger phrases:**
+- "How do I spawn agents?"
+- "What agents are available?"
+- "Agent registry"
+- "Subagent types"
+
+**Use this skill when:**
+- You need to know the correct subagent_type for an agent
+- You want to see all available agents organized by plugin
+- You need to understand parallel execution patterns
+
 ## Quality Review Checkpoints
 
 | Checkpoint | After Phase | Agents |

@@ -60,6 +60,7 @@ Game design workflow plugin.
 - `gdd-generator` - Autonomously generates complete Game Design Documents from concepts
 - `mechanic-designer` - Designs detailed game mechanics with physics, timing, and feel parameters
 - `scope-advisor` - Assesses project scope, identifies overambition, defines MVPs
+- `gdd-implementation-tracker` - Compares GDD to implementation, identifies missing features, prioritizes remaining work
 
 ### nethercore-zx-procgen
 
@@ -89,6 +90,7 @@ Procedural asset generation plugin.
 - `procgen-optimizer` - Optimizes generation code and output
 - `creative-orchestrator` - Coordinates full asset pipeline
 - `character-generator` - End-to-end character creation
+- `quality-analyzer` - Holistic asset quality assessment with actionable recommendations and auto-dispatch support
 
 ### nethercore-zx-publish
 
@@ -227,6 +229,33 @@ Platform-agnostic game audio design with Sonic Style Language (SSL) - the audio 
 - `music-architect` - Designs tracks with harmony, structure, and adaptivity
 - `audio-coherence-reviewer` - Validates audio consistency with sonic identity
 
+### ai-game-studio
+
+Intelligent game development studio providing request routing, quality analysis, and completion verification across all plugins.
+
+**Skills (3):**
+- `request-patterns` - Patterns for classifying and routing game development requests to appropriate expert agents
+- `dependency-chains` - What must be completed before other tasks can begin; blocking dependencies and parallelizable work
+- `verification-checklists` - Checklists for verifying assets, features, and systems are truly complete
+
+**Agents:**
+- `request-dispatcher` - Intelligent routing for any development request; parses intent, routes to appropriate experts, ensures completion
+- `completion-auditor` - Semantic verification that work is actually complete; catches "generated but not integrated" and "coded but not rendered" issues
+- `project-health-monitor` - Comprehensive project health assessment; coordinates all analysis agents, produces unified health dashboard with prioritized tasks
+
+**Hooks:**
+- SubagentStop verification prompts (ensures follow-up actions aren't forgotten)
+- SessionStart health check reminder
+- Stop checkpoint for documenting incomplete work
+
+**Key Capabilities:**
+- **Intelligent Dispatch:** Parses vague requests like "improve mesh quality" and routes to correct experts
+- **Dependency Tracking:** Ensures tasks are completed in correct order (design → generate → integrate)
+- **Semantic Verification:** Verifies features actually work, not just that code exists
+- **Auto-Dispatch:** Can automatically queue and dispatch fixes for identified issues (with approval)
+- **GDD Cross-Reference:** Tracks which GDD features are implemented vs missing
+- **Quality Analysis:** Assesses asset quality and identifies improvement opportunities
+
 ## Installation
 
 Add to your `.claude/settings.local.json`:
@@ -253,7 +282,8 @@ Add to your `.claude/settings.local.json`:
     "nethercore-zx-cicd@nethercore-ai-plugins": true,
     "game-design@nethercore-ai-plugins": true,
     "creative-direction@nethercore-ai-plugins": true,
-    "sound-design@nethercore-ai-plugins": true
+    "sound-design@nethercore-ai-plugins": true,
+    "ai-game-studio@nethercore-ai-plugins": true
   }
 }
 ```

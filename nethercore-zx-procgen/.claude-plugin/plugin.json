@@ -1,7 +1,7 @@
 {
   "name": "nethercore-zx-procgen",
-  "version": "2.0.0",
-  "description": "Procedural asset generation for Nethercore ZX. Generate textures (Albedo, MRE, SSE, Matcaps), meshes (with UVs and vertex colors), 2D sprites (pixel art, tilesets, UI elements), skeletal animations (walk cycles, attacks, IK), rigid body animations (vehicles, robots), and sounds. Includes SADL (Semantic Asset Description Language) for AI-first creative workflows with style tokens, color palettes, material databases, and quality heuristics. Fully supports ZX GPU skinning, render modes 0-3, dither transparency, and the nether-cli asset pipeline.",
+  "version": "2.1.0",
+  "description": "Procedural asset generation for Nethercore ZX. Generate textures (Albedo, MRE, SSE, Matcaps), meshes (with UVs and vertex colors), 2D sprites (pixel art, tilesets, UI elements), skeletal animations (walk cycles, attacks, IK), rigid body animations (vehicles, robots), and sounds. Generators run as native binaries via nether.toml build.script, output to assets/ directory, and are bundled into ROMs. Includes SADL (Semantic Asset Description Language) for AI-first creative workflows. Fully supports ZX GPU skinning, render modes 0-3, dither transparency, and the nether-cli asset pipeline.",
   "author": {
     "name": "Nethercore Systems",
     "email": "nethercore.systems@gmail.com"
@@ -13,6 +13,11 @@
     "nethercore-zx",
     "procedural-generation",
     "procgen",
+    "native-binary",
+    "build-script",
+    "asset-pipeline",
+    "nether-toml",
+    "gitignore",
     "textures",
     "matcap",
     "meshes",

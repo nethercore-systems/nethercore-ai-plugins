@@ -170,18 +170,184 @@ Execution:
                       [Sync Test]
 ```
 
-## Agent Invocation
+## Agent Invocation (CRITICAL)
 
-Use Task tool to launch parallel agents:
+You MUST use the Task tool to launch agents. Agents are identified by **fully-qualified subagent_type** names.
+
+### Agent Registry (Quick Reference)
+
+| Agent | subagent_type |
+|-------|---------------|
+| Asset Designer | `nethercore-zx-procgen:asset-designer` |
+| Asset Generator | `nethercore-zx-procgen:asset-generator` |
+| Character Generator | `nethercore-zx-procgen:character-generator` |
+| Asset Critic | `nethercore-zx-procgen:asset-critic` |
+| Asset Quality Reviewer | `nethercore-zx-procgen:asset-quality-reviewer` |
+| Procgen Optimizer | `nethercore-zx-procgen:procgen-optimizer` |
+| Code Scaffolder | `nethercore-zx-dev:code-scaffolder` |
+| Feature Implementer | `nethercore-zx-dev:feature-implementer` |
+| Integration Assistant | `nethercore-zx-dev:integration-assistant` |
+| Rollback Reviewer | `nethercore-zx-dev:rollback-reviewer` |
+| Art Director | `creative-direction:art-director` |
+| Sound Director | `creative-direction:sound-director` |
+| Tech Director | `creative-direction:tech-director` |
+| Creative Director | `creative-direction:creative-director` |
+| Test Runner | `nethercore-zx-test:test-runner` |
+| Build Analyzer | `nethercore-zx-optimize:build-analyzer` |
+| Optimizer | `nethercore-zx-optimize:optimizer` |
+| SFX Architect | `sound-design:sfx-architect` |
+| Music Architect | `sound-design:music-architect` |
+| Design Reviewer | `game-design:design-reviewer` |
+| Accessibility Auditor | `game-design:accessibility-auditor` |
+
+### CRITICAL: Parallel Execution Pattern
+
+To run agents IN PARALLEL, you MUST send a SINGLE message containing MULTIPLE Task tool calls.
+
+**CORRECT - Parallel (one message, multiple Tasks):**
+```
+Message 1:
+  Task tool call #1:
+    subagent_type: "nethercore-zx-procgen:asset-designer"
+    description: "Design character assets"
+    prompt: "Create SADL specifications for the player character based on..."
+
+  Task tool call #2:
+    subagent_type: "nethercore-zx-procgen:asset-designer"
+    description: "Design environment assets"
+    prompt: "Create SADL specifications for the forest environment..."
+
+  Task tool call #3:
+    subagent_type: "nethercore-zx-procgen:asset-designer"
+    description: "Design UI elements"
+    prompt: "Create SADL specifications for the HUD elements..."
+
+→ All three execute CONCURRENTLY
+```
+
+**WRONG - Sequential (separate messages):**
+```
+Message 1: Task tool call for characters
+Message 2: Task tool call for environment
+Message 3: Task tool call for UI
+
+→ Executes one at a time (SLOW)
+```
+
+### Background Execution for Long Tasks
+
+For long-running tasks where you want to continue orchestrating:
 
 ```
-# Launch multiple agents in parallel
-Task: asset-designer (characters)
-Task: asset-designer (environment)
-Task: asset-designer (UI)
+Task tool call:
+  subagent_type: "nethercore-zx-procgen:character-generator"
+  description: "Generate player character"
+  prompt: "Generate complete animated player character with walk, run, attack animations..."
+  run_in_background: true
 
-# Wait for all to complete
-# Aggregate results
+→ Returns immediately with task_id
+→ Use TaskOutput later to get results
+```
+
+Retrieve results:
+```
+TaskOutput tool call:
+  task_id: "agent-abc123"
+  block: true  # Wait for completion
+```
+
+### Concrete Parallel Examples
+
+**Example 1: Parallel Asset Generation**
+
+User wants characters, environment, and audio generated:
+
+```
+In ONE message, send THREE Task calls:
+
+Task #1:
+  subagent_type: "nethercore-zx-procgen:asset-designer"
+  description: "Design character SADL"
+  prompt: "Read docs/design/game-design.md and create SADL specs for the warrior character. Include armor, weapon, and idle/walk/attack poses."
+
+Task #2:
+  subagent_type: "nethercore-zx-procgen:asset-designer"
+  description: "Design environment SADL"
+  prompt: "Read docs/design/game-design.md and create SADL specs for the dungeon environment. Include floor tiles, wall segments, torches, doors."
+
+Task #3:
+  subagent_type: "sound-design:sfx-architect"
+  description: "Design combat SFX"
+  prompt: "Read docs/design/game-design.md and create synthesis specs for sword swing, shield block, and enemy hit sounds."
+```
+
+**Example 2: Parallel Quality Review**
+
+```
+In ONE message, send THREE Task calls:
+
+Task #1:
+  subagent_type: "creative-direction:art-director"
+  description: "Review visual coherence"
+  prompt: "Review all assets in assets/meshes/ and assets/textures/ for visual consistency with the creative pillars in docs/design/creative-vision.md"
+
+Task #2:
+  subagent_type: "creative-direction:sound-director"
+  description: "Review audio coherence"
+  prompt: "Review all audio in assets/audio/ for consistency with the SSL in docs/design/sonic-style.md"
+
+Task #3:
+  subagent_type: "creative-direction:tech-director"
+  description: "Review code architecture"
+  prompt: "Review src/ for code quality, file organization, and architecture patterns. Check for files over 300 lines."
+```
+
+**Example 3: Parallel Validation Suite**
+
+```
+In ONE message, send FOUR Task calls:
+
+Task #1:
+  subagent_type: "nethercore-zx-test:test-runner"
+  description: "Run sync tests"
+  prompt: "Run sync tests with: nether run --sync-test --frames 1000"
+
+Task #2:
+  subagent_type: "nethercore-zx-optimize:build-analyzer"
+  description: "Analyze build size"
+  prompt: "Run nether build and analyze the output for largest assets and optimization opportunities"
+
+Task #3:
+  subagent_type: "nethercore-zx-dev:rollback-reviewer"
+  description: "Check rollback safety"
+  prompt: "Review src/ for non-deterministic code patterns that could cause desyncs"
+
+Task #4:
+  subagent_type: "nethercore-zx-publish:release-validator"
+  description: "Validate release readiness"
+  prompt: "Check all release requirements: ROM size, metadata, assets, documentation"
+```
+
+### Aggregating Results
+
+After parallel tasks complete, aggregate results:
+
+```markdown
+## Parallel Execution Complete
+
+### Task Results
+
+| Task | Agent | Status | Summary |
+|------|-------|--------|---------|
+| Character SADL | asset-designer | ✅ | Created 3 character specs |
+| Environment SADL | asset-designer | ✅ | Created 12 prop specs |
+| Combat SFX | sfx-architect | ✅ | Created 5 sound specs |
+
+### Combined Output
+[Aggregate findings from all agents]
+
+### Next Steps
+[Based on aggregated results]
 ```
 
 ## Output Format

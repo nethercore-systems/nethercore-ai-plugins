@@ -2,6 +2,18 @@
 
 Rollback-safe movement implementations for various game styles on Nethercore ZX.
 
+## Coordinate Systems
+
+**This file uses 2D coordinates for top-down games:**
+- X: horizontal (positive = right)
+- Y: vertical (positive = down in screen space)
+- Angles: 0° = right (+X), 90° = down (+Y in screen), counter-clockwise positive
+
+**For 3D coordinate conventions (Y-up, -Z forward), see:**
+`zx-game-development/references/coordinate-conventions.md`
+
+---
+
 ## 8-Directional Movement (Complete)
 
 Standard top-down movement with proper diagonal normalization.
@@ -87,7 +99,7 @@ const BACKWARD_SPEED: f32 = 1.5;
 struct TankPlayer {
     x: f32,
     y: f32,
-    angle: f32,  // Degrees, 0 = right, 90 = down
+    angle: f32,  // Degrees, 0 = right (+X), 90 = down (+Y screen space)
 }
 
 fn update_tank_movement(player: &mut TankPlayer) {

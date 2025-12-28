@@ -388,6 +388,163 @@ Delegate to specialized agents:
 - asset-generator for code production
 - asset-critic for quality assessment
 
+---
+
+## CRITICAL: How to Invoke Sub-Agents
+
+You have access to the Task tool. You MUST use it to spawn specialized agents.
+
+### Agent Registry (Fully-Qualified Names)
+
+| Agent | subagent_type | Purpose |
+|-------|---------------|---------|
+| Asset Designer | `nethercore-zx-procgen:asset-designer` | Translate vision → SADL specs |
+| Asset Generator | `nethercore-zx-procgen:asset-generator` | SADL specs → procedural code |
+| Asset Critic | `nethercore-zx-procgen:asset-critic` | Quality assessment vs specs |
+| Asset Quality Reviewer | `nethercore-zx-procgen:asset-quality-reviewer` | ZX budget compliance |
+| Procgen Optimizer | `nethercore-zx-procgen:procgen-optimizer` | Optimization suggestions |
+| Character Generator | `nethercore-zx-procgen:character-generator` | End-to-end character creation |
+| Art Director | `creative-direction:art-director` | Visual coherence review |
+
+### Single Agent Invocation
+
+```
+Task tool call:
+  subagent_type: "nethercore-zx-procgen:asset-designer"
+  description: "Design barrel SADL specs"
+  prompt: "Create SADL specifications for a rustic wooden barrel. Style: medieval fantasy. Include weathering and metal bands. Target: 200-400 triangles."
+```
+
+### Parallel Asset Design (CRITICAL)
+
+When designing MULTIPLE assets, launch designers IN PARALLEL by sending ONE message with MULTIPLE Task tool calls:
+
+```
+In ONE message, send multiple Task calls:
+
+Task #1:
+  subagent_type: "nethercore-zx-procgen:asset-designer"
+  description: "Design barrel specs"
+  prompt: "Create SADL for rustic barrel..."
+
+Task #2:
+  subagent_type: "nethercore-zx-procgen:asset-designer"
+  description: "Design crate specs"
+  prompt: "Create SADL for wooden crate..."
+
+Task #3:
+  subagent_type: "nethercore-zx-procgen:asset-designer"
+  description: "Design chest specs"
+  prompt: "Create SADL for treasure chest..."
+
+→ All three design tasks execute CONCURRENTLY
+```
+
+### Parallel Generation After Design
+
+After collecting SADL specs, generate in parallel:
+
+```
+In ONE message:
+
+Task #1:
+  subagent_type: "nethercore-zx-procgen:asset-generator"
+  description: "Generate barrel mesh"
+  prompt: "Generate procedural code for barrel using this SADL spec: [spec from designer]..."
+
+Task #2:
+  subagent_type: "nethercore-zx-procgen:asset-generator"
+  description: "Generate crate mesh"
+  prompt: "Generate procedural code for crate using this SADL spec: [spec from designer]..."
+
+Task #3:
+  subagent_type: "nethercore-zx-procgen:asset-generator"
+  description: "Generate chest mesh"
+  prompt: "Generate procedural code for chest using this SADL spec: [spec from designer]..."
+```
+
+### Parallel Quality Review
+
+Review multiple assets concurrently:
+
+```
+In ONE message:
+
+Task #1:
+  subagent_type: "nethercore-zx-procgen:asset-critic"
+  description: "Critique barrel"
+  prompt: "Review barrel asset against SADL spec. Check style compliance and creative intent..."
+
+Task #2:
+  subagent_type: "nethercore-zx-procgen:asset-critic"
+  description: "Critique crate"
+  prompt: "Review crate asset against SADL spec..."
+
+Task #3:
+  subagent_type: "nethercore-zx-procgen:asset-quality-reviewer"
+  description: "Check ZX budgets"
+  prompt: "Verify all generated assets meet ZX poly and texture limits..."
+```
+
+### Pipeline Orchestration Pattern
+
+For a complete asset set, orchestrate in waves:
+
+```
+WAVE 1: Design (Parallel)
+├── Task: asset-designer (barrel)
+├── Task: asset-designer (crate)
+└── Task: asset-designer (chest)
+    → Wait for all to complete
+    → Collect SADL specs
+
+WAVE 2: Generate (Parallel)
+├── Task: asset-generator (barrel with spec)
+├── Task: asset-generator (crate with spec)
+└── Task: asset-generator (chest with spec)
+    → Wait for all to complete
+    → Collect generated code
+
+WAVE 3: Critique (Parallel)
+├── Task: asset-critic (barrel)
+├── Task: asset-critic (crate)
+├── Task: asset-critic (chest)
+└── Task: asset-quality-reviewer (all)
+    → Wait for all to complete
+    → Identify issues
+
+WAVE 4: Refine (if needed)
+└── Task: asset-generator (assets with issues)
+    → Loop back to WAVE 3
+```
+
+### Background Generation for Large Sets
+
+For many assets, use background execution:
+
+```
+Task tool call:
+  subagent_type: "nethercore-zx-procgen:character-generator"
+  description: "Generate player character"
+  prompt: "Generate complete animated player..."
+  run_in_background: true
+
+→ Returns task_id immediately
+→ Continue with other assets
+→ Use TaskOutput to collect when ready
+```
+
+### Coherence Review
+
+After all assets generated, invoke art director:
+
+```
+Task tool call:
+  subagent_type: "creative-direction:art-director"
+  description: "Review asset coherence"
+  prompt: "Review all generated assets in output/ for visual consistency. Check palette adherence, style uniformity, and scale harmony."
+```
+
 ## REQUIRED: Gitignore for Generated Assets
 
 **After ANY asset file is written, ensure .gitignore includes:**

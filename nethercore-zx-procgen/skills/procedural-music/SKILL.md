@@ -238,6 +238,23 @@ write_wav(&to_pcm_i16(&kick), SAMPLE_RATE, "samples/kick.wav");
 
 The procedural-sounds skill provides complete synthesis guidance.
 
+## Music Theory
+
+For deep music theory knowledge, consult the **`sound-design`** plugin's music composition skill:
+
+**`sound-design/skills/music-composition/SKILL.md`** covers:
+
+- **Scales and Modes** - Lydian (dreamy), Dorian (mysterious), Phrygian (combat), and when to use each
+- **Chord Progressions** - By emotion (triumphant, tense, mysterious, melancholic, peaceful)
+- **Tempo Guidelines** - BPM ranges for menu, exploration, combat, boss, stealth
+- **Song Structures** - Loop-based, layered (adaptive), and linear (cutscenes)
+- **Looping Techniques** - Seamless loops, crossfades, harmonic resolution
+- **Adaptive Music** - Vertical layering, horizontal resequencing, stinger systems
+- **Leitmotifs** - Creating memorable themes for characters and places
+- **Genre Patterns** - Orchestral, electronic, chiptune, ambient
+
+This skill (procedural-music) focuses on **XM tracker format and ZX integration**. For composition theory, use the sound-design plugin.
+
 ## Additional Resources
 
 ### Reference Files
@@ -246,6 +263,12 @@ For detailed information, consult:
 - **`references/xm-effects.md`** - Complete effect command reference
 - **`references/composition-patterns.md`** - Genre templates and song structures
 - **`references/workflow-guide.md`** - Step-by-step tracker workflow
+
+### Related Skills
+
+- **`sound-design/skills/music-composition`** - Music theory, chord progressions, adaptive music
+- **`sound-design/skills/synthesis-techniques`** - FM, wavetable, granular synthesis
+- **`procedural-sounds`** - Generating instrument samples procedurally
 
 ### External Resources
 

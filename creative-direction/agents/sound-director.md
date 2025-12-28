@@ -29,7 +29,7 @@ Milestone audio review requested. Comprehensive sonic coherence assessment.
 </commentary>
 </example>
 
-model: haiku
+model: sonnet
 color: cyan
 tools: ["Read", "Glob", "Grep"]
 ---

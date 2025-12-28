@@ -8,6 +8,9 @@ version: 2.0.0
 
 Implement camera systems using the ZX FFI camera functions. All camera state should be stored in static variables for rollback safety. Includes perspective-based design patterns for optimal camera choices.
 
+**Coordinate Convention:** Nethercore uses Y-up, right-handed coordinates where **-Z is forward**.
+For full details, see `zx-game-development/references/coordinate-conventions.md`.
+
 ## Camera FFI Functions
 
 Reference `nethercore/include/zx.rs` lines 173-201 for complete signatures:
@@ -96,11 +99,13 @@ fn update_with_dead_zone(target_x: f32, target_z: f32) {
 
 ### Orbit Camera
 
-Third-person camera controlled by right stick:
+Third-person camera controlled by right stick. Camera orbits behind the target.
+
+**Coordinate convention:** When yaw=0, camera is at +Z looking towards -Z (behind a character facing forward).
 
 ```rust
-static mut CAM_YAW: f32 = 0.0;    // Horizontal rotation
-static mut CAM_PITCH: f32 = 20.0; // Vertical rotation (degrees)
+static mut CAM_YAW: f32 = 0.0;    // Horizontal rotation (0 = behind target facing -Z)
+static mut CAM_PITCH: f32 = 20.0; // Vertical tilt (degrees, positive = above)
 static mut CAM_DIST: f32 = 8.0;   // Distance from target
 
 fn update_orbit_camera(player: u32) {
@@ -114,7 +119,7 @@ fn update_orbit_camera(player: u32) {
 
     unsafe {
         CAM_YAW += rx * SENSITIVITY * dt;
-        CAM_PITCH -= ry * SENSITIVITY * dt;
+        CAM_PITCH -= ry * SENSITIVITY * dt;  // Invert for intuitive up/down
         CAM_PITCH = CAM_PITCH.clamp(PITCH_MIN, PITCH_MAX);
     }
 }
@@ -124,7 +129,9 @@ fn get_orbit_position(target_x: f32, target_y: f32, target_z: f32) -> (f32, f32,
         let yaw_rad = CAM_YAW.to_radians();
         let pitch_rad = CAM_PITCH.to_radians();
 
-        let x = target_x + CAM_DIST * yaw_rad.sin() * pitch_rad.cos();
+        // Camera behind target: -sin for X, +cos for Z
+        // When yaw=0: camera at (0, d*sin(pitch), d*cos(pitch)) = behind target
+        let x = target_x - CAM_DIST * yaw_rad.sin() * pitch_rad.cos();
         let y = target_y + CAM_DIST * pitch_rad.sin();
         let z = target_z + CAM_DIST * yaw_rad.cos() * pitch_rad.cos();
 
@@ -135,11 +142,13 @@ fn get_orbit_position(target_x: f32, target_y: f32, target_z: f32) -> (f32, f32,
 
 ### First-Person Camera
 
-Camera at player position, looking in player direction:
+Camera at player position, looking in player direction.
+
+**Coordinate convention:** When yaw=0, looking towards -Z (forward). See `references/coordinate-conventions.md`.
 
 ```rust
-static mut LOOK_YAW: f32 = 0.0;
-static mut LOOK_PITCH: f32 = 0.0;
+static mut LOOK_YAW: f32 = 0.0;   // 0 = looking towards -Z
+static mut LOOK_PITCH: f32 = 0.0; // 0 = horizontal, positive = up
 
 fn update_first_person(player: u32) {
     const SENSITIVITY: f32 = 90.0;
@@ -151,7 +160,7 @@ fn update_first_person(player: u32) {
 
     unsafe {
         LOOK_YAW += rx * SENSITIVITY * dt;
-        LOOK_PITCH -= ry * SENSITIVITY * dt;
+        LOOK_PITCH -= ry * SENSITIVITY * dt;  // Invert for intuitive up/down
         LOOK_PITCH = LOOK_PITCH.clamp(-PITCH_LIMIT, PITCH_LIMIT);
     }
 }
@@ -161,9 +170,10 @@ fn get_look_direction() -> (f32, f32, f32) {
         let yaw = LOOK_YAW.to_radians();
         let pitch = LOOK_PITCH.to_radians();
 
-        let x = yaw.sin() * pitch.cos();
+        // Forward is -Z when yaw=0, so negate sin and cos
+        let x = -yaw.sin() * pitch.cos();
         let y = pitch.sin();
-        let z = yaw.cos() * pitch.cos();
+        let z = -yaw.cos() * pitch.cos();
 
         (x, y, z)
     }

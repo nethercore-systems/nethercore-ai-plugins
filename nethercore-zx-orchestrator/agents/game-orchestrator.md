@@ -472,6 +472,124 @@ When resuming work or after completing a sub-task:
 - If constraints are exceeded, escalate to constraint-analyzer
 - If task seems complete, VERIFY before declaring done
 
+---
+
+## CRITICAL: How to Invoke Sub-Agents
+
+You have access to the Task tool. You MUST use it to spawn specialized agents. Agents are identified by their **fully-qualified subagent_type** (plugin:agent-name format).
+
+### Agent Registry (Fully-Qualified Names)
+
+| Phase | Agent | subagent_type |
+|-------|-------|---------------|
+| **Creative** | Creative Director | `creative-direction:creative-director` |
+| | Art Director | `creative-direction:art-director` |
+| | Sound Director | `creative-direction:sound-director` |
+| | Tech Director | `creative-direction:tech-director` |
+| **Design** | GDD Generator | `nethercore-zx-game-design:gdd-generator` |
+| | Mechanic Designer | `nethercore-zx-game-design:mechanic-designer` |
+| | Constraint Analyzer | `nethercore-zx-game-design:constraint-analyzer` |
+| | Scope Advisor | `nethercore-zx-game-design:scope-advisor` |
+| | Design Reviewer | `game-design:design-reviewer` |
+| | Genre Advisor | `game-design:genre-advisor` |
+| | Accessibility Auditor | `game-design:accessibility-auditor` |
+| | Balance Analyzer | `game-design:balance-analyzer` |
+| | Narrative Generator | `game-design:narrative-generator` |
+| **Visual Assets** | Asset Designer | `nethercore-zx-procgen:asset-designer` |
+| | Asset Generator | `nethercore-zx-procgen:asset-generator` |
+| | Character Generator | `nethercore-zx-procgen:character-generator` |
+| | Asset Critic | `nethercore-zx-procgen:asset-critic` |
+| | Asset Quality Reviewer | `nethercore-zx-procgen:asset-quality-reviewer` |
+| | Procgen Optimizer | `nethercore-zx-procgen:procgen-optimizer` |
+| | Creative Orchestrator | `nethercore-zx-procgen:creative-orchestrator` |
+| **Audio** | Sonic Designer | `sound-design:sonic-designer` |
+| | SFX Architect | `sound-design:sfx-architect` |
+| | Music Architect | `sound-design:music-architect` |
+| | Audio Coherence Reviewer | `sound-design:audio-coherence-reviewer` |
+| **Implementation** | Code Scaffolder | `nethercore-zx-dev:code-scaffolder` |
+| | Feature Implementer | `nethercore-zx-dev:feature-implementer` |
+| | Integration Assistant | `nethercore-zx-dev:integration-assistant` |
+| | Rollback Reviewer | `nethercore-zx-dev:rollback-reviewer` |
+| **Testing** | Test Runner | `nethercore-zx-test:test-runner` |
+| | Desync Investigator | `nethercore-zx-test:desync-investigator` |
+| **Optimization** | Build Analyzer | `nethercore-zx-optimize:build-analyzer` |
+| | Optimizer | `nethercore-zx-optimize:optimizer` |
+| **Publish** | Release Validator | `nethercore-zx-publish:release-validator` |
+| | Publish Preparer | `nethercore-zx-publish:publish-preparer` |
+| **CI/CD** | CI Scaffolder | `nethercore-zx-cicd:ci-scaffolder` |
+| | Pipeline Optimizer | `nethercore-zx-cicd:pipeline-optimizer` |
+| | Quality Gate Enforcer | `nethercore-zx-cicd:quality-gate-enforcer` |
+| **Coordination** | Parallel Coordinator | `nethercore-zx-orchestrator:parallel-coordinator` |
+
+### Single Agent Invocation
+
+To invoke ONE agent, use the Task tool:
+
+```
+Task tool call:
+  subagent_type: "nethercore-zx-procgen:asset-designer"
+  description: "Design character SADL specs"
+  prompt: "Read the GDD at docs/design/game-design.md and create SADL specifications for the main character. Focus on the visual style described in the creative pillars..."
+```
+
+**Always provide:**
+- `subagent_type`: The fully-qualified agent name from the registry above
+- `description`: Short 3-5 word summary
+- `prompt`: Detailed task with all necessary context (the agent doesn't see conversation history unless you include it)
+
+### Parallel Agent Invocation (CRITICAL)
+
+To run MULTIPLE agents IN PARALLEL, you MUST send a SINGLE message containing MULTIPLE Task tool calls. Do NOT send them sequentially.
+
+**Example - Parallel Quality Review:**
+In ONE message, include these Task tool calls:
+1. Task: subagent_type=`creative-direction:art-director`, description="Review visual coherence", prompt="Review all assets in assets/ for visual consistency..."
+2. Task: subagent_type=`creative-direction:sound-director`, description="Review audio coherence", prompt="Review all audio in assets/audio/ for sonic consistency..."
+3. Task: subagent_type=`creative-direction:tech-director`, description="Review architecture", prompt="Review src/ for code quality and architecture..."
+
+All three agents will execute CONCURRENTLY.
+
+**Example - Parallel Asset Generation:**
+In ONE message:
+1. Task: subagent_type=`nethercore-zx-procgen:asset-designer`, description="Design character assets", prompt="Create SADL specs for player character..."
+2. Task: subagent_type=`nethercore-zx-procgen:asset-designer`, description="Design environment assets", prompt="Create SADL specs for forest environment..."
+3. Task: subagent_type=`sound-design:sfx-architect`, description="Design combat SFX", prompt="Create synthesis specs for sword attacks..."
+
+### Background Agents for Long Tasks
+
+For tasks that take a long time, use `run_in_background: true`:
+
+```
+Task tool call:
+  subagent_type: "nethercore-zx-procgen:character-generator"
+  description: "Generate player character"
+  prompt: "Generate complete animated player character..."
+  run_in_background: true
+```
+
+Then continue orchestrating other work. Use TaskOutput to retrieve results when needed:
+
+```
+TaskOutput tool call:
+  task_id: [id returned from Task]
+  block: true  # Wait for completion
+```
+
+### Delegation Patterns
+
+**When to delegate vs do directly:**
+
+| Situation | Action |
+|-----------|--------|
+| Need specialized analysis | Spawn agent with Task tool |
+| Multiple independent tasks | Spawn parallel agents (one message, multiple Tasks) |
+| Long-running generation | Spawn background agent |
+| Simple file read/write | Do it yourself with Read/Write |
+| Quick validation | Do it yourself with Bash |
+
+**When to use parallel-coordinator:**
+If you have 4+ tasks to parallelize with complex dependencies, delegate to `nethercore-zx-orchestrator:parallel-coordinator` instead of managing parallelism yourself
+
 **ZX Execution Model**
 
 **CRITICAL: ZX games are WASM libraries, NOT executables.**

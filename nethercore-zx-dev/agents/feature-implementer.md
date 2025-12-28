@@ -322,6 +322,8 @@ Recommended budget: < 100 KB total game state
 
 **Before declaring a feature complete, you MUST verify:**
 
+### Syntactic Checks (Code Exists)
+
 1. **No TODOs or stubs remaining:**
    ```bash
    # Search for incomplete code markers
@@ -344,11 +346,100 @@ Recommended budget: < 100 KB total game state
    cargo clippy --target wasm32-unknown-unknown
    ```
 
-5. **Integration is complete:**
-   - Module added to lib.rs
-   - State initialized in init()
-   - Update called in update()
-   - Render called in render()
+### Integration Checks (Code Connected)
+
+5. **Module integration:**
+   - [ ] Module added to lib.rs: `mod feature_name;`
+   - [ ] State initialized in init(): `feature: Feature::new(),`
+   - [ ] Update called in update(): `self.feature.update(...);`
+   - [ ] Render called in render(): `self.feature.render(...);`
+
+### SEMANTIC CHECKS (Feature Actually Works)
+
+**These checks catch "code exists but feature doesn't work" bugs:**
+
+6. **For VISUAL features (anything that should appear on screen):**
+   ```bash
+   # Verify draw functions are called
+   grep -r "draw_mesh\|draw_sprite\|draw_text\|draw_line\|draw_rect" src/feature_name.rs
+   ```
+   - [ ] At least one draw_* function is called
+   - [ ] draw_* is called from render(), not just defined
+   - [ ] Camera/viewport is set before drawing (if 3D)
+   - [ ] Feature is in correct render order (not hidden behind other elements)
+
+7. **For TEXTURED features:**
+   ```bash
+   # Verify textures are bound before drawing
+   grep -B 5 "draw_mesh" src/feature_name.rs | grep "texture_bind"
+   ```
+   - [ ] texture_bind() called before draw_mesh()
+   - [ ] Correct texture handle used (matches asset)
+
+8. **For INTERACTIVE features:**
+   ```bash
+   # Verify input is read
+   grep -r "input_\|button_\|key_\|gamepad_" src/feature_name.rs
+   ```
+   - [ ] Input is read somewhere
+   - [ ] Input affects game state
+   - [ ] State change is visible (rendered or causes other effects)
+
+9. **For ASSET-DEPENDENT features:**
+   ```bash
+   # Verify assets are declared and used
+   grep -r "asset_handle!" src/assets.rs | grep "feature_name"
+   grep -r "FEATURE_" src/feature_name.rs
+   ```
+   - [ ] Required assets exist in assets/ folder
+   - [ ] Assets declared in nether.toml
+   - [ ] Asset handles exist in src/assets.rs
+   - [ ] Handles are used in feature code
+
+10. **For AUDIO features:**
+    ```bash
+    # Verify sound playback
+    grep -r "sound_play\|music_play" src/feature_name.rs
+    ```
+    - [ ] sound_play() called at appropriate triggers
+    - [ ] Sound handles reference existing assets
+
+### The "Would a Player Notice?" Test
+
+Ask yourself: **If a player runs the game, will they see/hear/experience this feature?**
+
+| Feature Type | What Player Should Notice |
+|--------------|---------------------------|
+| Track in racing game | Track is visible, car drives on it |
+| Enemy | Enemy appears, moves, can be hit |
+| Power-up | Item spawns, can be collected, effect happens |
+| UI element | Text/bar/icon visible on screen |
+| Sound effect | Sound plays when triggered |
+| Animation | Character moves smoothly |
+
+If the answer is "no, they wouldn't notice" - the feature is NOT complete.
+
+### Verification Commands
+
+Run ALL of these before declaring complete:
+
+```bash
+# 1. Build succeeds
+nether build
+
+# 2. No incomplete markers
+grep -r "TODO\|FIXME\|unimplemented!\|todo!" src/
+
+# 3. Feature renders (for visual features)
+grep -r "draw_" src/feature_name.rs
+
+# 4. Feature updates
+grep "fn update" src/feature_name.rs
+
+# 5. Feature is integrated
+grep "mod feature_name" src/lib.rs
+grep "feature_name" src/lib.rs | grep -v "^mod"
+```
 
 **If ANY of these checks fail, continue working - do not declare complete.**
 

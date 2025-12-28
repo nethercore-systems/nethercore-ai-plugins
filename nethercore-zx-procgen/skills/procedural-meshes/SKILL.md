@@ -1,10 +1,25 @@
 ---
 name: Procedural Mesh Generation
 description: This skill should be used when the user asks to "generate mesh", "create 3D model", "procedural geometry", "low-poly model", "mesh modifiers", "combine meshes", "subdivide", "mirror mesh", "generate character mesh", "create vehicle", "procedural prop", "vertex colors", or mentions mesh generation, geometry synthesis, vertex manipulation, or procedural 3D modeling for game assets.
-version: 1.2.0
+version: 1.3.0
 ---
 
 # Procedural Mesh Generation
+
+## Build Integration
+
+Mesh generators are **native binaries** (not WASM). They run at build time via `nether.toml`'s `build.script`:
+
+```toml
+[build]
+script = "cargo run -p generator --release && cargo build -p game --target wasm32-unknown-unknown --release"
+
+[[assets.meshes]]
+id = "barrel"
+path = "../assets/meshes/barrel.obj"
+```
+
+See the **Native Asset Pipeline** skill for full architecture details.
 
 ## Output Requirements
 
@@ -153,9 +168,11 @@ path = "assets/meshes/enemy.gltf"
 
 ---
 
-## Reference Files
+## Reference Files (Language-Agnostic)
 
-- `references/primitives-reference.md` - All primitive parameters
-- `references/modifiers.md` - Modifier examples and usage
-- `references/vertex-colors.md` - Vertex color techniques
-- `references/combining-meshes.md` - Part assembly patterns
+All reference documentation includes algorithms in pseudocode with examples in Rust, Python, and JavaScript:
+
+- `references/primitives-reference.md` - All primitives with algorithms and multi-language examples
+- `references/modifiers.md` - Modifiers with pseudocode algorithms and language examples
+- `references/vertex-colors.md` - Vertex color baking (PS1/N64 quality techniques)
+- `references/combining-meshes.md` - Part assembly with multi-language examples

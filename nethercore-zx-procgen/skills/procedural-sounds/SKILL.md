@@ -1,10 +1,25 @@
 ---
 name: Procedural Sound Generation
 description: This skill should be used when the user asks to "generate sound", "create sound effect", "procedural audio", "synth sound", "synthesize sound", "ADSR envelope", "oscillator", "audio filter", "make SFX", "retro sound effect", or mentions sound synthesis, audio generation, waveform synthesis, or procedural audio for game assets. Provides comprehensive guidance for creating procedural sounds using any language/tool that outputs WAV files compatible with the Nethercore asset pipeline.
-version: 1.0.0
+version: 1.1.0
 ---
 
 # Procedural Sound Generation
+
+## Build Integration
+
+Sound generators are **native binaries** (not WASM). They run at build time via `nether.toml`'s `build.script`:
+
+```toml
+[build]
+script = "cargo run -p generator --release && cargo build -p game --target wasm32-unknown-unknown --release"
+
+[[assets.sounds]]
+id = "laser"
+path = "../assets/audio/laser.wav"
+```
+
+See the **Native Asset Pipeline** skill for full architecture details.
 
 ## Overview
 
