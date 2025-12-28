@@ -16,8 +16,5 @@
     "sound-design",
     "composition"
   ],
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/nethercore-systems/nethercore-ai-plugins"
-  }
+  "repository": "https://github.com/nethercore-systems/nethercore-ai-plugins"
 }

@@ -1,32 +1,34 @@
 {
-  "hooks": [
-    {
-      "event": "SubagentStop",
-      "matcher": {
-        "subagent_name": "feature-implementer"
+  "hooks": {
+    "SubagentStop": [
+      {
+        "matcher": {
+          "subagent_name": "feature-implementer"
+        },
+        "type": "prompt",
+        "prompt_content": "FEATURE IMPLEMENTATION COMPLETED - SEMANTIC VERIFICATION REQUIRED\n\nThe feature-implementer just finished. Before moving on, verify the feature ACTUALLY WORKS:\n\n1. VISUAL CHECK: Does the feature render?\n   - grep for draw_* calls in the feature code\n   - Verify texture_bind before draw_mesh if textured\n   - Check render order in main render()\n\n2. INTEGRATION CHECK:\n   - Is module in lib.rs?\n   - Is state initialized in init()?\n   - Is update() called in main update()?\n   - Is render() called in main render()?\n\n3. ASSET CHECK: Are required assets connected?\n   - Assets in nether.toml?\n   - Handles in src/assets.rs?\n   - Handles used in feature code?\n\n4. PLAYER NOTICE TEST:\n   - Would a player see/hear/experience this feature?\n   - If no, the feature is NOT complete.\n\nRECOMMENDED: Run completion-auditor (ai-game-studio:completion-auditor) for thorough verification.\n\nDo NOT move to next task until verification passes."
       },
-      "type": "prompt",
-      "prompt_content": "FEATURE IMPLEMENTATION COMPLETED - SEMANTIC VERIFICATION REQUIRED\n\nThe feature-implementer just finished. Before moving on, verify the feature ACTUALLY WORKS:\n\n1. VISUAL CHECK: Does the feature render?\n   - grep for draw_* calls in the feature code\n   - Verify texture_bind before draw_mesh if textured\n   - Check render order in main render()\n\n2. INTEGRATION CHECK:\n   - Is module in lib.rs?\n   - Is state initialized in init()?\n   - Is update() called in main update()?\n   - Is render() called in main render()?\n\n3. ASSET CHECK: Are required assets connected?\n   - Assets in nether.toml?\n   - Handles in src/assets.rs?\n   - Handles used in feature code?\n\n4. PLAYER NOTICE TEST:\n   - Would a player see/hear/experience this feature?\n   - If no, the feature is NOT complete.\n\nRECOMMENDED: Run completion-auditor (ai-game-studio:completion-auditor) for thorough verification.\n\nDo NOT move to next task until verification passes."
-    },
-    {
-      "event": "SubagentStop",
-      "matcher": {
-        "subagent_name": "code-scaffolder"
-      },
-      "type": "prompt",
-      "prompt_content": "CODE SCAFFOLDING COMPLETED - IMPLEMENTATION PENDING\n\nThe code-scaffolder created boilerplate code, but this is NOT a complete feature.\n\nNEXT STEPS REQUIRED:\n1. Review scaffolded code for TODO markers\n2. Implement actual game logic (scaffolding is structure only)\n3. Connect to game loop (init/update/render)\n4. Add required assets\n5. Test the feature\n\nScaffolded code alone does not make a playable feature."
-    },
-    {
-      "event": "SessionStart",
-      "matcher": "*",
-      "type": "prompt",
-      "prompt_content": "AI GAME STUDIO SESSION START\n\nBefore starting work, consider running a project health check:\n\n1. Check for .claude/project-status.md to see previous session state\n2. Check for .claude/dispatch-queue.md for pending tasks\n3. Run project-health-monitor for comprehensive status\n\nThis ensures you don't miss incomplete work from previous sessions.\n\nQuick status check:\n- ls .claude/project-status.md 2>/dev/null && echo 'Status file exists'\n- ls docs/design/game-design.md 2>/dev/null && echo 'GDD exists'\n- nether build 2>&1 | tail -1"
-    },
-    {
-      "event": "Stop",
-      "matcher": "*",
-      "type": "prompt",
-      "prompt_content": "AI GAME STUDIO SESSION END - CHECKPOINT\n\nBefore stopping, verify:\n\n1. Are there incomplete tasks that should be tracked?\n   - Update .claude/dispatch-queue.md with pending work\n\n2. Was significant progress made?\n   - Update .claude/project-status.md\n\n3. Are there generated assets not integrated?\n   - Check output/, assets/ for unintegrated files\n   - Flag for next session if incomplete\n\n4. Any features partially implemented?\n   - Note in status file for continuation\n\nApprove stopping only if state is documented for resumption."
-    }
-  ]
+      {
+        "matcher": {
+          "subagent_name": "code-scaffolder"
+        },
+        "type": "prompt",
+        "prompt_content": "CODE SCAFFOLDING COMPLETED - IMPLEMENTATION PENDING\n\nThe code-scaffolder created boilerplate code, but this is NOT a complete feature.\n\nNEXT STEPS REQUIRED:\n1. Review scaffolded code for TODO markers\n2. Implement actual game logic (scaffolding is structure only)\n3. Connect to game loop (init/update/render)\n4. Add required assets\n5. Test the feature\n\nScaffolded code alone does not make a playable feature."
+      }
+    ],
+    "SessionStart": [
+      {
+        "matcher": "*",
+        "type": "prompt",
+        "prompt_content": "AI GAME STUDIO SESSION START\n\nBefore starting work, consider running a project health check:\n\n1. Check for .claude/project-status.md to see previous session state\n2. Check for .claude/dispatch-queue.md for pending tasks\n3. Run project-health-monitor for comprehensive status\n\nThis ensures you don't miss incomplete work from previous sessions.\n\nQuick status check:\n- ls .claude/project-status.md 2>/dev/null && echo 'Status file exists'\n- ls docs/design/game-design.md 2>/dev/null && echo 'GDD exists'\n- nether build 2>&1 | tail -1"
+      }
+    ],
+    "Stop": [
+      {
+        "matcher": "*",
+        "type": "prompt",
+        "prompt_content": "AI GAME STUDIO SESSION END - CHECKPOINT\n\nBefore stopping, verify:\n\n1. Are there incomplete tasks that should be tracked?\n   - Update .claude/dispatch-queue.md with pending work\n\n2. Was significant progress made?\n   - Update .claude/project-status.md\n\n3. Are there generated assets not integrated?\n   - Check output/, assets/ for unintegrated files\n   - Flag for next session if incomplete\n\n4. Any features partially implemented?\n   - Note in status file for continuation\n\nApprove stopping only if state is documented for resumption."
+      }
+    ]
+  }
 }

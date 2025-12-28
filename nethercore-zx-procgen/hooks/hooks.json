@@ -1,63 +1,60 @@
 {
-  "hooks": [
-    {
-      "event": "PostToolUse",
-      "matcher": {
-        "tool_name": "Write",
-        "path_pattern": "**/assets/**/*"
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": {
+          "tool_name": "Write",
+          "path_pattern": "**/assets/**/*"
+        },
+        "type": "prompt",
+        "prompt_content": "GENERATED ASSET FILE DETECTED\n\nYou just wrote a file to an assets/ directory. Generated assets should NOT be committed to git since they can be regenerated.\n\nREQUIRED ACTION:\n1. Check if the project has a .gitignore file\n2. If .gitignore exists, verify it includes patterns for generated assets:\n   - assets/meshes/*.obj\n   - assets/meshes/*.gltf\n   - assets/textures/*.png\n   - assets/audio/*.wav\n   - output/**\n   - generated/**\n3. If patterns are missing, ADD them to .gitignore\n4. If .gitignore doesn't exist, CREATE it with the patterns above\n\nThis keeps repositories lightweight since all assets can be regenerated from procedural code."
       },
-      "type": "prompt",
-      "prompt_content": "GENERATED ASSET FILE DETECTED\n\nYou just wrote a file to an assets/ directory. Generated assets should NOT be committed to git since they can be regenerated.\n\nREQUIRED ACTION:\n1. Check if the project has a .gitignore file\n2. If .gitignore exists, verify it includes patterns for generated assets:\n   - assets/meshes/*.obj\n   - assets/meshes/*.gltf\n   - assets/textures/*.png\n   - assets/audio/*.wav\n   - output/**\n   - generated/**\n3. If patterns are missing, ADD them to .gitignore\n4. If .gitignore doesn't exist, CREATE it with the patterns above\n\nThis keeps repositories lightweight since all assets can be regenerated from procedural code."
-    },
-    {
-      "event": "PostToolUse",
-      "matcher": {
-        "tool_name": "Write",
-        "path_pattern": "**/output/**/*"
+      {
+        "matcher": {
+          "tool_name": "Write",
+          "path_pattern": "**/output/**/*"
+        },
+        "type": "prompt",
+        "prompt_content": "GENERATED OUTPUT FILE DETECTED\n\nYou just wrote a file to an output/ directory. Generated output should NOT be committed to git.\n\nREQUIRED ACTION:\n1. Ensure .gitignore includes: output/**\n2. If .gitignore doesn't exist or is missing this pattern, add it."
       },
-      "type": "prompt",
-      "prompt_content": "GENERATED OUTPUT FILE DETECTED\n\nYou just wrote a file to an output/ directory. Generated output should NOT be committed to git.\n\nREQUIRED ACTION:\n1. Ensure .gitignore includes: output/**\n2. If .gitignore doesn't exist or is missing this pattern, add it."
-    },
-    {
-      "event": "PostToolUse",
-      "matcher": {
-        "tool_name": "Write",
-        "path_pattern": "**/generated/**/*"
+      {
+        "matcher": {
+          "tool_name": "Write",
+          "path_pattern": "**/generated/**/*"
+        },
+        "type": "prompt",
+        "prompt_content": "GENERATED FILE DETECTED\n\nYou just wrote a file to a generated/ directory. These files should NOT be committed to git.\n\nREQUIRED ACTION:\n1. Ensure .gitignore includes: generated/**\n2. If .gitignore doesn't exist or is missing this pattern, add it."
+      }
+    ],
+    "SubagentStop": [
+      {
+        "matcher": {
+          "subagent_name": "asset-generator"
+        },
+        "type": "prompt",
+        "prompt_content": "ASSET GENERATION COMPLETED - INTEGRATION CHECK REQUIRED\n\nThe asset-generator agent just finished. Assets are NOT usable until integrated.\n\nCHECK THE FOLLOWING:\n\n1. Were asset files created?\n   - Check: assets/meshes/, assets/textures/, output/\n   - If NO files exist, generation may have failed\n\n2. Are assets declared in nether.toml?\n   - Required: [[assets.meshes]], [[assets.textures]], etc.\n   - If NOT declared, assets won't be packed into ROM\n\n3. Do asset handles exist in src/assets.rs?\n   - Required: pub const MESH_NAME: MeshHandle = asset_handle!(...);\n   - If NO handles, code can't reference assets\n\n4. Are assets used in render code?\n   - Required: texture_bind(HANDLE), draw_mesh(HANDLE)\n   - If NOT used, assets exist but won't appear in game\n\nRECOMMENDED ACTIONS:\n- If integration is incomplete, suggest running integration-assistant\n- If assets exist but aren't in nether.toml, add them\n- If handles exist but aren't used, add render code\n\nDo NOT declare 'asset generation complete' until integration is verified."
       },
-      "type": "prompt",
-      "prompt_content": "GENERATED FILE DETECTED\n\nYou just wrote a file to a generated/ directory. These files should NOT be committed to git.\n\nREQUIRED ACTION:\n1. Ensure .gitignore includes: generated/**\n2. If .gitignore doesn't exist or is missing this pattern, add it."
-    },
-    {
-      "event": "SubagentStop",
-      "matcher": {
-        "subagent_name": "asset-generator"
+      {
+        "matcher": {
+          "subagent_name": "character-generator"
+        },
+        "type": "prompt",
+        "prompt_content": "CHARACTER GENERATION COMPLETED - INTEGRATION CHECK REQUIRED\n\nThe character-generator agent just finished. The character is NOT usable until integrated.\n\nCHECK THE FOLLOWING:\n\n1. Were all character files created?\n   - Mesh: assets/meshes/[character].obj or .gltf\n   - Textures: assets/textures/[character]_*.png\n   - Animations: assets/animations/[character]_*.anim (if applicable)\n\n2. Are all assets declared in nether.toml?\n   - Mesh, textures, and animations all need entries\n\n3. Do asset handles exist in src/assets.rs?\n\n4. Is there code to render the character?\n   - bind texture, draw mesh, apply animation\n\n5. Is the character spawned/initialized in the game?\n   - Character struct created in init() or spawn function\n\nRECOMMENDED: If integration is incomplete, run integration-assistant followed by verification of render code."
       },
-      "type": "prompt",
-      "prompt_content": "ASSET GENERATION COMPLETED - INTEGRATION CHECK REQUIRED\n\nThe asset-generator agent just finished. Assets are NOT usable until integrated.\n\nCHECK THE FOLLOWING:\n\n1. Were asset files created?\n   - Check: assets/meshes/, assets/textures/, output/\n   - If NO files exist, generation may have failed\n\n2. Are assets declared in nether.toml?\n   - Required: [[assets.meshes]], [[assets.textures]], etc.\n   - If NOT declared, assets won't be packed into ROM\n\n3. Do asset handles exist in src/assets.rs?\n   - Required: pub const MESH_NAME: MeshHandle = asset_handle!(...);\n   - If NO handles, code can't reference assets\n\n4. Are assets used in render code?\n   - Required: texture_bind(HANDLE), draw_mesh(HANDLE)\n   - If NOT used, assets exist but won't appear in game\n\nRECOMMENDED ACTIONS:\n- If integration is incomplete, suggest running integration-assistant\n- If assets exist but aren't in nether.toml, add them\n- If handles exist but aren't used, add render code\n\nDo NOT declare 'asset generation complete' until integration is verified."
-    },
-    {
-      "event": "SubagentStop",
-      "matcher": {
-        "subagent_name": "character-generator"
+      {
+        "matcher": {
+          "subagent_name": "creative-orchestrator"
+        },
+        "type": "prompt",
+        "prompt_content": "CREATIVE ORCHESTRATOR COMPLETED - FINAL INTEGRATION CHECK\n\nThe creative-orchestrator just finished a batch of assets.\n\nVERIFY COMPLETE INTEGRATION:\n\n1. Check the asset manifest (if created)\n2. Verify ALL assets are in nether.toml\n3. Verify ALL handles exist in src/assets.rs\n4. Verify assets are actually USED in game code\n5. Run 'nether build' to confirm assets are packaged\n\nIf any step fails, the orchestrator work is incomplete.\n\nCONSIDER: Running completion-auditor (ai-studio:completion-auditor) for comprehensive verification."
       },
-      "type": "prompt",
-      "prompt_content": "CHARACTER GENERATION COMPLETED - INTEGRATION CHECK REQUIRED\n\nThe character-generator agent just finished. The character is NOT usable until integrated.\n\nCHECK THE FOLLOWING:\n\n1. Were all character files created?\n   - Mesh: assets/meshes/[character].obj or .gltf\n   - Textures: assets/textures/[character]_*.png\n   - Animations: assets/animations/[character]_*.anim (if applicable)\n\n2. Are all assets declared in nether.toml?\n   - Mesh, textures, and animations all need entries\n\n3. Do asset handles exist in src/assets.rs?\n\n4. Is there code to render the character?\n   - bind texture, draw mesh, apply animation\n\n5. Is the character spawned/initialized in the game?\n   - Character struct created in init() or spawn function\n\nRECOMMENDED: If integration is incomplete, run integration-assistant followed by verification of render code."
-    },
-    {
-      "event": "SubagentStop",
-      "matcher": {
-        "subagent_name": "creative-orchestrator"
-      },
-      "type": "prompt",
-      "prompt_content": "CREATIVE ORCHESTRATOR COMPLETED - FINAL INTEGRATION CHECK\n\nThe creative-orchestrator just finished a batch of assets.\n\nVERIFY COMPLETE INTEGRATION:\n\n1. Check the asset manifest (if created)\n2. Verify ALL assets are in nether.toml\n3. Verify ALL handles exist in src/assets.rs\n4. Verify assets are actually USED in game code\n5. Run 'nether build' to confirm assets are packaged\n\nIf any step fails, the orchestrator work is incomplete.\n\nCONSIDER: Running completion-auditor (ai-studio:completion-auditor) for comprehensive verification."
-    },
-    {
-      "event": "SubagentStop",
-      "matcher": {
-        "subagent_name": "asset-designer"
-      },
-      "type": "prompt",
-      "prompt_content": "ASSET DESIGN COMPLETED - GENERATION PENDING\n\nThe asset-designer created SADL specifications but NOT actual assets.\n\nNEXT STEPS REQUIRED:\n1. Review the SADL specs (design document, not asset files)\n2. Run asset-generator with the SADL specs to create actual assets\n3. After generation, run integration-assistant to hook up assets\n\nSADL specs alone don't produce a playable game - generation and integration must follow."
-    }
-  ]
+      {
+        "matcher": {
+          "subagent_name": "asset-designer"
+        },
+        "type": "prompt",
+        "prompt_content": "ASSET DESIGN COMPLETED - GENERATION PENDING\n\nThe asset-designer created SADL specifications but NOT actual assets.\n\nNEXT STEPS REQUIRED:\n1. Review the SADL specs (design document, not asset files)\n2. Run asset-generator with the SADL specs to create actual assets\n3. After generation, run integration-assistant to hook up assets\n\nSADL specs alone don't produce a playable game - generation and integration must follow."
+      }
+    ]
+  }
 }
