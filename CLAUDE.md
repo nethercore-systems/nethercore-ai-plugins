@@ -66,7 +66,7 @@ Game design workflow plugin.
 
 Procedural asset generation plugin.
 
-**Skills (10):**
+**Skills (11):**
 - `procedural-textures` - Texture generation (Albedo, MRE, SSE, Matcaps)
 - `procedural-meshes` - 3D mesh generation with UVs and vertex colors
 - `procedural-sounds` - Audio synthesis and SFX
@@ -77,10 +77,12 @@ Procedural asset generation plugin.
 - `mocap-integration` - BVH parsing and retargeting
 - `semantic-asset-language` - SADL for AI-first creative workflows
 - `mesh-texturing-workflows` - UV projection techniques
+- `asset-quality-tiers` - Tier system (Placeholder→Temp→Final→Hero) and enhancement strategies
 
 **Commands:**
 - `/generate-asset` - Quick single-asset generation
 - `/new-asset-project` - Scaffold asset generation project
+- `/improve-assets` - Guided quality improvement workflow with tier upgrades
 
 **Agents:**
 - `asset-designer` - Translates creative vision to SADL specs
@@ -91,6 +93,7 @@ Procedural asset generation plugin.
 - `creative-orchestrator` - Coordinates full asset pipeline
 - `character-generator` - End-to-end character creation
 - `quality-analyzer` - Holistic asset quality assessment with actionable recommendations and auto-dispatch support
+- `quality-enhancer` - Autonomous asset quality improvement, upgrades assets to higher tiers
 
 ### nethercore-zx-publish
 

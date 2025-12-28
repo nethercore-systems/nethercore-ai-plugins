@@ -12,8 +12,9 @@ Procedural asset generation plugin for Nethercore ZX. Create beautiful textures,
 - **Vertex Color Meshes**: Per-vertex coloring, gradients, baked AO
 - **Skeletal Animation**: GPU skinning, bone weights, walk cycles, attacks, IK systems
 - **Rigid Body Animation**: Vehicle physics, robots, mechanical systems
-- **2 Commands**: `/new-asset-project` for scaffolding, `/generate-asset` for quick generation
-- **6 Agents**: Creative pipeline (designer, generator, critic, orchestrator) + quality reviewer + optimizer
+- **Quality Tier System**: Placeholder → Temp → Final → Hero progression for assets
+- **3 Commands**: `/new-asset-project`, `/generate-asset`, `/improve-assets`
+- **9 Agents**: Creative pipeline + quality analysis + quality enhancement
 - **Language Agnostic**: Use Rust, Python, Processing, Blender, or any tool that outputs standard formats
 
 ## Installation
@@ -156,6 +157,24 @@ AI-first creative asset pipeline that bridges creative intent and procedural gen
 
 **Trigger phrases**: "SADL", "style token", "semantic asset", "design asset", "creative pipeline", "quality heuristics"
 
+### Asset Quality Tiers
+
+A four-tier quality system for progressive asset improvement:
+
+**Tier System:**
+- **Placeholder** (30-50%): Blocking, scale testing, rapid iteration
+- **Temp** (50-70%): Development testing, internal builds
+- **Final** (70-90%): Ship-ready, production quality
+- **Hero** (90-100%): Maximum quality for marketing, cutscenes, closeups
+
+**Enhancement Strategies:**
+- Mesh: Add UVs → Add bevels → Add edge loops and detail
+- Texture: Add noise → Add contrast/layers → Add wear/all channels
+- Audio: Add envelope → Add layers → Add variation/richness
+- Animation: Add keyframes → Add easing → Add anticipation/follow-through
+
+**Trigger phrases**: "quality tiers", "upgrade to final", "hero quality", "placeholder vs final", "asset polish"
+
 ## Agents
 
 ### Creative Pipeline Agents (SADL)
@@ -203,6 +222,42 @@ Suggests optimizations for smaller/faster assets:
 - Audio compression
 
 **Trigger**: "optimize my assets", "reduce file size"
+
+### Quality Enhancer
+
+Autonomous asset quality improvement through the tier system. Takes existing assets and upgrades them to higher quality tiers.
+
+**Capabilities:**
+- Assess current tier of all project assets
+- Apply enhancement strategies per asset type
+- Upgrade meshes (bevels, silhouettes, edge loops)
+- Upgrade textures (contrast, layers, material channels)
+- Upgrade audio (envelopes, layers, variation)
+
+**Trigger**: "improve my assets", "quality up pass", "make assets better", "upgrade to final", "hero quality"
+
+### Quality Analyzer
+
+Holistic asset quality assessment with scoring, issue identification, and auto-dispatch support for fixes.
+
+**Trigger**: "analyze asset quality", "quality report", "are these production-ready"
+
+### Character Generator
+
+End-to-end animated character creation pipeline, producing mesh, skeleton, skinning, and animations.
+
+**Trigger**: "generate character", "create player character", "make animated NPC"
+
+## Commands
+
+### `/new-asset-project [name]`
+Scaffold a complete procedural asset project with generator code and ZX viewer.
+
+### `/generate-asset [type] [description]`
+Quick single-asset generation (texture, mesh, or sound) with inline code.
+
+### `/improve-assets [target-tier]`
+Interactive quality improvement workflow. Scans assets, assesses current tiers, and guides upgrades to the target tier (Temp, Final, or Hero).
 
 ## Output Formats
 
