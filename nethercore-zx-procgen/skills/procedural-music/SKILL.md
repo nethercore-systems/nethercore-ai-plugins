@@ -83,6 +83,96 @@ This means:
 - **Much smaller ROM sizes** (no duplicate sample data)
 - **Instrument names MUST match** your `[[assets.sounds]]` IDs exactly
 
+## ⚠️ CRITICAL: Standard FastTracker 2 Format Required
+
+**DO NOT create custom XM formats!** Your XM file MUST be 100% compatible with the FastTracker 2 specification (version 0x0104).
+
+### Required Format Compliance
+
+| Component | Requirement | No Custom Formats! |
+|-----------|-------------|-------------------|
+| Magic header | Exactly `"Extended Module: "` (17 bytes) | ❌ No variations |
+| Version | `0x0104` (little-endian `04 01` bytes) | ❌ No custom versions |
+| Header structure | Exact FastTracker 2 layout (276 bytes) | ❌ No simplified headers |
+| Pattern data | Standard packed/unpacked note format | ❌ No custom encodings |
+| Instrument headers | Standard 29+ or 243 byte structure | ❌ No custom sizes |
+| Sample headers | Standard 40-byte structure | ❌ No modifications |
+
+### The ONLY Acceptable Workflow
+
+✅ **CORRECT:** Use MilkyTracker or OpenMPT to create XM files
+✅ **CORRECT:** Export as "FastTracker 2 Module (.xm)"
+✅ **CORRECT:** XM file opens in MilkyTracker/OpenMPT without errors
+✅ **CORRECT:** All headers match the XM specification exactly
+
+❌ **WRONG:** Writing custom binary XM from scratch
+❌ **WRONG:** Creating "simplified" or "minimal" XM formats
+❌ **WRONG:** Custom header sizes or structures
+❌ **WRONG:** Non-standard magic bytes or version numbers
+
+### Format Validation Checklist
+
+Before using an XM file, verify it meets ALL these requirements:
+
+1. **Opens in a tracker**: File must open successfully in MilkyTracker or OpenMPT
+2. **Magic bytes**: First 17 bytes are `45 78 74 65 6E 64 65 64 20 4D 6F 64 75 6C 65 3A 20`
+3. **Version bytes**: Bytes 58-59 are `04 01` (version 0x0104, little-endian)
+4. **Header size**: Bytes 60-63 are typically `14 01 00 00` (276) or `10 01 00 00` (272), little-endian
+5. **Parses correctly**: `nether_xm::parse_xm()` returns Ok without errors
+
+### XM File Structure Reference
+
+**Standard FastTracker 2 XM format:**
+
+```
+Offset   Size   Description
+------   ----   -----------
+0        17     Magic: "Extended Module: "
+17       20     Module name (null-terminated)
+37       1      0x1A marker
+38       20     Tracker name
+58       2      Version (0x0104 = bytes 04 01)
+60       4      Header size (276 = bytes 14 01 00 00)
+64       2      Song length (order table length)
+66       2      Restart position
+68       2      Number of channels (1-32)
+70       2      Number of patterns
+72       2      Number of instruments
+74       2      Flags (bit 0: linear frequency table)
+76       2      Default speed
+78       2      Default BPM
+80       256    Pattern order table
+336+     ...    Pattern data (see pattern format below)
+...      ...    Instrument headers + sample headers + sample data
+```
+
+**Pattern format:**
+```
++0      4      Pattern header length (9)
++4      1      Packing type (0)
++5      2      Number of rows (typically 64)
++7      2      Packed pattern data size
++9      ...    Pattern data (packed or unpacked notes)
+```
+
+**Note format (unpacked - 5 bytes):**
+```
+Byte 0: Note (1-96 for C-0 to B-7, 97 for note-off, 0 for no note)
+Byte 1: Instrument (1-128, 0 for none)
+Byte 2: Volume (0-64, 0 for default)
+Byte 3: Effect type (0-35)
+Byte 4: Effect parameter (0-255)
+```
+
+**Note format (packed):** If first byte >= 0x80, it's packed format with flags indicating which fields follow.
+
+### Official Specification
+
+The canonical XM format specification:
+https://github.com/milkytracker/MilkyTracker/blob/master/resources/reference/xm-form.txt
+
+**When in doubt, consult the official spec!**
+
 ## Sample Integration with ROM
 
 **Key concept:** XM instrument names map to ROM sample IDs.

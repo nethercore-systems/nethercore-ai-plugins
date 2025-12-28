@@ -228,3 +228,104 @@ pub extern "C" fn init() {
 2. Share samples between tracks
 3. Use shorter loop regions in samples
 4. Consider fewer channels
+
+## XM Format Validation
+
+**CRITICAL:** Always verify your XM files are standard FastTracker 2 format before using them.
+
+### Validation Command (Unix/macOS/Git Bash)
+
+```bash
+# View first 80 bytes of XM file in hex
+xxd -l 80 your_song.xm | head -5
+```
+
+**Expected output (first line MUST show):**
+```
+00000000: 4578 7465 6e64 6564 204d 6f64 756c 653a  Extended Module:
+```
+
+### Validation Command (Windows PowerShell)
+
+```powershell
+# View first 80 bytes in hex
+Format-Hex your_song.xm -Count 80 | Select-Object -First 10
+```
+
+### Manual Hex Validation
+
+**First 80 bytes of a valid XM file:**
+
+```
+Offset(h) 00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F
+
+00000000  45 78 74 65 6E 64 65 64 20 4D 6F 64 75 6C 65 3A  Extended Module:
+00000010  20 4D 79 20 53 6F 6E 67 00 00 00 00 00 00 00 00   My Song........
+00000020  00 00 00 00 00 1A 4D 69 6C 6B 79 54 72 61 63 6B  ......MilkyTrack
+00000030  65 72 20 31 2E 30 34 00 00 00 00 00 00 00 04 01  er 1.04.........
+00000040  14 01 00 00 05 00 00 00 02 00 08 00 01 00 00 00  ................
+```
+
+**Key validation points:**
+
+1. **Bytes 0-16:** `45 78 74 65 6E 64 65 64 20 4D 6F 64 75 6C 65 3A 20`
+   - ASCII: `"Extended Module: "`
+   - If this doesn't match, the file is NOT a valid XM
+
+2. **Bytes 17-36:** Module name (20 bytes, null-padded)
+   - Example: `" My Song\0\0\0..."`
+
+3. **Byte 37:** `1A` (hex marker)
+
+4. **Bytes 38-57:** Tracker name (20 bytes)
+   - Example: `"MilkyTracker 1.04\0\0..."`
+
+5. **Bytes 58-59:** Version `04 01` (0x0104 little-endian)
+   - If this is anything else, the file won't parse
+
+6. **Bytes 60-63:** Header size (typically `14 01 00 00` = 276 or `10 01 00 00` = 272 bytes, little-endian)
+
+### Tracker Validation
+
+**The definitive validation:**
+
+1. Open the XM file in MilkyTracker or OpenMPT
+2. If it opens and plays correctly → Valid FastTracker 2 format ✅
+3. If it fails to open or shows errors → Invalid format ❌
+
+**Download MilkyTracker:** https://milkytracker.org/
+
+### Common Invalid Formats
+
+❌ **Custom magic bytes**
+```
+00000000: 4E 43 5A 58 4D 75 73 69 63 00 00 00 00 00 00 00  NCZXMusic.......
+```
+This is NOT a valid XM file!
+
+❌ **Wrong version**
+```
+00000000: ... (correct magic) ...
+0000003A: 01 00  # Version 0x0001 instead of 0x0104
+```
+This will be rejected by the parser!
+
+❌ **Custom header size**
+```
+00000000: ... (correct magic) ...
+0000003C: 20 00 00 00  # Header size 32 instead of 276
+```
+This will cause parsing errors!
+
+### Validation Checklist
+
+Before using an XM file in your game, verify:
+
+- [ ] Opens in MilkyTracker or OpenMPT without errors
+- [ ] First 17 bytes are `Extended Module: ` (use hex viewer)
+- [ ] Bytes 58-59 are `04 01` (version 0x0104)
+- [ ] Bytes 60-63 are `14 01 00 00` (header size 276)
+- [ ] Instrument names match your `[[assets.sounds]]` IDs exactly
+- [ ] File extension is `.xm`
+
+**If ANY of these fail, the XM file is invalid and must be recreated!**
