@@ -1,7 +1,7 @@
 {
   "name": "nethercore-zx-orchestrator",
-  "version": "1.0.0",
-  "description": "Game development orchestrator for Nethercore ZX. Coordinates the full development pipeline across game-design, procgen, and zx-dev plugins - from GDD creation through asset generation to playable ROM.",
+  "version": "1.1.0",
+  "description": "Game development orchestrator for Nethercore ZX. Coordinates the full 7-phase development pipeline across all 10 nethercore plugins - from creative vision through design, assets, implementation, testing, to published game.",
   "author": {
     "name": "Nethercore Systems",
     "email": "nethercore.systems@gmail.com"
@@ -15,6 +15,9 @@
     "game-development",
     "workflow",
     "pipeline",
-    "coordinator"
+    "coordinator",
+    "creative-direction",
+    "sound-design",
+    "quality-review"
   ]
 }

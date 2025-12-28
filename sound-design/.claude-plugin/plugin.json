@@ -1,0 +1,23 @@
+{
+  "name": "sound-design",
+  "version": "1.0.0",
+  "description": "Platform-agnostic game audio design - sonic style language, synthesis techniques, music composition, and SFX design patterns",
+  "author": {
+    "name": "Nethercore Systems",
+    "email": "nethercore.systems@gmail.com"
+  },
+  "keywords": [
+    "audio",
+    "sound",
+    "music",
+    "sfx",
+    "synthesis",
+    "game-audio",
+    "sound-design",
+    "composition"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nethercore-systems/nethercore-ai-plugins"
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "hooks": [
+    {
+      "event": "PostToolUse",
+      "matcher": {
+        "tool_name": "Write",
+        "path_pattern": "**/assets/**/*"
+      },
+      "type": "prompt",
+      "prompt_content": "GENERATED ASSET FILE DETECTED\n\nYou just wrote a file to an assets/ directory. Generated assets should NOT be committed to git since they can be regenerated.\n\nREQUIRED ACTION:\n1. Check if the project has a .gitignore file\n2. If .gitignore exists, verify it includes patterns for generated assets:\n   - assets/meshes/*.obj\n   - assets/meshes/*.gltf\n   - assets/textures/*.png\n   - assets/audio/*.wav\n   - output/**\n   - generated/**\n3. If patterns are missing, ADD them to .gitignore\n4. If .gitignore doesn't exist, CREATE it with the patterns above\n\nThis keeps repositories lightweight since all assets can be regenerated from procedural code."
+    },
+    {
+      "event": "PostToolUse",
+      "matcher": {
+        "tool_name": "Write",
+        "path_pattern": "**/output/**/*"
+      },
+      "type": "prompt",
+      "prompt_content": "GENERATED OUTPUT FILE DETECTED\n\nYou just wrote a file to an output/ directory. Generated output should NOT be committed to git.\n\nREQUIRED ACTION:\n1. Ensure .gitignore includes: output/**\n2. If .gitignore doesn't exist or is missing this pattern, add it."
+    },
+    {
+      "event": "PostToolUse",
+      "matcher": {
+        "tool_name": "Write",
+        "path_pattern": "**/generated/**/*"
+      },
+      "type": "prompt",
+      "prompt_content": "GENERATED FILE DETECTED\n\nYou just wrote a file to a generated/ directory. These files should NOT be committed to git.\n\nREQUIRED ACTION:\n1. Ensure .gitignore includes: generated/**\n2. If .gitignore doesn't exist or is missing this pattern, add it."
+    }
+  ]
+}

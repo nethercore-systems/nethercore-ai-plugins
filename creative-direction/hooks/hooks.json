@@ -1,0 +1,51 @@
+{
+  "description": "Continuous coherence monitoring hooks for creative direction",
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write",
+        "hooks": [
+          {
+            "type": "prompt",
+            "prompt": "File size and structure check. Analyze this Write operation:\n\nFile: $TOOL_INPUT\n\nCheck:\n1. Count lines in the written content. If source code exceeds 300 lines, flag as WARNING. If exceeds 500 lines, flag as CRITICAL.\n2. If this appears to be generated code or assets, check if it should be split into multiple files.\n3. For non-code files (docs, configs), different limits apply (500 soft, 1000 hard).\n\nRespond with a brief assessment:\n- If file size is acceptable: 'File size OK: [line count] lines'\n- If WARNING: 'WARNING: [line count] lines exceeds soft limit. Consider splitting: [brief suggestion]'\n- If CRITICAL: 'CRITICAL: [line count] lines exceeds hard limit. Must split into: [specific modules]'\n\nKeep response under 100 words.",
+            "timeout": 30
+          }
+        ]
+      },
+      {
+        "matcher": "Edit",
+        "hooks": [
+          {
+            "type": "prompt",
+            "prompt": "Post-edit file size check. The file was just edited.\n\nFile: $TOOL_INPUT\nResult: $TOOL_RESULT\n\nIf this edit significantly grew the file, check if the file now exceeds size limits (300 lines soft, 500 lines hard for code). If so, briefly note this for future splitting consideration.\n\nRespond only if there's a size concern, otherwise respond with empty string.",
+            "timeout": 20
+          }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/scripts/load-direction.sh",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "prompt",
+            "prompt": "Creative direction checkpoint. Before stopping, briefly consider:\n\n1. Were any significant creative decisions made this session that should be documented in .claude/creative-direction.local.md?\n2. Were any architectural decisions made that need an ADR?\n3. Did any files grow past size limits that need addressing?\n\nIf any of these apply, remind the user to document them. If nothing notable, approve stopping.\n\nRespond with either 'approve' or a brief reminder (under 50 words) of what should be documented.",
+            "timeout": 30
+          }
+        ]
+      }
+    ]
+  }
+}

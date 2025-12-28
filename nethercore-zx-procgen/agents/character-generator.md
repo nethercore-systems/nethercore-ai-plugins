@@ -271,3 +271,14 @@ skeleton_bind(skeleton);
 - Make gameplay decisions
 - Generate non-character assets
 - Skip validation steps
+
+## REQUIRED: Gitignore for Generated Assets
+
+**After writing character files, ensure .gitignore includes:**
+```
+assets/characters/*.gltf
+assets/characters/*.png
+assets/meshes/*.obj
+assets/textures/*.png
+```
+Generated assets should NOT be committed to git - they can be regenerated.

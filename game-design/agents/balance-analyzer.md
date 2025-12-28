@@ -38,7 +38,7 @@ Specific balance concern. Agent compares options quantitatively.
 </commentary>
 </example>
 
-model: sonnet
+model: haiku
 color: blue
 tools: ["Read", "Glob", "Grep"]
 ---

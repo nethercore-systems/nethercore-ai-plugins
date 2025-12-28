@@ -29,7 +29,7 @@ ZX has specific audio requirements (22.05kHz mono). Agent validates compliance.
 </commentary>
 </example>
 
-model: sonnet
+model: haiku
 color: green
 tools: ["Read", "Grep", "Glob", "Bash"]
 ---

@@ -1,14 +1,16 @@
 ---
 description: Scaffold a new Nethercore ZX game project with working starter code
 argument-hint: "[language] [project-name]"
-allowed-tools: ["AskUserQuestion", "Write", "Bash", "Read"]
+allowed-tools: ["AskUserQuestion", "Write", "Bash", "Read", "WebFetch"]
 ---
 
 # New ZX Game Project Scaffolding
 
-Create a complete, working Nethercore ZX game project with proper structure.
+Create a complete, working Nethercore ZX game project with proper structure and up-to-date FFI bindings.
 
 ## Step 1: Gather Project Configuration
+
+**IMPORTANT**: Ask for language FIRST - this determines everything else.
 
 **If language argument ($1) is not provided or not one of "rust", "c", "zig":**
 
@@ -43,46 +45,213 @@ test -d [project-name] && echo "EXISTS" || echo "OK"
 
 If directory exists, inform the user and ask them to choose a different name.
 
-## Step 3: Create Project Structure
+## Step 3: Fetch FFI Bindings
+
+**CRITICAL**: Fetch the complete, up-to-date FFI bindings from GitHub.
+
+The bindings are auto-generated at build time and always current:
+
+| Language | URL |
+|----------|-----|
+| Rust | `https://raw.githubusercontent.com/nethercore-systems/nethercore/main/include/zx.rs` |
+| C | `https://raw.githubusercontent.com/nethercore-systems/nethercore/main/include/zx.h` |
+| Zig | `https://raw.githubusercontent.com/nethercore-systems/nethercore/main/include/zx.zig` |
+
+Use WebFetch to retrieve the appropriate bindings file for the selected language.
+
+**Prompt for WebFetch**: "Return the complete file contents exactly as-is. This is FFI bindings code."
+
+Save the fetched content to write as a separate module file in Step 4.
+
+## Step 4: Create Project Structure
 
 Based on the language choice, create the appropriate structure:
 
 ### For Rust Projects
 
-Read the template from @${CLAUDE_PLUGIN_ROOT}/skills/zx-game-development/examples/hello-world-rust.md
-
 Create these files:
 
-1. **`[project-name]/Cargo.toml`** - Use the Cargo.toml from the template
-2. **`[project-name]/nether.toml`** - Use the nether.toml from the template, update the game id and title
-3. **`[project-name]/src/lib.rs`** - Use the src/lib.rs code from the template
+1. **`[project-name]/Cargo.toml`**:
+```toml
+[package]
+name = "[project-name]"
+version = "0.1.0"
+edition = "2021"
 
-The FFI bindings are included inline in the template's lib.rs via the `mod zx` block.
+[lib]
+crate-type = ["cdylib"]
+
+[profile.release]
+opt-level = "z"
+lto = true
+```
+
+2. **`[project-name]/nether.toml`**:
+```toml
+[game]
+id = "[project-name]"
+title = "[Project Title]"
+version = "0.1.0"
+
+[build]
+target = "wasm32-unknown-unknown"
+source = "src/lib.rs"
+```
+
+3. **`[project-name]/src/zx.rs`** - Write the COMPLETE fetched bindings file here (NOT inline in lib.rs)
+
+4. **`[project-name]/src/lib.rs`** - Minimal game code that imports zx module:
+```rust
+#![no_std]
+
+mod zx;
+use zx::*;
+
+static mut FRAME: u32 = 0;
+
+#[no_mangle]
+pub extern "C" fn init() {
+    // Initialization code here
+}
+
+#[no_mangle]
+pub extern "C" fn update() {
+    unsafe {
+        FRAME = FRAME.wrapping_add(1);
+    }
+
+    // Clear screen
+    clear(0x1a1a2e);
+
+    // Draw hello text
+    text(10, 10, c"Hello, Nethercore ZX!", 0xffffff);
+}
+```
+
+**Note**: The lib.rs is intentionally minimal (~20 lines). All FFI bindings are in zx.rs.
 
 ### For C Projects
 
-Read the template from @${CLAUDE_PLUGIN_ROOT}/skills/zx-game-development/examples/hello-world-c.md
-
 Create these files:
 
-1. **`[project-name]/Makefile`** - Use the Makefile from the template
-2. **`[project-name]/nether.toml`** - Use the nether.toml from the template, update the game id and title
-3. **`[project-name]/game.c`** - Use the game.c code from the template
+1. **`[project-name]/Makefile`**:
+```makefile
+CC = clang
+CFLAGS = --target=wasm32 -nostdlib -O2
 
-The C FFI declarations are included inline at the top of game.c.
+game.wasm: game.c zx.h
+	$(CC) $(CFLAGS) -o game.wasm game.c
+
+clean:
+	rm -f game.wasm
+```
+
+2. **`[project-name]/nether.toml`**:
+```toml
+[game]
+id = "[project-name]"
+title = "[Project Title]"
+version = "0.1.0"
+
+[build]
+target = "wasm32"
+source = "game.wasm"
+prebuilt = true
+```
+
+3. **`[project-name]/zx.h`** - Write the COMPLETE fetched bindings file here
+
+4. **`[project-name]/game.c`** - Minimal game code that includes zx.h:
+```c
+#include "zx.h"
+
+static unsigned int frame = 0;
+
+void init(void) {
+    // Initialization code here
+}
+
+void update(void) {
+    frame++;
+
+    // Clear screen
+    clear(0x1a1a2e);
+
+    // Draw hello text
+    text(10, 10, "Hello, Nethercore ZX!", 0xffffff);
+}
+```
+
+**Note**: The game.c is intentionally minimal. All FFI declarations are in zx.h.
 
 ### For Zig Projects
 
-Read the template from @${CLAUDE_PLUGIN_ROOT}/skills/zx-game-development/examples/hello-world-zig.md
-
 Create these files:
 
-1. **`[project-name]/build.zig`** - Use the build.zig from the template
-2. **`[project-name]/nether.toml`** - Use the nether.toml from the template, update the game id and title
-3. **`[project-name]/src/main.zig`** - Use the main.zig code from the template
-4. **`[project-name]/src/zx.zig`** - Use the zx.zig module from the template
+1. **`[project-name]/build.zig`**:
+```zig
+const std = @import("std");
 
-## Step 4: Create README
+pub fn build(b: *std.Build) void {
+    const target = b.resolveTargetQuery(.{
+        .cpu_arch = .wasm32,
+        .os_tag = .freestanding,
+    });
+
+    const exe = b.addExecutable(.{
+        .name = "game",
+        .root_source_file = b.path("src/main.zig"),
+        .target = target,
+        .optimize = .ReleaseSmall,
+    });
+
+    exe.entry = .disabled;
+    exe.rdynamic = true;
+
+    b.installArtifact(exe);
+}
+```
+
+2. **`[project-name]/nether.toml`**:
+```toml
+[game]
+id = "[project-name]"
+title = "[Project Title]"
+version = "0.1.0"
+
+[build]
+target = "wasm32-freestanding"
+source = "zig-out/bin/game.wasm"
+prebuilt = true
+build_command = "zig build"
+```
+
+3. **`[project-name]/src/zx.zig`** - Write the COMPLETE fetched bindings file here
+
+4. **`[project-name]/src/main.zig`** - Minimal game code that imports zx module:
+```zig
+const zx = @import("zx.zig");
+
+var frame: u32 = 0;
+
+export fn init() void {
+    // Initialization code here
+}
+
+export fn update() void {
+    frame +%= 1;
+
+    // Clear screen
+    zx.clear(0x1a1a2e);
+
+    // Draw hello text
+    zx.text(10, 10, "Hello, Nethercore ZX!", 0xffffff);
+}
+```
+
+**Note**: The main.zig is intentionally minimal. All FFI bindings are in zx.zig.
+
+## Step 5: Create README
 
 Create `[project-name]/README.md` with:
 
@@ -105,7 +274,36 @@ nether run
 
 ## Project Structure
 
-[List the files created]
+```
+[project-name]/
+├── [config files]      # Build configuration
+├── src/
+│   ├── [main file]     # Your game code (keep this small!)
+│   └── zx.[ext]        # FFI bindings (auto-generated, don't edit)
+└── nether.toml         # Game metadata and build config
+```
+
+## FFI Bindings
+
+The `zx.[rs|h|zig]` file contains complete FFI bindings for Nethercore ZX.
+These are auto-generated from the console specification.
+
+**Do NOT copy imports into your main file** - just use:
+- Rust: `mod zx; use zx::*;`
+- C: `#include "zx.h"`
+- Zig: `const zx = @import("zx.zig");`
+
+To update bindings to latest version:
+```bash
+# Rust
+curl -o src/zx.rs https://raw.githubusercontent.com/nethercore-systems/nethercore/main/include/zx.rs
+
+# C
+curl -o zx.h https://raw.githubusercontent.com/nethercore-systems/nethercore/main/include/zx.h
+
+# Zig
+curl -o src/zx.zig https://raw.githubusercontent.com/nethercore-systems/nethercore/main/include/zx.zig
+```
 
 ## Next Steps
 
@@ -116,11 +314,11 @@ nether run
 
 ## Resources
 
-- [Nethercore ZX Documentation](https://github.com/user/nethercore/tree/main/docs/book)
-- [FFI Cheat Sheet](https://github.com/user/nethercore/tree/main/docs/book/src/cheat-sheet.md)
+- [Nethercore ZX Documentation](https://github.com/nethercore-systems/nethercore/tree/main/docs/book)
+- [FFI Cheat Sheet](https://github.com/nethercore-systems/nethercore/tree/main/docs/book/src/cheat-sheet.md)
 ```
 
-## Step 5: Summary
+## Step 6: Summary
 
 After creating all files, report to the user:
 
@@ -129,6 +327,7 @@ After creating all files, report to the user:
 Show:
 - List of files created
 - The directory location
+- **Highlight that FFI bindings are in a separate file** (zx.rs/zx.h/zx.zig)
 
 **Next steps:**
 
@@ -139,5 +338,6 @@ nether run
 
 Tell them:
 - `nether run` builds and launches their game in the player
+- FFI bindings are in a separate module file - **don't copy imports into lib.rs/game.c/main.zig**
 - They can ask about ZX topics like "ZX input handling" or "ZX 3D graphics" for help
 - For multiplayer games, ask "check my game for rollback safety" before testing netplay

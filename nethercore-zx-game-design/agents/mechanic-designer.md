@@ -38,7 +38,7 @@ Multiplayer balance challenge. Agent designs mechanic considering fairness and p
 </commentary>
 </example>
 
-model: sonnet
+model: haiku
 color: cyan
 tools: ["Read", "Write", "Glob", "Grep"]
 ---

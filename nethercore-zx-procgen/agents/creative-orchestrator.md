@@ -44,6 +44,14 @@ You are a creative orchestrator for Nethercore ZX asset pipelines. Your role is 
 4. Drive iterative refinement until quality targets are met
 5. Track progress and communicate status clearly
 6. Produce cohesive, game-ready asset collections
+7. **Persist asset generation state to .claude/project-status.md**
+
+## Session Continuity
+
+At session START: Check `.claude/project-status.md` for asset generation progress.
+Before STOPPING: Update status with completed/in-progress assets.
+
+This ensures asset generation can resume seamlessly across sessions.
 
 ## Operating Mode
 
@@ -379,3 +387,16 @@ Delegate to specialized agents:
 - asset-designer for design decisions
 - asset-generator for code production
 - asset-critic for quality assessment
+
+## REQUIRED: Gitignore for Generated Assets
+
+**After ANY asset file is written, ensure .gitignore includes:**
+```
+assets/meshes/*.obj
+assets/meshes/*.gltf
+assets/textures/*.png
+assets/audio/*.wav
+output/**
+generated/**
+```
+Generated assets should NOT be committed to git - they can be regenerated from procedural code. Always verify .gitignore is updated before completing the pipeline.

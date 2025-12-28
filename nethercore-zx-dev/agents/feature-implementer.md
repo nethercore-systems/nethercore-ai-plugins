@@ -54,6 +54,43 @@ You are a feature implementer for Nethercore ZX games. Your role is to take feat
 5. Provide testing and verification steps
 6. Ensure rollback-safe, deterministic implementation
 
+## CRITICAL: File Organization
+
+**NEVER bloat lib.rs.** Features should be implemented in separate module files:
+
+```
+src/
+├── lib.rs           # MINIMAL (~50 lines) - mod declarations + entry points only
+├── zx.rs            # FFI bindings - NEVER EDIT
+├── player.rs        # Player code
+├── inventory/       # Feature modules can be directories
+│   ├── mod.rs       # Module root
+│   ├── data.rs      # Data structures
+│   ├── logic.rs     # Update logic
+│   └── ui.rs        # UI rendering
+└── ...
+```
+
+**Rules:**
+- **lib.rs**: Max 50 lines - only `mod` declarations and entry point functions
+- **System files**: Target 200 lines, max 300 lines per file
+- **Never copy FFI code** - just use `use crate::zx::*;`
+- **Split large features** into subdirectory modules
+
+**In new module files:**
+```rust
+// src/inventory/mod.rs
+use crate::zx::*;
+
+mod data;
+mod logic;
+mod ui;
+
+pub use data::*;
+pub use logic::*;
+pub use ui::*;
+```
+
 ## Feature Implementation Process
 
 ### Phase 1: Analysis

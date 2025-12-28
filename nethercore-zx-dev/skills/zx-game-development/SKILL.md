@@ -85,15 +85,46 @@ The `update()` function must be deterministic for rollback netcode:
 
 ## Project Structure
 
+**CRITICAL: Proper File Organization**
+
+Keep `lib.rs`/`game.c`/`main.zig` minimal (~50 lines max). All FFI bindings in a separate module file. Never copy FFI functions inline.
+
 ### Rust Project (Recommended)
 ```
 my-game/
 ├── Cargo.toml          # [lib] crate-type = ["cdylib"]
 ├── nether.toml         # Game manifest with assets
 ├── src/
-│   └── lib.rs          # Game code with init/update/render
+│   ├── lib.rs          # MINIMAL: mod declarations + entry points only
+│   ├── zx.rs           # FFI bindings - NEVER EDIT (fetched from GitHub)
+│   ├── player.rs       # Game systems in separate files
+│   └── enemies.rs      # Target 200 lines per file, max 300
 └── assets/             # Optional: textures, meshes, sounds
 ```
+
+**lib.rs (keep minimal ~30-50 lines):**
+```rust
+#![no_std]
+
+mod zx;       // FFI bindings module
+mod player;   // Game modules
+
+use zx::*;
+use player::*;
+
+static mut STATE: Option<GameState> = None;
+
+#[no_mangle]
+pub extern "C" fn init() { /* initialize state */ }
+
+#[no_mangle]
+pub extern "C" fn update() { /* call state.update() */ }
+
+#[no_mangle]
+pub extern "C" fn render() { /* call state.render() */ }
+```
+
+**src/zx.rs:** Fetch complete bindings from GitHub (see below)
 
 **Cargo.toml:**
 ```toml
@@ -105,8 +136,9 @@ edition = "2021"
 [lib]
 crate-type = ["cdylib"]
 
-[dependencies]
-# Copy zx.rs from nethercore/include/ or reference as path dependency
+[profile.release]
+opt-level = "z"
+lto = true
 ```
 
 ### C Project
@@ -114,8 +146,10 @@ crate-type = ["cdylib"]
 my-game/
 ├── Makefile            # clang --target=wasm32 compilation
 ├── nether.toml         # Game manifest
-├── zx.h                # Copy from nethercore/include/
-└── game.c              # Game code
+├── zx.h                # FFI bindings - NEVER EDIT (fetched from GitHub)
+├── game.c              # MINIMAL: includes + entry points
+├── player.c/h          # Game systems in separate files
+└── enemies.c/h         # Target 200 lines per file, max 300
 ```
 
 ### Zig Project
@@ -124,8 +158,38 @@ my-game/
 ├── build.zig           # Zig build configuration
 ├── nether.toml         # Game manifest
 └── src/
-    ├── main.zig        # Game code
-    └── zx.zig          # Copy from nethercore/include/
+    ├── main.zig        # MINIMAL: imports + entry points only
+    ├── zx.zig          # FFI bindings - NEVER EDIT (fetched from GitHub)
+    ├── player.zig      # Game systems in separate files
+    └── enemies.zig     # Target 200 lines per file, max 300
+```
+
+## Fetching FFI Bindings
+
+**IMPORTANT:** Always fetch complete, up-to-date bindings from GitHub. Never copy individual functions inline.
+
+| Language | GitHub URL |
+|----------|------------|
+| Rust | `https://raw.githubusercontent.com/nethercore-systems/nethercore/main/include/zx.rs` |
+| C | `https://raw.githubusercontent.com/nethercore-systems/nethercore/main/include/zx.h` |
+| Zig | `https://raw.githubusercontent.com/nethercore-systems/nethercore/main/include/zx.zig` |
+
+**Fetch command:**
+```bash
+# Rust
+curl -o src/zx.rs https://raw.githubusercontent.com/nethercore-systems/nethercore/main/include/zx.rs
+
+# C
+curl -o zx.h https://raw.githubusercontent.com/nethercore-systems/nethercore/main/include/zx.h
+
+# Zig
+curl -o src/zx.zig https://raw.githubusercontent.com/nethercore-systems/nethercore/main/include/zx.zig
+```
+
+**In module files, access FFI via:**
+```rust
+// src/player.rs
+use crate::zx::*;  // Access FFI through crate root
 ```
 
 ## Build Workflow
@@ -286,19 +350,20 @@ pub extern "C" fn render() {
 ## Language-Specific Notes
 
 ### Rust
-- Helper functions available: `log_str()`, `draw_text_str()`, `rom_texture_str()`
-- Copy `zx.rs` from `nethercore/include/` to your project
+- **Fetch `zx.rs` to `src/zx.rs`** - Never copy functions inline
+- **Use `mod zx;` in lib.rs** - Access via `use zx::*;` or `use crate::zx::*;`
+- Helper functions: `log_str()`, `draw_text_str()`, `rom_texture_str()`
 - Use `#![no_std]` for smaller WASM
 
 ### C/C++
+- **Fetch `zx.h` to project root** - Include with `#include "zx.h"`
 - NCZX_ prefixed constants: `NCZX_BUTTON_A`, `NCZX_RENDER_PBR`
 - Helper macros: `NCZX_LOG()`, `NCZX_DRAW_TEXT()`, `NCZX_ROM_TEXTURE()`
-- Copy `zx.h` from `nethercore/include/`
 
 ### Zig
+- **Fetch `zx.zig` to `src/zx.zig`** - Import with `const zx = @import("zx.zig");`
 - Namespace access: `zx.Button.a`, `zx.Render.pbr`
 - Slice helpers: `zx.logStr()`, `zx.drawTextStr()`, `zx.romTexture()`
-- Copy `zx.zig` from `nethercore/include/`
 
 ## Documentation Resources
 

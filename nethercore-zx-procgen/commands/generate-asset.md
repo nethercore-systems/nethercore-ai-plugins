@@ -201,3 +201,20 @@ After providing the code, offer:
 - Include comments explaining the generation technique
 - Provide both simple and layered examples when relevant
 - Reference the proc-gen source for advanced patterns
+
+## Gitignore Requirement
+
+**IMPORTANT:** Generated assets should NOT be committed to git.
+
+After generating any asset, ensure the project's `.gitignore` includes:
+```
+# Generated assets (can be regenerated from procedural code)
+assets/meshes/*.obj
+assets/meshes/*.gltf
+assets/textures/*.png
+assets/audio/*.wav
+output/**
+generated/**
+```
+
+If `.gitignore` doesn't exist or is missing these patterns, create/update it.

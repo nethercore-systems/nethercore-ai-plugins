@@ -1,6 +1,6 @@
 ---
 description: Reviews game designs for coherence, missing elements, and scope issues. Use this agent after creating a GDD, when reviewing game concepts, or when design documents are written.
-model: sonnet
+model: haiku
 color: blue
 tools:
   - Read

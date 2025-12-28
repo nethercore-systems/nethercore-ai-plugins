@@ -29,7 +29,7 @@ User needs a complete design system. The agent will specify palettes, materials,
 </commentary>
 </example>
 
-model: sonnet
+model: haiku
 color: magenta
 tools: ["Read", "Glob", "Grep"]
 ---

@@ -17,8 +17,9 @@ The plugins provide skills, commands, and agents covering the full game developm
 
 Core game development plugin for Nethercore ZX.
 
-**Skills (5):**
+**Skills (6):**
 - `zx-game-development` - FFI specifications (Rust/C/Zig), project templates, CLI tooling
+- `bindings-fetcher` - Fetch/update FFI bindings from GitHub, proper module organization
 - `camera-systems` - 3D camera implementation and perspective-based design patterns
 - `rendering-techniques` - Stencil effects, custom fonts, billboard particles
 - `debugging-guide` - Debugging and sync testing workflows
@@ -179,6 +180,53 @@ Platform-agnostic game design frameworks for fantasy console development. Compan
 - `balance-analyzer` - Analyzes game balance (stats, difficulty curves, economy)
 - `accessibility-auditor` - Audits designs for accessibility barriers and suggests improvements
 
+### creative-direction
+
+Quality assurance and coherence plugin providing "director" level oversight across all disciplines.
+
+**Skills (5):**
+- `art-vision` - Visual style bible, color theory, composition, style spectrums
+- `sound-vision` - Audio style guide, mixing, sonic identity, adaptive music
+- `tech-vision` - Architecture patterns, file splitting, module organization
+- `creative-vision` - Creative pillars, experience promise, vision alignment
+- `project-memory` - Persistent direction files, session context, ADR templates
+
+**Commands:**
+- `/establish-vision` - Interactive wizard to establish project creative direction
+
+**Agents:**
+- `art-director` - Reviews visual coherence across all assets, validates style consistency
+- `sound-director` - Reviews audio coherence, mix balance, sonic identity
+- `tech-director` - Reviews architecture, code quality, file size compliance
+- `creative-director` - Meta-director for holistic vision alignment, coordinates other directors
+
+**Hooks:**
+- PostToolUse file-size guards (warns when files exceed limits)
+- SessionStart direction context loading
+- Stop checkpoint for documenting decisions
+
+### sound-design
+
+Platform-agnostic game audio design with Sonic Style Language (SSL) - the audio equivalent of SADL for visual assets.
+
+**Skills (5):**
+- `sonic-style-language` - SSL specification: styles, moods, instruments, processing signatures
+- `synthesis-techniques` - FM, wavetable, granular, physical modeling, Karplus-Strong
+- `music-composition` - Theory, chord progressions, structure, adaptive music, leitmotifs
+- `sfx-design` - Layering, archetypes, impact design, UI audio, variation
+- `audio-integration` - Mix architecture, priorities, spatial audio, ducking, states
+
+**Commands:**
+- `/establish-sonic-identity` - Interactive wizard to create SSL specification
+- `/design-soundtrack` - Design music tracks with structure and harmony
+- `/design-sfx` - Design sound effects with layering specs
+
+**Agents:**
+- `sonic-designer` - Translates creative audio intent to SSL specifications
+- `sfx-architect` - Designs effects with layers and synthesis code
+- `music-architect` - Designs tracks with harmony, structure, and adaptivity
+- `audio-coherence-reviewer` - Validates audio consistency with sonic identity
+
 ## Installation
 
 Add to your `.claude/settings.local.json`:
@@ -203,7 +251,9 @@ Add to your `.claude/settings.local.json`:
     "nethercore-zx-test@nethercore-ai-plugins": true,
     "nethercore-zx-optimize@nethercore-ai-plugins": true,
     "nethercore-zx-cicd@nethercore-ai-plugins": true,
-    "game-design@nethercore-ai-plugins": true
+    "game-design@nethercore-ai-plugins": true,
+    "creative-direction@nethercore-ai-plugins": true,
+    "sound-design@nethercore-ai-plugins": true
   }
 }
 ```

@@ -264,24 +264,45 @@ Report what completed successfully:
 
 Recommend agents for common parallel workflows:
 
-**Asset Pipeline:**
+**Creative Direction:**
+- `art-director` + `sound-director` + `tech-director` (parallel reviews)
+- `creative-director` (after individual reviews complete)
+
+**Design Phase:**
+- `gdd-generator` (variants)
+- `mechanic-designer` × N (individual mechanics)
+- `scope-advisor` + `constraint-analyzer` (parallel assessment)
+- `design-reviewer` + `accessibility-auditor` (parallel review)
+
+**Visual Asset Pipeline:**
 - `asset-designer` × N (one per asset type)
 - `asset-generator` × N (after design)
-- `asset-quality-reviewer` (after generation)
+- `character-generator` × N (parallel character creation)
+- `asset-critic` + `asset-quality-reviewer` (parallel validation)
+- `procgen-optimizer` (after generation)
+- `art-director` (final coherence review)
 
-**Validation Suite:**
-- `release-validator` (comprehensive check)
-- `test-runner` (sync tests)
-- `rollback-reviewer` (code analysis)
-
-**Design Iteration:**
-- `gdd-generator` (variants)
-- `mechanic-designer` (individual mechanics)
-- `scope-advisor` (assessment)
+**Audio Asset Pipeline:**
+- `music-architect` × N (parallel track composition)
+- `sfx-architect` × N (parallel effect synthesis)
+- `sonic-designer` (after SSL established)
+- `sound-director` (final coherence review)
 
 **Implementation Sprint:**
 - `code-scaffolder` × N (different systems)
 - `feature-implementer` × N (different features)
+- `integration-assistant` × N (different asset types)
+- `rollback-reviewer` + `tech-director` (parallel review)
+
+**Validation Suite:**
+- `test-runner` + `build-analyzer` (parallel)
+- `desync-investigator` (if sync issues found)
+- `optimizer` (after analysis)
+- `release-validator` (comprehensive check)
+
+**Quality Review (All Directors):**
+- `art-director` + `sound-director` + `tech-director` (parallel)
+- `creative-director` (meta-review after individual directors)
 
 ## Scope
 

@@ -317,6 +317,19 @@ Ensure generated assets are ZX-compatible:
 | 16-bit indices | Max 65k vertices per mesh |
 | RGBA8 textures | Standard PNG output |
 
+## REQUIRED: Gitignore for Generated Assets
+
+**After writing ANY asset file, ensure .gitignore includes:**
+```
+assets/meshes/*.obj
+assets/meshes/*.gltf
+assets/textures/*.png
+assets/audio/*.wav
+output/**
+generated/**
+```
+Generated assets should NOT be committed to git - they can be regenerated from procedural code.
+
 ## Example Generated Code
 
 For a "weathered medieval barrel" spec:
