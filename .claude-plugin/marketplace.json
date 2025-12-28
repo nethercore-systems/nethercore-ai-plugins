@@ -106,6 +106,28 @@
       },
       "source": "./game-design",
       "category": "design"
+    },
+    {
+      "name": "creative-direction",
+      "description": "Art, sound, tech, and creative directors for ensuring coherence and quality across all game development disciplines. Provides style guides, vision alignment, and director-level oversight.",
+      "version": "1.0.0",
+      "author": {
+        "name": "Nethercore Systems",
+        "email": "nethercore.systems@gmail.com"
+      },
+      "source": "./creative-direction",
+      "category": "design"
+    },
+    {
+      "name": "sound-design",
+      "description": "Platform-agnostic game audio design - Sonic Style Language (SSL), synthesis techniques, music composition, SFX design patterns, and audio integration workflows.",
+      "version": "1.0.0",
+      "author": {
+        "name": "Nethercore Systems",
+        "email": "nethercore.systems@gmail.com"
+      },
+      "source": "./sound-design",
+      "category": "design"
     }
   ]
 }
