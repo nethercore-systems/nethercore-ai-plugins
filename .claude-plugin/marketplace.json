@@ -1,7 +1,7 @@
 {
   "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
   "name": "nethercore-ai-plugins",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "Official AI-powered development plugins for Nethercore game development. Comprehensive tooling for ZX fantasy console game development, procedural asset generation, and game design workflows.",
   "owner": {
     "name": "Nethercore Team",
@@ -11,7 +11,7 @@
     {
       "name": "nethercore-zx-dev",
       "description": "Comprehensive game development skill for Nethercore ZX fantasy console. Provides FFI specifications for Rust/C/Zig, asset pipeline guidance, project structure templates, and CLI tooling knowledge.",
-      "version": "1.0.0",
+      "version": "0.0.1",
       "author": {
         "name": "Nethercore Team",
         "email": "nethercore.systems@gmail.com"
@@ -22,7 +22,7 @@
     {
       "name": "nethercore-zx-procgen",
       "description": "Procedural asset generation for Nethercore ZX. Generate textures (Albedo, MRE, SSE, Matcaps), meshes (with UVs and vertex colors), skeletal animations (walk cycles, attacks, IK), rigid body animations (vehicles, robots), and sounds using any language or tool.",
-      "version": "2.0.0",
+      "version": "0.0.1",
       "author": {
         "name": "Nethercore Team",
         "email": "nethercore.systems@gmail.com"
@@ -33,7 +33,7 @@
     {
       "name": "nethercore-zx-game-design",
       "description": "Game design workflow for Nethercore ZX - create GDDs, validate console constraints, and plan asset requirements.",
-      "version": "1.0.0",
+      "version": "0.0.1",
       "author": {
         "name": "Nethercore Team",
         "email": "nethercore.systems@gmail.com"
@@ -44,7 +44,7 @@
     {
       "name": "nethercore-zx-orchestrator",
       "description": "Game development orchestrator for Nethercore ZX. Coordinates the full development pipeline across game-design, procgen, and zx-dev plugins.",
-      "version": "1.0.0",
+      "version": "0.0.1",
       "author": {
         "name": "Nethercore Team",
         "email": "nethercore.systems@gmail.com"
@@ -55,7 +55,7 @@
     {
       "name": "nethercore-zx-publish",
       "description": "Publishing workflow for Nethercore ZX games. Covers ROM packaging with nether CLI, nether.toml manifest creation, platform upload, and marketing asset preparation (thumbnails, screenshots, descriptions).",
-      "version": "1.0.0",
+      "version": "0.0.1",
       "author": {
         "name": "Nethercore Team",
         "email": "nethercore.systems@gmail.com"
@@ -66,7 +66,7 @@
     {
       "name": "nethercore-zx-test",
       "description": "Testing and quality assurance plugin for Nethercore ZX games. Provides sync testing, replay regression, benchmarking, and desync investigation workflows.",
-      "version": "1.0.0",
+      "version": "0.0.1",
       "author": {
         "name": "Nethercore Systems",
         "email": "nethercore.systems@gmail.com"
@@ -77,7 +77,7 @@
     {
       "name": "nethercore-zx-optimize",
       "description": "Optimization plugin for Nethercore ZX games. Provides resource budgeting guidance, optimization techniques, and automated analysis for ROM size, WASM, RAM, VRAM, and asset optimization.",
-      "version": "1.0.0",
+      "version": "0.0.1",
       "author": {
         "name": "Nethercore Systems",
         "email": "nethercore.systems@gmail.com"
@@ -88,7 +88,7 @@
     {
       "name": "nethercore-zx-cicd",
       "description": "CI/CD automation plugin for Nethercore ZX games. Provides GitHub Actions templates and workflow scaffolding for build, test, and release pipelines.",
-      "version": "1.0.0",
+      "version": "0.0.1",
       "author": {
         "name": "Nethercore Systems",
         "email": "nethercore.systems@gmail.com"
@@ -99,7 +99,7 @@
     {
       "name": "game-design",
       "description": "Platform-agnostic game design frameworks for fantasy console development - world building, character design, narrative, gameplay systems, and replayability engineering.",
-      "version": "1.0.0",
+      "version": "0.0.1",
       "author": {
         "name": "Nethercore Systems",
         "email": "nethercore.systems@gmail.com"
@@ -110,7 +110,7 @@
     {
       "name": "creative-direction",
       "description": "Art, sound, tech, and creative directors for ensuring coherence and quality across all game development disciplines. Provides style guides, vision alignment, and director-level oversight.",
-      "version": "1.0.0",
+      "version": "0.0.1",
       "author": {
         "name": "Nethercore Systems",
         "email": "nethercore.systems@gmail.com"
@@ -121,7 +121,7 @@
     {
       "name": "sound-design",
       "description": "Platform-agnostic game audio design - Sonic Style Language (SSL), synthesis techniques, music composition, SFX design patterns, and audio integration workflows.",
-      "version": "1.0.0",
+      "version": "0.0.1",
       "author": {
         "name": "Nethercore Systems",
         "email": "nethercore.systems@gmail.com"
