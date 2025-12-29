@@ -1,7 +1,13 @@
 ---
-name: Synthesis Techniques
-description: This skill should be used when the user asks about "FM synthesis", "wavetable synthesis", "granular synthesis", "subtractive synthesis", "additive synthesis", "physical modeling", "Karplus-Strong", "formant synthesis", "vocoder", "ring modulation", "frequency modulation", "oscillator", "modulator", "carrier", "operator", "synthesis type", "sound synthesis", "how to synthesize", or wants to understand which synthesis technique to use for a particular sound. Provides comprehensive guidance on modern audio synthesis methods for game sound design.
-version: 1.0.0
+name: Synthesis Techniques (Theory)
+description: |
+  Use this skill when the user asks about synthesis THEORY or wants to UNDERSTAND how synthesis works. Trigger phrases: "how does FM synthesis work", "explain wavetable", "what is granular synthesis", "which synthesis for X sound", "synthesis comparison", "oscillator types", "filter theory", "modulation explained".
+
+  This skill provides CONCEPTUAL UNDERSTANDING of synthesis methods - when to use each, how they work, signal flow diagrams.
+
+  For IMPLEMENTATION CODE (numpy/scipy): use zx-procgen:procedural-sounds instead.
+  For INSTRUMENT SAMPLES (realistic instrument synthesis): use zx-procgen:procedural-instruments instead.
+version: 1.0.1
 ---
 
 # Synthesis Techniques
