@@ -309,5 +309,5 @@ For detailed guidance on specific topics:
 ### ZX Integration
 
 For ZX games, consult:
-- `nethercore-zx-dev` for FFI patterns
-- `nethercore-zx-dev/rollback-reviewer` for determinism
+- `zx-dev` for FFI patterns
+- `zx-dev/rollback-reviewer` for determinism

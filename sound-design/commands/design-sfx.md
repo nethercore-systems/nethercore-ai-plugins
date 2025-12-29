@@ -1,5 +1,4 @@
 ---
-name: design-sfx
 description: Interactive wizard to design sound effects, producing detailed SFX specifications with layering and synthesis guidance.
 argument-hint: "[sound type, e.g., 'sword swing', 'jump', 'explosion']"
 allowed-tools:

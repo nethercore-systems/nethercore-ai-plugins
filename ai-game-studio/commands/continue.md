@@ -1,5 +1,4 @@
 ---
-name: continue
 description: Resume development from where you left off - check pending tasks and get next-step recommendations
 allowed-tools:
   - Read
@@ -109,8 +108,8 @@ On confirmation (or --auto):
 **Session Status**
 
 Dispatch Queue: 2 pending tasks
-1. Generate barrel textures → nethercore-zx-procgen:asset-generator
-2. Implement collision detection → nethercore-zx-dev:feature-implementer
+1. Generate barrel textures → zx-procgen:asset-generator
+2. Implement collision detection → zx-dev:feature-implementer
 
 Project Status: Implementation Phase (45% complete)
 Last: Player movement system
@@ -118,7 +117,7 @@ Blockers: None
 
 **Recommended Next Step:**
 → Generate barrel textures
-  Agent: nethercore-zx-procgen:asset-generator
+  Agent: zx-procgen:asset-generator
   Context: Barrel mesh exists, needs textures for rendering
 
 Continue with this? (yes/no/other)
@@ -139,23 +138,23 @@ Analyzing project state...
 ## Examples
 
 ```
-/continue
+ai-game-studio:continue
 → Shows status, recommends first pending task, asks "Continue with this?"
 
-/continue --quick
+ai-game-studio:continue --quick
 → Just shows dispatch-queue and project-status, no further action
 
-/continue --full
+ai-game-studio:continue --full
 → Runs project-health-monitor for comprehensive 6-dimension analysis
 
-/continue --auto
+ai-game-studio:continue --auto
 → Shows status, then immediately dispatches first pending task
 ```
 
 ## Relationship to Other Components
 
 ```
-/continue
+ai-game-studio:continue
     ↓
 Check .studio/dispatch-queue.md + .studio/project-status.md
     ↓
@@ -171,8 +170,8 @@ Appropriate specialist agent
 
 | Situation | Recommended Mode |
 |-----------|------------------|
-| Starting a new session | `/continue` (default) |
-| Quick status check | `/continue --quick` |
-| Lost track of project state | `/continue --full` |
-| Hands-off automation | `/continue --auto` |
-| Just want to see pending work | `/continue --quick` |
+| Starting a new session | `ai-game-studio:continue` (default) |
+| Quick status check | `ai-game-studio:continue --quick` |
+| Lost track of project state | `ai-game-studio:continue --full` |
+| Hands-off automation | `ai-game-studio:continue --auto` |
+| Just want to see pending work | `ai-game-studio:continue --quick` |

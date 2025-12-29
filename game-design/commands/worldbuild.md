@@ -1,5 +1,4 @@
 ---
-name: worldbuild
 description: Interactive world building wizard that guides through designing a game world
 argument-hint: "[scope]"
 allowed-tools:

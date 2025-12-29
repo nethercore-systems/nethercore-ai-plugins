@@ -165,7 +165,7 @@ mix_priorities:
 - Read GDDs to auto-suggest sonic direction
 - Align music moods with gameplay contexts
 
-### With nethercore-zx-procgen
+### With zx-procgen
 - SSL specs feed into `procedural-sounds` skill
 - Music specs guide `procedural-music` skill
 

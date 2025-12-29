@@ -50,19 +50,19 @@ The dispatch queue (`.studio/dispatch-queue.md`) tracks pending tasks that shoul
 ## Pending Tasks (Priority Order)
 
 ### 1. Generate barrel textures
-- **Agent:** nethercore-zx-procgen:asset-generator
+- **Agent:** zx-procgen:asset-generator
 - **Context:** Barrel mesh exists at assets/meshes/barrel.glb, needs albedo and MRE textures
 - **Blocked by:** None
 - **Added:** After mesh generation
 
 ### 2. Implement collision detection
-- **Agent:** nethercore-zx-dev:feature-implementer
+- **Agent:** zx-dev:feature-implementer
 - **Context:** Player can walk through walls, need AABB collision with track boundaries
 - **Blocked by:** None (can parallelize with #1)
 - **Added:** During feature planning
 
 ### 3. Add jump sound effect
-- **Agent:** nethercore-zx-procgen:sfx-architect
+- **Agent:** zx-procgen:sfx-architect
 - **Context:** Player jump has no audio feedback, need satisfying "whoosh" sound
 - **Blocked by:** None
 - **Added:** Polish pass review
@@ -103,14 +103,14 @@ Tasks should be ordered by:
 3. **Quick wins** - Fast tasks that unblock progress
 4. **Polish** - Nice-to-have improvements
 
-## Integration with /continue
+## Integration with ai-game-studio:continue
 
-The `/continue` command reads the dispatch queue:
+The `ai-game-studio:continue` command reads the dispatch queue:
 
 ```
-/continue          → Shows queue, recommends #1, asks to dispatch
-/continue --quick  → Just shows queue contents
-/continue --auto   → Auto-dispatches #1 without asking
+ai-game-studio:continue          → Shows queue, recommends #1, asks to dispatch
+ai-game-studio:continue --quick  → Just shows queue contents
+ai-game-studio:continue --auto   → Auto-dispatches #1 without asking
 ```
 
 ## Integration with Agents
@@ -142,8 +142,8 @@ If gap found:
 
 ### Agent Field
 Use fully-qualified agent names:
-- `nethercore-zx-procgen:asset-generator`
-- `nethercore-zx-dev:feature-implementer`
+- `zx-procgen:asset-generator`
+- `zx-dev:feature-implementer`
 - `ai-game-studio:completion-auditor`
 
 ### Context Field
@@ -170,7 +170,7 @@ After asset-generator completes:
 ```
 
 ### Auto-Complete from Dispatch
-When `/continue --auto` dispatches a task:
+When `ai-game-studio:continue --auto` dispatches a task:
 1. Task moves from "Pending" to being worked
 2. On completion, move to "Completed This Session"
 3. Remove from pending list

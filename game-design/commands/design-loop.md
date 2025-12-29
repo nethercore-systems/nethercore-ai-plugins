@@ -1,5 +1,4 @@
 ---
-name: design-loop
 description: Core loop analysis and design tool for mapping gameplay cycles
 allowed-tools:
   - Read

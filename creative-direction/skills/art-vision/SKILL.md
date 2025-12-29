@@ -201,7 +201,7 @@ For detailed guidance on specific topics:
 
 ### SADL Integration
 
-For ZX games, consult the SADL skill in `nethercore-zx-procgen`:
+For ZX games, consult the SADL skill in `zx-procgen`:
 - Style token definitions
 - Material database
 - Palette specifications

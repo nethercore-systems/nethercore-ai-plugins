@@ -27,15 +27,15 @@ This plugin provides conceptual design frameworks that apply across all Netherco
 └─────────────────────────────────────┘
               ↓ informs
 ┌─────────────────────────────────────┐
-│  nethercore-zx-game-design          │  ← Platform-specific
+│  zx-game-design          │  ← Platform-specific
 │  • ZX constraint validation         │
 │  • Implementation patterns          │
 │  • Memory budgets, render modes     │
 └─────────────────────────────────────┘
               ↓ feeds into
 ┌─────────────────────────────────────┐
-│  nethercore-zx-procgen              │
-│  nethercore-zx-dev                  │
+│  zx-procgen              │
+│  zx-dev                  │
 └─────────────────────────────────────┘
 ```
 

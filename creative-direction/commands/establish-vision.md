@@ -1,5 +1,4 @@
 ---
-name: establish-vision
 description: Interactive wizard to establish project creative direction
 allowed-tools:
   - Read

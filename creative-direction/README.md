@@ -93,8 +93,8 @@ creative_pillars:
 
 ## Integration with Other Plugins
 
-- **nethercore-zx-procgen**: Art director validates generated assets against SADL style tokens
-- **nethercore-zx-dev**: Tech director extends rollback-reviewer with broader architectural review
+- **zx-procgen**: Art director validates generated assets against SADL style tokens
+- **zx-dev**: Tech director extends rollback-reviewer with broader architectural review
 - **game-design**: Creative director validates implementation against GDD
 
 ## Installation

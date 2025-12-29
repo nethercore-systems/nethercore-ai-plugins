@@ -237,7 +237,7 @@ For detailed guidance on specific topics:
 
 ### ZX Integration
 
-For ZX games, consult the procedural audio skills in `nethercore-zx-procgen`:
+For ZX games, consult the procedural audio skills in `zx-procgen`:
 - Procedural sound generation
 - Audio format specifications
 - Channel management

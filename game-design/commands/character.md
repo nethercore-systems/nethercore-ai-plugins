@@ -1,5 +1,4 @@
 ---
-name: character
 description: Character design worksheet wizard for creating player characters, NPCs, and antagonists
 argument-hint: "[type]"
 allowed-tools:

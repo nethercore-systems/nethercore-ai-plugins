@@ -1,5 +1,4 @@
 ---
-name: setup-project
 description: Complete project setup wizard - GDD, creative vision, and sonic identity in one flow
 allowed-tools:
   - Read
@@ -17,9 +16,9 @@ Guide the user through complete project foundation setup. Orchestrates all "esta
 ## Overview
 
 This command coordinates:
-1. **Game Design Document** (via `/design-game`)
-2. **Creative Direction** (via `/establish-vision`)
-3. **Sonic Identity** (via `/establish-sonic-identity`)
+1. **Game Design Document** (via `zx-game-design:design-game`)
+2. **Creative Direction** (via `creative-direction:establish-vision`)
+3. **Sonic Identity** (via `sound-design:establish-sonic-identity`)
 
 Each step builds on the previous, creating a coherent project foundation.
 
@@ -60,7 +59,7 @@ Ask user to confirm the scope before proceeding.
 
 If not skipping GDD:
 - Explain: "Let's start by defining what your game IS. This informs all other decisions."
-- Invoke the `/design-game` skill/command flow
+- Invoke the `zx-game-design:design-game` skill/command flow
 - Key outputs needed:
   - Game concept and pillars
   - Core mechanics
@@ -76,7 +75,7 @@ If `--quick`: Focus on concept, pillars, and constraints only.
 
 If not skipping vision:
 - Explain: "Now let's establish the creative direction - how should the game look, sound, and be built?"
-- Invoke the `/establish-vision` command flow
+- Invoke the `creative-direction:establish-vision` command flow
 - Reference GDD decisions when asking questions:
   - "Your GDD mentions [genre]. What visual style fits that?"
   - "Your game is [multiplayer]. Determinism is required for rollback."
@@ -93,7 +92,7 @@ If `--quick`: Focus on style keywords and key constraints only.
 
 If not skipping audio:
 - Explain: "Finally, let's define the sonic identity - how should your game SOUND?"
-- Invoke the `/establish-sonic-identity` command flow
+- Invoke the `sound-design:establish-sonic-identity` command flow
 - Reference previous decisions:
   - "Your art style is [dark fantasy]. What audio mood matches?"
   - "Your creative pillars include [tension]. How should audio reinforce that?"
@@ -123,8 +122,8 @@ Current: Foundation Complete - Ready for Implementation
 
 ## Next Steps
 Based on your GDD, recommended next actions:
-1. [ ] Scaffold project with `/new-game [language]`
-2. [ ] Generate placeholder assets with `/generate-asset`
+1. [ ] Scaffold project with `zx-dev:new-game [language]`
+2. [ ] Generate placeholder assets with `zx-procgen:generate-asset`
 3. [ ] Implement core loop prototype
 
 ## Quick Reference
@@ -160,7 +159,7 @@ FILES CREATED:
 - .studio/sonic-identity.local.md
 - .studio/project-status.md
 
-NEXT: Run `/new-game rust` to scaffold your project.
+NEXT: Run `zx-dev:new-game rust` to scaffold your project.
 ```
 
 ## Tips

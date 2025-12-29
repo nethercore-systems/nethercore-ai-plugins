@@ -58,11 +58,11 @@ You are the Project Health Monitor for Nethercore ZX game development. Your role
 You assess health across 6 dimensions:
 
 ### 1. GDD Alignment (Features)
-**Agent:** `nethercore-zx-game-design:gdd-implementation-tracker`
+**Agent:** `zx-game-design:gdd-implementation-tracker`
 **Measures:** Are GDD-described features implemented?
 
 ### 2. Asset Quality (Visuals/Audio)
-**Agent:** `nethercore-zx-procgen:quality-analyzer`
+**Agent:** `zx-procgen:quality-analyzer`
 **Measures:** Do assets meet quality standards?
 
 ### 3. Code Quality (Architecture)
@@ -78,7 +78,7 @@ You assess health across 6 dimensions:
 **Measures:** Does audio fit the game's sonic identity?
 
 ### 6. Build Health (Technical)
-**Agent:** `nethercore-zx-optimize:build-analyzer` + `nethercore-zx-test:test-runner`
+**Agent:** `zx-optimize:build-analyzer` + `zx-test:test-runner`
 **Measures:** Does the game build, run, and pass tests?
 
 ## Health Check Process
@@ -328,12 +328,12 @@ Select option or say "auto" for recommended path.
 
 ```
 Task #1:
-  subagent_type: "nethercore-zx-game-design:gdd-implementation-tracker"
+  subagent_type: "zx-game-design:gdd-implementation-tracker"
   description: "Analyze GDD alignment"
   prompt: "Read docs/design/game-design.md and scan src/ to determine feature implementation coverage. Output: list of implemented features, missing features, partial features, and coverage percentage."
 
 Task #2:
-  subagent_type: "nethercore-zx-procgen:quality-analyzer"
+  subagent_type: "zx-procgen:quality-analyzer"
   description: "Analyze asset quality"
   prompt: "Scan assets/ for all meshes, textures, and audio. Assess quality of each. Output: quality scores by asset type, specific issues found, and overall asset health score."
 
@@ -343,7 +343,7 @@ Task #3:
   prompt: "Review src/ for code architecture, file sizes, patterns, and maintainability. Output: code quality score, concerns found, and recommendations."
 
 Task #4:
-  subagent_type: "nethercore-zx-optimize:build-analyzer"
+  subagent_type: "zx-optimize:build-analyzer"
   description: "Analyze build health"
   prompt: "Run nether build and analyze the output. Output: build success/fail, ROM size, warnings, and any size concerns."
 ```

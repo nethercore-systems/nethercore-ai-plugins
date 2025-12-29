@@ -9,91 +9,91 @@
   },
   "plugins": [
     {
-      "name": "nethercore-zx-dev",
+      "name": "zx-dev",
       "description": "Comprehensive game development skill for Nethercore ZX fantasy console. Provides FFI specifications for Rust/C/Zig, asset pipeline guidance, project structure templates, and CLI tooling knowledge.",
       "version": "0.0.1",
       "author": {
         "name": "Nethercore Team",
         "email": "nethercore.systems@gmail.com"
       },
-      "source": "./nethercore-zx-dev",
+      "source": "./zx-dev",
       "category": "development"
     },
     {
-      "name": "nethercore-zx-procgen",
+      "name": "zx-procgen",
       "description": "Procedural asset generation for Nethercore ZX. Generate textures (Albedo, MRE, SSE, Matcaps), meshes (with UVs and vertex colors), skeletal animations (walk cycles, attacks, IK), rigid body animations (vehicles, robots), and sounds using any language or tool.",
       "version": "0.0.1",
       "author": {
         "name": "Nethercore Team",
         "email": "nethercore.systems@gmail.com"
       },
-      "source": "./nethercore-zx-procgen",
+      "source": "./zx-procgen",
       "category": "development"
     },
     {
-      "name": "nethercore-zx-game-design",
+      "name": "zx-game-design",
       "description": "Game design workflow for Nethercore ZX - create GDDs, validate console constraints, and plan asset requirements.",
       "version": "0.0.1",
       "author": {
         "name": "Nethercore Team",
         "email": "nethercore.systems@gmail.com"
       },
-      "source": "./nethercore-zx-game-design",
+      "source": "./zx-game-design",
       "category": "development"
     },
     {
-      "name": "nethercore-zx-orchestrator",
+      "name": "zx-orchestrator",
       "description": "Game development orchestrator for Nethercore ZX. Coordinates the full development pipeline across game-design, procgen, and zx-dev plugins.",
       "version": "0.0.1",
       "author": {
         "name": "Nethercore Team",
         "email": "nethercore.systems@gmail.com"
       },
-      "source": "./nethercore-zx-orchestrator",
+      "source": "./zx-orchestrator",
       "category": "development"
     },
     {
-      "name": "nethercore-zx-publish",
+      "name": "zx-publish",
       "description": "Publishing workflow for Nethercore ZX games. Covers ROM packaging with nether CLI, nether.toml manifest creation, platform upload, and marketing asset preparation (thumbnails, screenshots, descriptions).",
       "version": "0.0.1",
       "author": {
         "name": "Nethercore Team",
         "email": "nethercore.systems@gmail.com"
       },
-      "source": "./nethercore-zx-publish",
+      "source": "./zx-publish",
       "category": "development"
     },
     {
-      "name": "nethercore-zx-test",
+      "name": "zx-test",
       "description": "Testing and quality assurance plugin for Nethercore ZX games. Provides sync testing, replay regression, benchmarking, and desync investigation workflows.",
       "version": "0.0.1",
       "author": {
         "name": "Nethercore Systems",
         "email": "nethercore.systems@gmail.com"
       },
-      "source": "./nethercore-zx-test",
+      "source": "./zx-test",
       "category": "development"
     },
     {
-      "name": "nethercore-zx-optimize",
+      "name": "zx-optimize",
       "description": "Optimization plugin for Nethercore ZX games. Provides resource budgeting guidance, optimization techniques, and automated analysis for ROM size, WASM, RAM, VRAM, and asset optimization.",
       "version": "0.0.1",
       "author": {
         "name": "Nethercore Systems",
         "email": "nethercore.systems@gmail.com"
       },
-      "source": "./nethercore-zx-optimize",
+      "source": "./zx-optimize",
       "category": "development"
     },
     {
-      "name": "nethercore-zx-cicd",
+      "name": "zx-cicd",
       "description": "CI/CD automation plugin for Nethercore ZX games. Provides GitHub Actions templates and workflow scaffolding for build, test, and release pipelines.",
       "version": "0.0.1",
       "author": {
         "name": "Nethercore Systems",
         "email": "nethercore.systems@gmail.com"
       },
-      "source": "./nethercore-zx-cicd",
+      "source": "./zx-cicd",
       "category": "development"
     },
     {

@@ -1,0 +1,11 @@
+{
+  "name": "zx-optimize",
+  "version": "0.0.1",
+  "description": "Optimization plugin for Nethercore ZX games. Provides resource budgeting guidance, optimization techniques, and automated analysis for ROM size, WASM, RAM, VRAM, and asset optimization.",
+  "author": {
+    "name": "Nethercore Systems",
+    "email": "nethercore.systems@gmail.com"
+  },
+  "repository": "https://github.com/nethercore-systems/nethercore-ai-plugins",
+  "keywords": ["nethercore", "zx", "optimization", "wasm", "performance", "assets", "rom-size"]
+}

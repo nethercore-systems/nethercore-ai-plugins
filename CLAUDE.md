@@ -13,7 +13,7 @@ The plugins provide skills, commands, and agents covering the full game developm
 
 ## Plugins
 
-### nethercore-zx-dev
+### zx-dev
 
 Core game development plugin for Nethercore ZX.
 
@@ -26,7 +26,7 @@ Core game development plugin for Nethercore ZX.
 - `environment-effects` - Fog, lighting, and atmospheric effects
 
 **Commands:**
-- `/new-game` - Scaffold a new ZX game project
+- `zx-dev:new-game` - Scaffold a new ZX game project
 
 **Agents:**
 - `rollback-reviewer` - Reviews code for GGRS rollback netcode compatibility
@@ -34,7 +34,7 @@ Core game development plugin for Nethercore ZX.
 - `feature-implementer` - Implements complete game features end-to-end across multiple files and systems
 - `integration-assistant` - Connects generated assets to game code with nether.toml and handle constants
 
-### nethercore-zx-game-design
+### zx-game-design
 
 Game design workflow plugin.
 
@@ -51,9 +51,9 @@ Game design workflow plugin.
 - `level-design` - Level design patterns and procedural generation
 
 **Commands:**
-- `/design-game` - Interactive GDD builder wizard
-- `/plan-assets` - Generate asset specs from GDD
-- `/validate-design` - Validate design against ZX constraints
+- `zx-game-design:design-game` - Interactive GDD builder wizard
+- `zx-game-design:plan-assets` - Generate asset specs from GDD
+- `zx-game-design:validate-design` - Validate design against ZX constraints
 
 **Agents:**
 - `constraint-analyzer` - Proactively checks design feasibility
@@ -62,7 +62,7 @@ Game design workflow plugin.
 - `scope-advisor` - Assesses project scope, identifies overambition, defines MVPs
 - `gdd-implementation-tracker` - Compares GDD to implementation, identifies missing features, prioritizes remaining work
 
-### nethercore-zx-procgen
+### zx-procgen
 
 Procedural asset generation plugin.
 
@@ -80,9 +80,9 @@ Procedural asset generation plugin.
 - `asset-quality-tiers` - Tier system (Placeholder→Temp→Final→Hero) and enhancement strategies
 
 **Commands:**
-- `/generate-asset` - Quick single-asset generation
-- `/new-asset-project` - Scaffold asset generation project
-- `/improve-assets` - Guided quality improvement workflow with tier upgrades
+- `zx-procgen:generate-asset` - Quick single-asset generation
+- `zx-procgen:new-asset-project` - Scaffold asset generation project
+- `zx-procgen:improve-assets` - Guided quality improvement workflow with tier upgrades
 
 **Agents:**
 - `asset-designer` - Translates creative vision to SADL specs
@@ -95,7 +95,7 @@ Procedural asset generation plugin.
 - `quality-analyzer` - Holistic asset quality assessment with actionable recommendations and auto-dispatch support
 - `quality-enhancer` - Autonomous asset quality improvement, upgrades assets to higher tiers
 
-### nethercore-zx-publish
+### zx-publish
 
 Publishing workflow plugin.
 
@@ -104,14 +104,14 @@ Publishing workflow plugin.
 - `platform-assets` - Marketing assets (thumbnails, screenshots)
 
 **Commands:**
-- `/publish-game` - Full publishing workflow
-- `/prepare-platform-assets` - Generate marketing assets
+- `zx-publish:publish-game` - Full publishing workflow
+- `zx-publish:prepare-platform-assets` - Generate marketing assets
 
 **Agents:**
 - `publish-preparer` - Autonomously prepares games for release (validation, optimization, packaging)
 - `release-validator` - Validates all release requirements and identifies blockers
 
-### nethercore-zx-orchestrator
+### zx-orchestrator
 
 Meta-orchestration plugin coordinating multi-plugin workflows.
 
@@ -119,7 +119,7 @@ Meta-orchestration plugin coordinating multi-plugin workflows.
 - `game-orchestrator` - Coordinates full development pipeline from GDD to published ROM
 - `parallel-coordinator` - Analyzes task dependencies and coordinates parallel agent execution
 
-### nethercore-zx-test
+### zx-test
 
 Testing and quality assurance plugin for ZX games.
 
@@ -131,7 +131,7 @@ Testing and quality assurance plugin for ZX games.
 - `test-runner` - Runs sync tests and replay regression tests
 - `desync-investigator` - Analyzes sync failures to find non-deterministic code
 
-### nethercore-zx-optimize
+### zx-optimize
 
 Optimization plugin for ZX games.
 
@@ -143,7 +143,7 @@ Optimization plugin for ZX games.
 - `build-analyzer` - Analyzes build output to identify largest assets
 - `optimizer` - Applies optimization techniques and reports savings
 
-### nethercore-zx-cicd
+### zx-cicd
 
 CI/CD automation plugin for ZX games.
 
@@ -173,10 +173,10 @@ Platform-agnostic game design frameworks for fantasy console development. Compan
 - `replayability-engineering` - Run-based design, meta-progression, emergent systems, procedural variety
 
 **Commands:**
-- `/worldbuild` - Interactive world building wizard
-- `/character` - Character design worksheet wizard
-- `/design-loop` - Core loop analysis and design tool
-- `/balance-review` - Game balance review framework
+- `game-design:worldbuild` - Interactive world building wizard
+- `game-design:character` - Character design worksheet wizard
+- `game-design:design-loop` - Core loop analysis and design tool
+- `game-design:balance-review` - Game balance review framework
 
 **Agents:**
 - `design-reviewer` - Reviews GDDs for coherence, completeness, scope
@@ -197,7 +197,7 @@ Quality assurance and coherence plugin providing "director" level oversight acro
 - `project-memory` - Persistent direction files, session context, ADR templates
 
 **Commands:**
-- `/establish-vision` - Interactive wizard to establish project creative direction
+- `creative-direction:establish-vision` - Interactive wizard to establish project creative direction
 
 **Agents:**
 - `art-director` - Reviews visual coherence across all assets, validates style consistency
@@ -222,9 +222,9 @@ Platform-agnostic game audio design with Sonic Style Language (SSL) - the audio 
 - `audio-integration` - Mix architecture, priorities, spatial audio, ducking, states
 
 **Commands:**
-- `/establish-sonic-identity` - Interactive wizard to create SSL specification
-- `/design-soundtrack` - Design music tracks with structure and harmony
-- `/design-sfx` - Design sound effects with layering specs
+- `sound-design:establish-sonic-identity` - Interactive wizard to create SSL specification
+- `sound-design:design-soundtrack` - Design music tracks with structure and harmony
+- `sound-design:design-sfx` - Design sound effects with layering specs
 
 **Agents:**
 - `sonic-designer` - Translates creative audio intent to SSL specifications
@@ -242,7 +242,8 @@ Intelligent game development studio providing request routing, quality analysis,
 - `verification-checklists` - Checklists for verifying assets, features, and systems are truly complete
 
 **Commands:**
-- `/setup-project` - Complete project setup wizard orchestrating GDD, creative vision, and sonic identity in one flow
+- `ai-game-studio:setup-project` - Complete project setup wizard orchestrating GDD, creative vision, and sonic identity in one flow
+- `ai-game-studio:continue` - Resume development from where you left off
 
 **Agents:**
 - `request-dispatcher` - Intelligent routing for any development request; parses intent, routes to appropriate experts, ensures completion
@@ -278,14 +279,14 @@ Add to your `.claude/settings.local.json`:
     }
   },
   "enabledPlugins": {
-    "nethercore-zx-dev@nethercore-ai-plugins": true,
-    "nethercore-zx-game-design@nethercore-ai-plugins": true,
-    "nethercore-zx-procgen@nethercore-ai-plugins": true,
-    "nethercore-zx-publish@nethercore-ai-plugins": true,
-    "nethercore-zx-orchestrator@nethercore-ai-plugins": true,
-    "nethercore-zx-test@nethercore-ai-plugins": true,
-    "nethercore-zx-optimize@nethercore-ai-plugins": true,
-    "nethercore-zx-cicd@nethercore-ai-plugins": true,
+    "zx-dev@nethercore-ai-plugins": true,
+    "zx-game-design@nethercore-ai-plugins": true,
+    "zx-procgen@nethercore-ai-plugins": true,
+    "zx-publish@nethercore-ai-plugins": true,
+    "zx-orchestrator@nethercore-ai-plugins": true,
+    "zx-test@nethercore-ai-plugins": true,
+    "zx-optimize@nethercore-ai-plugins": true,
+    "zx-cicd@nethercore-ai-plugins": true,
     "game-design@nethercore-ai-plugins": true,
     "creative-direction@nethercore-ai-plugins": true,
     "sound-design@nethercore-ai-plugins": true,

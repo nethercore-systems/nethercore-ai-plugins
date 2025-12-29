@@ -1,0 +1,11 @@
+{
+  "name": "zx-publish",
+  "version": "0.0.1",
+  "description": "Publishing workflow for Nethercore ZX games. Covers ROM packaging with nether CLI, nether.toml manifest creation, platform upload, and marketing asset preparation (thumbnails, screenshots, descriptions).",
+  "author": {
+    "name": "Nethercore Systems",
+    "email": "nethercore.systems@gmail.com"
+  },
+  "repository": "https://github.com/nethercore-systems/nethercore-ai-plugins",
+  "keywords": ["nethercore", "zx", "publishing", "rom", "nether-cli", "platform", "upload"]
+}

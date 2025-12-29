@@ -1,5 +1,4 @@
 ---
-name: design-soundtrack
 description: Interactive wizard to design music tracks for a game, producing detailed composition specifications.
 argument-hint: "[track name or context, e.g., 'main theme' or 'boss battle']"
 allowed-tools:

@@ -1,5 +1,4 @@
 ---
-name: balance-review
 description: Game balance review framework analyzing difficulty, stats, and economy
 argument-hint: "[target]"
 allowed-tools:

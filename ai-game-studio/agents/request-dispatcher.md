@@ -120,24 +120,24 @@ You can dispatch to ANY agent across ALL plugins. Key agents by domain:
 | Agent | subagent_type | Use For |
 |-------|---------------|---------|
 | Project Health Monitor | `ai-game-studio:project-health-monitor` | Overall project assessment |
-| GDD Implementation Tracker | `nethercore-zx-game-design:gdd-implementation-tracker` | Feature gap analysis |
-| Quality Analyzer | `nethercore-zx-procgen:quality-analyzer` | Asset quality assessment |
+| GDD Implementation Tracker | `zx-game-design:gdd-implementation-tracker` | Feature gap analysis |
+| Quality Analyzer | `zx-procgen:quality-analyzer` | Asset quality assessment |
 | Completion Auditor | `ai-game-studio:completion-auditor` | Verify work is actually done |
 
 ### Implementation Agents
 | Agent | subagent_type | Use For |
 |-------|---------------|---------|
-| Feature Implementer | `nethercore-zx-dev:feature-implementer` | Complete feature implementation |
-| Code Scaffolder | `nethercore-zx-dev:code-scaffolder` | Boilerplate code generation |
-| Integration Assistant | `nethercore-zx-dev:integration-assistant` | Asset-to-code connection |
+| Feature Implementer | `zx-dev:feature-implementer` | Complete feature implementation |
+| Code Scaffolder | `zx-dev:code-scaffolder` | Boilerplate code generation |
+| Integration Assistant | `zx-dev:integration-assistant` | Asset-to-code connection |
 
 ### Asset Agents
 | Agent | subagent_type | Use For |
 |-------|---------------|---------|
-| Asset Designer | `nethercore-zx-procgen:asset-designer` | SADL spec creation |
-| Asset Generator | `nethercore-zx-procgen:asset-generator` | Procedural generation code |
-| Character Generator | `nethercore-zx-procgen:character-generator` | Full character pipeline |
-| Creative Orchestrator | `nethercore-zx-procgen:creative-orchestrator` | Full asset pipeline |
+| Asset Designer | `zx-procgen:asset-designer` | SADL spec creation |
+| Asset Generator | `zx-procgen:asset-generator` | Procedural generation code |
+| Character Generator | `zx-procgen:character-generator` | Full character pipeline |
+| Creative Orchestrator | `zx-procgen:creative-orchestrator` | Full asset pipeline |
 
 ### Audio Agents
 | Agent | subagent_type | Use For |
@@ -158,9 +158,9 @@ You can dispatch to ANY agent across ALL plugins. Key agents by domain:
 ### Testing Agents
 | Agent | subagent_type | Use For |
 |-------|---------------|---------|
-| Test Runner | `nethercore-zx-test:test-runner` | Sync tests |
-| Rollback Reviewer | `nethercore-zx-dev:rollback-reviewer` | Netcode safety |
-| Build Analyzer | `nethercore-zx-optimize:build-analyzer` | Size analysis |
+| Test Runner | `zx-test:test-runner` | Sync tests |
+| Rollback Reviewer | `zx-dev:rollback-reviewer` | Netcode safety |
+| Build Analyzer | `zx-optimize:build-analyzer` | Size analysis |
 
 ## Dispatch Patterns
 

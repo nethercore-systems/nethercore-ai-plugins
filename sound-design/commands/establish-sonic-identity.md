@@ -1,5 +1,4 @@
 ---
-name: establish-sonic-identity
 description: Interactive wizard to establish the overall audio direction for a game project. Creates a Sonic Style Language (SSL) specification.
 argument-hint: "[game name or concept]"
 allowed-tools:
