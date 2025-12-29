@@ -1,7 +1,13 @@
 ---
 name: Procedural Sound Generation with NumPy/SciPy
-description: This skill should be used when the user asks to "generate sound", "create sound effect", "procedural audio", "synth sound", "synthesize sound", "numpy synthesis", "scipy audio", "make SFX", "game audio", "WAV generation", "audio synthesis", "sound design", "FM synthesis", "subtractive synthesis", "additive synthesis", or mentions sound effects, audio generation, procedural audio, or sound design for game assets. Provides comprehensive guidance for creating procedural sounds using numpy, scipy.signal, and soundfile.
-version: 3.0.0
+description: |
+  Use this skill when the user wants to GENERATE or CODE sound effects for ZX games. Trigger phrases: "generate sound", "create SFX", "write audio code", "synthesize WAV", "numpy audio", "scipy sound", "procedural SFX", "make laser sound", "explosion sound code", "footstep generator".
+
+  This skill provides IMPLEMENTATION CODE using numpy/scipy to produce WAV files at build time for ZX ROM assets.
+
+  For THEORY (how synthesis works, choosing techniques): use sound-design:synthesis-techniques instead.
+  For DESIGN (what sounds a game needs, layering specs): use sound-design:sfx-design instead.
+version: 3.0.1
 ---
 
 # Procedural Sound Generation with NumPy/SciPy
