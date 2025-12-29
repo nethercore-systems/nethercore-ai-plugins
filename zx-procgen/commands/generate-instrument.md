@@ -1,5 +1,4 @@
 ---
-name: Generate Instrument Sample
 description: Generate a high-quality procedural instrument sample using advanced synthesis techniques
 argument-hint: "<instrument> [style]"
 allowed-tools:
