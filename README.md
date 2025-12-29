@@ -316,13 +316,15 @@ Platform-agnostic game audio design with Sonic Style Language (SSL).
 
 Intelligent game development studio providing request routing, quality analysis, and continuous workflow guidance.
 
-**Skills (3):**
+**Skills (4):**
 - `request-patterns` - Classifying and routing development requests
 - `dependency-chains` - Blocking dependencies and parallelizable work
 - `verification-checklists` - Verifying assets and features are complete
+- `dispatch-queue` - Task queue pattern for session continuity
 
 **Commands:**
 - `/setup-project` - Complete project setup wizard (GDD + creative vision + sonic identity)
+- `/continue` - Resume development from where you left off (--quick, --full, --auto)
 
 **Agents:**
 - `request-dispatcher` - Intelligent routing for any development request
@@ -380,6 +382,19 @@ Continue with #1? (yes/no/other)
 ```
 
 This ensures you always know what to do after any task completes.
+
+### The `/continue` Command
+
+For explicit session resumption, use the `/continue` command:
+
+```
+/continue          → Check pending tasks, recommend next step, ask before dispatching
+/continue --quick  → Just show dispatch queue and project status
+/continue --full   → Run comprehensive project health analysis
+/continue --auto   → Auto-dispatch first pending task without asking
+```
+
+The command reads `.claude/dispatch-queue.md` and `.claude/project-status.md` to understand your current state and recommend the next action.
 
 ## Contributing
 

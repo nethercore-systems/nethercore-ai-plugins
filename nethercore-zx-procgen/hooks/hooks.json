@@ -35,7 +35,7 @@
         "hooks": [
           {
             "type": "prompt",
-            "prompt": "CREATIVE ORCHESTRATOR COMPLETED - FINAL INTEGRATION CHECK\n\nThe creative-orchestrator just finished a batch of assets.\n\nVERIFY COMPLETE INTEGRATION:\n\n1. Check the asset manifest (if created)\n2. Verify ALL assets are in nether.toml\n3. Verify ALL handles exist in src/assets.rs\n4. Verify assets are actually USED in game code\n5. Run 'nether build' to confirm assets are packaged\n\nIf any step fails, the orchestrator work is incomplete.\n\nCONSIDER: Running completion-auditor (ai-studio:completion-auditor) for comprehensive verification."
+            "prompt": "CREATIVE ORCHESTRATOR COMPLETED - FINAL INTEGRATION CHECK\n\nThe creative-orchestrator just finished a batch of assets.\n\nVERIFY COMPLETE INTEGRATION:\n\n1. Check the asset manifest (if created)\n2. Verify ALL assets are in nether.toml\n3. Verify ALL handles exist in src/assets.rs\n4. Verify assets are actually USED in game code\n5. Run 'nether build' to confirm assets are packaged\n\nIf any step fails, the orchestrator work is incomplete.\n\nCONSIDER: Running completion-auditor (ai-game-studio:completion-auditor) for comprehensive verification."
           }
         ]
       },
