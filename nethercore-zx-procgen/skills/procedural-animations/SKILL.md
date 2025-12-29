@@ -519,7 +519,6 @@ print("Exported: /tmp/character_walk.glb")
 ### Reference Files
 
 - **`references/object-animation.md`** — Complete object animation patterns
-- **`references/skeletal-animation.md`** — Skeletal pipeline overview
 - **`references/armature-creation.md`** — Skeleton presets (humanoid, quadruped, etc.)
 - **`references/skinning-weights.md`** — Mesh binding techniques
 - **`references/keyframe-patterns.md`** — Common animation recipes

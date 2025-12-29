@@ -627,7 +627,6 @@ def create_texture_atlas(textures, padding=2):
 ### Reference Files
 
 - **`references/uv-projection-techniques.md`** - Planar, cylindrical, spherical projection
-- **`references/atlas-optimization.md`** - Advanced packing algorithms
 
 ### Related Skills
 

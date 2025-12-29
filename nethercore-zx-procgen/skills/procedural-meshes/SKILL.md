@@ -53,7 +53,7 @@ Choose the appropriate workflow based on what is being modeled:
 │
 ├─► HARD SURFACE (weapons, vehicles, architecture, props, mechanical)
 │   └─► Use: Polygon Modeling with bpy primitives + modifiers
-│       See: references/bpy-hard-surface.md
+│       See: Hard Surface Workflow section below
 │
 └─► ORGANIC (characters, creatures, rocks, foliage, blobby shapes)
     │

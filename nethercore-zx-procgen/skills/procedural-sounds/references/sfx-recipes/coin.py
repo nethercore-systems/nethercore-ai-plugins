@@ -7,10 +7,13 @@ Ascending arpeggio with bright, cheerful character.
 Technique: Additive synthesis with quick envelopes
 Character: Rewarding, cheerful, satisfying
 Duration: 0.3 - 0.5 seconds
+
+Dependencies: pip install numpy scipy soundfile
 """
 
-from pyo import *
-import time
+import numpy as np
+import soundfile as sf
+from scipy import signal
 
 # =============================================================================
 # PARAMETERS
@@ -20,27 +23,18 @@ import time
 # Default: C5 -> E5 -> G5 -> C6 (major arpeggio)
 NOTES = [523, 659, 784, 1047]
 
-# Alternatively, define by MIDI notes:
-# C5=60, E5=64, G5=67, C6=72
-# Use: NOTES = [mtof(n) for n in [60, 64, 67, 72]]
-
 # Timing
 NOTE_DURATION = 0.08        # Duration per note
-NOTE_OVERLAP = 0.02         # Overlap between notes (polyphony)
 GAP_BETWEEN_NOTES = 0.06    # Time between note starts
 
 # Envelope (per note)
-ATTACK = 0.005              # Very quick attack
-DECAY = 0.08                # Quick decay
-SUSTAIN = 0.0               # No sustain (plucky)
-RELEASE = 0.03              # Short release
+DECAY_RATE = 25             # Exponential decay rate
 
 # Tone
 WAVEFORM = "sine"           # "sine", "square", or "triangle"
 BRIGHTNESS = 0.3            # Add harmonics (0-1)
 
 # Effects
-CHORUS_ENABLED = False      # Adds shimmer
 REVERB_MIX = 0.15           # Slight reverb
 
 # Output
@@ -52,86 +46,78 @@ OUTPUT_FILE = "coin.wav"
 # SYNTHESIS
 # =============================================================================
 
-def build_coin(s):
-    """Build the coin sound synthesis chain."""
+def generate_waveform(freq, t, waveform):
+    """Generate waveform of specified type."""
+    phase = 2 * np.pi * freq * t
+    if waveform == "square":
+        return np.sign(np.sin(phase))
+    elif waveform == "triangle":
+        return 2 * np.abs(2 * (freq * t % 1) - 1) - 1
+    else:  # sine
+        return np.sin(phase)
 
-    total_dur = len(NOTES) * GAP_BETWEEN_NOTES + NOTE_DURATION + 0.1
-    oscs = []
-    envs = []
+
+def simple_reverb(audio, mix, sample_rate):
+    """Simple reverb effect."""
+    if mix <= 0:
+        return audio
+
+    delays = [int(d * sample_rate) for d in [0.025, 0.031]]
+    output = np.zeros(len(audio) + max(delays), dtype=np.float32)
+    output[:len(audio)] = audio
+
+    for delay in delays:
+        for i in range(delay, len(audio)):
+            output[i] += output[i - delay] * 0.5
+
+    output = output[:len(audio)]
+    return audio * (1 - mix) + output * mix
+
+
+def build_coin():
+    """Build the coin sound synthesis chain."""
+    total_duration = len(NOTES) * GAP_BETWEEN_NOTES + NOTE_DURATION + 0.1
+    num_samples = int(SAMPLE_RATE * total_duration)
+    t = np.linspace(0, total_duration, num_samples, dtype=np.float32)
+    audio = np.zeros(num_samples, dtype=np.float32)
 
     for i, freq in enumerate(NOTES):
-        # Trigger for this note (will be played with delay)
-        trig = Trig()
+        note_start = i * GAP_BETWEEN_NOTES
 
-        # Envelope for this note
-        env = Adsr(
-            attack=ATTACK,
-            decay=DECAY,
-            sustain=SUSTAIN,
-            release=RELEASE,
-            dur=NOTE_DURATION,
-            trig=trig
-        )
-        envs.append((trig, env, i * GAP_BETWEEN_NOTES))
+        # Create note envelope (starts at note_start, decays from there)
+        note_mask = t >= note_start
+        note_t = t[note_mask] - note_start
+        note_env = np.exp(-note_t * DECAY_RATE)
 
-        # Oscillator
-        if WAVEFORM == "square":
-            osc = LFO(freq=freq, type=2, mul=env)  # Square wave
-        elif WAVEFORM == "triangle":
-            osc = LFO(freq=freq, type=3, mul=env)  # Triangle wave
-        else:
-            osc = Sine(freq=freq, mul=env)
+        # Generate waveform
+        note_audio = generate_waveform(freq, t[note_mask], WAVEFORM)
 
-        # Add brightness (harmonics)
+        # Add harmonics for brightness
         if BRIGHTNESS > 0:
-            harmonic = Sine(freq=freq * 2, mul=env * BRIGHTNESS * 0.5)
-            harmonic2 = Sine(freq=freq * 3, mul=env * BRIGHTNESS * 0.25)
-            osc = Mix([osc, harmonic, harmonic2], voices=1)
+            note_audio += generate_waveform(freq * 2, t[note_mask], "sine") * BRIGHTNESS * 0.5
+            note_audio += generate_waveform(freq * 3, t[note_mask], "sine") * BRIGHTNESS * 0.25
+            note_audio /= 1 + BRIGHTNESS * 0.75
 
-        oscs.append(osc)
+        # Apply envelope and add to output
+        audio[note_mask] += note_audio * note_env * 0.4
 
-    # Mix all notes
-    mixed = Mix(oscs, voices=1)
-
-    # Optional chorus for shimmer
-    if CHORUS_ENABLED:
-        mixed = Chorus(mixed, depth=0.5, feedback=0.2, bal=0.3)
-
-    # Light reverb for polish
+    # Apply reverb
     if REVERB_MIX > 0:
-        mixed = Freeverb(mixed, size=0.3, damp=0.7, bal=REVERB_MIX)
+        audio = simple_reverb(audio, REVERB_MIX, SAMPLE_RATE)
 
-    # Store envelope data for triggering
-    mixed._coin_envs = envs
-
-    return mixed
+    return audio.astype(np.float32)
 
 
 def render():
     """Render the coin sound to WAV file."""
-    s = Server(audio="offline")
-    s.setSamplingRate(SAMPLE_RATE)
-    s.setNchnls(1)
-    s.boot()
-    s.recordOptions(filename=OUTPUT_FILE, fileformat=0, sampletype=1)
+    audio = build_coin()
 
-    signal = build_coin(s)
-    signal.out()
+    # Normalize
+    max_val = np.max(np.abs(audio))
+    if max_val > 0:
+        audio = audio / max_val * 0.9
 
-    s.start()
-    s.recstart()
-
-    # Trigger each note with its delay
-    for trig, env, delay in signal._coin_envs:
-        time.sleep(delay if delay == signal._coin_envs[0][2] else GAP_BETWEEN_NOTES)
-        trig.play()
-
-    # Wait for last note to finish
-    time.sleep(NOTE_DURATION + 0.15)
-    s.recstop()
-    s.stop()
-    s.shutdown()
-
+    sf.write(OUTPUT_FILE, audio, SAMPLE_RATE, subtype='PCM_16')
     print(f"Generated: {OUTPUT_FILE}")
 
 
@@ -150,12 +136,12 @@ def coin_classic():
 
 def coin_gem():
     """Sparkly gem pickup - longer, more magical."""
-    global NOTES, GAP_BETWEEN_NOTES, NOTE_DURATION, CHORUS_ENABLED, BRIGHTNESS
+    global NOTES, GAP_BETWEEN_NOTES, NOTE_DURATION, BRIGHTNESS, REVERB_MIX
     NOTES = [523, 659, 784, 988, 1047]  # C5 -> E5 -> G5 -> B5 -> C6
     GAP_BETWEEN_NOTES = 0.05
     NOTE_DURATION = 0.1
-    CHORUS_ENABLED = True
     BRIGHTNESS = 0.5
+    REVERB_MIX = 0.25
 
 
 def coin_power():
@@ -169,10 +155,9 @@ def coin_power():
 
 def coin_retro():
     """8-bit retro coin."""
-    global NOTES, WAVEFORM, CHORUS_ENABLED, REVERB_MIX, BRIGHTNESS
+    global NOTES, WAVEFORM, REVERB_MIX, BRIGHTNESS
     NOTES = [880, 1175]  # A5 -> D6
     WAVEFORM = "square"
-    CHORUS_ENABLED = False
     REVERB_MIX = 0.0
     BRIGHTNESS = 0.0
 

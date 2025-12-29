@@ -7,10 +7,13 @@ Rising then falling pitch with quick attack.
 Technique: Frequency modulation with pitch envelope
 Character: Bouncy, playful, responsive
 Duration: 0.15 - 0.3 seconds
+
+Dependencies: pip install numpy scipy soundfile
 """
 
-from pyo import *
-import time
+import numpy as np
+import soundfile as sf
+from scipy import signal
 
 # =============================================================================
 # PARAMETERS
@@ -28,16 +31,11 @@ WAVEFORM = "sine"           # "sine", "square", "triangle"
 ADD_HARMONICS = True        # Add upper harmonics for presence
 
 # Envelope
-ATTACK = 0.01               # Quick attack
-DECAY = 0.15                # Main body
-RELEASE = 0.05              # Short tail
+DECAY_RATE = 10             # Exponential decay rate
 
 # Filter (optional warmth)
 FILTER_ENABLED = True       # Low-pass filter
 FILTER_FREQ = 2000          # Cutoff frequency
-
-# Effects
-SUBTLE_CHORUS = False       # Very light chorus for width
 
 # Output
 DURATION = 0.25
@@ -49,71 +47,73 @@ OUTPUT_FILE = "jump.wav"
 # SYNTHESIS
 # =============================================================================
 
-def build_jump(s):
-    """Build the jump sound synthesis chain."""
+def generate_waveform(phase, waveform):
+    """Generate waveform from phase array."""
+    if waveform == "square":
+        return np.sign(np.sin(phase))
+    elif waveform == "triangle":
+        # Use sawtooth and fold
+        saw = 2 * (phase / (2 * np.pi) % 1) - 1
+        return 2 * np.abs(saw) - 1
+    else:  # sine
+        return np.sin(phase)
 
-    # Amplitude envelope
-    env = Adsr(
-        attack=ATTACK,
-        decay=DECAY,
-        sustain=0,
-        release=RELEASE,
-        dur=DURATION
-    )
-    env.play()
+
+def build_jump():
+    """Build the jump sound synthesis chain."""
+    num_samples = int(SAMPLE_RATE * DURATION)
+    t = np.linspace(0, DURATION, num_samples, dtype=np.float32)
 
     # Pitch envelope: rise then fall
-    # Using Linseg with multiple points
-    pitch_env = Linseg([
-        (0, START_FREQ),
-        (RISE_TIME, PEAK_FREQ),
-        (RISE_TIME + FALL_TIME, END_FREQ)
-    ])
-    pitch_env.play()
+    rise_samples = int(RISE_TIME * SAMPLE_RATE)
+    fall_samples = int(FALL_TIME * SAMPLE_RATE)
 
-    # Main oscillator
-    if WAVEFORM == "square":
-        osc = LFO(freq=pitch_env, type=2, mul=env)
-    elif WAVEFORM == "triangle":
-        osc = LFO(freq=pitch_env, type=3, mul=env)
+    freq = np.zeros(num_samples, dtype=np.float32)
+    freq[:rise_samples] = np.linspace(START_FREQ, PEAK_FREQ, rise_samples)
+
+    fall_end = rise_samples + fall_samples
+    if fall_end <= num_samples:
+        freq[rise_samples:fall_end] = np.linspace(PEAK_FREQ, END_FREQ, fall_samples)
+        freq[fall_end:] = END_FREQ
     else:
-        osc = Sine(freq=pitch_env, mul=env)
+        freq[rise_samples:] = np.linspace(PEAK_FREQ, END_FREQ, num_samples - rise_samples)
+
+    # Integrate frequency to get continuous phase
+    phase = np.cumsum(2 * np.pi * freq / SAMPLE_RATE)
+
+    # Generate main oscillator
+    audio = generate_waveform(phase, WAVEFORM)
 
     # Add harmonics for presence
     if ADD_HARMONICS:
-        harm1 = Sine(freq=pitch_env * 2, mul=env * 0.3)
-        harm2 = Sine(freq=pitch_env * 3, mul=env * 0.15)
-        osc = Mix([osc, harm1, harm2], voices=1)
+        audio += generate_waveform(phase * 2, "sine") * 0.3
+        audio += generate_waveform(phase * 3, "sine") * 0.15
+        audio /= 1.45
+
+    # Amplitude envelope
+    env = np.exp(-t * DECAY_RATE)
+    audio *= env
 
     # Optional lowpass for warmth
     if FILTER_ENABLED:
-        osc = ButLP(osc, freq=FILTER_FREQ)
+        nyquist = SAMPLE_RATE / 2
+        normalized_cutoff = min(FILTER_FREQ / nyquist, 0.99)
+        b, a = signal.butter(2, normalized_cutoff, btype='low')
+        audio = signal.filtfilt(b, a, audio)
 
-    # Optional subtle chorus
-    if SUBTLE_CHORUS:
-        osc = Chorus(osc, depth=0.3, feedback=0.1, bal=0.2)
-
-    return osc
+    return audio.astype(np.float32)
 
 
 def render():
     """Render the jump sound to WAV file."""
-    s = Server(audio="offline")
-    s.setSamplingRate(SAMPLE_RATE)
-    s.setNchnls(1)
-    s.boot()
-    s.recordOptions(filename=OUTPUT_FILE, fileformat=0, sampletype=1)
+    audio = build_jump()
 
-    signal = build_jump(s)
-    signal.out()
+    # Normalize
+    max_val = np.max(np.abs(audio))
+    if max_val > 0:
+        audio = audio / max_val * 0.9
 
-    s.start()
-    s.recstart()
-    time.sleep(DURATION + 0.1)
-    s.recstop()
-    s.stop()
-    s.shutdown()
-
+    sf.write(OUTPUT_FILE, audio, SAMPLE_RATE, subtype='PCM_16')
     print(f"Generated: {OUTPUT_FILE}")
 
 
@@ -164,13 +164,14 @@ def jump_retro():
 
 def jump_floaty():
     """Floaty/low gravity jump."""
-    global RISE_TIME, FALL_TIME, DURATION, START_FREQ, PEAK_FREQ, END_FREQ
+    global RISE_TIME, FALL_TIME, DURATION, START_FREQ, PEAK_FREQ, END_FREQ, DECAY_RATE
     RISE_TIME = 0.15
     FALL_TIME = 0.25
     DURATION = 0.45
     START_FREQ = 120
     PEAK_FREQ = 280
     END_FREQ = 150
+    DECAY_RATE = 5
 
 
 if __name__ == "__main__":

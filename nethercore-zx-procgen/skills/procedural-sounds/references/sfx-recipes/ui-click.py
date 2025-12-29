@@ -7,10 +7,12 @@ Very short sine blip for interface feedback.
 Technique: Simple sine with ultra-short envelope
 Character: Clean, responsive, non-intrusive
 Duration: 0.02 - 0.08 seconds
+
+Dependencies: pip install numpy scipy soundfile
 """
 
-from pyo import *
-import time
+import numpy as np
+import soundfile as sf
 
 # =============================================================================
 # PARAMETERS
@@ -21,12 +23,11 @@ FREQUENCY = 800             # Click pitch (Hz)
 HARMONICS = True            # Add subtle harmonics
 
 # Envelope
-ATTACK = 0.001              # Instant
-DECAY = 0.02                # Very quick
-RELEASE = 0.01              # Minimal tail
+ATTACK = 0.001              # Instant attack
+DECAY_RATE = 80             # Very quick decay
 
 # Character
-CLICK_TYPE = "soft"         # "soft", "crisp", "woody", "digital"
+CLICK_TYPE = "soft"         # "soft", "crisp", "woody", "digital", "heavy"
 
 # Output
 DURATION = 0.04
@@ -42,36 +43,31 @@ CLICK_TYPES = {
     "soft": {
         "frequency": 600,
         "harmonics": False,
-        "attack": 0.002,
-        "decay": 0.025,
+        "decay_rate": 60,
         "duration": 0.04
     },
     "crisp": {
         "frequency": 1000,
         "harmonics": True,
-        "attack": 0.001,
-        "decay": 0.015,
+        "decay_rate": 100,
         "duration": 0.03
     },
     "woody": {
         "frequency": 400,
         "harmonics": True,
-        "attack": 0.001,
-        "decay": 0.035,
+        "decay_rate": 50,
         "duration": 0.05
     },
     "digital": {
         "frequency": 1200,
         "harmonics": False,
-        "attack": 0.0005,
-        "decay": 0.01,
+        "decay_rate": 150,
         "duration": 0.02
     },
     "heavy": {
         "frequency": 300,
         "harmonics": True,
-        "attack": 0.002,
-        "decay": 0.04,
+        "decay_rate": 40,
         "duration": 0.06
     }
 }
@@ -79,14 +75,13 @@ CLICK_TYPES = {
 
 def apply_click_type(click_name):
     """Apply parameters from click preset."""
-    global FREQUENCY, HARMONICS, ATTACK, DECAY, DURATION
+    global FREQUENCY, HARMONICS, DECAY_RATE, DURATION
 
     if click_name in CLICK_TYPES:
         preset = CLICK_TYPES[click_name]
         FREQUENCY = preset["frequency"]
         HARMONICS = preset["harmonics"]
-        ATTACK = preset["attack"]
-        DECAY = preset["decay"]
+        DECAY_RATE = preset["decay_rate"]
         DURATION = preset["duration"]
 
 
@@ -94,28 +89,27 @@ def apply_click_type(click_name):
 # SYNTHESIS
 # =============================================================================
 
-def build_click(s):
+def build_click():
     """Build the UI click synthesis chain."""
+    num_samples = int(SAMPLE_RATE * DURATION)
+    t = np.linspace(0, DURATION, num_samples, dtype=np.float32)
 
-    env = Adsr(
-        attack=ATTACK,
-        decay=DECAY,
-        sustain=0,
-        release=RELEASE,
-        dur=DURATION
-    )
-    env.play()
+    # Envelope with quick attack and decay
+    attack_samples = int(ATTACK * SAMPLE_RATE)
+    env = np.exp(-t * DECAY_RATE)
+    if attack_samples > 0 and attack_samples < num_samples:
+        env[:attack_samples] *= np.linspace(0, 1, attack_samples)
 
     # Main tone
-    osc = Sine(freq=FREQUENCY, mul=env)
+    audio = np.sin(2 * np.pi * FREQUENCY * t) * env
 
     # Optional harmonics for presence
     if HARMONICS:
-        harm1 = Sine(freq=FREQUENCY * 2, mul=env * 0.2)
-        harm2 = Sine(freq=FREQUENCY * 3, mul=env * 0.1)
-        osc = Mix([osc, harm1, harm2], voices=1)
+        audio += np.sin(2 * np.pi * FREQUENCY * 2 * t) * env * 0.2
+        audio += np.sin(2 * np.pi * FREQUENCY * 3 * t) * env * 0.1
+        audio /= 1.3  # Normalize
 
-    return osc
+    return audio.astype(np.float32)
 
 
 def render():
@@ -123,22 +117,14 @@ def render():
     if CLICK_TYPE in CLICK_TYPES:
         apply_click_type(CLICK_TYPE)
 
-    s = Server(audio="offline")
-    s.setSamplingRate(SAMPLE_RATE)
-    s.setNchnls(1)
-    s.boot()
-    s.recordOptions(filename=OUTPUT_FILE, fileformat=0, sampletype=1)
+    audio = build_click()
 
-    signal = build_click(s)
-    signal.out()
+    # Normalize
+    max_val = np.max(np.abs(audio))
+    if max_val > 0:
+        audio = audio / max_val * 0.9
 
-    s.start()
-    s.recstart()
-    time.sleep(DURATION + 0.02)
-    s.recstop()
-    s.stop()
-    s.shutdown()
-
+    sf.write(OUTPUT_FILE, audio, SAMPLE_RATE, subtype='PCM_16')
     print(f"Generated: {OUTPUT_FILE}")
 
 
@@ -148,48 +134,37 @@ def render():
 
 def ui_hover():
     """Mouse hover - very subtle."""
-    global FREQUENCY, DECAY, DURATION, HARMONICS
+    global FREQUENCY, DECAY_RATE, DURATION, HARMONICS
     FREQUENCY = 900
-    DECAY = 0.01
+    DECAY_RATE = 120
     DURATION = 0.02
     HARMONICS = False
 
 
 def ui_confirm():
     """Confirm/accept action - positive feel."""
-    global FREQUENCY, DECAY, DURATION, HARMONICS
+    global FREQUENCY, DECAY_RATE, DURATION, HARMONICS
     FREQUENCY = 700
-    DECAY = 0.03
+    DECAY_RATE = 50
     DURATION = 0.05
     HARMONICS = True
 
 
 def ui_cancel():
     """Cancel/back action - slightly lower."""
-    global FREQUENCY, DECAY, DURATION
+    global FREQUENCY, DECAY_RATE, DURATION
     FREQUENCY = 400
-    DECAY = 0.025
+    DECAY_RATE = 60
     DURATION = 0.04
 
 
 def ui_error():
     """Error/invalid action - dissonant."""
-    global FREQUENCY, DECAY, DURATION, OUTPUT_FILE
+    global FREQUENCY, DECAY_RATE, DURATION, OUTPUT_FILE
     FREQUENCY = 250
-    DECAY = 0.06
+    DECAY_RATE = 30
     DURATION = 0.08
     OUTPUT_FILE = "ui_error.wav"
-
-
-def ui_toggle_on():
-    """Toggle switch on - rising pitch."""
-    # This needs custom synthesis for pitch change
-    pass
-
-
-def ui_toggle_off():
-    """Toggle switch off - falling pitch."""
-    pass
 
 
 def render_ui_set(output_dir="."):

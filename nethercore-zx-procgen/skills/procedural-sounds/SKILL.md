@@ -1,12 +1,12 @@
 ---
-name: Procedural Sound Generation with pyo
-description: This skill should be used when the user asks to "generate sound", "create sound effect", "procedural audio", "synth sound", "synthesize sound", "pyo synthesis", "make SFX", "game audio", "WAV generation", "audio synthesis", "sound design", "FM synthesis", "subtractive synthesis", "additive synthesis", "granular synthesis", or mentions sound effects, audio generation, procedural audio, or sound design for game assets. Provides comprehensive guidance for creating procedural sounds using the pyo Python DSP library.
-version: 2.0.0
+name: Procedural Sound Generation with NumPy/SciPy
+description: This skill should be used when the user asks to "generate sound", "create sound effect", "procedural audio", "synth sound", "synthesize sound", "numpy synthesis", "scipy audio", "make SFX", "game audio", "WAV generation", "audio synthesis", "sound design", "FM synthesis", "subtractive synthesis", "additive synthesis", or mentions sound effects, audio generation, procedural audio, or sound design for game assets. Provides comprehensive guidance for creating procedural sounds using numpy, scipy.signal, and soundfile.
+version: 3.0.0
 ---
 
-# Procedural Sound Generation with pyo
+# Procedural Sound Generation with NumPy/SciPy
 
-Generate production-quality game sound effects using pyo, a Python DSP module with 250+ signal processing classes.
+Generate production-quality game sound effects using numpy for array operations, scipy.signal for filtering, and soundfile for WAV output. A lean, portable stack with no audio hardware requirements.
 
 ## Build Integration
 
@@ -25,93 +25,110 @@ See the **Native Asset Pipeline** skill for full architecture details.
 
 ## Prerequisites
 
-Install pyo and portaudio:
+Install with pip (no native dependencies required):
 
 ```bash
-# macOS
-brew install portaudio
-pip install pyo
-
-# Windows
-pip install pyo  # Includes portaudio
-
-# Linux
-sudo apt-get install libportaudio2 portaudio19-dev
-pip install pyo
+pip install numpy scipy soundfile
 ```
 
-## Offline Rendering (Critical)
+That's it - works on all platforms without portaudio or special setup.
 
-Always use `audio="offline"` to render without audio hardware:
+## Core Workflow
+
+Render sounds to WAV files with pure numpy operations:
 
 ```python
-from pyo import *
-import time
+import numpy as np
+import soundfile as sf
+from scipy import signal
 
-s = Server(audio="offline")
-s.boot()
-s.recordOptions(filename="output.wav", fileformat=0, sampletype=1)
+SAMPLE_RATE = 22050  # ZX standard
 
-# Build synthesis chain here...
-# signal.out()
+def render_sound(filename: str, audio: np.ndarray):
+    """Write audio array to 16-bit WAV file."""
+    # Normalize to prevent clipping
+    if np.max(np.abs(audio)) > 0:
+        audio = audio / np.max(np.abs(audio)) * 0.9
+    sf.write(filename, audio, SAMPLE_RATE, subtype='PCM_16')
 
-s.start()
-s.recstart()
-time.sleep(duration)
-s.recstop()
-s.stop()
+# Example: Simple sine tone
+duration = 0.5
+t = np.linspace(0, duration, int(SAMPLE_RATE * duration), dtype=np.float32)
+audio = np.sin(2 * np.pi * 440 * t)
+render_sound("tone.wav", audio)
 ```
 
-See `references/pyo-offline-workflow.md` for complete workflow patterns.
+See `references/numpy-scipy-workflow.md` for complete workflow patterns.
 
 ## ZX Audio Requirements
 
 | Spec | Value | Notes |
 |------|-------|-------|
-| Sample Rate | 22050 Hz | Set via `s.setSamplingRate(22050)` |
-| Bit Depth | 16-bit | `sampletype=1` in recordOptions |
+| Sample Rate | 22050 Hz | Standard for all ZX audio |
+| Bit Depth | 16-bit | Via `subtype='PCM_16'` |
 | Channels | Mono | Stereo panning done at playback |
 | Max Duration | ~2 seconds | Typical SFX budget |
 | Simultaneous | 16 channels | Plus 1 dedicated music channel |
 
 ## Technique Selection
 
-| Technique | Best For | Key Classes |
-|-----------|----------|-------------|
-| **Subtractive** | Bassy, warm, explosive | `Noise` → `MoogLP` |
-| **FM** | Metallic, bells, digital | `FM`, `CrossFM` |
-| **Additive** | Organs, complex tones | Multiple `Sine` summed |
-| **Granular** | Textures, ambience | `Granulator` |
+| Technique | Best For | Key Functions |
+|-----------|----------|---------------|
+| **Subtractive** | Bassy, warm, explosive | `np.random` + `signal.butter` |
+| **FM** | Metallic, bells, digital | `np.sin` with modulation |
+| **Additive** | Organs, complex tones | Multiple `np.sin` summed |
+| **Karplus-Strong** | Plucked strings | Delay line averaging |
 
-See `references/pyo-building-blocks.md` for complete class reference.
+See `references/numpy-scipy-building-blocks.md` for complete function reference.
 
 ## Common SFX Patterns
 
 ### Laser/Zap
 Descending frequency sweep with harmonics:
 ```python
-env = Adsr(attack=0.01, decay=0.15, sustain=0, release=0.05, dur=0.2)
-lfo = Sine(freq=50, mul=200)
-osc = SuperSaw(freq=Sig(1200) + lfo, detune=0.5, bal=0.7, mul=env)
-filt = MoogLP(osc, freq=4000, res=0.3)
+def make_laser(duration=0.2, start_freq=1200, end_freq=200):
+    t = np.linspace(0, duration, int(SAMPLE_RATE * duration))
+    freq_sweep = np.linspace(start_freq, end_freq, len(t))
+    phase = np.cumsum(2 * np.pi * freq_sweep / SAMPLE_RATE)
+    osc = np.sin(phase) + 0.3 * np.sin(2 * phase)  # Add harmonics
+    env = np.exp(-t * 15)  # Quick decay
+    return osc * env
 ```
 
 ### Explosion
-Noise burst with lowpass sweep and reverb:
+Noise burst with lowpass sweep:
 ```python
-env = Adsr(attack=0.01, decay=0.6, sustain=0, release=0.3, dur=0.9)
-noise = PinkNoise(mul=env)
-filt = MoogLP(noise, freq=Linseg([(0, 3000), (0.5, 200)]), res=0.4)
-verb = Freeverb(filt, size=0.8, damp=0.5)
+def make_explosion(duration=0.8):
+    t = np.linspace(0, duration, int(SAMPLE_RATE * duration))
+    noise = np.random.randn(len(t))  # White noise
+    env = np.exp(-t * 3)  # Slower decay
+
+    # Sweep filter from high to low
+    cutoff_sweep = np.linspace(0.3, 0.02, len(t))
+    filtered = np.zeros_like(noise)
+    for i, cutoff in enumerate(cutoff_sweep[::100]):
+        start, end = i*100, min((i+1)*100, len(t))
+        b, a = signal.butter(2, cutoff, btype='low')
+        filtered[start:end] = signal.lfilter(b, a, noise[start:end])
+
+    return filtered * env
 ```
 
 ### Coin/Pickup
 Ascending arpeggio with quick decay:
 ```python
-freqs = [523, 659, 784, 1047]  # C5, E5, G5, C6
-trigs = [Trig().stop() for _ in freqs]
-envs = [Adsr(attack=0.005, decay=0.1, sustain=0, release=0.05, dur=0.12, trig=t) for t in trigs]
-oscs = [Sine(freq=f, mul=e) for f, e in zip(freqs, envs)]
+def make_coin(duration=0.4):
+    freqs = [523, 659, 784, 1047]  # C5, E5, G5, C6
+    t = np.linspace(0, duration, int(SAMPLE_RATE * duration))
+    audio = np.zeros_like(t)
+
+    for i, freq in enumerate(freqs):
+        note_start = i * 0.08
+        note_env = np.where(t >= note_start,
+                          np.exp(-(t - note_start) * 25), 0)
+        audio += np.sin(2 * np.pi * freq * t) * note_env * 0.3
+
+    return audio
 ```
 
 See `references/sfx-recipes/` for complete production-ready recipes for all common game sounds.
@@ -151,8 +168,19 @@ generator/
     └── export.py       # WAV export utilities
 ```
 
+## Why NumPy/SciPy?
+
+| Aspect | NumPy/SciPy/Soundfile | pyo |
+|--------|----------------------|-----|
+| Dependencies | 3 pip packages | pyo + portaudio |
+| Installation | `pip install` only | Requires native libs |
+| Audio hardware | Not needed | Needs server/offline mode |
+| Code style | Array operations | Object graph |
+| Learning curve | Standard NumPy | Custom DSP library |
+| Portability | All platforms | Platform-specific issues |
+
 ## Additional Resources
 
-- `references/pyo-offline-workflow.md` — Offline rendering patterns
-- `references/pyo-building-blocks.md` — Complete pyo class reference
+- `references/numpy-scipy-workflow.md` — Complete rendering patterns
+- `references/numpy-scipy-building-blocks.md` — Synthesis function reference
 - `references/sfx-recipes/` — Production-ready recipes for all common SFX

@@ -1,6 +1,6 @@
 ---
 name: Generate SFX
-description: Quick single sound effect generation using pyo synthesis
+description: Quick single sound effect generation using numpy/scipy synthesis
 argument-hint: "<type> [output-path]"
 allowed-tools:
   - Read
@@ -11,7 +11,7 @@ allowed-tools:
 
 # Generate SFX Command
 
-Generate a Python script for a game sound effect using pyo synthesis.
+Generate a Python script for a game sound effect using NumPy/SciPy synthesis.
 
 ## Arguments
 
@@ -42,18 +42,18 @@ The user may provide:
 5. **Provide Instructions**
    - Show how to run the script
    - Explain customization options
-   - Note any prerequisites (pyo installation)
+   - Note prerequisites (numpy, scipy, soundfile)
 
 ## Sound Types
 
 | Type | Description | Technique |
 |------|-------------|-----------|
-| `laser` | Sci-fi zap/shoot | SuperSaw sweep |
-| `explosion` | Impact/boom | Layered noise |
+| `laser` | Sci-fi zap/shoot | Frequency sweep |
+| `explosion` | Impact/boom | Layered noise + sub |
 | `coin` | Pickup/collect | Arpeggio |
 | `jump` | Player jump | Pitch arc |
 | `hit` | Damage/punch | Noise transient |
-| `powerup` | Power-up collect | FM + chorus |
+| `powerup` | Power-up collect | FM + arpeggio |
 | `footstep` | Walking sounds | Filtered noise |
 | `click` | UI interaction | Sine blip |
 
@@ -77,12 +77,18 @@ The generated script will be self-contained with:
 
 Remind the user that they need:
 1. Python 3.x
-2. pyo library (`pip install pyo`)
-3. portaudio (usually bundled on Windows, may need install on Linux/macOS)
+2. NumPy (`pip install numpy`)
+3. SciPy (`pip install scipy`)
+4. soundfile (`pip install soundfile`)
+
+Or install all at once:
+```bash
+pip install numpy scipy soundfile
+```
 
 ## If Type Not Recognized
 
 If the user requests a sound type not in the recipe list:
 1. Explain available types
-2. Offer to create a custom recipe using the pyo building blocks
+2. Offer to create a custom recipe using the numpy/scipy building blocks
 3. Reference the procedural-sounds skill for synthesis guidance

@@ -2,15 +2,18 @@
 """
 Powerup Sound Effect
 ====================
-Rising pitch with FM shimmer and chorus for magical feel.
+Rising pitch with FM shimmer and optional arpeggio for magical feel.
 
-Technique: FM synthesis + chorus + rising sweep
+Technique: FM synthesis + arpeggio overlay
 Character: Magical, empowering, exciting
 Duration: 0.4 - 0.8 seconds
+
+Dependencies: pip install numpy scipy soundfile
 """
 
-from pyo import *
-import time
+import numpy as np
+import soundfile as sf
+from scipy import signal
 
 # =============================================================================
 # PARAMETERS
@@ -33,14 +36,11 @@ ARPEGGIO_INTERVAL = 0.08    # Time between notes
 ARPEGGIO_MIX = 0.3          # Mix level
 
 # Effects
-CHORUS_ENABLED = True       # Chorus for width/shimmer
-CHORUS_DEPTH = 0.7          # Depth (0-1)
 REVERB_MIX = 0.25           # Reverb mix
 
 # Envelope
 ATTACK = 0.05               # Gradual attack
-DECAY = 0.4                 # Long decay
-RELEASE = 0.15              # Smooth release
+DECAY_RATE = 3              # Exponential decay rate
 
 # Output
 DURATION = 0.6
@@ -49,119 +49,96 @@ OUTPUT_FILE = "powerup.wav"
 
 
 # =============================================================================
+# UTILITIES
+# =============================================================================
+
+def simple_reverb(audio, mix, sample_rate):
+    """Simple reverb effect."""
+    if mix <= 0:
+        return audio
+
+    delays = [int(d * sample_rate) for d in [0.03, 0.037, 0.045]]
+    output = np.zeros(len(audio) + max(delays), dtype=np.float32)
+    output[:len(audio)] = audio
+
+    for delay in delays:
+        for i in range(delay, len(output) - 1):
+            output[i] += output[i - delay] * 0.4
+
+    output = output[:len(audio)]
+    return audio * (1 - mix) + output * mix
+
+
+# =============================================================================
 # SYNTHESIS
 # =============================================================================
 
-def build_powerup(s):
+def build_powerup():
     """Build the powerup sound synthesis chain."""
+    num_samples = int(SAMPLE_RATE * DURATION)
+    t = np.linspace(0, DURATION, num_samples, dtype=np.float32)
 
     # === MAIN SWEEP ===
-    env_main = Adsr(
-        attack=ATTACK,
-        decay=DECAY,
-        sustain=0.3,
-        release=RELEASE,
-        dur=DURATION
-    )
-    env_main.play()
+    # Frequency sweep
+    sweep_samples = int(SWEEP_TIME * SAMPLE_RATE)
+    freq = np.zeros(num_samples, dtype=np.float32)
+    freq[:sweep_samples] = np.linspace(START_FREQ, END_FREQ, sweep_samples)
+    freq[sweep_samples:] = END_FREQ
 
-    # Rising frequency
-    freq_sweep = Linseg([(0, START_FREQ), (SWEEP_TIME, END_FREQ)])
-    freq_sweep.play()
+    # Integrate frequency to get phase
+    phase = np.cumsum(2 * np.pi * freq / SAMPLE_RATE)
+
+    # Envelope
+    env = 1 - np.exp(-t / ATTACK)  # Attack
+    env *= np.exp(-(t - DURATION * 0.3).clip(0) * DECAY_RATE)  # Decay after peak
 
     # Main oscillator (FM or simple)
     if FM_ENABLED:
-        # FM synthesis for shimmer
-        main_osc = FM(
-            carrier=freq_sweep,
-            ratio=FM_RATIO,
-            index=FM_INDEX,
-            mul=env_main
-        )
-    else:
-        main_osc = Sine(freq=freq_sweep, mul=env_main)
+        # FM synthesis
+        mod_freq = freq * FM_RATIO
+        mod_phase = np.cumsum(2 * np.pi * mod_freq / SAMPLE_RATE)
+        modulator = np.sin(mod_phase)
 
-    layers = [main_osc]
+        # Index envelope (decays over time)
+        index_env = FM_INDEX * np.exp(-t * 2)
+        main_audio = np.sin(phase + index_env * modulator) * env
+    else:
+        main_audio = np.sin(phase) * env
 
     # === ARPEGGIO SPARKLE ===
     if ARPEGGIO_ENABLED:
-        arp_oscs = []
-        arp_data = []
+        arp_audio = np.zeros(num_samples, dtype=np.float32)
 
-        for i, freq in enumerate(ARPEGGIO_NOTES):
-            trig = Trig()
-            env = Adsr(
-                attack=0.005,
-                decay=0.1,
-                sustain=0,
-                release=0.05,
-                dur=0.12,
-                trig=trig
-            )
-            osc = Sine(freq=freq, mul=env * ARPEGGIO_MIX)
-            arp_oscs.append(osc)
-            arp_data.append((trig, i * ARPEGGIO_INTERVAL))
+        for i, note_freq in enumerate(ARPEGGIO_NOTES):
+            note_start = i * ARPEGGIO_INTERVAL
+            note_mask = t >= note_start
+            note_t = t[note_mask] - note_start
 
-        arp_mix = Mix(arp_oscs, voices=1)
-        layers.append(arp_mix)
+            # Note with quick decay
+            note_env = np.exp(-note_t * 15)
+            note = np.sin(2 * np.pi * note_freq * note_t) * note_env
 
-        # Store for triggering
-        main_osc._arp_data = arp_data
-    else:
-        main_osc._arp_data = []
+            arp_audio[note_mask] += note * ARPEGGIO_MIX
 
-    # === MIX LAYERS ===
-    mixed = Mix(layers, voices=1)
+        main_audio = main_audio + arp_audio
 
-    # === EFFECTS ===
-    if CHORUS_ENABLED:
-        mixed = Chorus(
-            mixed,
-            depth=CHORUS_DEPTH,
-            feedback=0.3,
-            bal=0.4
-        )
-
+    # === REVERB ===
     if REVERB_MIX > 0:
-        mixed = Freeverb(
-            mixed,
-            size=0.5,
-            damp=0.6,
-            bal=REVERB_MIX
-        )
+        main_audio = simple_reverb(main_audio, REVERB_MIX, SAMPLE_RATE)
 
-    mixed._arp_data = main_osc._arp_data
-    return mixed
+    return main_audio.astype(np.float32)
 
 
 def render():
     """Render the powerup sound to WAV file."""
-    s = Server(audio="offline")
-    s.setSamplingRate(SAMPLE_RATE)
-    s.setNchnls(1)
-    s.boot()
-    s.recordOptions(filename=OUTPUT_FILE, fileformat=0, sampletype=1)
+    audio = build_powerup()
 
-    signal = build_powerup(s)
-    signal.out()
+    # Normalize
+    max_val = np.max(np.abs(audio))
+    if max_val > 0:
+        audio = audio / max_val * 0.9
 
-    s.start()
-    s.recstart()
-
-    # Trigger arpeggio notes
-    current_time = 0
-    for trig, delay in signal._arp_data:
-        wait_time = delay - current_time
-        if wait_time > 0:
-            time.sleep(wait_time)
-            current_time = delay
-        trig.play()
-
-    time.sleep(DURATION - current_time + 0.2)
-    s.recstop()
-    s.stop()
-    s.shutdown()
-
+    sf.write(OUTPUT_FILE, audio, SAMPLE_RATE, subtype='PCM_16')
     print(f"Generated: {OUTPUT_FILE}")
 
 
@@ -171,11 +148,10 @@ def render():
 
 def powerup_health():
     """Health restore - gentle, warm."""
-    global START_FREQ, END_FREQ, FM_ENABLED, CHORUS_DEPTH, REVERB_MIX
+    global START_FREQ, END_FREQ, FM_ENABLED, REVERB_MIX
     START_FREQ = 300
     END_FREQ = 500
     FM_ENABLED = False
-    CHORUS_DEPTH = 0.4
     REVERB_MIX = 0.35
 
 
@@ -197,16 +173,15 @@ def powerup_ultimate():
     END_FREQ = 1000
     FM_INDEX = 6.0
     REVERB_MIX = 0.4
-    ARPEGGIO_NOTES = [262, 392, 523, 659, 784, 1047]  # More notes
+    ARPEGGIO_NOTES = [262, 392, 523, 659, 784, 1047]
 
 
 def powerup_subtle():
     """Small buff - subtle, quick."""
-    global DURATION, SWEEP_TIME, ARPEGGIO_ENABLED, CHORUS_ENABLED, FM_ENABLED
+    global DURATION, SWEEP_TIME, ARPEGGIO_ENABLED, FM_ENABLED
     DURATION = 0.3
     SWEEP_TIME = 0.2
     ARPEGGIO_ENABLED = False
-    CHORUS_ENABLED = False
     FM_ENABLED = False
 
 
@@ -216,7 +191,7 @@ def powerup_dark():
     START_FREQ = 100
     END_FREQ = 300
     FM_RATIO = 1.5
-    FM_INDEX = 8.0  # More dissonant
+    FM_INDEX = 8.0
 
 
 if __name__ == "__main__":

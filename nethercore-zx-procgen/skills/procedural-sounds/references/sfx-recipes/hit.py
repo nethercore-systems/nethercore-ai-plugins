@@ -7,10 +7,13 @@ Short noise burst with quick lowpass and body thump.
 Technique: Noise + sine transient, heavily filtered
 Character: Impactful, physical, weighty
 Duration: 0.05 - 0.2 seconds
+
+Dependencies: pip install numpy scipy soundfile
 """
 
-from pyo import *
-import time
+import numpy as np
+import soundfile as sf
+from scipy import signal
 
 # =============================================================================
 # PARAMETERS
@@ -18,16 +21,15 @@ import time
 
 # Transient (the initial "thwack")
 TRANSIENT_FREQ = 100        # Low thump frequency (Hz)
-TRANSIENT_DECAY = 0.03      # Very quick decay
+TRANSIENT_DECAY = 30        # Exponential decay rate
 
 # Noise layer (the "texture")
 NOISE_TYPE = "white"        # "white" for sharp, "pink" for softer
-NOISE_DECAY = 0.08          # Noise decay time
+NOISE_DECAY = 20            # Noise decay rate
 NOISE_MIX = 0.6             # Mix level (0-1)
 
 # Filter
 FILTER_FREQ = 1500          # Cutoff frequency (Hz)
-FILTER_RES = 0.5            # Resonance (adds punch)
 FILTER_SWEEP = True         # Sweep filter down
 FILTER_END = 300            # Ending cutoff if sweeping
 
@@ -36,112 +38,106 @@ BODY_ENABLED = True         # Add low-end thump
 BODY_FREQ = 80              # Body frequency (Hz)
 BODY_MIX = 0.4              # Body mix level
 
-# Envelope
-ATTACK = 0.001              # Instant attack
-TOTAL_DURATION = 0.1        # Total length
-
 # Compression (for punch)
-COMPRESS = True             # Use compression
-COMPRESS_RATIO = 6          # Compression ratio
+COMPRESS = True             # Use soft clipping
 
 # Output
+DURATION = 0.1
 SAMPLE_RATE = 22050
 OUTPUT_FILE = "hit.wav"
+
+
+# =============================================================================
+# UTILITIES
+# =============================================================================
+
+def generate_noise(noise_type, num_samples):
+    """Generate noise of specified type."""
+    if noise_type == "pink":
+        white = np.random.randn(num_samples)
+        fft = np.fft.rfft(white)
+        freqs = np.fft.rfftfreq(num_samples)
+        freqs[0] = 1
+        fft = fft / np.sqrt(freqs)
+        return np.fft.irfft(fft, num_samples).astype(np.float32)
+    else:  # white
+        return np.random.randn(num_samples).astype(np.float32)
+
+
+def filter_sweep(audio, start_cutoff, end_cutoff, sample_rate):
+    """Apply time-varying lowpass filter."""
+    num_samples = len(audio)
+    output = np.zeros(num_samples, dtype=np.float32)
+    chunk_size = 128  # Smaller chunks for short sounds
+
+    for i in range(0, num_samples, chunk_size):
+        end = min(i + chunk_size, num_samples)
+        progress = i / num_samples
+        cutoff = start_cutoff * (1 - progress) + end_cutoff * progress
+
+        nyquist = sample_rate / 2
+        norm_cutoff = max(0.01, min(cutoff / nyquist, 0.99))
+        b, a = signal.butter(2, norm_cutoff, btype='low')
+        output[i:end] = signal.lfilter(b, a, audio[i:end])
+
+    return output
 
 
 # =============================================================================
 # SYNTHESIS
 # =============================================================================
 
-def build_hit(s):
+def build_hit():
     """Build the hit sound synthesis chain."""
+    num_samples = int(SAMPLE_RATE * DURATION)
+    t = np.linspace(0, DURATION, num_samples, dtype=np.float32)
 
     # === TRANSIENT LAYER ===
-    trans_env = Adsr(
-        attack=ATTACK,
-        decay=TRANSIENT_DECAY,
-        sustain=0,
-        release=0.01,
-        dur=TRANSIENT_DECAY + 0.02
-    )
-    trans_env.play()
-
-    transient = Sine(freq=TRANSIENT_FREQ, mul=trans_env)
+    trans_env = np.exp(-t * TRANSIENT_DECAY)
+    transient = np.sin(2 * np.pi * TRANSIENT_FREQ * t) * trans_env
 
     # === NOISE LAYER ===
-    noise_env = Adsr(
-        attack=ATTACK,
-        decay=NOISE_DECAY,
-        sustain=0,
-        release=0.02,
-        dur=NOISE_DECAY + 0.03
-    )
-    noise_env.play()
+    noise = generate_noise(NOISE_TYPE, num_samples)
+    noise_env = np.exp(-t * NOISE_DECAY)
 
-    if NOISE_TYPE == "pink":
-        noise = PinkNoise(mul=noise_env * NOISE_MIX)
-    else:
-        noise = Noise(mul=noise_env * NOISE_MIX)
-
-    # Filter the noise
+    # Apply filter
     if FILTER_SWEEP:
-        filt_freq = Linseg([(0, FILTER_FREQ), (NOISE_DECAY, FILTER_END)])
-        filt_freq.play()
+        filtered_noise = filter_sweep(noise, FILTER_FREQ, FILTER_END, SAMPLE_RATE)
     else:
-        filt_freq = FILTER_FREQ
+        nyquist = SAMPLE_RATE / 2
+        norm_cutoff = min(FILTER_FREQ / nyquist, 0.99)
+        b, a = signal.butter(2, norm_cutoff, btype='low')
+        filtered_noise = signal.filtfilt(b, a, noise)
 
-    filtered_noise = MoogLP(noise, freq=filt_freq, res=FILTER_RES)
+    layer_noise = filtered_noise * noise_env * NOISE_MIX
 
     # === BODY LAYER ===
     if BODY_ENABLED:
-        body_env = Adsr(
-            attack=ATTACK,
-            decay=0.05,
-            sustain=0,
-            release=0.02,
-            dur=0.08
-        )
-        body_env.play()
-
-        body = Sine(freq=BODY_FREQ, mul=body_env * BODY_MIX)
+        body_env = np.exp(-t * 25)
+        body = np.sin(2 * np.pi * BODY_FREQ * t) * body_env * BODY_MIX
     else:
-        body = Sig(0)
+        body = np.zeros(num_samples, dtype=np.float32)
 
     # === MIX ===
-    mixed = Mix([transient, filtered_noise, body], voices=1)
+    mixed = transient + layer_noise + body
 
-    # === COMPRESSION ===
+    # === COMPRESSION (soft clipping) ===
     if COMPRESS:
-        mixed = Compress(
-            mixed,
-            thresh=-20,
-            ratio=COMPRESS_RATIO,
-            risetime=0.001,
-            falltime=0.05,
-            mul=1.2
-        )
+        mixed = np.tanh(mixed * 1.5)
 
-    return mixed
+    return mixed.astype(np.float32)
 
 
 def render():
     """Render the hit sound to WAV file."""
-    s = Server(audio="offline")
-    s.setSamplingRate(SAMPLE_RATE)
-    s.setNchnls(1)
-    s.boot()
-    s.recordOptions(filename=OUTPUT_FILE, fileformat=0, sampletype=1)
+    audio = build_hit()
 
-    signal = build_hit(s)
-    signal.out()
+    # Normalize
+    max_val = np.max(np.abs(audio))
+    if max_val > 0:
+        audio = audio / max_val * 0.9
 
-    s.start()
-    s.recstart()
-    time.sleep(TOTAL_DURATION + 0.05)
-    s.recstop()
-    s.stop()
-    s.shutdown()
-
+    sf.write(OUTPUT_FILE, audio, SAMPLE_RATE, subtype='PCM_16')
     print(f"Generated: {OUTPUT_FILE}")
 
 
@@ -151,11 +147,11 @@ def render():
 
 def hit_punch():
     """Heavy punch - more body, longer tail."""
-    global BODY_MIX, BODY_FREQ, NOISE_DECAY, TOTAL_DURATION
+    global BODY_MIX, BODY_FREQ, NOISE_DECAY, DURATION
     BODY_MIX = 0.6
     BODY_FREQ = 60
-    NOISE_DECAY = 0.12
-    TOTAL_DURATION = 0.15
+    NOISE_DECAY = 15
+    DURATION = 0.15
 
 
 def hit_slap():
@@ -164,15 +160,14 @@ def hit_slap():
     BODY_ENABLED = False
     FILTER_FREQ = 3000
     NOISE_TYPE = "white"
-    NOISE_DECAY = 0.05
+    NOISE_DECAY = 30
 
 
 def hit_sword():
     """Sword clash - metallic ring."""
-    global TRANSIENT_FREQ, FILTER_FREQ, FILTER_RES, NOISE_MIX
+    global TRANSIENT_FREQ, FILTER_FREQ, NOISE_MIX
     TRANSIENT_FREQ = 400
     FILTER_FREQ = 4000
-    FILTER_RES = 0.7
     NOISE_MIX = 0.4
 
 
@@ -187,9 +182,9 @@ def hit_blunt():
 
 def hit_light():
     """Light tap - UI feedback, small damage."""
-    global TOTAL_DURATION, NOISE_DECAY, BODY_ENABLED, NOISE_MIX
-    TOTAL_DURATION = 0.05
-    NOISE_DECAY = 0.03
+    global DURATION, NOISE_DECAY, BODY_ENABLED, NOISE_MIX
+    DURATION = 0.05
+    NOISE_DECAY = 40
     BODY_ENABLED = False
     NOISE_MIX = 0.3
 

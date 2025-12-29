@@ -4,14 +4,16 @@ Laser/Zap Sound Effect
 ======================
 Descending frequency sweep with harmonics and slight modulation.
 
-Technique: Subtractive synthesis with SuperSaw + FM modulation
+Technique: Subtractive synthesis with detuned oscillators
 Character: Sci-fi, arcade, retro shooter
 Duration: 0.15 - 0.3 seconds
+
+Dependencies: pip install numpy scipy soundfile
 """
 
-from pyo import *
-import time
-import os
+import numpy as np
+import soundfile as sf
+from scipy import signal
 
 # =============================================================================
 # PARAMETERS - Adjust these to customize the sound
@@ -23,8 +25,8 @@ END_FREQ = 200          # Ending frequency (Hz) - lower = deeper tail
 SWEEP_CURVE = "linear"  # "linear" or "exponential"
 
 # Oscillator
-DETUNE = 0.5            # SuperSaw detune (0-1) - higher = richer/fatter
-BALANCE = 0.7           # SuperSaw balance (0-1) - mix between saws
+DETUNE = 0.5            # Detune spread (0-1) - higher = richer/fatter
+NUM_OSCS = 3            # Number of oscillators (1-5)
 
 # Modulation (adds movement/wobble)
 MOD_FREQ = 50           # LFO frequency (Hz)
@@ -33,12 +35,10 @@ USE_MODULATION = True   # Enable/disable modulation
 
 # Filter
 FILTER_FREQ = 4000      # Lowpass cutoff (Hz)
-FILTER_RES = 0.3        # Resonance (0-1) - higher = more emphasis at cutoff
 
 # Envelope
 ATTACK = 0.01           # Attack time (seconds)
-DECAY = 0.15            # Decay time (seconds)
-RELEASE = 0.05          # Release time (seconds)
+DECAY_RATE = 15         # Exponential decay rate (higher = faster)
 DURATION = 0.2          # Total duration (seconds)
 
 # Output
@@ -50,65 +50,66 @@ OUTPUT_FILE = "laser.wav"
 # SYNTHESIS
 # =============================================================================
 
-def build_laser(s):
+def build_laser():
     """Build the laser synthesis chain."""
-
-    # Envelope - shapes the amplitude over time
-    env = Adsr(
-        attack=ATTACK,
-        decay=DECAY,
-        sustain=0,          # No sustain for punchy sound
-        release=RELEASE,
-        dur=DURATION
-    )
-    env.play()
+    num_samples = int(SAMPLE_RATE * DURATION)
+    t = np.linspace(0, DURATION, num_samples, dtype=np.float32)
 
     # Frequency sweep
     if SWEEP_CURVE == "exponential":
-        freq_sweep = Expseg([(0, START_FREQ), (DURATION, END_FREQ)])
+        freq = START_FREQ * (END_FREQ / START_FREQ) ** (t / DURATION)
     else:
-        freq_sweep = Linseg([(0, START_FREQ), (DURATION, END_FREQ)])
-    freq_sweep.play()
+        freq = np.linspace(START_FREQ, END_FREQ, num_samples)
 
-    # Optional pitch modulation (adds wobble/character)
+    # Optional pitch modulation
     if USE_MODULATION:
-        lfo = Sine(freq=MOD_FREQ, mul=MOD_DEPTH)
-        pitch = freq_sweep + lfo
+        lfo = np.sin(2 * np.pi * MOD_FREQ * t) * MOD_DEPTH
+        freq = freq + lfo
+
+    # Integrate frequency to get continuous phase
+    phase = np.cumsum(2 * np.pi * freq / SAMPLE_RATE)
+
+    # Multi-oscillator (detuned saws/sines for thickness)
+    audio = np.zeros(num_samples, dtype=np.float32)
+    if NUM_OSCS > 1 and DETUNE > 0:
+        detune_spread = np.linspace(-DETUNE * 0.02, DETUNE * 0.02, NUM_OSCS)
+        for d in detune_spread:
+            audio += np.sin(phase * (1 + d))
+        audio /= NUM_OSCS
     else:
-        pitch = freq_sweep
+        audio = np.sin(phase)
 
-    # Main oscillator - SuperSaw for rich harmonics
-    osc = SuperSaw(
-        freq=pitch,
-        detune=DETUNE,
-        bal=BALANCE,
-        mul=env
-    )
+    # Add harmonics
+    audio += 0.3 * np.sin(2 * phase)  # 2nd harmonic
+    audio += 0.15 * np.sin(3 * phase)  # 3rd harmonic
+    audio /= 1.45  # Normalize
 
-    # Lowpass filter to tame harshness
-    filtered = MoogLP(osc, freq=FILTER_FREQ, res=FILTER_RES)
+    # Envelope - attack and exponential decay
+    env = np.exp(-t * DECAY_RATE)
+    attack_samples = int(ATTACK * SAMPLE_RATE)
+    if attack_samples > 0:
+        env[:attack_samples] *= np.linspace(0, 1, attack_samples)
+    audio *= env
 
-    return filtered
+    # Lowpass filter
+    nyquist = SAMPLE_RATE / 2
+    normalized_cutoff = min(FILTER_FREQ / nyquist, 0.99)
+    b, a = signal.butter(2, normalized_cutoff, btype='low')
+    audio = signal.filtfilt(b, a, audio)
+
+    return audio.astype(np.float32)
 
 
 def render():
     """Render the laser sound to WAV file."""
-    s = Server(audio="offline")
-    s.setSamplingRate(SAMPLE_RATE)
-    s.setNchnls(1)
-    s.boot()
-    s.recordOptions(filename=OUTPUT_FILE, fileformat=0, sampletype=1)
+    audio = build_laser()
 
-    signal = build_laser(s)
-    signal.out()
+    # Normalize
+    max_val = np.max(np.abs(audio))
+    if max_val > 0:
+        audio = audio / max_val * 0.9
 
-    s.start()
-    s.recstart()
-    time.sleep(DURATION + 0.1)
-    s.recstop()
-    s.stop()
-    s.shutdown()
-
+    sf.write(OUTPUT_FILE, audio, SAMPLE_RATE, subtype='PCM_16')
     print(f"Generated: {OUTPUT_FILE}")
 
 
@@ -128,21 +129,22 @@ def laser_high_energy():
 
 def laser_bass():
     """Deep, bassy laser for heavy weapons."""
-    global START_FREQ, END_FREQ, FILTER_FREQ, DURATION, DECAY
+    global START_FREQ, END_FREQ, FILTER_FREQ, DURATION, DECAY_RATE
     START_FREQ = 600
     END_FREQ = 80
     FILTER_FREQ = 2000
     DURATION = 0.35
-    DECAY = 0.25
+    DECAY_RATE = 10
 
 
 def laser_retro():
     """Classic 8-bit style zap."""
-    global START_FREQ, END_FREQ, USE_MODULATION, DETUNE, DURATION
+    global START_FREQ, END_FREQ, USE_MODULATION, DETUNE, DURATION, NUM_OSCS
     START_FREQ = 800
     END_FREQ = 100
     USE_MODULATION = False
-    DETUNE = 0.0  # Pure saw for retro feel
+    DETUNE = 0.0
+    NUM_OSCS = 1
     DURATION = 0.12
 
 

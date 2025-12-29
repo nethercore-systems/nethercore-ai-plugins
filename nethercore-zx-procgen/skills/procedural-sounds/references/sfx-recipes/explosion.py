@@ -7,10 +7,13 @@ Noise burst with lowpass sweep, sub-bass rumble, and reverb.
 Technique: Layered subtractive synthesis
 Character: Impactful, cinematic, weighty
 Duration: 0.5 - 1.5 seconds
+
+Dependencies: pip install numpy scipy soundfile
 """
 
-from pyo import *
-import time
+import numpy as np
+import soundfile as sf
+from scipy import signal
 
 # =============================================================================
 # PARAMETERS
@@ -18,15 +21,11 @@ import time
 
 # Main noise layer
 NOISE_TYPE = "pink"         # "white", "pink", or "brown"
-NOISE_ATTACK = 0.01         # Quick attack for punch
-NOISE_DECAY = 0.5           # Main decay time
-NOISE_RELEASE = 0.3         # Tail release
+NOISE_DECAY_RATE = 3        # Exponential decay rate
 
 # Filter sweep
 FILTER_START = 3000         # Starting cutoff (Hz)
 FILTER_END = 200            # Ending cutoff (Hz)
-FILTER_SWEEP_TIME = 0.5     # How fast filter closes
-FILTER_RES = 0.4            # Resonance (adds punch)
 
 # Sub-bass rumble layer
 SUB_FREQ = 50               # Sub-bass frequency (Hz)
@@ -40,7 +39,6 @@ SIZZLE_MIX = 0.25           # Mix level (0-1)
 
 # Reverb
 REVERB_SIZE = 0.8           # Room size (0-1)
-REVERB_DAMP = 0.5           # Damping (0-1)
 REVERB_MIX = 0.3            # Wet/dry mix
 
 # Distortion (optional grit)
@@ -54,117 +52,127 @@ OUTPUT_FILE = "explosion.wav"
 
 
 # =============================================================================
-# SYNTHESIS
+# UTILITIES
 # =============================================================================
 
-def build_explosion(s):
-    """Build the explosion synthesis chain."""
-
-    # === MAIN NOISE LAYER ===
-    env_noise = Adsr(
-        attack=NOISE_ATTACK,
-        decay=NOISE_DECAY,
-        sustain=0,
-        release=NOISE_RELEASE,
-        dur=DURATION - 0.1
-    )
-    env_noise.play()
-
-    # Select noise type
-    if NOISE_TYPE == "white":
-        noise = Noise(mul=env_noise)
-    elif NOISE_TYPE == "brown":
-        noise = BrownNoise(mul=env_noise)
+def generate_noise(noise_type, num_samples):
+    """Generate noise of specified type."""
+    if noise_type == "white":
+        return np.random.randn(num_samples).astype(np.float32)
+    elif noise_type == "brown":
+        white = np.random.randn(num_samples)
+        brown = np.cumsum(white)
+        brown -= np.mean(brown)
+        return (brown / np.max(np.abs(brown))).astype(np.float32)
     else:  # pink
-        noise = PinkNoise(mul=env_noise)
+        white = np.random.randn(num_samples)
+        fft = np.fft.rfft(white)
+        freqs = np.fft.rfftfreq(num_samples)
+        freqs[0] = 1  # Avoid division by zero
+        fft = fft / np.sqrt(freqs)
+        return np.fft.irfft(fft, num_samples).astype(np.float32)
 
-    # Filter sweep - closes down over time
-    filter_sweep = Linseg([(0, FILTER_START), (FILTER_SWEEP_TIME, FILTER_END)])
-    filter_sweep.play()
 
-    filtered_noise = MoogLP(noise, freq=filter_sweep, res=FILTER_RES)
+def filter_sweep(audio, start_cutoff, end_cutoff, sample_rate):
+    """Apply time-varying lowpass filter."""
+    num_samples = len(audio)
+    output = np.zeros(num_samples, dtype=np.float32)
+    chunk_size = 256
 
-    # === SUB-BASS RUMBLE LAYER ===
-    if SUB_ENABLED:
-        env_sub = Adsr(
-            attack=0.02,
-            decay=0.4,
-            sustain=0.2,
-            release=0.3,
-            dur=DURATION - 0.1
-        )
-        env_sub.play()
+    for i in range(0, num_samples, chunk_size):
+        end = min(i + chunk_size, num_samples)
+        progress = i / num_samples
+        cutoff = start_cutoff * (1 - progress) + end_cutoff * progress
 
-        # Low sine with slight pitch drop
-        sub_freq = Linseg([(0, SUB_FREQ), (0.5, SUB_FREQ * 0.7)])
-        sub_freq.play()
-
-        sub = Sine(freq=sub_freq, mul=env_sub * SUB_MIX)
-    else:
-        sub = Sig(0)
-
-    # === SIZZLE LAYER (high-frequency debris) ===
-    if SIZZLE_ENABLED:
-        env_sizzle = Adsr(
-            attack=0.01,
-            decay=0.3,
-            sustain=0.1,
-            release=0.4,
-            dur=DURATION - 0.1
-        )
-        env_sizzle.play()
-
-        sizzle_noise = Noise(mul=env_sizzle * SIZZLE_MIX)
-        sizzle = ButHP(sizzle_noise, freq=SIZZLE_FREQ)
-    else:
-        sizzle = Sig(0)
-
-    # === MIX LAYERS ===
-    mixed = Mix([filtered_noise, sub, sizzle], voices=1)
-
-    # === DISTORTION (optional) ===
-    if DISTORTION_ENABLED:
-        mixed = Disto(mixed, drive=DISTORTION_DRIVE, slope=0.8)
-
-    # === REVERB ===
-    reverbed = Freeverb(
-        mixed,
-        size=REVERB_SIZE,
-        damp=REVERB_DAMP,
-        bal=REVERB_MIX
-    )
-
-    # Soft limiting to prevent clipping
-    output = Compress(
-        reverbed,
-        thresh=-12,
-        ratio=4,
-        risetime=0.01,
-        falltime=0.1,
-        mul=0.8
-    )
+        nyquist = sample_rate / 2
+        norm_cutoff = max(0.01, min(cutoff / nyquist, 0.99))
+        b, a = signal.butter(2, norm_cutoff, btype='low')
+        output[i:end] = signal.lfilter(b, a, audio[i:end])
 
     return output
 
 
+def simple_reverb(audio, room_size, sample_rate):
+    """Simple comb filter reverb."""
+    delays = [int(d * sample_rate) for d in [0.029, 0.037, 0.041, 0.043]]
+    output = np.zeros(len(audio) + max(delays), dtype=np.float32)
+
+    for delay in delays:
+        comb = np.zeros(len(output), dtype=np.float32)
+        feedback = room_size * 0.8
+
+        comb[:len(audio)] = audio
+        for i in range(delay, len(audio)):
+            comb[i] += comb[i - delay] * feedback
+
+        output += comb
+
+    return output[:len(audio)] / len(delays)
+
+
+# =============================================================================
+# SYNTHESIS
+# =============================================================================
+
+def build_explosion():
+    """Build the explosion synthesis chain."""
+    num_samples = int(SAMPLE_RATE * DURATION)
+    t = np.linspace(0, DURATION, num_samples, dtype=np.float32)
+
+    # === MAIN NOISE LAYER ===
+    noise = generate_noise(NOISE_TYPE, num_samples)
+    noise_env = np.exp(-t * NOISE_DECAY_RATE)
+    filtered_noise = filter_sweep(noise, FILTER_START, FILTER_END, SAMPLE_RATE)
+    layer_main = filtered_noise * noise_env
+
+    # === SUB-BASS RUMBLE LAYER ===
+    if SUB_ENABLED:
+        sub_freq = np.linspace(SUB_FREQ, SUB_FREQ * 0.7, num_samples)
+        phase = np.cumsum(2 * np.pi * sub_freq / SAMPLE_RATE)
+        sub = np.sin(phase)
+        sub_env = np.exp(-t * 2)
+        layer_sub = sub * sub_env * SUB_MIX
+    else:
+        layer_sub = np.zeros(num_samples, dtype=np.float32)
+
+    # === SIZZLE LAYER ===
+    if SIZZLE_ENABLED:
+        sizzle_noise = np.random.randn(num_samples).astype(np.float32)
+        nyquist = SAMPLE_RATE / 2
+        norm_cutoff = min(SIZZLE_FREQ / nyquist, 0.99)
+        b, a = signal.butter(2, norm_cutoff, btype='high')
+        sizzle = signal.filtfilt(b, a, sizzle_noise)
+        sizzle_env = np.exp(-t * 5)
+        layer_sizzle = sizzle * sizzle_env * SIZZLE_MIX
+    else:
+        layer_sizzle = np.zeros(num_samples, dtype=np.float32)
+
+    # === MIX LAYERS ===
+    mixed = layer_main + layer_sub + layer_sizzle
+
+    # === DISTORTION ===
+    if DISTORTION_ENABLED:
+        gain = 1 + DISTORTION_DRIVE * 10
+        mixed = np.tanh(mixed * gain)
+
+    # === REVERB ===
+    if REVERB_MIX > 0:
+        reverbed = simple_reverb(mixed, REVERB_SIZE, SAMPLE_RATE)
+        mixed = mixed * (1 - REVERB_MIX) + reverbed * REVERB_MIX
+
+    return mixed.astype(np.float32)
+
+
 def render():
     """Render the explosion sound to WAV file."""
-    s = Server(audio="offline")
-    s.setSamplingRate(SAMPLE_RATE)
-    s.setNchnls(1)
-    s.boot()
-    s.recordOptions(filename=OUTPUT_FILE, fileformat=0, sampletype=1)
+    audio = build_explosion()
 
-    signal = build_explosion(s)
-    signal.out()
+    # Normalize
+    max_val = np.max(np.abs(audio))
+    if max_val > 0:
+        audio = audio / max_val * 0.9
 
-    s.start()
-    s.recstart()
-    time.sleep(DURATION + 0.2)
-    s.recstop()
-    s.stop()
-    s.shutdown()
-
+    sf.write(OUTPUT_FILE, audio, SAMPLE_RATE, subtype='PCM_16')
     print(f"Generated: {OUTPUT_FILE}")
 
 
@@ -174,18 +182,18 @@ def render():
 
 def explosion_small():
     """Small explosion - grenade, barrel."""
-    global DURATION, NOISE_DECAY, SUB_ENABLED, REVERB_SIZE
+    global DURATION, NOISE_DECAY_RATE, SUB_ENABLED, REVERB_SIZE
     DURATION = 0.4
-    NOISE_DECAY = 0.2
+    NOISE_DECAY_RATE = 5
     SUB_ENABLED = False
     REVERB_SIZE = 0.4
 
 
 def explosion_massive():
     """Large explosion - nuke, boss death."""
-    global DURATION, NOISE_DECAY, SUB_MIX, REVERB_SIZE, DISTORTION_ENABLED
+    global DURATION, NOISE_DECAY_RATE, SUB_MIX, REVERB_SIZE, DISTORTION_ENABLED
     DURATION = 1.5
-    NOISE_DECAY = 0.8
+    NOISE_DECAY_RATE = 2
     SUB_MIX = 0.6
     REVERB_SIZE = 0.95
     DISTORTION_ENABLED = True
@@ -203,11 +211,10 @@ def explosion_retro():
 
 def explosion_underwater():
     """Muffled underwater explosion."""
-    global FILTER_START, FILTER_END, REVERB_SIZE, REVERB_DAMP
+    global FILTER_START, FILTER_END, REVERB_SIZE
     FILTER_START = 1500
     FILTER_END = 100
     REVERB_SIZE = 0.95
-    REVERB_DAMP = 0.8
 
 
 if __name__ == "__main__":

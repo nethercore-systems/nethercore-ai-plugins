@@ -6,7 +6,7 @@ Official AI-powered development plugins for Nethercore game development. Current
 
 | Plugin | Description | Skills |
 |--------|-------------|--------|
-| [nethercore-zx-dev](./nethercore-zx-dev/) | Core game development - FFI specs, cameras, rendering | 5 |
+| [nethercore-zx-dev](./nethercore-zx-dev/) | Core game development - FFI specs, cameras, rendering | 6 |
 | [nethercore-zx-game-design](./nethercore-zx-game-design/) | Game design workflow - GDDs, multiplayer, mechanics | 10 |
 | [nethercore-zx-procgen](./nethercore-zx-procgen/) | Procedural asset generation - textures, meshes, sounds | 10 |
 | [nethercore-zx-publish](./nethercore-zx-publish/) | Publishing workflow - ROM packaging, platform upload | 2 |
@@ -15,6 +15,9 @@ Official AI-powered development plugins for Nethercore game development. Current
 | [nethercore-zx-optimize](./nethercore-zx-optimize/) | Optimization - resource budgets, performance tuning | 2 |
 | [nethercore-zx-cicd](./nethercore-zx-cicd/) | CI/CD automation - GitHub Actions, quality gates | 1 |
 | [game-design](./game-design/) | Platform-agnostic design - world building, narrative | 11 |
+| [creative-direction](./creative-direction/) | Creative oversight - art, sound, tech direction | 5 |
+| [sound-design](./sound-design/) | Audio design - Sonic Style Language, synthesis, composition | 5 |
+| [ai-game-studio](./ai-game-studio/) | Intelligent routing - request dispatch, completion verification | 3 |
 
 ## Installation
 
@@ -41,7 +44,10 @@ Add to your global Claude settings (`~/.claude/settings.json` on macOS/Linux, `%
     "nethercore-zx-test@nethercore-ai-plugins": true,
     "nethercore-zx-optimize@nethercore-ai-plugins": true,
     "nethercore-zx-cicd@nethercore-ai-plugins": true,
-    "game-design@nethercore-ai-plugins": true
+    "game-design@nethercore-ai-plugins": true,
+    "creative-direction@nethercore-ai-plugins": true,
+    "sound-design@nethercore-ai-plugins": true,
+    "ai-game-studio@nethercore-ai-plugins": true
   }
 }
 ```
@@ -69,7 +75,10 @@ For nethercore contributors who have cloned the workspace, add to `.claude/setti
     "nethercore-zx-test@nethercore-ai-plugins": true,
     "nethercore-zx-optimize@nethercore-ai-plugins": true,
     "nethercore-zx-cicd@nethercore-ai-plugins": true,
-    "game-design@nethercore-ai-plugins": true
+    "game-design@nethercore-ai-plugins": true,
+    "creative-direction@nethercore-ai-plugins": true,
+    "sound-design@nethercore-ai-plugins": true,
+    "ai-game-studio@nethercore-ai-plugins": true
   }
 }
 ```
@@ -90,8 +99,9 @@ nether run                # Build and launch
 
 Core game development plugin for Nethercore ZX.
 
-**Skills (5):**
+**Skills (6):**
 - `zx-game-development` - FFI specifications, project templates, CLI tooling
+- `bindings-fetcher` - Fetch/update FFI bindings from GitHub
 - `camera-systems` - 3D camera implementation and perspective-based design
 - `rendering-techniques` - Stencil effects, custom fonts, billboard particles
 - `debugging-guide` - Debugging and sync testing workflows
@@ -102,6 +112,9 @@ Core game development plugin for Nethercore ZX.
 
 **Agents:**
 - `rollback-reviewer` - Reviews code for GGRS rollback netcode compatibility
+- `code-scaffolder` - Generates boilerplate game code for common patterns
+- `feature-implementer` - Implements complete game features end-to-end
+- `integration-assistant` - Connects generated assets to game code
 
 ### nethercore-zx-game-design
 
@@ -126,6 +139,10 @@ Game design workflow plugin.
 
 **Agents:**
 - `constraint-analyzer` - Proactively checks design feasibility
+- `gdd-generator` - Autonomously generates complete Game Design Documents
+- `mechanic-designer` - Designs detailed game mechanics
+- `scope-advisor` - Assesses project scope and defines MVPs
+- `gdd-implementation-tracker` - Compares GDD to implementation
 
 ### nethercore-zx-procgen
 
@@ -136,16 +153,18 @@ Procedural asset generation plugin.
 - `procedural-meshes` - 3D mesh generation with UVs and vertex colors
 - `procedural-sounds` - Audio synthesis and SFX
 - `procedural-music` - XM tracker music composition
-- `procedural-animations` - Walk cycles, attacks, locomotion
+- `procedural-animations` - Walk cycles, attacks, locomotion (includes skeletal rigging and mocap)
 - `procedural-sprites` - 2D sprites, pixel art, tilesets, UI elements
-- `skeletal-rigging` - Bone weights and skinning
-- `mocap-integration` - BVH parsing and retargeting
 - `semantic-asset-language` - SADL for AI-first creative workflows
 - `mesh-texturing-workflows` - UV projection techniques
+- `asset-quality-tiers` - Tier system (Placeholder→Temp→Final→Hero)
+- `native-asset-pipeline` - Native ZX asset format pipeline
 
 **Commands:**
 - `/generate-asset` - Quick single-asset generation
+- `/generate-sfx` - Quick sound effect generation
 - `/new-asset-project` - Scaffold asset generation project
+- `/improve-assets` - Guided quality improvement workflow
 
 **Agents:**
 - `asset-designer` - Translates creative vision to SADL specs
@@ -155,6 +174,8 @@ Procedural asset generation plugin.
 - `procgen-optimizer` - Optimizes generation code and output
 - `creative-orchestrator` - Coordinates full asset pipeline
 - `character-generator` - End-to-end character creation
+- `quality-analyzer` - Holistic asset quality assessment
+- `quality-enhancer` - Autonomous asset quality improvement
 
 ### nethercore-zx-publish
 
@@ -168,12 +189,20 @@ Publishing workflow plugin.
 - `/publish-game` - Full publishing workflow
 - `/prepare-platform-assets` - Generate marketing assets
 
+**Agents:**
+- `publish-preparer` - Autonomously prepares games for release
+- `release-validator` - Validates all release requirements
+
 ### nethercore-zx-orchestrator
 
 Meta-orchestration plugin coordinating multi-plugin workflows.
 
+**Commands:**
+- `/orchestrate` - Launch the game development orchestrator
+
 **Agents:**
 - `game-orchestrator` - Coordinates full development pipeline from GDD to playable ROM
+- `parallel-coordinator` - Analyzes task dependencies and coordinates parallel execution
 
 ### nethercore-zx-test
 
@@ -208,6 +237,8 @@ CI/CD automation plugin for ZX games.
 
 **Agents:**
 - `ci-scaffolder` - Creates `.github/workflows/` with build and release pipelines
+- `pipeline-optimizer` - Optimizes CI/CD pipeline performance
+- `quality-gate-enforcer` - Adds and configures quality checks
 
 ### game-design
 
@@ -235,6 +266,68 @@ Platform-agnostic game design frameworks for fantasy console development.
 **Agents:**
 - `design-reviewer` - Reviews GDDs for coherence, completeness, scope
 - `genre-advisor` - Suggests genre-appropriate design patterns
+- `narrative-generator` - Generates story content, dialogue, lore
+- `balance-analyzer` - Analyzes game balance and difficulty curves
+- `accessibility-auditor` - Audits designs for accessibility barriers
+
+### creative-direction
+
+Quality assurance and coherence plugin providing "director" level oversight.
+
+**Skills (5):**
+- `art-vision` - Visual style bible, color theory, composition
+- `sound-vision` - Audio style guide, mixing, sonic identity
+- `tech-vision` - Architecture patterns, file splitting, module organization
+- `creative-vision` - Creative pillars, experience promise, vision alignment
+- `project-memory` - Persistent direction files, session context
+
+**Commands:**
+- `/establish-vision` - Interactive wizard to establish project creative direction
+
+**Agents:**
+- `art-director` - Reviews visual coherence across all assets
+- `sound-director` - Reviews audio coherence and mix balance
+- `tech-director` - Reviews architecture and code quality
+- `creative-director` - Meta-director for holistic vision alignment
+
+### sound-design
+
+Platform-agnostic game audio design with Sonic Style Language (SSL).
+
+**Skills (5):**
+- `sonic-style-language` - SSL specification: styles, moods, instruments, processing
+- `synthesis-techniques` - FM, wavetable, granular, physical modeling
+- `music-composition` - Theory, chord progressions, structure, adaptive music
+- `sfx-design` - Layering, archetypes, impact design, UI audio
+- `audio-integration` - Mix architecture, spatial audio, ducking
+
+**Commands:**
+- `/establish-sonic-identity` - Create SSL specification
+- `/design-soundtrack` - Design music tracks
+- `/design-sfx` - Design sound effects with layering specs
+
+**Agents:**
+- `sonic-designer` - Translates creative audio intent to SSL
+- `sfx-architect` - Designs effects with synthesis code
+- `music-architect` - Designs tracks with harmony and structure
+- `audio-coherence-reviewer` - Validates audio consistency
+
+### ai-game-studio
+
+Intelligent game development studio providing request routing and quality analysis.
+
+**Skills (3):**
+- `request-patterns` - Classifying and routing development requests
+- `dependency-chains` - Blocking dependencies and parallelizable work
+- `verification-checklists` - Verifying assets and features are complete
+
+**Commands:**
+- `/setup-project` - Complete project setup wizard (GDD + creative vision + sonic identity)
+
+**Agents:**
+- `request-dispatcher` - Intelligent routing for any development request
+- `completion-auditor` - Semantic verification that work is complete
+- `project-health-monitor` - Comprehensive project health assessment
 
 ## Contributing
 

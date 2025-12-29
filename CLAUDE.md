@@ -241,6 +241,9 @@ Intelligent game development studio providing request routing, quality analysis,
 - `dependency-chains` - What must be completed before other tasks can begin; blocking dependencies and parallelizable work
 - `verification-checklists` - Checklists for verifying assets, features, and systems are truly complete
 
+**Commands:**
+- `/setup-project` - Complete project setup wizard orchestrating GDD, creative vision, and sonic identity in one flow
+
 **Agents:**
 - `request-dispatcher` - Intelligent routing for any development request; parses intent, routes to appropriate experts, ensures completion
 - `completion-auditor` - Semantic verification that work is actually complete; catches "generated but not integrated" and "coded but not rendered" issues

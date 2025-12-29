@@ -133,33 +133,34 @@ Comprehensive animation generation with three paradigms:
 
 **Trigger phrases**: "generate animation", "walk cycle", "skeletal animation", "bone weights", "IK", "vehicle suspension", "robot animation", "rig character"
 
-### Procedural Sounds (v2.0 - pyo synthesis)
+### Procedural Sounds (v3.0 - NumPy/SciPy)
 
-Production-quality sound effects using **pyo**, a Python DSP module with 250+ signal processing classes:
+Production-quality sound effects using **NumPy**, **SciPy**, and **soundfile** - lightweight, pure-Python audio synthesis with no external audio dependencies:
 
 **Synthesis Building Blocks:**
-- **Oscillators**: Sine, SuperSaw, LFO, Noise (White/Pink/Brown)
-- **Envelopes**: ADSR, Linseg (linear segments), Expseg (exponential)
-- **Filters**: MoogLP, Butterworth (LP/HP/BP), Biquad
-- **FM Synthesis**: FM, CrossFM for metallic/bell sounds
-- **Effects**: Freeverb, Delay, Disto, Chorus, Compress
+- **Oscillators**: Sine, Square, Sawtooth, Triangle, SuperSaw (np.sin, np.sign)
+- **Noise**: White (np.random.randn), Pink (FFT shaping), Brown (cumulative sum)
+- **Envelopes**: ADSR, exponential decay (np.exp), linear/exponential segments
+- **Filters**: Butterworth LP/HP/BP (scipy.signal.butter + filtfilt)
+- **FM Synthesis**: Direct formula (sin(phase + index * sin(mod_phase)))
+- **Effects**: Delay, Reverb (comb filters), Distortion (tanh), Compression
 
 **Technique Guide:**
-| Technique | Best For | Key Classes |
-|-----------|----------|-------------|
-| Subtractive | Bassy, warm, explosive | Noise → MoogLP |
-| FM | Metallic, bells, digital | FM, CrossFM |
-| Additive | Organs, complex tones | Multiple Sine summed |
-| Granular | Textures, ambience | Granulator |
+| Technique | Best For | Functions |
+|-----------|----------|-----------|
+| Subtractive | Bassy, warm, explosive | noise → butter → filtfilt |
+| FM | Metallic, bells, digital | sin(phase + β*sin(mod)) |
+| Additive | Organs, complex tones | Sum of sine waves |
+| Filtered Noise | Impacts, footsteps, texture | randn → butter filter |
 
 **Production-Ready Recipes:**
 8 complete SFX scripts with customization parameters:
 - Laser/Zap, Explosion, Coin/Pickup, Jump
 - Hit/Punch, Powerup, Footstep, UI Click
 
-**Prerequisites**: Python 3.x, pyo library (`pip install pyo`), portaudio
+**Prerequisites**: `pip install numpy scipy soundfile`
 
-**Trigger phrases**: "generate sound", "pyo synthesis", "procedural audio", "SFX", "FM synthesis", "WAV generation"
+**Trigger phrases**: "generate sound", "numpy synthesis", "procedural audio", "SFX", "FM synthesis", "WAV generation"
 
 ### Semantic Asset Language (SADL)
 
@@ -279,7 +280,7 @@ Scaffold a complete procedural asset project with generator code and ZX viewer.
 Quick single-asset generation (texture, mesh, or sound) with inline code.
 
 ### `/generate-sfx <type> [output-path]`
-Quick SFX generation with pyo. Types: laser, explosion, coin, jump, hit, powerup, footstep, click. Generates a Python script with customizable parameters.
+Quick SFX generation with NumPy/SciPy. Types: laser, explosion, coin, jump, hit, powerup, footstep, click. Generates a Python script with customizable parameters.
 
 ### `/improve-assets [target-tier]`
 Interactive quality improvement workflow. Scans assets, assesses current tiers, and guides upgrades to the target tier (Temp, Final, or Hero).
