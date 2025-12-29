@@ -66,18 +66,19 @@ Game design workflow plugin.
 
 Procedural asset generation plugin.
 
-**Skills (11):**
+**Skills (12):**
 - `procedural-textures` - Texture generation (Albedo, MRE, SSE, Matcaps)
 - `procedural-meshes` - 3D mesh generation with UVs and vertex colors
-- `procedural-sounds` - Audio synthesis and SFX
-- `procedural-music` - XM tracker music composition
-- `procedural-animations` - Walk cycles, attacks, locomotion
+- `procedural-sounds` - Audio synthesis (FM, Karplus-Strong, subtractive) and SFX
+- `procedural-instruments` - Instrument sample synthesis for XM modules
+- `procedural-music` - XM tracker music composition and workflow
+- `xm-writer` - Programmatic XM file generation from Python
+- `procedural-animations` - Walk cycles, attacks, skeletal rigging, BVH/mocap
 - `procedural-sprites` - 2D sprites, pixel art, tilesets, UI elements
-- `skeletal-rigging` - Bone weights and skinning
-- `mocap-integration` - BVH parsing and retargeting
 - `semantic-asset-language` - SADL for AI-first creative workflows
 - `mesh-texturing-workflows` - UV projection techniques
-- `asset-quality-tiers` - Tier system (Placeholder→Temp→Final→Hero) and enhancement strategies
+- `asset-quality-tiers` - Tier system (Placeholder→Temp→Final→Hero)
+- `native-asset-pipeline` - nether.toml integration, build-time generation
 
 **Commands:**
 - `zx-procgen:generate-asset` - Quick single-asset generation
@@ -214,12 +215,11 @@ Quality assurance and coherence plugin providing "director" level oversight acro
 
 Platform-agnostic game audio design with Sonic Style Language (SSL) - the audio equivalent of SADL for visual assets.
 
-**Skills (5):**
+**Skills (4):**
 - `sonic-style-language` - SSL specification: styles, moods, instruments, processing signatures
-- `synthesis-techniques` - FM, wavetable, granular, physical modeling, Karplus-Strong
-- `music-composition` - Theory, chord progressions, structure, adaptive music, leitmotifs
-- `sfx-design` - Layering, archetypes, impact design, UI audio, variation
-- `audio-integration` - Mix architecture, priorities, spatial audio, ducking, states
+- `music-composition` - Reference tables: modes, keys by genre, tempos, chord progressions by emotion
+- `sfx-design` - Layering patterns, UI sound archetypes, ambient layer recipes
+- `audio-integration` - Mix architecture, bus structure, priorities, ducking
 
 **Commands:**
 - `sound-design:establish-sonic-identity` - Interactive wizard to create SSL specification
