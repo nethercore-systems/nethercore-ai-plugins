@@ -8,7 +8,7 @@ Official AI-powered development plugins for Nethercore game development. Current
 |--------|-------------|--------|
 | [nethercore-zx-dev](./nethercore-zx-dev/) | Core game development - FFI specs, cameras, rendering | 6 |
 | [nethercore-zx-game-design](./nethercore-zx-game-design/) | Game design workflow - GDDs, multiplayer, mechanics | 10 |
-| [nethercore-zx-procgen](./nethercore-zx-procgen/) | Procedural asset generation - textures, meshes, sounds | 10 |
+| [nethercore-zx-procgen](./nethercore-zx-procgen/) | Procedural asset generation - textures, meshes, sounds | 11 |
 | [nethercore-zx-publish](./nethercore-zx-publish/) | Publishing workflow - ROM packaging, platform upload | 2 |
 | [nethercore-zx-orchestrator](./nethercore-zx-orchestrator/) | Meta-orchestration - coordinates full pipeline | 0 |
 | [nethercore-zx-test](./nethercore-zx-test/) | Testing and QA - sync tests, replay regression | 2 |
@@ -148,11 +148,12 @@ Game design workflow plugin.
 
 Procedural asset generation plugin.
 
-**Skills (10):**
+**Skills (11):**
 - `procedural-textures` - Texture generation (Albedo, MRE, SSE, Matcaps)
 - `procedural-meshes` - 3D mesh generation with UVs and vertex colors
 - `procedural-sounds` - Audio synthesis and SFX
-- `procedural-music` - XM tracker music composition
+- `procedural-music` - XM tracker music composition (manual tracker workflow)
+- `xm-writer` - Programmatic XM generation from Python (generate XM files from code)
 - `procedural-animations` - Walk cycles, attacks, locomotion (includes skeletal rigging and mocap)
 - `procedural-sprites` - 2D sprites, pixel art, tilesets, UI elements
 - `semantic-asset-language` - SADL for AI-first creative workflows

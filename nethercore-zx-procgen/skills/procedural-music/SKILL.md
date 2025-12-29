@@ -412,6 +412,7 @@ For detailed information, consult:
 
 ### Related Skills
 
+- **`xm-writer`** - Programmatic XM generation from Python (generate XM files from code without a tracker GUI)
 - **`sound-design/skills/music-composition`** - Music theory, chord progressions, adaptive music
 - **`sound-design/skills/synthesis-techniques`** - FM, wavetable, granular synthesis
 - **`procedural-sounds`** - Generating instrument samples procedurally
