@@ -17,7 +17,7 @@ Official AI-powered development plugins for Nethercore game development. Current
 | [game-design](./game-design/) | Platform-agnostic design - world building, narrative | 11 |
 | [creative-direction](./creative-direction/) | Creative oversight - art, sound, tech direction | 5 |
 | [sound-design](./sound-design/) | Audio design - Sonic Style Language, synthesis, composition | 5 |
-| [ai-game-studio](./ai-game-studio/) | Intelligent routing - request dispatch, completion verification | 3 |
+| [ai-game-studio](./ai-game-studio/) | Intelligent routing - request dispatch, completion verification, workflow continuity | 3 |
 
 ## Installation
 
@@ -314,7 +314,7 @@ Platform-agnostic game audio design with Sonic Style Language (SSL).
 
 ### ai-game-studio
 
-Intelligent game development studio providing request routing and quality analysis.
+Intelligent game development studio providing request routing, quality analysis, and continuous workflow guidance.
 
 **Skills (3):**
 - `request-patterns` - Classifying and routing development requests
@@ -328,6 +328,58 @@ Intelligent game development studio providing request routing and quality analys
 - `request-dispatcher` - Intelligent routing for any development request
 - `completion-auditor` - Semantic verification that work is complete
 - `project-health-monitor` - Comprehensive project health assessment
+- `next-step-suggester` - Fast, focused "what next?" recommendations
+
+## Continuous Workflow
+
+The plugins feature automatic "what's next?" guidance to maintain development momentum:
+
+### Automatic Next-Step Suggestions
+
+When any agent completes its work, a hook automatically suggests 2-3 logical next actions:
+
+```
+WORK COMPLETED - SUGGEST NEXT STEPS
+
+An agent just finished work. Suggested next actions:
+- After asset generation → verify integration or generate related assets
+- After feature implementation → test, polish, or add sounds
+- After scaffolding → implement actual game logic
+
+Would you like me to continue with [recommended action]?
+```
+
+### Quick "What Next?" Agent
+
+When you're unsure what to do, ask "what next?" or "I'm stuck" to get fast, focused recommendations:
+
+```
+**Current State:** Player movement implemented, no assets connected yet.
+
+**Recommended Next Step:**
+→ Run integration-assistant to connect player mesh and textures
+   Agent: nethercore-zx-dev:integration-assistant
+
+**Why:** Assets exist but aren't wired up - player won't render until integrated.
+
+**Alternative:** Generate placeholder assets if none exist yet.
+
+Ready to proceed? Say "yes" or specify what you'd prefer.
+```
+
+### Agent Continuation Prompts
+
+All major agents end their output with clear next-step options:
+
+```
+**Next Steps:**
+1. Run completion-auditor to verify full integration --> ai-game-studio:completion-auditor
+2. Generate sound effects for the feature --> nethercore-zx-procgen:sfx-architect
+
+Continue with #1? (yes/no/other)
+```
+
+This ensures you always know what to do after any task completes.
 
 ## Contributing
 

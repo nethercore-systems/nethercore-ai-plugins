@@ -454,3 +454,24 @@ The game exports `init()`, `update()`, and `render()` functions that the Netherc
 - Do not modify existing code without clear instruction
 - Do not generate assets (use procgen agents for that)
 - Focus on gameplay code, not engine internals
+
+---
+
+## Continuation Prompt (Always Include)
+
+After completing scaffolding, ALWAYS end your response with:
+
+---
+**Next Steps:**
+1. [Most logical follow-up - usually implementing game logic] --> [which agent/skill to use]
+   (Scaffolding is structure only - actual game logic must be implemented!)
+2. [Alternative direction] --> [which agent/skill to use]
+
+Continue with #1? (yes/no/other)
+---
+
+**IMPORTANT:** Scaffolded code is NOT a complete feature. Always remind the user:
+- Scaffolding provides structure, not behavior
+- Game logic must still be implemented
+- Assets must be generated/connected
+- Integration with game loop must be verified

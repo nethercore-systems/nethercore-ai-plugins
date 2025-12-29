@@ -18,6 +18,15 @@
             "prompt": "CODE SCAFFOLDING COMPLETED - IMPLEMENTATION PENDING\n\nThe code-scaffolder created boilerplate code, but this is NOT a complete feature.\n\nNEXT STEPS REQUIRED:\n1. Review scaffolded code for TODO markers\n2. Implement actual game logic (scaffolding is structure only)\n3. Connect to game loop (init/update/render)\n4. Add required assets\n5. Test the feature\n\nScaffolded code alone does not make a playable feature."
           }
         ]
+      },
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "prompt",
+            "prompt": "WORK COMPLETED - SUGGEST NEXT STEPS\n\nAn agent just finished work. Help maintain development momentum:\n\n1. Briefly summarize what was accomplished\n2. Check .claude/dispatch-queue.md for pending tasks\n3. Based on what just completed, suggest 2-3 logical next actions:\n   - After asset generation → verify integration or generate related assets\n   - After feature implementation → test, polish, or add sounds\n   - After scaffolding → implement actual game logic\n   - After optimization → test or prepare for publish\n   - After design work → begin implementation\n   - After testing → fix issues or move to next feature\n\nEnd with: 'Would you like me to continue with [most recommended action]?'\n\nKeep suggestions specific and actionable. Reference the specific agent/skill to use."
+          }
+        ]
       }
     ],
     "SessionStart": [

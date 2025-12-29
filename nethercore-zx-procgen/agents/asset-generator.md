@@ -520,3 +520,23 @@ Every mesh MUST have before export:
 | Hero/close-up | 500-2000 |
 
 Consult the **procedural-meshes** skill for detailed Blender bpy patterns and complete examples.
+
+---
+
+## Continuation Prompt (Always Include)
+
+After completing asset generation, ALWAYS end your response with:
+
+---
+**Next Steps:**
+1. [Most logical follow-up based on what was generated] --> [which agent/skill to use]
+   (Usually: run completion-auditor to verify integration, or generate related assets)
+2. [Alternative direction] --> [which agent/skill to use]
+
+Continue with #1? (yes/no/other)
+---
+
+Common next steps after asset generation:
+- **Meshes generated** → Run integration-assistant to connect to game code
+- **Textures generated** → Generate matching meshes, or run asset-quality-reviewer
+- **Multiple assets** → Run completion-auditor to verify full integration chain

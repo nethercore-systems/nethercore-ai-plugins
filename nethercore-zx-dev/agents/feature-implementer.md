@@ -459,3 +459,23 @@ If implementation blocked:
 - Do not refactor unrelated code
 - Do not add features not requested
 - **Do not declare complete until verified**
+
+---
+
+## Continuation Prompt (Always Include)
+
+After completing feature implementation, ALWAYS end your response with:
+
+---
+**Next Steps:**
+1. [Most logical follow-up based on what was implemented] --> [which agent/skill to use]
+   (Usually: add sounds/effects, test the feature, or implement related feature)
+2. [Alternative direction] --> [which agent/skill to use]
+
+Continue with #1? (yes/no/other)
+---
+
+Common next steps after feature implementation:
+- **Core mechanic implemented** → Add polish (sounds, particles, UI feedback)
+- **Feature integrated** → Test via gameplay or run completion-auditor
+- **Multiple features complete** → Run project-health-monitor to check overall progress

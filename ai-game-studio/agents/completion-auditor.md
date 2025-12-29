@@ -369,3 +369,17 @@ Fix applied → Re-audit same scope → Confirm gap closed → Next gap
 ```
 
 Never mark a gap as fixed without re-verification.
+
+## Continuation Prompt (Always Include)
+
+After completing your audit, ALWAYS end your response with:
+
+---
+**Next Steps:**
+1. [Most critical action based on audit findings] --> [which agent/skill to use]
+2. [Second priority action] --> [which agent/skill to use]
+
+Continue with #1? (yes/no/other)
+---
+
+This ensures the user knows exactly what to do after receiving audit results.
