@@ -1,13 +1,12 @@
 ---
-name: Music Composition for Games (Theory)
+name: Music Composition Reference
 description: |
-  Use this skill when the user asks about music THEORY, COMPOSITION TECHNIQUES, or DESIGN patterns for game music. Trigger phrases: "chord progression for X mood", "what key for combat", "adaptive music design", "leitmotif technique", "how to write looping music", "music structure", "tempo for exploration", "vertical layering explained".
+  Use this skill when DESIGNING music content - choosing keys, chord progressions, tempos for specific contexts. Trigger phrases: "chord progression for X mood", "what key for combat music", "tempo for boss fight", "mode for mystery", "how to structure a game theme".
 
-  This skill provides MUSIC THEORY - scales, modes, chord progressions, song structure, adaptive music concepts, genre patterns.
+  Contains reference tables: modes by character, keys by genre, tempos by context, chord progressions by emotion.
 
-  For XM TRACKER IMPLEMENTATION (ZX format, MilkyTracker workflow): use zx-procgen:procedural-music instead.
-  For DESIGNING SPECIFIC TRACKS (SSL specs, track briefs): use sound-design:design-soundtrack command.
-version: 1.0.1
+  NOT for XM creation (use procedural-music) or sound synthesis (use procedural-sounds).
+version: 1.1.0
 ---
 
 # Music Composition for Games
