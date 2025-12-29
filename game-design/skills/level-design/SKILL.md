@@ -1,7 +1,12 @@
 ---
-name: Level Design Principles
-description: This skill should be used when the user asks about "level design", "level flow", "challenge curve", "player guidance", "spatial design", "level layout", "pacing", "encounter design", "secrets", "exploration", "landmarks", "teaching through design", or needs to design playable spaces.
-version: 1.0.0
+name: Level Design Principles (Conceptual)
+description: |
+  Use this skill for CONCEPTUAL level design - how to guide players, create challenge curves, and design memorable spaces. Trigger phrases: "level flow", "pacing", "challenge curve", "player guidance", "teaching through design", "encounter design", "how to design a good level".
+
+  This skill provides UNIVERSAL PRINCIPLES - applicable to any game engine or platform.
+
+  For ZX-SPECIFIC IMPLEMENTATION (tile maps, ROM storage, procedural generation): use zx-game-design:level-design instead.
+version: 1.0.1
 ---
 
 # Level Design Principles
