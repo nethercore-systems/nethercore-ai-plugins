@@ -1,293 +1,284 @@
 ---
 name: Procedural Texture Generation for ZX
-description: This skill should be used when the user asks to "generate a texture", "create procedural texture", "make a noise pattern", "perlin noise texture", "voronoi pattern", "tile texture", "seamless texture", "material texture", "gradient texture", "generate tileable image", "procedural material", "MRE texture", "metallic roughness", "specular map", "albedo texture", "SSE texture", "Mode 2 textures", "Mode 3 textures", "generate PBR textures", "matcap texture", "generate matcap", "dither transparency", "alpha texture", or mentions texture generation, noise algorithms, pattern generation, UV mapping, or material channels for ZX game assets.
-version: 1.3.0
+description: This skill should be used when the user asks to "generate a texture", "create procedural texture", "make a noise pattern", "perlin noise texture", "simplex noise", "voronoi pattern", "tile texture", "seamless texture", "material texture", "gradient texture", "generate tileable image", "procedural material", "MRE texture", "metallic roughness", "specular map", "albedo texture", "SSE texture", "Mode 0 textures", "Mode 1 textures", "Mode 2 textures", "Mode 3 textures", "generate PBR textures", "matcap texture", "generate matcap", "dither transparency", "alpha texture", "FastNoiseLite", "PIL texture", "NumPy texture", "texture atlas", "material recipe", "brushed metal texture", "wood grain texture", "stone texture", or mentions texture generation, noise algorithms, pattern generation, material channels, render modes, or matcap generation for ZX game assets.
+version: 2.0.0
 ---
 
 # Procedural Texture Generation
 
-## Build Integration
+Generate game-ready textures procedurally using Python with PIL, NumPy, and FastNoiseLite.
 
-Texture generators are **native binaries** (not WASM). They run at build time via `nether.toml`'s `build.script`:
+## Technology Stack
 
-```toml
-[build]
-script = "cargo run -p generator --release && cargo build -p game --target wasm32-unknown-unknown --release"
+| Library | Purpose |
+|---------|---------|
+| **PIL (Pillow)** | Image I/O, basic operations |
+| **NumPy** | Fast array math, blending |
+| **FastNoiseLite** | High-quality noise (Perlin, Simplex, Cellular, etc.) |
 
-[[assets.textures]]
-id = "bark"
-path = "../assets/textures/bark_albedo.png"
+```bash
+pip install pillow numpy pyfastnoiselite
 ```
-
-See the **Native Asset Pipeline** skill for full architecture details.
 
 ## Output Requirements
 
-- Format: PNG (RGBA or RGB)
-- Resolution: Power of 2 (64, 128, 256, 512 max)
-- Color: RGBA8 format (0xRRGGBBAA)
+- **Format:** PNG (RGBA or RGB)
+- **Resolution:** Power of 2 (64, 128, 256, 512 max)
+- **Target Aesthetic:** Low Poly / N64 / PS1 / PS2 era
 
 ---
 
-## ZX Material Texture System
+## Nethercore ZX Render Modes
 
-### Mode 0: Lambert (Flat/Diffuse)
+**Critical:** Each render mode requires different texture maps. Render mode is set once in `init()` via `render_mode(mode)`.
 
-| Slot | Texture | Description |
-|------|---------|-------------|
-| 0 | Albedo | Base color + Alpha for dither transparency |
+### Mode 0: Lambert/Unlit (1 map)
 
-Use for flat-shaded retro looks, UI, sprites, unlit objects.
+The simplest mode — texture multiplied by vertex color. Automatic Lambert shading when mesh has normals.
 
-### Mode 1: Matcap (Pre-baked Lighting)
+| Slot | Texture | Purpose |
+|------|---------|---------|
+| 0 | Albedo | RGB base color |
 
-| Slot | Texture | Description |
-|------|---------|-------------|
-| 0 | Albedo | Base color (UV-mapped) |
-| 1-3 | Matcaps | Spherical lighting captures (normal-mapped) |
+**Shading Behavior:**
+- Without normals: `final_color = texture × vertex_color`
+- With normals: Simple Lambert with sun direction and sky ambient
 
-**Blend Modes:** Multiply (shadows), Add (highlights), HSV Modulate (iridescence)
+**Use Cases:** UI, sprites, flat-shaded retro graphics, performance-critical scenes
 
-```rust
-render_mode(1);
-texture_bind(albedo_tex);
-matcap_set(1, shadow_matcap);
-matcap_blend_mode(1, 0);  // 0=Multiply, 1=Add, 2=HSV
+---
+
+### Mode 1: Matcap (up to 4 maps with layering)
+
+View-space normal sampling from matcap textures. Lighting is "baked" into the matcap.
+
+| Slot | Texture | Sampled By |
+|------|---------|------------|
+| 0 | Albedo | UV coordinates |
+| 1 | Matcap 1 | View-space normal |
+| 2 | Matcap 2 | View-space normal |
+| 3 | Matcap 3 | View-space normal |
+
+**Matcap Blend Modes:**
+
+| Mode | Value | Effect | Use Case |
+|------|-------|--------|----------|
+| Multiply | 0 | Darkens | Shadows, AO, toon bands |
+| Add | 1 | Brightens | Highlights, rim, glow |
+| HSV Modulate | 2 | Hue/saturation shift | Iridescence, rainbow |
+
+**How Matcaps Work:**
+```
+view_normal = transform_to_view_space(surface_normal)
+matcap_uv = view_normal.xy * 0.5 + 0.5
+final = albedo × vertex_color × matcap1 × matcap2 × matcap3
 ```
 
-### Mode 2: Metallic-Roughness (MRE)
+See `references/matcap-generation.md` for the complete matcap library (20+ types).
+
+---
+
+### Mode 2: Metallic-Roughness Blinn-Phong (2 maps)
+
+PBR-inspired normalized Blinn-Phong with energy conservation.
 
 | Slot | Texture | Channels |
 |------|---------|----------|
-| 0 | Albedo | RGB base color |
+| 0 | Albedo | RGB: Diffuse color |
 | 1 | MRE | R: Metallic, G: Roughness, B: Emissive |
 
-```rust
-texture_bind(albedo_tex);
-material_mre(mre_tex);
-// Or uniform values:
-material_metallic(0.8);
-material_roughness(0.3);
-```
+**MRE Channel Values:**
 
-### Mode 3: Specular-Shininess (SSE)
+| Channel | 0.0 | 1.0 |
+|---------|-----|-----|
+| Metallic (R) | Dielectric (plastic) | Full metal |
+| Roughness (G) | Mirror smooth | Fully diffuse |
+| Emissive (B) | No glow | Max self-illumination |
 
-| Slot | Texture | Channels |
-|------|---------|----------|
-| 0 | Albedo | RGB base color |
-| 1 | SSE | R: Specular Reduction (usually 0), G: Shininess, B: Emissive |
-| 2 | Specular | RGB highlight color |
-
-```rust
-texture_bind(albedo_tex);
-material_shininess(0.7);
-material_specular(0xFFD700FF);  // Gold highlight
-```
-
----
-
-## Texture Generation Quick Reference
-
-### Albedo Textures
-
-Base color with noise variation. See `references/albedo-generation.md` for full examples.
-
-```rust
-let mut tex = TextureBuffer::new(256, 256);
-tex.solid(0x8B4513FF);  // Base color
-tex.fbm(0.03, 4, 0.5, seed, 0x000000FF, 0xFFFFFFFF);  // Noise variation
-tex.write_png("assets/textures/bark_albedo.png").unwrap();
-```
-
-### MRE Textures (Mode 2)
-
-Pack metallic, roughness, emissive into RGB. See `references/mre-sse-generation.md`.
+**Common Material Presets:**
 
 | Material | Metallic | Roughness |
 |----------|----------|-----------|
-| Chrome | 1.0 | 0.1 |
-| Brushed Steel | 1.0 | 0.4 |
+| Polished metal | 0.9 | 0.2 |
+| Brushed metal | 0.9 | 0.4 |
 | Plastic | 0.0 | 0.5 |
 | Rubber | 0.0 | 0.9 |
+| Glass | 0.0 | 0.1 |
 
-### SSE Textures (Mode 3)
-
-Pack specular reduction, shininess, emissive into RGB. See `references/mre-sse-generation.md`.
-
-**Note:** Specular Reduction (R channel) should be **0** for most materials. Only increase for worn/dirty areas.
-
-### Matcap Textures (Mode 1)
-
-Spherical lighting captures. See `references/matcap-generation.md`.
-
-- Shadow matcap: Light gray sphere, multiply blend
-- Highlight matcap: White specular dot, add blend
-- HSV matcap: Color gradient for iridescence
-
-### Alpha/Dither Transparency
-
-ZX uses Bayer dithering for order-independent transparency. See `references/alpha-dither.md`.
-
-Common patterns: Radial (particles), EdgeFade (foliage), NoiseHoles (decay)
+See `references/mre-sse-generation.md` for complete examples.
 
 ---
 
-## Noise Algorithms
+### Mode 3: Specular-Shininess Blinn-Phong (3 maps)
 
-| Algorithm | Use For | Code |
-|-----------|---------|------|
-| Perlin | Organic surfaces, clouds | `tex.perlin(scale, seed, low, high)` |
-| Simplex | Faster Perlin alternative | `tex.simplex(scale, seed, low, high)` |
-| Voronoi | Cells, scales, crystals | `tex.voronoi(cells, seed, cell, edge)` |
-| FBM | Complex terrain, clouds | `tex.fbm(scale, octaves, persist, seed, low, high)` |
+Classic Blinn-Phong with explicit specular control. Era-authentic for PS1/N64/Saturn aesthetic.
 
-For tileable patterns, use periodic 4D noise. See `references/noise-algorithms.md`.
+| Slot | Texture | Channels |
+|------|---------|----------|
+| 0 | Albedo | RGB: Diffuse color |
+| 1 | SSE | R: Specular Damping, G: Shininess, B: Emissive |
+| 2 | Specular | RGB: Specular highlight tint |
+
+**SSE Channel Values:**
+
+| Channel | 0.0 | 1.0 |
+|---------|-----|-----|
+| Specular Damping (R) | Full specular | No specular |
+| Shininess (G) | Diffuse (exp=1) | Mirror (exp=256) |
+| Emissive (B) | No glow | Max glow |
+
+**Note:** Specular Damping (R) should usually be **0**. Only increase for worn/dirty areas.
+
+See `references/mre-sse-generation.md` for complete examples.
 
 ---
 
-## UV Mapping
+## Quick Start: TextureBuffer Class
 
-Procedural meshes need proper UVs:
+All examples use a helper class. See `references/texture-api.md` for the complete implementation.
 
-```rust
-let cube: UnpackedMeshUV = generate_cube_uv(1.0, 1.0, 1.0);
-let sphere: UnpackedMeshUV = generate_sphere_uv(1.0, 16, 8);
+```python
+from texture_buffer import TextureBuffer
+
+# Create and save a simple texture
+tex = TextureBuffer(256, 256)
+tex.fill((139, 69, 19, 255))  # Brown base
+tex.add_perlin_noise(scale=0.03, intensity=0.2, seed=42)
+tex.save("bark_albedo.png")
 ```
 
 ---
 
-## nether.toml Configuration
+## Noise Algorithms (FastNoiseLite)
 
-```toml
-# Mode 2 material
-[[assets.textures]]
-id = "armor_albedo"
-path = "assets/textures/armor_albedo.png"
+| Algorithm | Best For | Parameters |
+|-----------|----------|------------|
+| Perlin | Smooth organic patterns | scale, seed |
+| Simplex | Faster Perlin, fewer artifacts | scale, seed |
+| Cellular (Voronoi) | Cells, cracks, scales | cell_count, seed |
+| Value | Hard-edged noise | scale, seed |
+| Fractal (FBM) | Complex organic detail | octaves, persistence |
 
-[[assets.textures]]
-id = "armor_mre"
-path = "assets/textures/armor_mre.png"
-```
-
----
-
-## Uniform vs Texture Properties
-
-**Texture-based (per-pixel):**
-- Albedo, MRE channels, SSE channels, Specular color, Matcaps
-
-**Uniform-only (per-draw-call):**
-- `material_rim(intensity, power)` - Rim lighting
-- `set_color(rgba)` - Color tint
-- `set_alpha(a)` - Alpha multiplier
-
-**Rim lighting is NOT a texture** - it's calculated from view angle vs normal.
+See `references/noise-algorithms.md` for the complete noise reference.
 
 ---
 
-## Multi-Layer Texture System
+## Material Recipes
 
-**For professional quality, always use multi-layer composition instead of single-pass noise.**
+Common material patterns using layered noise:
 
-The workflow:
+| Material | Technique |
+|----------|-----------|
+| Brushed metal | Directional stretched noise + grain |
+| Wood grain | Elongated Perlin + ring pattern |
+| Stone/concrete | Multi-octave FBM + subtle color variation |
+| Rust patches | Thresholded cellular noise |
+| Fabric/cloth | Fine weave pattern + noise |
+
+See `references/material-recipes.md` for complete recipes with code.
+
+---
+
+## Multi-Layer Composition
+
+Professional textures are built from multiple layers:
+
 ```
 1. BASE: Solid color + subtle noise variation
-2. DETAIL: Perlin noise overlay for texture
-3. FEATURES: Scratches, cracks, grain (as appropriate)
-4. WEATHERING: Rust, stains, dust (based on style)
-5. EDGE WEAR: Curvature-based highlights (if available)
-6. FINAL: Dust + contrast boost
-7. QUALITY CHECK: Validate metrics
+2. DETAIL: Perlin/Simplex noise overlay
+3. FEATURES: Scratches, cracks, grain
+4. WEATHERING: Rust, stains, dust
+5. FINAL: Contrast boost, color grading
 ```
 
-See `references/layer-system.md` for the complete layer system documentation including:
-- All layer types (base, noise, features, weathering, edge wear, final)
-- Feature generators: scratches, cracks, grain, pores, rust, dust, stains
-- Quality metrics and validation
-- Language-agnostic examples
+See `references/layer-system.md` for the complete layer system.
 
 ---
 
-## CRITICAL: Code Organization & File Size Limits
+## Texture Atlas Packing
 
-**Generated code MUST follow these file size limits to prevent context bloat:**
+**ZX binds one texture per slot.** Multiple materials require atlas packing.
 
-| Limit | Lines | Action |
-|-------|-------|--------|
-| Target | ≤300 | Ideal file size |
-| Soft limit | 400 | Consider splitting |
-| Hard limit | 500 | MUST split immediately |
-| Unacceptable | >500 | Never generate |
+**Workflow:**
+1. Generate individual material textures
+2. Pack into atlas (2x2, 4x4 grid)
+3. Generate matching atlas for each required slot (Albedo, MRE, SSE, Specular)
+4. Remap mesh UVs to atlas quadrants
 
-### Mandatory Splitting Strategy
+See `references/atlas-packing.md` for atlas utilities.
 
-When generating texture code, use this module structure:
+---
 
-```
-generator/src/
-├── main.rs              # Entry point only (~50 lines)
-├── lib.rs               # Module exports (~30 lines)
-├── textures/
-│   ├── mod.rs           # Re-exports (~20 lines)
-│   ├── albedo.rs        # Albedo generation (~150-200 lines)
-│   ├── mre.rs           # MRE generation (~100-150 lines)
-│   ├── matcap.rs        # Matcap generation (~100-150 lines)
-│   └── noise.rs         # Noise utilities (~150-200 lines)
-├── layers/
-│   ├── mod.rs           # Layer system exports
-│   ├── base.rs          # Base layer
-│   ├── features.rs      # Scratches, cracks, grain
-│   └── weathering.rs    # Rust, stains, dust
-└── constants.rs         # Palettes, presets (~100 lines)
+## Seamless/Tileable Textures
+
+For tileable textures, use 4D noise with circular coordinates:
+
+```python
+# Map 2D to 4D torus for seamless tiling
+s, t = x / width, y / height
+nx = cos(s * 2 * PI) * scale
+ny = sin(s * 2 * PI) * scale
+nz = cos(t * 2 * PI) * scale
+nw = sin(t * 2 * PI) * scale
+value = noise.get_noise_4d(nx, ny, nz, nw)
 ```
 
-### What to Extract
+See `references/seamless-textures.md` for tileable texture techniques.
 
-| Extract Into | Content |
-|--------------|---------|
-| `constants.rs` | Color palettes, material presets, noise parameters |
-| `noise.rs` | Perlin, simplex, voronoi, FBM functions |
-| `layers/*.rs` | Individual layer generators |
-| `materials/*.rs` | Per-material-type generators |
+---
 
-### Large Function Pattern
+## Console Constraints
 
-**NEVER** generate functions over 100 lines. Split into helpers:
-
-```rust
-// BAD: 200-line function
-fn generate_bark_texture(...) { /* everything inline */ }
-
-// GOOD: Composed from small functions
-fn generate_bark_texture(size: u32, seed: u64) -> TextureBuffer {
-    let mut tex = create_base_layer(size, BARK_COLORS);
-    add_noise_layer(&mut tex, seed);
-    add_crack_details(&mut tex, seed + 1);
-    add_weathering(&mut tex, seed + 2);
-    tex
-}
-```
-
-### Module Re-export Pattern
-
-```rust
-// generator/src/lib.rs
-pub mod textures;
-pub mod layers;
-pub mod constants;
-
-pub use textures::{generate_albedo, generate_mre};
-pub use constants::*;
-```
+| Constraint | Limit |
+|------------|-------|
+| Max texture resolution | 512 x 512 |
+| Required sizes | Power of 2 |
+| VRAM budget | 4MB total |
+| Matcap resolution | Typically 64x64 or 128x128 |
 
 ---
 
 ## Reference Files
 
-- `references/layer-system.md` - **Multi-layer composition system (START HERE)**
-- `references/texture-api.md` - API quick reference
-- `references/albedo-generation.md` - Albedo generation examples
-- `references/mre-sse-generation.md` - Material texture examples
-- `references/matcap-generation.md` - Matcap generation examples
-- `references/alpha-dither.md` - Alpha transparency examples
-- `references/noise-algorithms.md` - Noise function reference
+| Reference | Contents |
+|-----------|----------|
+| `texture-api.md` | TextureBuffer class implementation |
+| `noise-algorithms.md` | FastNoiseLite noise reference |
+| `albedo-generation.md` | Albedo texture examples |
+| `mre-sse-generation.md` | MRE and SSE map generation |
+| `matcap-generation.md` | Complete matcap library (20+ types) |
+| `material-recipes.md` | Material presets with code |
+| `layer-system.md` | Multi-layer composition system |
+| `atlas-packing.md` | Texture atlas utilities |
+| `seamless-textures.md` | Tileable texture techniques |
+| `alpha-dither.md` | Dither transparency patterns |
+
+---
+
+## File Organization
+
+```
+generator/
+├── main.py              # Entry point
+├── texture_buffer.py    # TextureBuffer class
+├── noise_utils.py       # FastNoiseLite helpers
+├── textures/
+│   ├── albedo.py        # Albedo generators
+│   ├── mre.py           # MRE map generators
+│   ├── sse.py           # SSE map generators
+│   ├── matcap.py        # Matcap generators
+│   └── atlas.py         # Atlas packing
+├── materials/
+│   ├── metal.py         # Metal recipes
+│   ├── wood.py          # Wood recipes
+│   └── stone.py         # Stone recipes
+└── constants.py         # Palettes, presets
+```
+
+**File Size Limits:**
+
+| Limit | Lines | Action |
+|-------|-------|--------|
+| Target | ≤300 | Ideal |
+| Soft | 400 | Consider splitting |
+| Hard | 500 | MUST split |

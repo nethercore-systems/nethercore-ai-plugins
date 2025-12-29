@@ -1,6 +1,6 @@
 ---
 name: asset-generator
-description: Use this agent when the user has SADL specifications or design specs and needs procedural generation code produced. Triggers on requests like "generate code for this spec", "create the mesh generator", "write texture generation code", "implement this recipe", "produce the assets from this design", or after asset-designer has created specifications.
+description: Use this agent when the user has SADL specifications or design specs and needs procedural generation code produced. Triggers on requests like "generate code for this spec", "create the mesh generator", "write texture generation code", "implement this recipe", "produce the assets from this design", "blender mesh script", "bpy generator", "generate glb", or after asset-designer has created specifications.
 
 <example>
 Context: User has received SADL specifications from asset-designer
@@ -83,7 +83,21 @@ Init-only functions include:
 
 ---
 
-## Supported Languages
+## Supported Languages & Runtimes
+
+### Mesh Generation
+
+| Runtime | Use Case | Output Format |
+|---------|----------|---------------|
+| **Blender bpy** | 3D meshes (Recommended) | .glb/.gltf/.obj via headless Blender |
+| Rust + proc-gen | Meshes with proc-gen library | .obj files |
+
+**For mesh generation, prefer Blender bpy** — run headless with:
+```bash
+blender --background --python generator.py
+```
+
+### Texture/Audio Generation
 
 | Language | Use Case | Output Format |
 |----------|----------|---------------|
@@ -91,7 +105,7 @@ Init-only functions include:
 | Python | Quick prototyping, tooling | .py files |
 | Node.js | Web-based tools | .js/.ts files |
 
-Default to **Rust** if not specified (uses proc-gen library).
+Default to **Rust** for textures/audio, **Blender bpy** for meshes.
 
 ---
 
@@ -362,3 +376,147 @@ let mesh = recipe.generate_mesh(seed);
 | Massive (100+) | 500 | 250 | 100 |
 
 Use `RecipeConstraints::for_game_size(GameSize::Medium)` to auto-configure.
+
+---
+
+## Blender bpy Mesh Generation
+
+For 3D mesh generation, use Blender in headless mode. This is the preferred workflow for all mesh assets.
+
+### Project Structure for Blender Meshes
+
+```
+my-game/
+├── generators/
+│   └── meshes/
+│       ├── barrel.py          # Blender script for barrel
+│       ├── crate.py           # Blender script for crate
+│       └── common.py          # Shared utilities
+├── game/
+│   ├── nether.toml           # References generated assets
+│   └── src/...
+├── assets/
+│   └── meshes/               # GLB output (gitignored)
+└── generate_meshes.sh        # Runs all Blender scripts
+```
+
+### nether.toml Integration
+
+```toml
+[build]
+script = "./generate_meshes.sh && cargo build -p game --target wasm32-unknown-unknown --release"
+
+[[assets.meshes]]
+id = "barrel"
+path = "../assets/meshes/barrel.glb"
+```
+
+### generate_meshes.sh
+
+```bash
+#!/bin/bash
+mkdir -p assets/meshes
+blender --background --python generators/meshes/barrel.py
+blender --background --python generators/meshes/crate.py
+```
+
+### Blender Script Template
+
+```python
+#!/usr/bin/env python3
+"""Generate [asset name] mesh for Nethercore ZX."""
+
+import bpy
+import math
+
+def clear_scene():
+    bpy.ops.object.select_all(action='SELECT')
+    bpy.ops.object.delete()
+
+def generate_mesh():
+    """Generate the mesh - customize this function."""
+    # Add primitives
+    bpy.ops.mesh.primitive_cube_add(size=1.0)
+    obj = bpy.context.active_object
+    obj.name = "AssetName"
+
+    # Add modifiers as needed
+    # mod = obj.modifiers.new(name="Bevel", type='BEVEL')
+    # mod.width = 0.02
+
+    return obj
+
+def post_process(obj):
+    """Apply required post-processing."""
+    bpy.context.view_layer.objects.active = obj
+
+    # UV unwrap
+    bpy.ops.object.mode_set(mode='EDIT')
+    bpy.ops.mesh.select_all(action='SELECT')
+    bpy.ops.uv.smart_project(angle_limit=66.0)
+
+    # Cleanup
+    bpy.ops.mesh.remove_doubles(threshold=0.0001)
+    bpy.ops.mesh.delete_loose()
+    bpy.ops.mesh.quads_convert_to_tris()
+
+    # Normals
+    bpy.ops.object.mode_set(mode='OBJECT')
+    bpy.ops.object.shade_smooth()
+    obj.data.use_auto_smooth = True
+    obj.data.auto_smooth_angle = math.radians(30)
+
+def export_glb(filepath):
+    """Export to GLB format."""
+    bpy.ops.export_scene.gltf(
+        filepath=filepath,
+        export_format='GLB',
+        export_apply_modifiers=True,
+        export_normals=True
+    )
+
+def main():
+    clear_scene()
+    obj = generate_mesh()
+    post_process(obj)
+    export_glb("assets/meshes/asset_name.glb")
+    print("Exported assets/meshes/asset_name.glb")
+
+if __name__ == "__main__":
+    main()
+```
+
+### Mesh Workflow Decision Tree
+
+Choose approach based on shape type:
+
+```
+Hard Surface (weapons, vehicles, architecture, props)?
+  └─► Polygon modeling with bpy primitives + modifiers
+
+Organic (characters, creatures, rocks, foliage)?
+  ├─► Simple blobs → Metaballs
+  ├─► Creatures from skeleton → Skin Modifier
+  └─► Complex smooth blends → SDF Pipeline (fogleman/sdf → Blender cleanup)
+```
+
+### Required Post-Processing
+
+Every mesh MUST have before export:
+
+1. **UV unwrap** — `smart_project`, `cube_project`, or manual seams
+2. **Normals** — `shade_smooth` + `use_auto_smooth` OR `shade_flat`
+3. **Cleanup** — `remove_doubles`, `delete_loose`
+4. **Triangulate** — `quads_convert_to_tris`
+
+### Console Constraints Reminder
+
+| Use Case | Triangle Budget |
+|----------|-----------------|
+| Swarm entities | 50-150 |
+| Props | 50-300 |
+| Characters | 200-500 |
+| Vehicles | 300-800 |
+| Hero/close-up | 500-2000 |
+
+Consult the **procedural-meshes** skill for detailed Blender bpy patterns and complete examples.

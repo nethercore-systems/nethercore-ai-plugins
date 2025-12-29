@@ -1,302 +1,259 @@
-# Noise Algorithms Reference
+# Noise Algorithms Reference (FastNoiseLite)
 
-Procedural noise functions for texture generation. These algorithms are language-agnostic and can be implemented in any language.
+FastNoiseLite provides high-quality, consistent noise across all algorithms.
 
-## Core Noise Types
+## Setup
+
+```python
+from pyfastnoiselite import FastNoiseLite, NoiseType, FractalType, CellularDistanceFunction, CellularReturnType
+```
+
+## Noise Types
 
 ### Perlin Noise
 
 Classic gradient noise for organic surfaces.
 
-**Parameters:**
-| Parameter | Description | Range |
-|-----------|-------------|-------|
-| Scale | Feature size | 0.01 (large) to 0.2 (fine) |
-| Seed | Reproducibility | Any integer |
-| Color low | Minimum output color | RGBA |
-| Color high | Maximum output color | RGBA |
+```python
+def create_perlin(seed: int = 42, scale: float = 0.05) -> FastNoiseLite:
+    noise = FastNoiseLite(seed)
+    noise.noise_type = NoiseType.NoiseType_Perlin
+    noise.frequency = scale
+    return noise
 
-**Use for:** Clouds, water, organic materials, terrain
-
-**Algorithm (pseudocode):**
+# Usage
+noise = create_perlin(42, 0.05)
+value = noise.get_noise(x, y)  # Returns [-1, 1]
 ```
-function perlin_2d(x, y, seed):
-    # Get grid cell coordinates
-    x0 = floor(x)
-    y0 = floor(y)
-    x1 = x0 + 1
-    y1 = y0 + 1
 
-    # Get interpolation weights
-    sx = x - x0
-    sy = y - y0
+| Scale | Effect |
+|-------|--------|
+| 0.01 | Very large features |
+| 0.03 | Large features |
+| 0.05 | Medium features |
+| 0.1 | Small features |
+| 0.2 | Fine detail |
 
-    # Get gradient vectors at corners (hash-based)
-    g00 = gradient_at(x0, y0, seed)
-    g10 = gradient_at(x1, y0, seed)
-    g01 = gradient_at(x0, y1, seed)
-    g11 = gradient_at(x1, y1, seed)
-
-    # Compute dot products with distance vectors
-    n00 = dot(g00, (x - x0, y - y0))
-    n10 = dot(g10, (x - x1, y - y0))
-    n01 = dot(g01, (x - x0, y - y1))
-    n11 = dot(g11, (x - x1, y - y1))
-
-    # Smooth interpolation (fade function)
-    u = smoothstep(sx)
-    v = smoothstep(sy)
-
-    # Bilinear interpolation
-    return lerp(
-        lerp(n00, n10, u),
-        lerp(n01, n11, u),
-        v
-    )
-
-function smoothstep(t):
-    return t * t * t * (t * (t * 6 - 15) + 10)
-```
+**Best for:** Clouds, water, organic materials, terrain height
 
 ---
 
-### Simplex Noise
+### Simplex Noise (OpenSimplex2)
 
 Faster than Perlin, fewer directional artifacts.
 
-**Parameters:** Same as Perlin
+```python
+def create_simplex(seed: int = 42, scale: float = 0.05) -> FastNoiseLite:
+    noise = FastNoiseLite(seed)
+    noise.noise_type = NoiseType.NoiseType_OpenSimplex2
+    noise.frequency = scale
+    return noise
+```
 
-**Advantages:**
-- O(n) complexity vs O(2^n) for Perlin in higher dimensions
-- No visible grid alignment artifacts
-- Better gradient distribution
-
-**Use for:** Same as Perlin, preferred for real-time generation
+**Best for:** Same as Perlin, preferred for real-time or when speed matters
 
 ---
 
-### Voronoi (Cellular) Noise
+### Cellular Noise (Voronoi)
 
-Cell-like patterns for scales, crystals, cracks.
+Cell-like patterns. FastNoiseLite provides multiple return types.
 
-**Parameters:**
-| Parameter | Description | Range |
-|-----------|-------------|-------|
-| Cell count | Number of cells | 4-32 typical |
-| Seed | Reproducibility | Any integer |
-| Cell color | Color inside cells | RGBA |
-| Edge color | Color at cell edges | RGBA |
-
-**Use for:** Scales, crystals, cracks, organic cells, leather, stone
-
-**Algorithm (pseudocode):**
+```python
+def create_cellular(seed: int = 42, scale: float = 0.1,
+                    return_type: CellularReturnType = CellularReturnType.CellularReturnType_Distance) -> FastNoiseLite:
+    noise = FastNoiseLite(seed)
+    noise.noise_type = NoiseType.NoiseType_Cellular
+    noise.frequency = scale
+    noise.cellular_return_type = return_type
+    noise.cellular_distance_function = CellularDistanceFunction.CellularDistanceFunction_EuclideanSq
+    return noise
 ```
-function voronoi_2d(x, y, cell_count, seed):
-    # Find containing cell
-    cell_x = floor(x * cell_count)
-    cell_y = floor(y * cell_count)
 
-    min_dist = infinity
-    second_dist = infinity
+**Cellular Return Types:**
 
-    # Check 3x3 neighborhood
-    for dy in [-1, 0, 1]:
-        for dx in [-1, 0, 1]:
-            nx = cell_x + dx
-            ny = cell_y + dy
+| Type | Effect |
+|------|--------|
+| `CellularReturnType_CellValue` | Random value per cell (flat regions) |
+| `CellularReturnType_Distance` | Distance to nearest cell center |
+| `CellularReturnType_Distance2` | Distance to 2nd nearest cell |
+| `CellularReturnType_Distance2Add` | Sum of D1 + D2 |
+| `CellularReturnType_Distance2Sub` | D2 - D1 (edges/cracks) |
+| `CellularReturnType_Distance2Mul` | D1 * D2 |
+| `CellularReturnType_Distance2Div` | D1 / D2 |
 
-            # Get random point in this cell
-            point = hash_to_point(nx, ny, seed)
-            point.x = (nx + point.x) / cell_count
-            point.y = (ny + point.y) / cell_count
+**Best for:** Scales, crystals, cracks, organic cells, leather, cobblestone
 
-            dist = distance(x, y, point.x, point.y)
+---
 
-            if dist < min_dist:
-                second_dist = min_dist
-                min_dist = dist
-            else if dist < second_dist:
-                second_dist = dist
+### Value Noise
 
-    # Return distance to nearest cell center
-    # Or (second_dist - min_dist) for edge detection
-    return min_dist
+Hard-edged, blocky noise.
+
+```python
+def create_value(seed: int = 42, scale: float = 0.05) -> FastNoiseLite:
+    noise = FastNoiseLite(seed)
+    noise.noise_type = NoiseType.NoiseType_Value
+    noise.frequency = scale
+    return noise
+```
+
+**Best for:** Pixelated effects, rough surfaces, deliberate blockiness
+
+---
+
+### Value Cubic
+
+Smoother version of Value noise.
+
+```python
+def create_value_cubic(seed: int = 42, scale: float = 0.05) -> FastNoiseLite:
+    noise = FastNoiseLite(seed)
+    noise.noise_type = NoiseType.NoiseType_ValueCubic
+    noise.frequency = scale
+    return noise
 ```
 
 ---
 
-### Fractal Brownian Motion (FBM)
+## Fractal Noise (FBM)
 
-Layered noise for complex organic patterns.
+Layer multiple noise octaves for complex detail.
 
-**Parameters:**
-| Parameter | Description | Range |
-|-----------|-------------|-------|
-| Scale | Base feature size | 0.01-0.1 |
-| Octaves | Number of layers | 1-8 |
-| Persistence | Amplitude falloff | 0.3-0.7 |
-| Lacunarity | Frequency multiplier | 2.0 typical |
-| Seed | Reproducibility | Any integer |
-
-**Use for:** Terrain, clouds, complex organic textures, weathering
-
-**Algorithm (pseudocode):**
+```python
+def create_fbm(seed: int = 42, scale: float = 0.03,
+               octaves: int = 4, persistence: float = 0.5,
+               lacunarity: float = 2.0) -> FastNoiseLite:
+    noise = FastNoiseLite(seed)
+    noise.noise_type = NoiseType.NoiseType_Perlin  # Base noise type
+    noise.frequency = scale
+    noise.fractal_type = FractalType.FractalType_FBm
+    noise.fractal_octaves = octaves
+    noise.fractal_gain = persistence  # Amplitude multiplier per octave
+    noise.fractal_lacunarity = lacunarity  # Frequency multiplier per octave
+    return noise
 ```
-function fbm_2d(x, y, octaves, persistence, lacunarity, seed):
-    total = 0
-    amplitude = 1.0
-    frequency = 1.0
-    max_value = 0.0  # For normalization
 
-    for i in range(octaves):
-        total += perlin_2d(x * frequency, y * frequency, seed + i) * amplitude
-        max_value += amplitude
+**Fractal Types:**
 
-        amplitude *= persistence  # Decrease amplitude
-        frequency *= lacunarity   # Increase frequency
-
-    return total / max_value  # Normalize to [-1, 1]
-```
+| Type | Effect |
+|------|--------|
+| `FractalType_None` | No fractal (single layer) |
+| `FractalType_FBm` | Standard layered noise |
+| `FractalType_Ridged` | Inverted, sharp ridges |
+| `FractalType_PingPong` | Ping-pong effect for terraced look |
 
 **Octave Effects:**
+
 | Octaves | Result |
 |---------|--------|
 | 1 | Smooth, simple |
 | 2-3 | Basic detail |
 | 4-6 | Rich complexity |
-| 7-8 | Maximum detail (expensive) |
+| 7-8 | Maximum detail |
 
 ---
 
-## Tileable (Seamless) Noise
+## Domain Warp
 
-For textures that tile seamlessly, use 4D noise with circular coordinates.
-
-**Algorithm (pseudocode):**
-```
-function tileable_noise_2d(x, y, width, height, seed):
-    # Map 2D coordinates to 4D torus
-    s = x / width
-    t = y / height
-
-    # Create circular coordinates
-    nx = cos(s * 2 * PI)
-    ny = sin(s * 2 * PI)
-    nz = cos(t * 2 * PI)
-    nw = sin(t * 2 * PI)
-
-    # Sample 4D noise (result tiles seamlessly in 2D)
-    return perlin_4d(nx, ny, nz, nw, seed)
-```
-
-**Why it works:** The 4D coordinates wrap around like a torus, so opposite edges sample the same noise values.
-
----
-
-## Language Examples
-
-### Rust (proc-gen)
-
-```rust
-use proc_gen::texture::*;
-
-let mut tex = TextureBuffer::new(256, 256);
-
-// Basic Perlin
-tex.perlin(0.05, 42, 0x000000FF, 0xFFFFFFFF);
-
-// FBM for complex patterns
-tex.fbm(0.03, 4, 0.5, 42, 0x2F1810FF, 0x5A3A28FF);
-
-// Voronoi for cells
-tex.voronoi(16, 42, 0x8B4513FF, 0x2F1810FF);
-
-tex.write_png("output.png").unwrap();
-```
-
-### Python (noise library)
+Distort coordinates for more organic shapes.
 
 ```python
-from noise import snoise2, pnoise2
-import numpy as np
-from PIL import Image
+def create_warped_noise(seed: int = 42) -> FastNoiseLite:
+    noise = FastNoiseLite(seed)
+    noise.noise_type = NoiseType.NoiseType_OpenSimplex2
+    noise.frequency = 0.02
 
-def generate_perlin_texture(width, height, scale=0.05, seed=42):
-    img = np.zeros((height, width, 4), dtype=np.uint8)
+    # Enable domain warp
+    noise.domain_warp_type = FastNoiseLite.DomainWarpType.DomainWarpType_OpenSimplex2
+    noise.domain_warp_amp = 50.0  # Warp strength
+    noise.domain_warp_frequency = 0.01
+    return noise
 
-    for y in range(height):
-        for x in range(width):
-            value = pnoise2(x * scale, y * scale, base=seed)
-            # Map [-1, 1] to [0, 255]
-            byte = int((value + 1) * 0.5 * 255)
-            img[y, x] = [byte, byte, byte, 255]
-
-    return Image.fromarray(img)
-
-def generate_fbm_texture(width, height, scale=0.03, octaves=4, persistence=0.5):
-    img = np.zeros((height, width, 4), dtype=np.uint8)
-
-    for y in range(height):
-        for x in range(width):
-            value = pnoise2(x * scale, y * scale, octaves=octaves,
-                           persistence=persistence)
-            byte = int((value + 1) * 0.5 * 255)
-            img[y, x] = [byte, byte, byte, 255]
-
-    return Image.fromarray(img)
+# Usage with warp
+x_warped, y_warped = noise.domain_warp(x, y)
+value = noise.get_noise(x_warped, y_warped)
 ```
 
-### JavaScript (simplex-noise)
+---
 
-```javascript
-import { createNoise2D, createNoise4D } from 'simplex-noise';
+## Complete Texture Generation
 
-function generateTexture(width, height, scale = 0.05, seed = 42) {
-    const noise2D = createNoise2D(() => seed);
-    const imageData = new ImageData(width, height);
+```python
+import numpy as np
+from pyfastnoiselite import FastNoiseLite, NoiseType, FractalType
 
-    for (let y = 0; y < height; y++) {
-        for (let x = 0; x < width; x++) {
-            const value = noise2D(x * scale, y * scale);
-            const byte = Math.floor((value + 1) * 0.5 * 255);
-            const i = (y * width + x) * 4;
-            imageData.data[i] = byte;
-            imageData.data[i + 1] = byte;
-            imageData.data[i + 2] = byte;
-            imageData.data[i + 3] = 255;
-        }
-    }
+def generate_noise_texture(width: int, height: int, noise_type: str = 'perlin',
+                           scale: float = 0.05, seed: int = 42,
+                           color_low: tuple = (0, 0, 0, 255),
+                           color_high: tuple = (255, 255, 255, 255)) -> np.ndarray:
+    """Generate a noise texture with color mapping."""
 
-    return imageData;
-}
+    noise = FastNoiseLite(seed)
+    noise.frequency = scale
 
-// Tileable version using 4D noise
-function generateTileableTexture(width, height, scale = 0.05, seed = 42) {
-    const noise4D = createNoise4D(() => seed);
-    const imageData = new ImageData(width, height);
+    if noise_type == 'perlin':
+        noise.noise_type = NoiseType.NoiseType_Perlin
+    elif noise_type == 'simplex':
+        noise.noise_type = NoiseType.NoiseType_OpenSimplex2
+    elif noise_type == 'cellular':
+        noise.noise_type = NoiseType.NoiseType_Cellular
+    elif noise_type == 'value':
+        noise.noise_type = NoiseType.NoiseType_Value
+    elif noise_type == 'fbm':
+        noise.noise_type = NoiseType.NoiseType_Perlin
+        noise.fractal_type = FractalType.FractalType_FBm
+        noise.fractal_octaves = 4
+        noise.fractal_gain = 0.5
 
-    for (let y = 0; y < height; y++) {
-        for (let x = 0; x < width; x++) {
-            const s = x / width;
-            const t = y / height;
+    data = np.zeros((height, width, 4), dtype=np.uint8)
 
-            const nx = Math.cos(s * 2 * Math.PI) * scale;
-            const ny = Math.sin(s * 2 * Math.PI) * scale;
-            const nz = Math.cos(t * 2 * Math.PI) * scale;
-            const nw = Math.sin(t * 2 * Math.PI) * scale;
+    for y in range(height):
+        for x in range(width):
+            # Get noise value and map to [0, 1]
+            val = (noise.get_noise(x, y) + 1) / 2
 
-            const value = noise4D(nx, ny, nz, nw);
-            const byte = Math.floor((value + 1) * 0.5 * 255);
-            const i = (y * width + x) * 4;
-            imageData.data[i] = byte;
-            imageData.data[i + 1] = byte;
-            imageData.data[i + 2] = byte;
-            imageData.data[i + 3] = 255;
-        }
-    }
+            # Interpolate between colors
+            for c in range(4):
+                data[y, x, c] = int(color_low[c] * (1 - val) + color_high[c] * val)
 
-    return imageData;
-}
+    return data
+```
+
+---
+
+## Tileable Noise (4D Sampling)
+
+For seamlessly tileable textures, sample 4D noise with circular coordinates:
+
+```python
+import math
+
+def generate_tileable_noise(width: int, height: int, scale: float = 1.0,
+                            seed: int = 42) -> np.ndarray:
+    """Generate seamlessly tileable noise texture."""
+    noise = FastNoiseLite(seed)
+    noise.noise_type = NoiseType.NoiseType_Perlin
+    noise.frequency = 1.0  # Scale handled in coordinates
+
+    data = np.zeros((height, width, 4), dtype=np.uint8)
+
+    for y in range(height):
+        for x in range(width):
+            # Map 2D to 4D torus
+            s = x / width
+            t = y / height
+
+            nx = math.cos(s * 2 * math.pi) * scale
+            ny = math.sin(s * 2 * math.pi) * scale
+            nz = math.cos(t * 2 * math.pi) * scale
+            nw = math.sin(t * 2 * math.pi) * scale
+
+            # Sample 4D noise (tiles seamlessly)
+            val = (noise.get_noise_4d(nx, ny, nz, nw) + 1) / 2
+            gray = int(val * 255)
+            data[y, x] = (gray, gray, gray, 255)
+
+    return data
 ```
 
 ---
@@ -304,26 +261,50 @@ function generateTileableTexture(width, height, scale = 0.05, seed = 42) {
 ## Common Presets
 
 ### Terrain
-```
-FBM: scale=0.01, octaves=6, persistence=0.5
+```python
+noise.noise_type = NoiseType.NoiseType_Perlin
+noise.frequency = 0.01
+noise.fractal_type = FractalType.FractalType_FBm
+noise.fractal_octaves = 6
+noise.fractal_gain = 0.5
 ```
 
 ### Clouds
-```
-FBM: scale=0.02, octaves=4, persistence=0.6
-```
-
-### Wood Grain
-```
-Perlin: scale=0.02 (stretched in one axis)
-```
-
-### Marble
-```
-Perlin + sin(x + perlin_value) for veins
+```python
+noise.noise_type = NoiseType.NoiseType_OpenSimplex2
+noise.frequency = 0.02
+noise.fractal_type = FractalType.FractalType_FBm
+noise.fractal_octaves = 4
+noise.fractal_gain = 0.6
 ```
 
 ### Scales/Cells
+```python
+noise.noise_type = NoiseType.NoiseType_Cellular
+noise.frequency = 0.08
+noise.cellular_return_type = CellularReturnType.CellularReturnType_Distance
 ```
-Voronoi: cell_count=16-32
+
+### Cracks
+```python
+noise.noise_type = NoiseType.NoiseType_Cellular
+noise.frequency = 0.1
+noise.cellular_return_type = CellularReturnType.CellularReturnType_Distance2Sub
+```
+
+### Wood Grain
+```python
+# Stretch noise in one direction
+noise.noise_type = NoiseType.NoiseType_Perlin
+noise.frequency = 0.02
+# Sample with stretched Y: noise.get_noise(x, y * 0.2)
+```
+
+### Marble Veins
+```python
+noise.noise_type = NoiseType.NoiseType_Perlin
+noise.frequency = 0.03
+noise.fractal_type = FractalType.FractalType_FBm
+noise.fractal_octaves = 3
+# Apply: sin(x * 0.1 + noise_value * 4.0) for veins
 ```
