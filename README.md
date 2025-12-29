@@ -8,7 +8,7 @@ Official AI-powered development plugins for Nethercore game development. Current
 |--------|-------------|--------|
 | [zx-dev](./zx-dev/) | Core game development - FFI specs, cameras, rendering | 6 |
 | [zx-game-design](./zx-game-design/) | Game design workflow - GDDs, multiplayer, mechanics | 10 |
-| [zx-procgen](./zx-procgen/) | Procedural asset generation - textures, meshes, sounds | 11 |
+| [zx-procgen](./zx-procgen/) | Procedural asset generation - textures, meshes, sounds, instruments | 12 |
 | [zx-publish](./zx-publish/) | Publishing workflow - ROM packaging, platform upload | 2 |
 | [zx-orchestrator](./zx-orchestrator/) | Meta-orchestration - coordinates full pipeline | 0 |
 | [zx-test](./zx-test/) | Testing and QA - sync tests, replay regression | 2 |
@@ -148,10 +148,11 @@ Game design workflow plugin.
 
 Procedural asset generation plugin.
 
-**Skills (11):**
+**Skills (12):**
 - `procedural-textures` - Texture generation (Albedo, MRE, SSE, Matcaps)
 - `procedural-meshes` - 3D mesh generation with UVs and vertex colors
 - `procedural-sounds` - Audio synthesis and SFX
+- `procedural-instruments` - High-quality instrument synthesis (Karplus-Strong, FM, wavetable, additive)
 - `procedural-music` - XM tracker music composition (manual tracker workflow)
 - `xm-writer` - Programmatic XM generation from Python (generate XM files from code)
 - `procedural-animations` - Walk cycles, attacks, locomotion (includes skeletal rigging and mocap)
@@ -164,6 +165,7 @@ Procedural asset generation plugin.
 **Commands:**
 - `zx-procgen:generate-asset` - Quick single-asset generation
 - `zx-procgen:generate-sfx` - Quick sound effect generation
+- `zx-procgen:generate-instrument` - Generate high-quality instrument samples
 - `zx-procgen:new-asset-project` - Scaffold asset generation project
 - `zx-procgen:improve-assets` - Guided quality improvement workflow
 
@@ -177,6 +179,7 @@ Procedural asset generation plugin.
 - `character-generator` - End-to-end character creation
 - `quality-analyzer` - Holistic asset quality assessment
 - `quality-enhancer` - Autonomous asset quality improvement
+- `instrument-architect` - Designs and implements instrument samples
 
 ### zx-publish
 

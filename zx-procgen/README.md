@@ -13,8 +13,9 @@ Procedural asset generation plugin for Nethercore ZX. Create beautiful textures,
 - **Skeletal Animation**: GPU skinning, bone weights, walk cycles, attacks, IK systems
 - **Rigid Body Animation**: Vehicle physics, robots, mechanical systems
 - **Quality Tier System**: Placeholder → Temp → Final → Hero progression for assets
-- **4 Commands**: `/new-asset-project`, `/generate-asset`, `/generate-sfx`, `/improve-assets`
-- **9 Agents**: Creative pipeline + quality analysis + quality enhancement
+- **Procedural Instruments**: High-quality instrument samples via Karplus-Strong, FM, wavetable, additive synthesis
+- **5 Commands**: `/new-asset-project`, `/generate-asset`, `/generate-sfx`, `/generate-instrument`, `/improve-assets`
+- **10 Agents**: Creative pipeline + quality analysis + quality enhancement + instrument design
 - **Language Agnostic**: Use Rust, Python, Processing, Blender, or any tool that outputs standard formats
 
 ## Installation
@@ -162,6 +163,38 @@ Production-quality sound effects using **NumPy**, **SciPy**, and **soundfile** -
 
 **Trigger phrases**: "generate sound", "numpy synthesis", "procedural audio", "SFX", "FM synthesis", "WAV generation"
 
+### Procedural Instruments (NEW)
+
+Production-quality instrument synthesis for game music. Solves the "chiptuney" problem by implementing advanced synthesis techniques that create realistic, evolving timbres instead of basic oscillator sounds.
+
+**Synthesis Techniques:**
+| Technique | Best For | Example Instruments |
+|-----------|----------|---------------------|
+| Karplus-Strong | Plucked strings | Acoustic guitar, bass, harp, koto |
+| FM Synthesis | Keys, bells | Electric piano (DX7), tubular bells, vibraphone |
+| Wavetable | Pads, evolving sounds | String ensemble, synth pads |
+| Additive | Organs | Hammond organ with drawbars |
+| Subtractive | Leads, bass | Synth bass, brass, supersaw leads |
+
+**Why It's Better Than Raw Oscillators:**
+- Multi-stage envelopes (not just ADSR)
+- Attack transients with noise bursts
+- Evolving timbres via modulation envelopes
+- Detuned unison voices for richness
+- Physical modeling for realistic strings
+
+**8 Complete Recipes:**
+- `acoustic-guitar.py` - Karplus-Strong with body resonance
+- `electric-piano.py` - FM synthesis (Rhodes/Wurlitzer)
+- `synth-bass.py` - Subtractive (punchy, reese, sub)
+- `strings-pad.py` - Wavetable with unison detuning
+- `organ.py` - Additive with Hammond drawbars
+- `brass-lead.py` - Subtractive with breath noise
+- `fm-bell.py` - FM inharmonic (tubular, church, glockenspiel)
+- `pluck-synth.py` - Various plucks (harp, koto, kalimba, marimba)
+
+**Trigger phrases**: "generate instrument", "synthesize piano", "Karplus-Strong", "FM electric piano", "realistic instrument", "not chiptuney", "high quality sample", "wavetable pad"
+
 ### Semantic Asset Language (SADL)
 
 AI-first creative asset pipeline that bridges creative intent and procedural generation:
@@ -271,6 +304,18 @@ End-to-end animated character creation pipeline, producing mesh, skeleton, skinn
 
 **Trigger**: "generate character", "create player character", "make animated NPC"
 
+### Instrument Architect
+
+Designs and implements high-quality instrument samples using advanced synthesis techniques. Takes creative descriptions ("warm electric piano for jazz") and produces complete Python synthesis code.
+
+**Capabilities:**
+- Select optimal synthesis technique for each instrument
+- Design parameter specifications (ratios, envelopes, modulation)
+- Generate production-ready NumPy/SciPy code
+- Apply quality standards (no aliasing, proper envelopes, timbral evolution)
+
+**Trigger**: "design instrument", "create instrument sample", "synthesize piano", "make guitar sound", "not chiptuney"
+
 ## Commands
 
 ### `/new-asset-project [name]`
@@ -281,6 +326,14 @@ Quick single-asset generation (texture, mesh, or sound) with inline code.
 
 ### `/generate-sfx <type> [output-path]`
 Quick SFX generation with NumPy/SciPy. Types: laser, explosion, coin, jump, hit, powerup, footstep, click. Generates a Python script with customizable parameters.
+
+### `/generate-instrument <instrument> [style]`
+Generate high-quality instrument samples using advanced synthesis. Examples:
+- `/generate-instrument guitar acoustic` - Karplus-Strong acoustic guitar
+- `/generate-instrument piano electric` - FM synthesis Rhodes
+- `/generate-instrument bass punchy` - Subtractive synth bass
+- `/generate-instrument pad warm` - Wavetable string pad
+- `/generate-instrument bell tubular` - FM tubular bell
 
 ### `/improve-assets [target-tier]`
 Interactive quality improvement workflow. Scans assets, assesses current tiers, and guides upgrades to the target tier (Temp, Final, or Hero).

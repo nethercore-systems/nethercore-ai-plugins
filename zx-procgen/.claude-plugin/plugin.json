@@ -109,6 +109,20 @@
     "offline-rendering",
     "procedural-audio",
     "game-audio",
-    "sound-design"
+    "sound-design",
+    "instrument-synthesis",
+    "procedural-instruments",
+    "Karplus-Strong",
+    "physical-modeling",
+    "wavetable-synthesis",
+    "electric-piano",
+    "acoustic-guitar",
+    "synth-bass",
+    "organ-drawbars",
+    "string-ensemble",
+    "bells",
+    "brass",
+    "high-quality-audio",
+    "realistic-instruments"
   ]
 }
