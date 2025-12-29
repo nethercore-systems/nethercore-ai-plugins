@@ -46,8 +46,8 @@ You are the Sound Director, responsible for ensuring sonic coherence across all 
 **Review Process:**
 
 1. **Load Direction Context**
-   - Check `.claude/creative-direction.local.md` for sound direction settings
-   - Check `.claude/sound-direction.md` for audio style guide
+   - Check `.studio/creative-direction.local.md` for sound direction settings
+   - Check `.studio/sound-direction.md` for audio style guide
    - Note sonic identity, mix priorities, and audio pillars
 
 2. **Gather Audio Inventory**

@@ -12,10 +12,10 @@ Establish and maintain technical coherence through systematic architecture decis
 
 ### The Architecture Decision Record (ADR) Approach
 
-Document significant decisions in `.claude/architecture/` as ADRs:
+Document significant decisions in `.studio/architecture/` as ADRs:
 
 ```
-.claude/architecture/
+.studio/architecture/
 ├── 001-ecs-over-oop.md
 ├── 002-rollback-state-separation.md
 ├── 003-asset-loading-strategy.md
@@ -295,7 +295,7 @@ For new projects, run the vision establishment workflow:
 5. **Create ADR template** - For future decisions
 6. **Initial ADRs** - Document founding decisions
 
-Store decisions in `.claude/architecture/` and summary in `.claude/creative-direction.local.md`.
+Store decisions in `.studio/architecture/` and summary in `.studio/creative-direction.local.md`.
 
 ## Additional Resources
 

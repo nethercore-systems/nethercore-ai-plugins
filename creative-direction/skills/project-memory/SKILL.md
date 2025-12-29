@@ -6,7 +6,7 @@ version: 1.0.0
 
 # Project Memory
 
-Maintain project context and direction across Claude sessions through structured documentation in `.claude/` directory.
+Maintain project context and direction across Claude sessions through structured documentation in `.studio/` directory.
 
 ## Core Principles
 
@@ -20,11 +20,11 @@ Claude sessions are stateless—each new session starts fresh. Without persisten
 
 Project memory solves this through structured files that Claude reads at session start.
 
-### The .claude/ Directory
+### The .studio/ Directory
 
 ```
 project/
-├── .claude/
+├── .studio/
 │   ├── creative-direction.local.md  # Vision and direction
 │   ├── architecture/                # Technical decisions
 │   │   ├── decisions.md             # ADR index
@@ -32,20 +32,20 @@ project/
 │   ├── art-direction.md             # Style bible reference
 │   ├── sound-direction.md           # Audio style reference
 │   └── project-status.md            # Current work state
-├── .gitignore                        # Add .claude/*.local.md
+├── .gitignore                        # Add .studio/*.local.md
 └── ...
 ```
 
 ### File Types
 
 **Local Files** (`.local.md`): Not committed, personal context
-- `.claude/creative-direction.local.md`
+- `.studio/creative-direction.local.md`
 - Contains session-specific notes
 - Ignored by git
 
 **Shared Files**: Committed, team context
-- `.claude/architecture/*.md`
-- `.claude/art-direction.md`
+- `.studio/architecture/*.md`
+- `.studio/art-direction.md`
 - Visible to all contributors
 
 ## Creative Direction File
@@ -144,7 +144,7 @@ Maintain `decisions.md` as an index:
 Each decision in its own file:
 
 ```
-.claude/architecture/
+.studio/architecture/
 ├── decisions.md
 ├── 001-fixed-point-math.md
 ├── 002-ecs-architecture.md
@@ -205,7 +205,7 @@ Update project-status.md:
 ### Session Start
 
 At session start, Claude should:
-1. Check for `.claude/creative-direction.local.md`
+1. Check for `.studio/creative-direction.local.md`
 2. Read project status if exists
 3. Note relevant architecture decisions
 4. Load direction context into session
@@ -274,14 +274,14 @@ For decisions before 2024-01-01, see [art-direction-archive.md]
 
 Add to `.gitignore`:
 ```
-.claude/*.local.md
+.studio/*.local.md
 ```
 
 Commit shared files:
 ```
-.claude/architecture/
-.claude/art-direction.md
-.claude/sound-direction.md
+.studio/architecture/
+.studio/art-direction.md
+.studio/sound-direction.md
 ```
 
 ## Quick Reference
@@ -289,22 +289,22 @@ Commit shared files:
 ### File Checklist
 
 For a well-documented project:
-- [ ] `.claude/creative-direction.local.md` - Vision and pillars
-- [ ] `.claude/project-status.md` - Current work state
-- [ ] `.claude/architecture/decisions.md` - ADR index
+- [ ] `.studio/creative-direction.local.md` - Vision and pillars
+- [ ] `.studio/project-status.md` - Current work state
+- [ ] `.studio/architecture/decisions.md` - ADR index
 - [ ] Individual ADRs for significant decisions
-- [ ] `.gitignore` includes `.claude/*.local.md`
+- [ ] `.gitignore` includes `.studio/*.local.md`
 
 ### Template Starter
 
 Create minimal memory with:
 
 ```bash
-mkdir -p .claude/architecture
-touch .claude/creative-direction.local.md
-touch .claude/project-status.md
-touch .claude/architecture/decisions.md
-echo ".claude/*.local.md" >> .gitignore
+mkdir -p .studio/architecture
+touch .studio/creative-direction.local.md
+touch .studio/project-status.md
+touch .studio/architecture/decisions.md
+echo ".studio/*.local.md" >> .gitignore
 ```
 
 ## Additional Resources

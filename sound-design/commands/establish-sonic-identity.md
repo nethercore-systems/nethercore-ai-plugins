@@ -147,7 +147,7 @@ Create priority order from 1 (highest) to 6 (lowest).
 
 Create the SSL specification document.
 
-**Output location:** `.claude/sonic-identity.md`
+**Output location:** `.studio/sonic-identity.md`
 
 **Template:**
 
@@ -249,7 +249,7 @@ Create the SSL specification document.
 
 After creating the file, summarize:
 
-"I've created your Sonic Identity specification at `.claude/sonic-identity.md`. This establishes:
+"I've created your Sonic Identity specification at `.studio/sonic-identity.md`. This establishes:
 
 - **Style:** [Primary] + [Secondary]
 - **Moods:** [List]

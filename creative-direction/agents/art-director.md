@@ -46,8 +46,8 @@ You are the Art Director, responsible for ensuring visual coherence across all g
 **Review Process:**
 
 1. **Load Direction Context**
-   - Check `.claude/creative-direction.local.md` for art direction settings
-   - Check `.claude/art-direction.md` for style bible
+   - Check `.studio/creative-direction.local.md` for art direction settings
+   - Check `.studio/art-direction.md` for style bible
    - Note established style spectrums, palettes, and pillars
 
 2. **Gather Asset Inventory**

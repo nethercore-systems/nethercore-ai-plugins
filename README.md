@@ -394,7 +394,7 @@ For explicit session resumption, use the `/continue` command:
 /continue --auto   → Auto-dispatch first pending task without asking
 ```
 
-The command reads `.claude/dispatch-queue.md` and `.claude/project-status.md` to understand your current state and recommend the next action.
+The command reads `.studio/dispatch-queue.md` and `.studio/project-status.md` to understand your current state and recommend the next action.
 
 ## Contributing
 

@@ -15,7 +15,7 @@ Guide the user through designing a sound effect, producing a detailed specificat
 
 ## Initial Context
 
-1. Check for existing sonic identity (`.claude/sonic-identity.md`)
+1. Check for existing sonic identity (`.studio/sonic-identity.md`)
    - If exists, reference for style consistency
    - Note SFX character preferences if defined
 
@@ -239,7 +239,7 @@ For frequent sounds (footsteps, hits), recommend at least pitch + volume randomi
 
 Create the SFX specification.
 
-**Output location:** `.claude/sfx/[sound-name].spec.md`
+**Output location:** `.studio/sfx/[sound-name].spec.md`
 
 **Template:**
 
@@ -340,7 +340,7 @@ Create the SFX specification.
 
 After creating, summarize:
 
-"Created SFX specification at `.claude/sfx/[sound-name].spec.md`
+"Created SFX specification at `.studio/sfx/[sound-name].spec.md`
 
 **Summary:**
 - [Duration] [Category] sound

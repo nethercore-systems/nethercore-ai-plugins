@@ -379,13 +379,13 @@ Task tool call:
 ## Session Continuity
 
 At session START:
-1. Check `.claude/project-status.md` for pending tasks
-2. Check `.claude/dispatch-queue.md` for queued but not executed tasks
+1. Check `.studio/project-status.md` for pending tasks
+2. Check `.studio/dispatch-queue.md` for queued but not executed tasks
 3. Resume or report status
 
 Before STOPPING:
-1. Update `.claude/dispatch-queue.md` with any pending tasks
-2. Update `.claude/project-status.md` with progress
+1. Update `.studio/dispatch-queue.md` with any pending tasks
+2. Update `.studio/project-status.md` with progress
 
 ---
 

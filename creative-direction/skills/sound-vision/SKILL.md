@@ -224,7 +224,7 @@ For new projects, run the vision establishment workflow:
 6. **Create temp mix** - Test with placeholder audio
 7. **Document decisions** - Audio design document
 
-Store decisions in `.claude/creative-direction.local.md` for session persistence.
+Store decisions in `.studio/creative-direction.local.md` for session persistence.
 
 ## Additional Resources
 

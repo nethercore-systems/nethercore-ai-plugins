@@ -311,14 +311,14 @@ Select option or say "auto" for recommended path.
 
 ### At Session Start
 
-1. Check for `.claude/project-status.md`
+1. Check for `.studio/project-status.md`
 2. Run quick scan
 3. Present abbreviated health status
 4. Ask: "Continue from [last task] or get full health report?"
 
 ### Before Session End
 
-1. Update `.claude/project-status.md` with current health scores
+1. Update `.studio/project-status.md` with current health scores
 2. Note any in-progress work
 3. List recommended next session tasks
 

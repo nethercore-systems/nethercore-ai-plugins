@@ -49,12 +49,12 @@ You are an audio coherence reviewer, responsible for ensuring all game audio wor
 ### Step 1: Load Context
 
 1. **Load Sonic Identity**
-   - Read `.claude/sonic-identity.md` if exists
+   - Read `.studio/sonic-identity.md` if exists
    - Note: style, mood palette, instruments, processing, priorities
 
 2. **Load Audio Specs**
-   - Read `.claude/music/*.spec.md`
-   - Read `.claude/sfx/*.spec.md`
+   - Read `.studio/music/*.spec.md`
+   - Read `.studio/sfx/*.spec.md`
    - Note what was designed vs. established direction
 
 3. **Scan Project Audio**

@@ -15,7 +15,7 @@ Guide the user through designing a music track, producing a detailed composition
 
 ## Initial Context
 
-1. Check for existing sonic identity (`.claude/sonic-identity.md`)
+1. Check for existing sonic identity (`.studio/sonic-identity.md`)
    - If exists, load and reference it
    - If not, suggest running `/establish-sonic-identity` first, or proceed with questions
 
@@ -180,7 +180,7 @@ If yes, configure:
 
 Create the composition specification.
 
-**Output location:** `.claude/music/[track-name].spec.md`
+**Output location:** `.studio/music/[track-name].spec.md`
 
 **Template:**
 
@@ -293,7 +293,7 @@ Intensity:| Low   | Med  | High | Med  |
 
 After creating, summarize and offer next steps:
 
-"Created specification at `.claude/music/[track-name].spec.md`
+"Created specification at `.studio/music/[track-name].spec.md`
 
 **Summary:**
 - [Tempo] BPM in [Key]

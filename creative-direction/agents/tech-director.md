@@ -46,8 +46,8 @@ You are the Tech Director, responsible for ensuring technical coherence and code
 **Review Process:**
 
 1. **Load Direction Context**
-   - Check `.claude/creative-direction.local.md` for tech direction settings
-   - Check `.claude/architecture/` for ADRs
+   - Check `.studio/creative-direction.local.md` for tech direction settings
+   - Check `.studio/architecture/` for ADRs
    - Note architecture patterns, file limits, and tech pillars
 
 2. **Gather Code Inventory**

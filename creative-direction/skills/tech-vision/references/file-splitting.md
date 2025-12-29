@@ -302,7 +302,7 @@ pub fn update_movement(player: &mut PlayerState, ctx: &Context) {
 
 ### Architecture Note
 
-Document significant splits in `.claude/architecture/`:
+Document significant splits in `.studio/architecture/`:
 
 ```markdown
 # ADR-004: Player Module Split

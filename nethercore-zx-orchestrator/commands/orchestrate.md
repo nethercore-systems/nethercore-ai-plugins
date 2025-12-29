@@ -30,7 +30,7 @@ Parse the argument to determine what action to take:
 ## Process
 
 1. **Check for existing project state:**
-   - Look for `.claude/project-status.md`
+   - Look for `.studio/project-status.md`
    - Look for `docs/design/game-design.md` (GDD)
    - Look for `nether.toml` (project manifest)
 
@@ -39,7 +39,7 @@ Parse the argument to determine what action to take:
    - Pass the action and current state to the agent
 
 3. **For `status` action:**
-   - Read `.claude/project-status.md` if exists
+   - Read `.studio/project-status.md` if exists
    - Summarize current phase, progress, and next steps
    - Show quality checkpoint status
 

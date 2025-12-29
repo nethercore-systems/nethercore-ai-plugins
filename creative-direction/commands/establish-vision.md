@@ -11,14 +11,14 @@ argument-hint: "[--art-only|--sound-only|--tech-only|--full]"
 
 # Establish Vision Command
 
-Guide the user through establishing creative direction for their project. Create structured direction files in `.claude/` for persistent guidance across sessions.
+Guide the user through establishing creative direction for their project. Create structured direction files in `.studio/` for persistent guidance across sessions.
 
 ## Process
 
 ### 1. Check Existing Direction
 
 First, check if direction already exists:
-- Look for `.claude/creative-direction.local.md`
+- Look for `.studio/creative-direction.local.md`
 - If exists, ask if user wants to update or start fresh
 
 ### 2. Determine Scope
@@ -74,7 +74,7 @@ Ask user about:
 
 Based on responses, create:
 
-**`.claude/creative-direction.local.md`** with YAML frontmatter:
+**`.studio/creative-direction.local.md`** with YAML frontmatter:
 ```yaml
 ---
 art_style: [user input]
@@ -121,7 +121,7 @@ Direction established on [date].
 - [Key tech decisions noted]
 ```
 
-**`.claude/project-status.md`**:
+**`.studio/project-status.md`**:
 ```markdown
 # Project Status
 
@@ -137,7 +137,7 @@ Current: Setup / Direction Established
 Vision established via /establish-vision command.
 ```
 
-**`.claude/architecture/decisions.md`** (if tech direction):
+**`.studio/architecture/decisions.md`** (if tech direction):
 ```markdown
 # Architecture Decision Records
 
@@ -148,7 +148,7 @@ Vision established via /establish-vision command.
 
 ### 8. Add to .gitignore
 
-Add `.claude/*.local.md` to `.gitignore` if not already present.
+Add `.studio/*.local.md` to `.gitignore` if not already present.
 
 ### 9. Summarize
 

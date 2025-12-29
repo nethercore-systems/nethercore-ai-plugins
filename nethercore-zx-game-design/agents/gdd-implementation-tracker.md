@@ -386,7 +386,7 @@ grep "^pub struct\|^pub fn" src/*.rs
 
 ## Session Continuity
 
-Update `.claude/gdd-coverage.md` with:
+Update `.studio/gdd-coverage.md` with:
 - Last scan date
 - Coverage percentages
 - Priority queue

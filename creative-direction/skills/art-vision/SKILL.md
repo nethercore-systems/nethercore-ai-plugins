@@ -188,7 +188,7 @@ For new projects, run the vision establishment workflow:
 7. **Create color keys** - Paint key moments
 8. **Validate** - Test style against early assets
 
-Store decisions in `.claude/creative-direction.local.md` for session persistence.
+Store decisions in `.studio/creative-direction.local.md` for session persistence.
 
 ## Additional Resources
 

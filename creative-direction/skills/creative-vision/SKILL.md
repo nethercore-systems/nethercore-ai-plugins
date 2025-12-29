@@ -256,7 +256,7 @@ For new projects, run the vision establishment workflow:
 7. **Cross-discipline mapping** - How pillars manifest
 8. **Document** - Create vision document
 
-Store vision in `.claude/creative-direction.local.md` for persistence.
+Store vision in `.studio/creative-direction.local.md` for persistence.
 
 ## Director Notes Format
 

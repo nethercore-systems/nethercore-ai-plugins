@@ -67,7 +67,7 @@ If the user says "just design it" or "autonomous", switch to autonomous mode.
 
 Before making recommendations:
 
-1. Check for existing sonic identity (`.claude/sonic-identity.md`)
+1. Check for existing sonic identity (`.studio/sonic-identity.md`)
 2. Check for GDD or design documents (`*.gdd.md`, `design/*.md`)
 3. Load SSL skill knowledge for reference
 

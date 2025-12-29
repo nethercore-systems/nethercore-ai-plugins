@@ -52,7 +52,7 @@ Run the wizard to create your game's audio direction:
 /establish-sonic-identity "dark fantasy RPG"
 ```
 
-This creates `.claude/sonic-identity.md` with:
+This creates `.studio/sonic-identity.md` with:
 - Sonic style (Orchestral + Dark Ambient)
 - Mood palette (Mysterious, Tense, Triumphant, etc.)
 - Instrument recommendations
@@ -67,7 +67,7 @@ Create track specifications:
 /design-soundtrack "boss battle"
 ```
 
-Produces `.claude/music/boss-battle.spec.md` with:
+Produces `.studio/music/boss-battle.spec.md` with:
 - Tempo, key, time signature
 - Chord progressions per section
 - Structure diagram
@@ -83,7 +83,7 @@ Create sound effect specifications:
 /design-sfx "sword impact"
 ```
 
-Produces `.claude/sfx/sword-impact.spec.md` with:
+Produces `.studio/sfx/sword-impact.spec.md` with:
 - Layer breakdown
 - Synthesis parameters
 - Variation strategy
@@ -175,10 +175,10 @@ mix_priorities:
 
 ## Files Created
 
-The plugin creates specs in `.claude/`:
+The plugin creates specs in `.studio/`:
 
 ```
-.claude/
+.studio/
 ├── sonic-identity.md      # From /establish-sonic-identity
 ├── music/
 │   ├── main-theme.spec.md

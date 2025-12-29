@@ -324,7 +324,7 @@ project/
 - Key settings: [list important settings]
 
 ### Runtime Configuration
-- Location: `.claude/creative-direction.local.md`
+- Location: `.studio/creative-direction.local.md`
 - Purpose: Per-project creative direction settings
 ```
 

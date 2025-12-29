@@ -48,8 +48,8 @@ You are an SFX architect specializing in game sound design. Your role is to desi
 
 Before designing:
 
-1. Check for sonic identity (`.claude/sonic-identity.md`) for style consistency
-2. Check for existing SFX specs (`.claude/sfx/`) for consistency
+1. Check for sonic identity (`.studio/sonic-identity.md`) for style consistency
+2. Check for existing SFX specs (`.studio/sfx/`) for consistency
 3. Load relevant SSL skill knowledge
 
 ## Design Process

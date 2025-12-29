@@ -8,13 +8,13 @@ version: 1.0.0
 
 ## Overview
 
-Project status is tracked in `.claude/project-status.md` to maintain continuity across sessions. Orchestrators MUST read this file at session start and update it after each major task.
+Project status is tracked in `.studio/project-status.md` to maintain continuity across sessions. Orchestrators MUST read this file at session start and update it after each major task.
 
 ## Status File Location
 
 ```
 my-game/
-├── .claude/
+├── .studio/
 │   └── project-status.md    ← Status file
 ├── docs/
 ├── src/
@@ -67,7 +67,7 @@ my-game/
 
 ### At Session Start
 
-1. Check for `.claude/project-status.md`
+1. Check for `.studio/project-status.md`
 2. If exists, read and report current state
 3. Ask user if they want to continue from last position
 4. If new project, create initial status file
@@ -156,7 +156,7 @@ Update status after:
 
 ```bash
 # Orchestrator creates/updates via Write tool
-# File: .claude/project-status.md
+# File: .studio/project-status.md
 ```
 
 ### Quick Status Check
@@ -187,12 +187,12 @@ Orchestrators should include in their system prompts:
 ## Session Continuity
 
 **At Session Start:**
-1. Check for .claude/project-status.md
+1. Check for .studio/project-status.md
 2. If exists, read and summarize current state
 3. Ask: "Would you like to continue from [last task]?"
 
 **Before Stopping:**
-1. Update .claude/project-status.md with current state
+1. Update .studio/project-status.md with current state
 2. Ensure "In Progress" reflects current work
 3. Log this session
 ```

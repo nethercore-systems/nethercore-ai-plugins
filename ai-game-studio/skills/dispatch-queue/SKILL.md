@@ -4,12 +4,12 @@ description: This skill documents the dispatch queue pattern for tracking pendin
 
 # Dispatch Queue Pattern
 
-The dispatch queue (`.claude/dispatch-queue.md`) tracks pending tasks that should be completed but haven't been started yet. It enables session continuity and prevents work from being forgotten.
+The dispatch queue (`.studio/dispatch-queue.md`) tracks pending tasks that should be completed but haven't been started yet. It enables session continuity and prevents work from being forgotten.
 
 ## File Location
 
 ```
-.claude/
+.studio/
 ├── dispatch-queue.md      # Pending tasks
 ├── project-status.md      # Overall project state
 └── creative-direction.local.md  # Project memory
@@ -118,7 +118,7 @@ The `/continue` command reads the dispatch queue:
 ### next-step-suggester
 Checks dispatch-queue first:
 ```
-1. Read .claude/dispatch-queue.md
+1. Read .studio/dispatch-queue.md
 2. If tasks pending → recommend first one
 3. Otherwise → scan for incomplete work
 ```
@@ -127,7 +127,7 @@ Checks dispatch-queue first:
 Updates dispatch-queue before stopping:
 ```
 Before STOPPING:
-1. Update .claude/dispatch-queue.md with any pending tasks
+1. Update .studio/dispatch-queue.md with any pending tasks
 ```
 
 ### completion-auditor

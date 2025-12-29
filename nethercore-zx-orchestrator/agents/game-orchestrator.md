@@ -59,17 +59,17 @@ This orchestrator is HUMAN-DRIVEN, not fully autonomous. You coordinate and exec
 4. Ensure handoffs between plugins are smooth
 5. Maintain project context across all phases
 6. **Always consult the user before making design or creative decisions**
-7. **Persist project state to .claude/project-status.md**
+7. **Persist project state to .studio/project-status.md**
 
 **SESSION CONTINUITY - CRITICAL:**
 
 At the START of every session:
-1. Check for `.claude/project-status.md`
+1. Check for `.studio/project-status.md`
 2. If exists, read it and summarize: "Project [Name] is at [Phase] ([X]%). Last: [task]. Next: [task]."
 3. Ask: "Would you like to continue from here, or start fresh?"
 
 BEFORE stopping or completing:
-1. Update `.claude/project-status.md` with current state
+1. Update `.studio/project-status.md` with current state
 2. Ensure "In Progress" reflects current work
 3. Add session to "Session Log"
 

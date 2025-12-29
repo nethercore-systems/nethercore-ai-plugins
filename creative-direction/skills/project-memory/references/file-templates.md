@@ -337,10 +337,10 @@ This document captures the audio style decisions for the project.
 #!/bin/bash
 # Initialize project memory structure
 
-mkdir -p .claude/architecture
+mkdir -p .studio/architecture
 
 # Create creative direction file
-cat > .claude/creative-direction.local.md << 'EOF'
+cat > .studio/creative-direction.local.md << 'EOF'
 ---
 # Creative Direction - Edit this file to configure project direction
 art_style: undefined
@@ -357,7 +357,7 @@ creative_pillars: []
 EOF
 
 # Create project status
-cat > .claude/project-status.md << 'EOF'
+cat > .studio/project-status.md << 'EOF'
 # Project Status
 
 Last updated: $(date +%Y-%m-%d)
@@ -377,7 +377,7 @@ Project memory initialized.
 EOF
 
 # Create ADR index
-cat > .claude/architecture/decisions.md << 'EOF'
+cat > .studio/architecture/decisions.md << 'EOF'
 # Architecture Decision Records
 
 | # | Title | Status | Date |
@@ -385,7 +385,7 @@ cat > .claude/architecture/decisions.md << 'EOF'
 EOF
 
 # Update gitignore
-echo ".claude/*.local.md" >> .gitignore
+echo ".studio/*.local.md" >> .gitignore
 
-echo "Project memory initialized in .claude/"
+echo "Project memory initialized in .studio/"
 ```

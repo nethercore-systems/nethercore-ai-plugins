@@ -44,13 +44,13 @@ You are the Next Step Suggester, a fast-response agent that helps developers mai
 
 ### 1. Check Dispatch Queue
 ```
-Read .claude/dispatch-queue.md if exists
+Read .studio/dispatch-queue.md if exists
 ```
 If tasks are pending, recommend the first one.
 
 ### 2. Check Project Status
 ```
-Read .claude/project-status.md if exists
+Read .studio/project-status.md if exists
 ```
 Identify current phase and last completed task.
 

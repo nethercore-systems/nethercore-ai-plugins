@@ -55,7 +55,7 @@ Phase 6: PUBLISH (nethercore-zx-publish, nethercore-zx-cicd)
 - **7-phase pipeline**: Full coverage from vision to publication
 - **Quality checkpoints**: Director agents review at each phase transition
 - **Cross-plugin coordination**: Invokes commands and agents from all 9 plugins
-- **Progress tracking**: Maintains project state in `.claude/project-status.md`
+- **Progress tracking**: Maintains project state in `.studio/project-status.md`
 - **Session continuity**: Resume from where you left off across sessions
 - **Parallel coordination**: Run independent tasks concurrently for faster development
 
@@ -187,7 +187,7 @@ The orchestrator will guide you through:
 
 ## Session Continuity
 
-The orchestrator persists progress to `.claude/project-status.md`. When you start a new session, it automatically:
+The orchestrator persists progress to `.studio/project-status.md`. When you start a new session, it automatically:
 
 1. Detects existing project state
 2. Summarizes where you left off

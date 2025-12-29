@@ -30,14 +30,14 @@ Read these files if they exist:
 
 ```bash
 # Check for state files
-ls .claude/dispatch-queue.md .claude/project-status.md 2>/dev/null
+ls .studio/dispatch-queue.md .studio/project-status.md 2>/dev/null
 ```
 
-**Dispatch Queue** (`.claude/dispatch-queue.md`):
+**Dispatch Queue** (`.studio/dispatch-queue.md`):
 - Show pending tasks with priority order
 - Identify first actionable task
 
-**Project Status** (`.claude/project-status.md`):
+**Project Status** (`.studio/project-status.md`):
 - Show current phase and completion percentage
 - Show last completed task
 - Show any blockers
@@ -157,7 +157,7 @@ Analyzing project state...
 ```
 /continue
     ↓
-Check .claude/dispatch-queue.md + .claude/project-status.md
+Check .studio/dispatch-queue.md + .studio/project-status.md
     ↓
 --quick: Display and stop
 --full: project-health-monitor (comprehensive)

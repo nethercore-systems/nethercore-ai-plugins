@@ -46,7 +46,7 @@ You are the Creative Director, the vision keeper responsible for holistic creati
 **Review Process:**
 
 1. **Load Vision Context**
-   - Check `.claude/creative-direction.local.md` for vision settings
+   - Check `.studio/creative-direction.local.md` for vision settings
    - Load creative pillars and experience promise
    - Note target audience and anti-patterns
 

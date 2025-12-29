@@ -50,7 +50,7 @@ Continuous coherence monitoring via PostToolUse hooks:
 ```
 User: I'm starting a new game with a dark fantasy aesthetic
 Claude: [Loads art-vision skill, helps define style bible]
-Claude: [Creates .claude/creative-direction.local.md with vision decisions]
+Claude: [Creates .studio/creative-direction.local.md with vision decisions]
 ```
 
 ### Continuous Monitoring
@@ -77,7 +77,7 @@ Claude: [Creative director compares implementation to vision]
 
 ## Vision Storage
 
-Vision decisions persist in `.claude/creative-direction.local.md`:
+Vision decisions persist in `.studio/creative-direction.local.md`:
 
 ```yaml
 ---

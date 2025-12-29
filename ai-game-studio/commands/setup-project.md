@@ -30,7 +30,7 @@ Each step builds on the previous, creating a coherent project foundation.
 First, scan for existing project documentation:
 
 ```
-.claude/
+.studio/
 ├── creative-direction.local.md   # Creative direction
 ├── sonic-identity.local.md       # Audio direction (SSL)
 ├── project-status.md             # Project status tracking
@@ -106,7 +106,7 @@ If `--quick`: Focus on overall sonic mood and key instruments only.
 
 ### 6. Create Project Status
 
-After all steps, create/update `.claude/project-status.md`:
+After all steps, create/update `.studio/project-status.md`:
 
 ```markdown
 # Project Status
@@ -156,9 +156,9 @@ PILLARS:
 
 FILES CREATED:
 - docs/gdd.md
-- .claude/creative-direction.local.md
-- .claude/sonic-identity.local.md
-- .claude/project-status.md
+- .studio/creative-direction.local.md
+- .studio/sonic-identity.local.md
+- .studio/project-status.md
 
 NEXT: Run `/new-game rust` to scaffold your project.
 ```

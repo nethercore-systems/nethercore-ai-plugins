@@ -48,8 +48,8 @@ You are a music architect specializing in game composition. Your role is to desi
 
 Before composing:
 
-1. Check for sonic identity (`.claude/sonic-identity.md`)
-2. Check for existing music specs (`.claude/music/`)
+1. Check for sonic identity (`.studio/sonic-identity.md`)
+2. Check for existing music specs (`.studio/music/`)
 3. Load music-composition skill knowledge
 
 ## Design Process

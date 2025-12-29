@@ -29,7 +29,7 @@
         "hooks": [
           {
             "type": "prompt",
-            "prompt": "Creative direction context check. At session start, briefly check for these project direction files:\n\n1. .claude/creative-direction.local.md - Art/sound/creative vision settings\n2. .claude/project-status.md - Previous session state\n3. .claude/architecture/ - Architecture Decision Records\n\nIf any exist, note their presence. If none exist and this appears to be a game project, suggest running /establish-vision to set up creative direction.\n\nKeep response under 50 words. If no direction files exist and project doesn't need them, respond with empty string.",
+            "prompt": "Creative direction context check. At session start, briefly check for these project direction files:\n\n1. .studio/creative-direction.local.md - Art/sound/creative vision settings\n2. .studio/project-status.md - Previous session state\n3. .studio/architecture/ - Architecture Decision Records\n\nIf any exist, note their presence. If none exist and this appears to be a game project, suggest running /establish-vision to set up creative direction.\n\nKeep response under 50 words. If no direction files exist and project doesn't need them, respond with empty string.",
             "timeout": 10
           }
         ]
@@ -41,7 +41,7 @@
         "hooks": [
           {
             "type": "prompt",
-            "prompt": "Creative direction checkpoint. Before stopping, briefly consider:\n\n1. Were any significant creative decisions made this session that should be documented in .claude/creative-direction.local.md?\n2. Were any architectural decisions made that need an ADR?\n3. Did any files grow past size limits that need addressing?\n\nIf any of these apply, remind the user to document them. If nothing notable, approve stopping.\n\nRespond with either 'approve' or a brief reminder (under 50 words) of what should be documented.",
+            "prompt": "Creative direction checkpoint. Before stopping, briefly consider:\n\n1. Were any significant creative decisions made this session that should be documented in .studio/creative-direction.local.md?\n2. Were any architectural decisions made that need an ADR?\n3. Did any files grow past size limits that need addressing?\n\nIf any of these apply, remind the user to document them. If nothing notable, approve stopping.\n\nRespond with either 'approve' or a brief reminder (under 50 words) of what should be documented.",
             "timeout": 30
           }
         ]
