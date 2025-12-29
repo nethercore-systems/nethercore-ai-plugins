@@ -1,12 +1,32 @@
 ---
 name: Procedural Mesh Generation (Blender bpy)
 description: This skill should be used when the user asks to "generate mesh", "create 3D model", "procedural geometry", "low-poly model", "blender script", "bpy mesh", "hard surface model", "organic mesh", "metaballs", "skin modifier", "SDF mesh", "mesh modifiers", "UV unwrap", "export glb", "export gltf", or mentions mesh generation, geometry synthesis, Blender scripting, or procedural 3D modeling for game assets.
-version: 2.0.0
 ---
 
 # Procedural Mesh Generation with Blender bpy
 
 Generate game-ready 3D meshes procedurally using Blender in headless mode. All output includes proper UVs and normals for Nethercore ZX.
+
+## Prerequisites: System Blender
+
+This skill requires Blender installed and accessible via the system PATH.
+
+**Check if Blender is available:**
+```bash
+blender --version
+```
+
+**If Blender is not installed:**
+
+| Platform | Installation |
+|----------|--------------|
+| Windows | Download from [blender.org](https://www.blender.org/download/), install, add to PATH |
+| macOS | `brew install --cask blender` or download from blender.org |
+| Linux | `sudo apt install blender` or `sudo dnf install blender` or download from blender.org |
+
+**Required version:** Blender 3.0+ (for modern bpy API and glTF 2.0 export)
+
+**Why system Blender?** Headless scripting with `blender --background --python script.py` is the most reliable way to generate production-quality meshes with proper UVs and normals. Python's bpy module is only available within Blender's embedded Python environment.
 
 ## Runtime
 

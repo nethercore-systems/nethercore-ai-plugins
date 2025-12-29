@@ -1,12 +1,11 @@
 {
   "name": "nethercore-zx-cicd",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "CI/CD automation plugin for Nethercore ZX games. Provides GitHub Actions templates and workflow scaffolding for build, test, and release pipelines.",
   "author": {
     "name": "Nethercore Systems",
     "email": "nethercore.systems@gmail.com"
   },
   "repository": "https://github.com/nethercore-systems/nethercore-ai-plugins",
-  "license": "MIT/Apache-2.0",
   "keywords": ["nethercore", "zx", "ci", "cd", "github-actions", "automation", "release", "pipeline"]
 }

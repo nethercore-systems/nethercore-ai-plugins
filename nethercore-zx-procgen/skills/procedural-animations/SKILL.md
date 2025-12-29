@@ -1,12 +1,32 @@
 ---
-name: Blender Animation Generation
+name: Procedural Animation Generation
 description: This skill should be used when the user asks to "animate mesh", "create animation", "rig character", "add bones", "skeletal animation", "walk cycle", "idle animation", "attack animation", "spinning pickup", "bobbing item", "door animation", "platform animation", "export GLB with animation", "keyframe animation", "armature", "bone weights", "skinning", "motion capture", "BVH import", "Rigify", "animation clip", or mentions animating 3D objects, creating skeletal rigs, generating animation clips for glTF export, or procedural motion for game assets. Provides comprehensive Blender bpy workflow for both object/transform animations (rigid objects) and skeletal animations (deforming meshes), outputting game-ready .glb files.
-version: 1.0.0
 ---
 
-# Blender Animation Generation
+# Procedural Animation Generation
 
 Create animated 3D objects and characters using Blender's Python API (bpy) in headless mode. Output game-ready `.glb` files with animation clips targeting N64/PS1/PS2 era aesthetics.
+
+## Prerequisites: System Blender
+
+This skill requires Blender installed and accessible via the system PATH.
+
+**Check if Blender is available:**
+```bash
+blender --version
+```
+
+**If Blender is not installed:**
+
+| Platform | Installation |
+|----------|--------------|
+| Windows | Download from [blender.org](https://www.blender.org/download/), install, add to PATH |
+| macOS | `brew install --cask blender` or download from blender.org |
+| Linux | `sudo apt install blender` or `sudo dnf install blender` or download from blender.org |
+
+**Required version:** Blender 3.0+ (for modern bpy API and glTF 2.0 export)
+
+**Why system Blender?** Headless scripting with `blender --background --python script.py` is the most reliable way to generate production-quality meshes, rigs, and animations. Python's bpy module is only available within Blender's embedded Python environment.
 
 ## Decision Tree: Object vs Skeletal Animation
 

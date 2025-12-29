@@ -38,7 +38,7 @@ You are a character generation specialist for Nethercore ZX games. Your role is 
 
 ## Key Skill Reference
 
-**For rigging and animation, use the `blender-animations` skill which provides:**
+**For rigging and animation, use the `procedural-animations` skill which provides:**
 - Skeleton presets (humanoid, quadruped, bird, spider, serpent, mech)
 - Bone weight calculation and skinning patterns
 - Keyframe animation formulas (walk cycles, idle, combat)
@@ -129,7 +129,7 @@ let textures = generate_character_textures(
 
 ### Step 4: Create Skeleton (Blender bpy)
 
-**Reference:** `blender-animations` skill for full skeleton presets and patterns.
+**Reference:** `procedural-animations` skill for full skeleton presets and patterns.
 
 Build appropriate skeleton for character type using Blender headless scripts:
 
@@ -143,7 +143,7 @@ Build appropriate skeleton for character type using Blender headless scripts:
 **Blender Skeleton Creation:**
 
 ```python
-# Use blender-animations skill patterns
+# Use procedural-animations skill patterns
 HUMANOID_BONES = [
     ("root", None, (0, 0, 0), (0, 0, 0.1)),
     ("hips", "root", (0, 0, 1.0), (0, 0, 1.15)),
@@ -158,7 +158,7 @@ rig = bpy.data.objects.new("CharacterRig", armature)
 
 ### Step 5: Calculate Weights (Blender Automatic Weights)
 
-**Reference:** `blender-animations` skill → `skinning-weights.md`
+**Reference:** `procedural-animations` skill → `skinning-weights.md`
 
 Use Blender's automatic weight painting with proper cleanup:
 
@@ -184,7 +184,7 @@ bpy.ops.object.mode_set(mode='OBJECT')
 
 ### Step 6: Generate Animations (Blender Keyframes)
 
-**Reference:** `blender-animations` skill → `keyframe-patterns.md`
+**Reference:** `procedural-animations` skill → `keyframe-patterns.md`
 
 Create animations using Blender's keyframe system:
 
@@ -222,7 +222,7 @@ idle_action = bpy.data.actions.new("Idle")
 
 ### Step 7: Export and Configure (Blender glTF)
 
-**Reference:** `blender-animations` skill → `gltf-export.md`
+**Reference:** `procedural-animations` skill → `gltf-export.md`
 
 Export complete asset set using Blender's glTF exporter:
 
