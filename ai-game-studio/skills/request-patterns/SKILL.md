@@ -220,3 +220,72 @@ Typical quality workflow:
 | "Rate my asset quality" | `quality-analyzer` |
 | "Make these textures better" | `quality-enhancer` |
 | "Are these production ready?" | `quality-analyzer` → then `asset-quality-reviewer` |
+
+---
+
+## Orchestrator Selection Guide
+
+Four orchestrators exist at different abstraction levels:
+
+| Orchestrator | Plugin | Scope | Use When |
+|--------------|--------|-------|----------|
+| `game-orchestrator` | zx-orchestrator | Full 7-phase pipeline | Building complete game from GDD to ROM |
+| `creative-orchestrator` | zx-procgen | Asset generation | Generating assets for existing project |
+| `request-dispatcher` | ai-game-studio | Single request | Have a vague or complex request |
+| `parallel-coordinator` | zx-orchestrator | Task parallelization | 4+ independent tasks to run |
+
+### Decision Flow
+
+```
+What do you need?
+│
+├── "Build a complete game" ────────→ game-orchestrator
+│   (GDD → Assets → Code → Test → Publish)
+│
+├── "Generate all assets for my GDD" → creative-orchestrator
+│   (SADL → Generation → Validation)
+│
+├── "I have a complex request" ─────→ request-dispatcher
+│   (Parses intent, routes to expert)
+│
+└── "Run these tasks in parallel" ──→ parallel-coordinator
+    (Dependency analysis, parallel execution)
+```
+
+### When to Use Each
+
+**game-orchestrator:**
+- Starting a new game from scratch
+- Need human-driven development with checkpoints
+- Want 7-phase pipeline (Creative → Design → Visual → Audio → Code → Test → Publish)
+
+**creative-orchestrator:**
+- Have GDD/asset specs, need assets generated
+- Want SADL-based asset pipeline
+- Autonomous asset generation workflow
+
+**request-dispatcher:**
+- Have a single, possibly vague request
+- Don't know which agent to use
+- Request spans multiple domains
+
+**parallel-coordinator:**
+- Have 4+ independent tasks
+- Need dependency analysis
+- Want to maximize parallel execution
+
+### Examples
+
+| Request | Route To |
+|---------|----------|
+| "Make a fighting game" | `game-orchestrator` |
+| "Generate all characters from GDD" | `creative-orchestrator` |
+| "Improve my game" | `request-dispatcher` (will clarify and route) |
+| "Generate textures, meshes, and sounds" | `parallel-coordinator` (runs in parallel) |
+
+### Orchestrator Nesting
+
+Orchestrators can invoke each other:
+- `game-orchestrator` may invoke `creative-orchestrator` for asset phase
+- `request-dispatcher` may invoke `parallel-coordinator` for multi-domain requests
+- `creative-orchestrator` may invoke asset agents in parallel via `parallel-coordinator`
