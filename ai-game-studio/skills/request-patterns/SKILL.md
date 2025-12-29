@@ -155,7 +155,6 @@ Tasks:
 ### Analysis Agents
 - `project-health-monitor` - Overall project health
 - `gdd-implementation-tracker` - Feature gap analysis
-- `quality-analyzer` - Asset quality assessment
 - `completion-auditor` - Semantic verification
 
 ### Direction Agents
@@ -180,3 +179,44 @@ Tasks:
 - `rollback-reviewer` - Netcode safety
 - `release-validator` - Release readiness
 - `test-runner` - Sync tests
+
+---
+
+## Quality Agent Selection Guide
+
+Four agents handle asset quality - choose based on your need:
+
+| Agent | Question It Answers | Use When |
+|-------|---------------------|----------|
+| `asset-critic` | "Does this match the SADL spec?" | Comparing output to creative intent/specification |
+| `asset-quality-reviewer` | "Does this fit ZX limits?" | Checking technical compliance (budgets, formats) |
+| `quality-analyzer` | "How good is this overall?" | Holistic assessment with scores and priorities |
+| `quality-enhancer` | "Make this better" | Actively improving assets to higher tiers |
+
+### Decision Flow
+
+```
+"Check my assets" →
+├── Against spec/intent? → asset-critic
+├── Against ZX budgets? → asset-quality-reviewer
+├── Overall quality?    → quality-analyzer
+└── Improve them?       → quality-enhancer
+```
+
+### Quality Pipeline Order
+
+Typical quality workflow:
+1. **asset-critic** - Verify spec compliance after generation
+2. **asset-quality-reviewer** - Verify ZX technical limits
+3. **quality-analyzer** - Get holistic quality score
+4. **quality-enhancer** - Improve if score is low
+
+### Examples
+
+| Request | Route To |
+|---------|----------|
+| "Does this mesh match my SADL?" | `asset-critic` |
+| "Will these textures fit in ROM?" | `asset-quality-reviewer` |
+| "Rate my asset quality" | `quality-analyzer` |
+| "Make these textures better" | `quality-enhancer` |
+| "Are these production ready?" | `quality-analyzer` → then `asset-quality-reviewer` |
