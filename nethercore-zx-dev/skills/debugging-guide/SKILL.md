@@ -1,12 +1,12 @@
 ---
 name: Debugging Guide
-description: This skill should be used when the user asks about "debug panel", "F3 panel", "debug_register", "debug_watch", "sync test", "desync", "rollback debug", "--sync-test", "--p2p-test", "frame stepping", "time scale", "profiling", "debug group", "debugging ZX games", "inspect values", "live editing", or mentions debugging Nethercore ZX games, finding desyncs, testing multiplayer synchronization, or runtime value inspection.
+description: This skill should be used when the user asks about "debug panel", "F4 panel", "debug_register", "debug_watch", "sync test", "desync", "rollback debug", "--sync-test", "--p2p-test", "frame stepping", "time scale", "profiling", "debug group", "debugging ZX games", "inspect values", "live editing", or mentions debugging Nethercore ZX games, finding desyncs, testing multiplayer synchronization, or runtime value inspection.
 version: 1.0.0
 ---
 
 # Debugging Guide for Nethercore ZX
 
-Debug ZX games using the built-in inspection system and testing tools. Press **F3** to open the debug panel during development.
+Debug ZX games using the built-in inspection system and testing tools. Press **F4** to open the debug panel during development.
 
 ## Debug System Overview
 
@@ -19,15 +19,15 @@ The debug inspection system provides:
 
 Reference `nethercore/include/zx.rs` lines 1370-1478 for complete FFI signatures.
 
-## F3 Debug Panel
+## F4 Debug Panel
 
-Press **F3** during gameplay to toggle the debug panel. The panel displays all registered values and provides interactive controls.
+Press **F4** during gameplay to toggle the debug panel. The panel displays all registered values and provides interactive controls.
 
 ### Keyboard Shortcuts
 
 | Key | Action |
 |-----|--------|
-| F3 | Toggle debug panel |
+| F4 | Toggle debug panel |
 | F5 | Pause/unpause game |
 | F6 | Step one frame (while paused) |
 | F7 | Decrease time scale |
@@ -35,7 +35,7 @@ Press **F3** during gameplay to toggle the debug panel. The panel displays all r
 
 ## Registering Editable Values
 
-Register values during `init()` to make them editable in the F3 panel:
+Register values during `init()` to make them editable in the F4 panel:
 
 ```rust
 static mut PLAYER_SPEED: f32 = 5.0;
@@ -297,7 +297,7 @@ debug_group_close();               // debug_group_end wrapper
 - Debug functions compile to no-ops in release builds
 - Registration happens once in `init()`, not per-frame
 - Watches read memory directly, no runtime cost
-- F3 panel rendering uses separate draw path
+- F4 panel rendering uses separate draw path
 
 ## Additional Resources
 
