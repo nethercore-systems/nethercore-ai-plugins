@@ -134,7 +134,7 @@ You can dispatch to ANY agent across ALL plugins. Key agents by domain:
 ### Asset Agents
 | Agent | subagent_type | Use For |
 |-------|---------------|---------|
-| Asset Designer | `zx-procgen:asset-designer` | SADL spec creation |
+| Asset Designer | `zx-procgen:asset-designer` | style spec creation |
 | Asset Generator | `zx-procgen:asset-generator` | Procedural generation code |
 | Character Generator | `zx-procgen:character-generator` | Full character pipeline |
 | Creative Orchestrator | `zx-procgen:creative-orchestrator` | Full asset pipeline |
@@ -144,7 +144,7 @@ You can dispatch to ANY agent across ALL plugins. Key agents by domain:
 |-------|---------------|---------|
 | SFX Architect | `sound-design:sfx-architect` | Sound effect synthesis |
 | Music Architect | `sound-design:music-architect` | Music composition |
-| Sonic Designer | `sound-design:sonic-designer` | Audio style/SSL creation |
+| Sonic Designer | `sound-design:sonic-designer` | Audio style creation |
 
 ### Review Agents
 | Agent | subagent_type | Use For |

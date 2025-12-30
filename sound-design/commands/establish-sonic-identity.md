@@ -1,5 +1,5 @@
 ---
-description: Interactive wizard to establish the overall audio direction for a game project. Creates a Sonic Style Language (SSL) specification.
+description: Interactive wizard to establish the overall audio direction for a game project. Creates a audio style guide specification.
 argument-hint: "[game name or concept]"
 allowed-tools:
   - Read
@@ -10,7 +10,7 @@ allowed-tools:
 
 # Establish Sonic Identity
 
-Guide the user through creating a comprehensive Sonic Style Language (SSL) specification for their game.
+Guide the user through creating a comprehensive audio style guide specification for their game.
 
 ## Process Overview
 
@@ -22,7 +22,7 @@ Walk through these phases to establish audio direction:
 4. **Select Instrument Palettes** - Sound sources
 5. **Configure Processing** - Reverb, effects character
 6. **Set Mix Priorities** - What's most important
-7. **Output Specification** - Create SSL document
+7. **Output Specification** - Create audio style document
 
 ## Phase 1: Understand the Game
 
@@ -144,7 +144,7 @@ Create priority order from 1 (highest) to 6 (lowest).
 
 ## Phase 7: Output Specification
 
-Create the SSL specification document.
+Create the audio style specification document.
 
 **Output location:** `.studio/sonic-identity.md`
 

@@ -50,7 +50,7 @@ Before designing:
 
 1. Check for sonic identity (`.studio/sonic-identity.md`) for style consistency
 2. Check for existing SFX specs (`.studio/sfx/`) for consistency
-3. Load relevant SSL skill knowledge
+3. Load relevant audio style skill knowledge
 
 ## Design Process
 

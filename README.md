@@ -116,7 +116,7 @@ What do you need?
 
 ```
 1. Describe what you need: "I need a player character with idle and run animations"
-2. asset-designer agent → Creates SADL spec
+2. asset-designer agent → Creates style spec
 3. character-generator agent → Generates mesh, rig, animations
 4. integration-assistant agent → Connects to game code
 5. completion-auditor agent → Verifies everything works
@@ -125,7 +125,7 @@ What do you need?
 ### Workflow 3: Create Game Music
 
 ```
-1. sound-design:establish-sonic-identity   # Define audio style (SSL)
+1. sound-design:establish-sonic-identity   # Define audio style (audio style)
 2. sound-design:design-soundtrack          # Plan tracks
 3. music-architect agent → Design individual tracks
 4. zx-procgen:generate-instrument          # Create instrument samples
@@ -161,7 +161,7 @@ These provide universal game design knowledge not tied to ZX:
 | Plugin | Focus | Use When |
 |--------|-------|----------|
 | `game-design` | Design frameworks, psychology, balance | Designing gameplay, story, world |
-| `sound-design` | Audio theory, composition, SSL | Designing audio direction |
+| `sound-design` | Audio theory, composition, audio style | Designing audio direction |
 | `creative-direction` | Vision alignment, style guides | Establishing creative pillars |
 | `ai-game-studio` | Workflow orchestration, routing | Meta-coordination |
 
@@ -173,7 +173,7 @@ These provide ZX-specific implementation details:
 |--------|-------|----------|
 | `zx-dev` | FFI, cameras, rendering, debugging | Writing game code |
 | `zx-game-design` | Constraints, mechanics, GDDs | Designing for ZX limits |
-| `zx-procgen` | Asset generation, SADL | Creating assets |
+| `zx-procgen` | Asset generation, style guide | Creating assets |
 | `zx-test` | Sync tests, determinism | Testing multiplayer |
 | `zx-optimize` | Budgets, optimization | Performance tuning |
 | `zx-publish` | ROM packaging, upload | Publishing |
@@ -251,7 +251,7 @@ These provide ZX-specific implementation details:
 ### Audio Design
 | Command | Purpose |
 |---------|---------|
-| `sound-design:establish-sonic-identity` | Create SSL specification |
+| `sound-design:establish-sonic-identity` | Create audio style specification |
 | `sound-design:design-soundtrack` | Design music tracks |
 | `sound-design:design-sfx` | Design sound effects |
 
@@ -386,7 +386,7 @@ ZX-specific game design workflow plugin.
 
 Procedural asset generation plugin.
 
-**Skills (12):** Textures, meshes, sounds, instruments, music (XM), animations, sprites, SADL, texturing workflows, quality tiers, native pipeline
+**Skills (12):** Textures, meshes, sounds, instruments, music (XM), animations, sprites, style guide, texturing workflows, quality tiers, native pipeline
 
 **Commands:** `generate-asset`, `generate-sfx`, `generate-instrument`, `new-asset-project`, `improve-assets`
 
@@ -458,9 +458,9 @@ Director-level oversight plugin.
 
 ### sound-design
 
-Audio design with Sonic Style Language (SSL).
+Audio design with audio style guide.
 
-**Skills (5):** SSL specification, synthesis techniques, music composition, SFX design, audio integration
+**Skills (5):** audio style specification, synthesis techniques, music composition, SFX design, audio integration
 
 **Commands:** `establish-sonic-identity`, `design-soundtrack`, `design-sfx`
 

@@ -93,7 +93,7 @@ creative_pillars:
 
 ## Integration with Other Plugins
 
-- **zx-procgen**: Art director validates generated assets against SADL style tokens
+- **zx-procgen**: Art director validates generated assets against visual style tokens
 - **zx-dev**: Tech director extends rollback-reviewer with broader architectural review
 - **game-design**: Creative director validates implementation against GDD
 

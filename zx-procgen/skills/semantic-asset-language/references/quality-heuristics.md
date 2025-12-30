@@ -1,6 +1,6 @@
 # Quality Heuristics Reference
 
-Complete quality assessment heuristics for SADL-generated assets. Use these metrics for self-assessment and iterative refinement.
+Complete quality assessment heuristics for style-generated assets. Use these metrics for self-assessment and iterative refinement.
 
 ## Overview
 

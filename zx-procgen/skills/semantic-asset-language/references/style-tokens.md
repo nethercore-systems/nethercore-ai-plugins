@@ -1,6 +1,6 @@
 # Style Tokens Reference
 
-Complete style token definitions for SADL. Each token modifies base generation parameters to achieve a consistent visual style. These definitions are language-agnostic.
+Complete style token definitions for style guides. Each token modifies base generation parameters to achieve a consistent visual style. These definitions are language-agnostic.
 
 ## Token Definition Structure
 

@@ -75,7 +75,7 @@ Procedural asset generation plugin.
 - `xm-writer` - Programmatic XM file generation from Python
 - `procedural-animations` - Walk cycles, attacks, skeletal rigging, BVH/mocap
 - `procedural-sprites` - 2D sprites, pixel art, tilesets, UI elements
-- `semantic-asset-language` - SADL for AI-first creative workflows
+- `semantic-asset-language` - Style guide for AI-first creative workflows
 - `mesh-texturing-workflows` - UV projection techniques
 - `asset-quality-tiers` - Tier system (Placeholder→Temp→Final→Hero)
 - `native-asset-pipeline` - nether.toml integration, build-time generation
@@ -86,7 +86,7 @@ Procedural asset generation plugin.
 - `zx-procgen:improve-assets` - Guided quality improvement workflow with tier upgrades
 
 **Agents:**
-- `asset-designer` - Translates creative vision to SADL specs
+- `asset-designer` - Translates creative vision to style specs
 - `asset-generator` - Produces procedural generation code
 - `asset-critic` - Reviews asset quality against specs
 - `asset-quality-reviewer` - Validates assets meet ZX budgets
@@ -213,21 +213,21 @@ Quality assurance and coherence plugin providing "director" level oversight acro
 
 ### sound-design
 
-Platform-agnostic game audio design with Sonic Style Language (SSL) - the audio equivalent of SADL for visual assets.
+Platform-agnostic game audio design with audio style guide - the audio equivalent of the visual style guide for visual assets.
 
 **Skills (4):**
-- `sonic-style-language` - SSL specification: styles, moods, instruments, processing signatures
+- `sonic-style-language` - audio style specification: styles, moods, instruments, processing signatures
 - `music-composition` - Reference tables: modes, keys by genre, tempos, chord progressions by emotion
 - `sfx-design` - Layering patterns, UI sound archetypes, ambient layer recipes
 - `audio-integration` - Mix architecture, bus structure, priorities, ducking
 
 **Commands:**
-- `sound-design:establish-sonic-identity` - Interactive wizard to create SSL specification
+- `sound-design:establish-sonic-identity` - Interactive wizard to create audio style specification
 - `sound-design:design-soundtrack` - Design music tracks with structure and harmony
 - `sound-design:design-sfx` - Design sound effects with layering specs
 
 **Agents:**
-- `sonic-designer` - Translates creative audio intent to SSL specifications
+- `sonic-designer` - Translates creative audio intent to audio style specifications
 - `sfx-architect` - Designs effects with layers and synthesis code
 - `music-architect` - Designs tracks with harmony, structure, and adaptivity
 - `audio-coherence-reviewer` - Validates audio consistency with sonic identity

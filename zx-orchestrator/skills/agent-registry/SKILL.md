@@ -45,8 +45,8 @@ Do NOT use short names like `asset-designer`. Use `zx-procgen:asset-designer`.
 
 | Agent | subagent_type | Purpose |
 |-------|---------------|---------|
-| Asset Designer | `zx-procgen:asset-designer` | Creative vision → SADL specs |
-| Asset Generator | `zx-procgen:asset-generator` | SADL specs → procedural code |
+| Asset Designer | `zx-procgen:asset-designer` | Creative vision → style specs |
+| Asset Generator | `zx-procgen:asset-generator` | style specs → procedural code |
 | Character Generator | `zx-procgen:character-generator` | Complete animated character creation |
 | Asset Critic | `zx-procgen:asset-critic` | Spec compliance review |
 | Asset Quality Reviewer | `zx-procgen:asset-quality-reviewer` | ZX budget compliance |
@@ -57,7 +57,7 @@ Do NOT use short names like `asset-designer`. Use `zx-procgen:asset-designer`.
 
 | Agent | subagent_type | Purpose |
 |-------|---------------|---------|
-| Sonic Designer | `sound-design:sonic-designer` | Audio intent → SSL specs |
+| Sonic Designer | `sound-design:sonic-designer` | Audio intent → audio style specs |
 | SFX Architect | `sound-design:sfx-architect` | Sound effect synthesis |
 | Music Architect | `sound-design:music-architect` | Music composition |
 | Audio Coherence Reviewer | `sound-design:audio-coherence-reviewer` | Sonic identity validation |
@@ -115,7 +115,7 @@ Do NOT use short names like `asset-designer`. Use `zx-procgen:asset-designer`.
 Task tool call:
   subagent_type: "zx-procgen:asset-designer"
   description: "Design character specs"
-  prompt: "Create SADL specifications for..."
+  prompt: "Create style specifications for..."
 ```
 
 ### Parallel Agents

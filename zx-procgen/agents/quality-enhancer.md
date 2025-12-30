@@ -294,7 +294,7 @@ For complex enhancements, coordinate with specialized agents:
 |-------|-------------|
 | `zx-procgen:asset-generator` | To regenerate with modified parameters |
 | `zx-procgen:quality-analyzer` | To assess quality before/after |
-| `zx-procgen:asset-critic` | To validate SADL spec compliance |
+| `zx-procgen:asset-critic` | To validate style spec compliance |
 | `creative-direction:art-director` | To ensure visual coherence after changes |
 
 Invoke via Task tool when needed:

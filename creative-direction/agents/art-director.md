@@ -135,5 +135,5 @@ COMMENDATIONS
 **Edge Cases:**
 - No direction files: Report that vision needs establishing first
 - Single asset type: Focus on internal consistency
-- SADL-generated assets: Reference SADL style tokens in analysis
+- style-generated assets: Reference visual style tokens in analysis
 - Mixed generation methods: Check consistency across methods

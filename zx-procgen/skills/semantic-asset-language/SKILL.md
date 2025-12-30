@@ -245,7 +245,7 @@ pub const SCIFI_PANEL: GenerationRecipe = GenerationRecipe {
 
 ## Quality Heuristics
 
-SADL includes self-assessment heuristics for generated assets. Use these to validate output quality.
+The style guide includes self-assessment heuristics for generated assets. Use these to validate output quality.
 
 ### Texture Quality
 
@@ -316,7 +316,7 @@ For complete quality heuristics with measurement code, see `references/quality-h
 
 ## Creative Workflow
 
-SADL supports an iterative creative workflow:
+The style guide supports an iterative creative workflow:
 
 ```
 1. DESCRIBE  →  "I want a weathered medieval barrel"
@@ -331,7 +331,7 @@ SADL supports an iterative creative workflow:
 
 ### Creative Agents
 
-SADL is implemented by four specialized agents:
+The style guide is implemented by four specialized agents:
 
 | Agent | Role | Mode |
 |-------|------|------|
@@ -346,7 +346,7 @@ SADL is implemented by four specialized agents:
 
 ### Semantic Description Examples
 
-| Natural Language | SADL Translation |
+| Natural Language | Style Translation |
 |------------------|------------------|
 | "rusty old barrel" | Style: Rustic, Material: metal.rusted, Shape: barrel |
 | "glowing crystal" | Style: Fantasy, Material: crystal.magical, Emission: 0.8 |
