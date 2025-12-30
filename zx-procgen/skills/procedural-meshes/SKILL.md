@@ -1,6 +1,14 @@
 ---
 name: Procedural Mesh Generation (Blender bpy)
-description: This skill should be used when the user asks to "generate mesh", "create 3D model", "procedural geometry", "low-poly model", "blender script", "bpy mesh", "hard surface model", "organic mesh", "metaballs", "skin modifier", "SDF mesh", "mesh modifiers", "UV unwrap", "export glb", "export gltf", or mentions mesh generation, geometry synthesis, Blender scripting, or procedural 3D modeling for game assets.
+description: |
+  Use this skill to GENERATE 3D meshes for ZX games. Trigger phrases: "generate mesh", "3D model", "low-poly", "blender script", "hard surface", "organic mesh", "metaballs", "UV unwrap", "export glb".
+
+  Covers hard surface, organic (metaballs, skin, SDF), modifiers, UV, export.
+
+  For TEXTURING MESHES: use procedural-textures + mesh-texturing-workflows.
+  For ANIMATING MESHES: use procedural-animations.
+  For FULL CHARACTERS (mesh + texture + rig + anim): use character-generator agent.
+version: 1.1.0
 ---
 
 # Procedural Mesh Generation with Blender bpy

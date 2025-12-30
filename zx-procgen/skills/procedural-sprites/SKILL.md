@@ -1,7 +1,13 @@
 ---
 name: Procedural 2D Sprites & Pixel Art
-description: This skill should be used when the user asks to "generate pixel art", "create sprites", "2D sprite", "9-slice", "9-patch", "nine slice", "tile set", "tileset", "tilemap", "autotile", "wang tiles", "blob tiles", "health bar", "UI sprite", "indexed palette", "color palette", "pixel dithering", "ordered dither", "floyd-steinberg", "sprite sheet", "2D assets", "retro sprites", "button sprite", "icon generation", "color quantization", "bayer dithering", "atkinson dither", or mentions 2D asset generation, pixel art textures, UI elements, tilesets, sprite organization, or palette-based graphics for ZX games. Provides comprehensive guidance for procedurally generating 2D sprites, pixel art, UI elements, and tilesets compatible with the Nethercore ZX asset pipeline.
-version: 1.0.0
+description: |
+  Use this skill to GENERATE 2D assets for ZX games. Trigger phrases: "pixel art", "sprite sheet", "tileset", "autotile", "9-slice", "UI sprite", "health bar", "dithering", "indexed palette".
+
+  Covers palette quantization, dithering algorithms, tilesets, UI elements, character sheets.
+
+  For 3D TEXTURES (render modes, MRE/SSE): use procedural-textures.
+  For NOISE ALGORITHMS (base patterns for sprites): see procedural-textures noise reference.
+version: 1.1.0
 ---
 
 # Procedural 2D Sprites & Pixel Art
