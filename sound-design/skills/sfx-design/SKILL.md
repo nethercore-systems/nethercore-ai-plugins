@@ -14,7 +14,7 @@ version: 1.1.0
 Game SFX communicate information, provide feedback, and enhance immersion. Every sound must serve a purpose.
 
 > **Note:** Tables below show CONVENTIONAL patterns as starting points, not rules.
-> Your project's SSL (Sonic Style Language) or creative direction ALWAYS overrides these defaults.
+> Your project's Sonic Identity spec or creative direction ALWAYS overrides these defaults.
 > Distinctive sound design often comes from intentionally breaking expectations.
 
 ## Design Philosophy

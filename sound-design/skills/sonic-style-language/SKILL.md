@@ -1,25 +1,27 @@
 ---
-name: Sonic Style Language (SSL)
+name: SADL Audio Specification
 description: |
-  Use this skill when the user asks about audio style, sound direction, or wants consistent audio generation.
+  Use this skill when the user asks about audio style, sound direction, or wants consistent audio generation. This is the AUDIO portion of SADL (Semantic Asset Description Language).
 
-  **Trigger phrases:** "SSL", "sonic style", "audio style", "how should it sound", "what sound", "sound direction", "music style", "audio mood", "sound palette", "instrument palette", "audio aesthetic", "sonic identity", "dark fantasy audio", "retro sounds", "cinematic".
+  **Trigger phrases:** "SADL audio", "sonic identity", "audio style", "how should it sound", "sound direction", "music style", "audio mood", "sound palette", "instrument palette", "audio aesthetic", "dark fantasy audio", "retro sounds", "cinematic".
 
   **Also triggers on:** "establish sonic identity", "define audio direction", "consistent audio", "sound cohesion".
 
-  **Before generating audio:** Check `.studio/sonic-identity.local.md` for existing specs. If none exists and user wants consistent audio, suggest `/establish-sonic-identity` first.
+  **Before generating audio:** Check `.studio/sonic-identity.local.md` for existing specs. If none exists, suggest `/establish-sonic-identity` first.
 
-  SSL bridges creative intent ("dark and tense") and audio parameters (key=Cm, tempo=80, reverb=cathedral).
-version: 1.1.0
+  Bridges creative intent ("dark and tense") and audio parameters (key=Cm, tempo=80, reverb=cathedral).
+version: 2.0.0
 ---
 
-# Sonic Style Language (SSL)
+# SADL Audio Specification
 
-SSL bridges creative audio intent and sound implementation. Instead of guessing synthesis parameters or instrument choices, describe your audio semantically and translate to concrete specifications.
+The audio portion of SADL (Semantic Asset Description Language). Bridges creative audio intent and sound implementation. Instead of guessing synthesis parameters or instrument choices, describe your audio semantically and translate to concrete specifications.
+
+For VISUAL assets, see: zx-procgen:semantic-asset-language
 
 ## Core Concepts
 
-SSL has five pillars:
+SADL Audio has five pillars:
 
 1. **Sonic Styles** - Overall audio aesthetic (Orchestral, Chiptune, Industrial)
 2. **Mood Palettes** - Emotional character (Tense, Triumphant, Mysterious)

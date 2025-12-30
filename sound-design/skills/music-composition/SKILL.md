@@ -26,7 +26,7 @@ Game music differs from linear music: it must loop seamlessly, respond to gamepl
 ## Music Theory Reference
 
 > **Note:** All tables below show CONVENTIONAL patterns, not rules.
-> Your project's SSL (Sonic Style Language) or creative direction ALWAYS overrides these defaults.
+> Your project's Sonic Identity spec or creative direction ALWAYS overrides these defaults.
 > Breaking conventions intentionally often creates the most memorable music.
 
 ### Scales and Modes
