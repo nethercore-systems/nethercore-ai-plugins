@@ -3,11 +3,13 @@ name: Procedural Animation Generation
 description: |
   Use this skill to CREATE ANIMATIONS for ZX game assets. Trigger phrases: "animate mesh", "walk cycle", "skeletal animation", "rig character", "bone weights", "BVH import", "keyframe animation", "spinning pickup".
 
+  **Before animating:** Check `.studio/visual-style.local.md` for project style specs (exaggeration level, animation feel). Apply those constraints for consistent motion style. If no style exists, ask about animation feel.
+
   Covers object animation (rigid), skeletal animation (deforming), rigging, skinning, mocap import.
 
   For MESH GENERATION (the model to animate): use procedural-meshes.
   For CHARACTER GENERATION (mesh + rig + animation): use character-generator agent.
-version: 1.1.0
+version: 1.2.0
 ---
 
 # Procedural Animation Generation

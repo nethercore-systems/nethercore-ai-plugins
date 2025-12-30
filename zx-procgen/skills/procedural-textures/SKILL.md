@@ -3,11 +3,13 @@ name: Procedural Texture Generation for ZX
 description: |
   Use this skill to GENERATE textures for ZX 3D meshes. Trigger phrases: "generate texture", "procedural texture", "noise pattern", "MRE texture", "albedo", "matcap", "seamless texture", "material recipe".
 
+  **Before generating:** Check `.studio/visual-style.local.md` for project style specs (palette, materials, damage level). Apply those constraints for consistent assets. If no style exists, ask about style or suggest `/establish-visual-style`.
+
   Covers ZX render modes 0-3, noise algorithms, material layers, atlas packing.
 
   For UV-AWARE TEXTURING (projecting onto meshes): use mesh-texturing-workflows.
   For 2D SPRITES (pixel art, tilesets): use procedural-sprites.
-version: 2.1.0
+version: 2.2.0
 ---
 
 # Procedural Texture Generation
