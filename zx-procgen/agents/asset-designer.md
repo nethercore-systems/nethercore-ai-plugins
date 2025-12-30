@@ -138,20 +138,23 @@ Detail Level:
 
 Combine into a generation recipe:
 
-```rust
-GenerationRecipe {
-    name: "user_defined_asset",
-    description: "[User's description]",
-    base_style: StyleToken::[Selected],
-    palette: ColorPalette::[Selected],
-    material: "[category.variant]",
-    shape_hints: vec!["[base shapes]"],
-    scale_range: (min, max),
-    noise_amplitude_range: (min, max),
-    poly_budget: (min, max),
-    texture_resolution: 256,  // or 128 for small props
-    uv_texel_density: 256.0,
-}
+```python
+from dataclasses import dataclass
+from typing import List
+
+@dataclass
+class GenerationRecipe:
+    name: str = "user_defined_asset"
+    description: str = "[User's description]"
+    base_style: str = "[Selected]"  # e.g., "Rustic", "Cyberpunk"
+    palette: str = "[Selected]"  # e.g., "WarmEarthy", "Neon"
+    material: str = "[category.variant]"  # e.g., "metal.rusted"
+    shape_hints: List[str] = None  # e.g., ["cylinder", "box"]
+    scale_range: tuple[float, float] = (1.0, 1.0)
+    noise_amplitude_range: tuple[float, float] = (0.0, 0.1)
+    poly_budget: tuple[int, int] = (100, 500)
+    texture_resolution: int = 256  # or 128 for small props
+    uv_texel_density: float = 256.0
 ```
 
 ## Output Format

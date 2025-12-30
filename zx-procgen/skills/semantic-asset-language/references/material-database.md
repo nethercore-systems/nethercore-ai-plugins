@@ -4,16 +4,18 @@ Materials map semantic descriptors to PBR parameters using dot notation: `catego
 
 ## Material Structure
 
-```rust
-pub struct PbrParams {
-    pub base_color: [f32; 3],     // RGB (0-1 range)
-    pub metallic: f32,            // 0 = dielectric, 1 = full metal
-    pub roughness: f32,           // 0 = mirror, 1 = fully rough
-    pub normal_strength: f32,     // Normal map intensity (0-2)
-    pub ao_strength: f32,         // Ambient occlusion (0-1)
-    pub emission: f32,            // Emission intensity (0 = none, >0 = glow)
-    pub ior: f32,                 // Index of refraction (1.0-3.0)
-}
+```python
+from dataclasses import dataclass
+
+@dataclass
+class PbrParams:
+    base_color: tuple[float, float, float]  # RGB (0-1 range)
+    metallic: float            # 0 = dielectric, 1 = full metal
+    roughness: float           # 0 = mirror, 1 = fully rough
+    normal_strength: float     # Normal map intensity (0-2)
+    ao_strength: float         # Ambient occlusion (0-1)
+    emission: float            # Emission intensity (0 = none, >0 = glow)
+    ior: float                 # Index of refraction (1.0-3.0)
 ```
 
 ## Quick Reference
@@ -40,17 +42,21 @@ pub struct PbrParams {
 
 ## Material Lookup Pattern
 
-```rust
-pub fn material_from_semantic(descriptor: &str) -> Option<PbrParams> {
-    let parts: Vec<&str> = descriptor.split('.').collect();
-    match parts[0] {
-        "metal" => lookup_metal(parts[1]),
-        "wood" => lookup_wood(parts[1]),
-        "stone" => lookup_stone(parts[1]),
-        // ... other categories
-        _ => None,
+```python
+from typing import Optional
+
+def material_from_semantic(descriptor: str) -> Optional[PbrParams]:
+    parts = descriptor.split('.')
+    category_lookups = {
+        "metal": lookup_metal,
+        "wood": lookup_wood,
+        "stone": lookup_stone,
+        # ... other categories
     }
-}
+    lookup_fn = category_lookups.get(parts[0])
+    if lookup_fn and len(parts) > 1:
+        return lookup_fn(parts[1])
+    return None
 ```
 
 ## Common Patterns

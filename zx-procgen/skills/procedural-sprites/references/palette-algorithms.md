@@ -6,33 +6,53 @@ Color quantization algorithms for reducing full-color images to limited palettes
 
 Split color space recursively along the widest channel:
 
-```rust
-/// Generate indexed palette using median cut
-fn generate_palette(colors: &[u32], max_colors: usize) -> Vec<u32> {
-    let mut buckets = vec![colors.to_vec()];
+```python
+import numpy as np
 
-    while buckets.len() < max_colors {
-        // Find bucket with widest color range
-        let (idx, axis) = find_widest_bucket(&buckets);
-        let bucket = buckets.remove(idx);
+def generate_palette(colors: np.ndarray, max_colors: int) -> np.ndarray:
+    """
+    Generate indexed palette using median cut algorithm.
 
-        // Split along widest axis (R, G, or B)
-        let (low, high) = split_bucket(&bucket, axis);
-        buckets.push(low);
-        buckets.push(high);
-    }
+    Args:
+        colors: Array of RGB colors, shape (N, 3)
+        max_colors: Maximum number of palette colors
 
-    // Average each bucket to get palette color
-    buckets.iter().map(|b| average_color(b)).collect()
-}
+    Returns:
+        Palette array of shape (max_colors, 3)
+    """
+    buckets = [colors.copy()]
 
-fn find_widest_bucket(buckets: &[Vec<u32>]) -> (usize, usize) {
-    buckets.iter().enumerate()
-        .map(|(i, b)| (i, channel_range(b)))
-        .max_by_key(|(_, (_, range))| *range)
-        .map(|(i, (axis, _))| (i, axis))
-        .unwrap_or((0, 0))
-}
+    while len(buckets) < max_colors:
+        # Find bucket with widest color range
+        idx, axis = find_widest_bucket(buckets)
+        bucket = buckets.pop(idx)
+
+        # Split along widest axis (R=0, G=1, B=2)
+        low, high = split_bucket(bucket, axis)
+        buckets.append(low)
+        buckets.append(high)
+
+    # Average each bucket to get palette color
+    return np.array([bucket.mean(axis=0) for bucket in buckets], dtype=np.uint8)
+
+def find_widest_bucket(buckets: list[np.ndarray]) -> tuple[int, int]:
+    """Find bucket with widest color range and return (bucket_idx, axis)."""
+    best_idx, best_axis, best_range = 0, 0, 0
+
+    for i, bucket in enumerate(buckets):
+        for axis in range(3):  # R, G, B
+            channel_range = bucket[:, axis].max() - bucket[:, axis].min()
+            if channel_range > best_range:
+                best_idx, best_axis, best_range = i, axis, channel_range
+
+    return best_idx, best_axis
+
+def split_bucket(bucket: np.ndarray, axis: int) -> tuple[np.ndarray, np.ndarray]:
+    """Split bucket at median along specified axis."""
+    median = np.median(bucket[:, axis])
+    low = bucket[bucket[:, axis] <= median]
+    high = bucket[bucket[:, axis] > median]
+    return low, high
 ```
 
 ## Python Implementation
@@ -56,20 +76,46 @@ def generate_palette(image_path, num_colors=16):
 
 ## Quantizing Pixels to Palette
 
-```rust
-fn quantize_to_palette(color: u32, palette: &[u32]) -> u32 {
-    palette.iter()
-        .min_by_key(|&&p| color_distance(color, p))
-        .copied()
-        .unwrap_or(color)
-}
+```python
+import numpy as np
 
-fn color_distance(a: u32, b: u32) -> u32 {
-    let dr = ((a >> 24) & 0xFF) as i32 - ((b >> 24) & 0xFF) as i32;
-    let dg = ((a >> 16) & 0xFF) as i32 - ((b >> 16) & 0xFF) as i32;
-    let db = ((a >> 8) & 0xFF) as i32 - ((b >> 8) & 0xFF) as i32;
-    (dr * dr + dg * dg + db * db) as u32
-}
+def quantize_to_palette(color: np.ndarray, palette: np.ndarray) -> np.ndarray:
+    """
+    Find nearest palette color for a given color.
+
+    Args:
+        color: RGB color as array of shape (3,) or (H, W, 3)
+        palette: Palette colors as array of shape (N, 3)
+
+    Returns:
+        Nearest palette color(s)
+    """
+    if color.ndim == 1:
+        # Single color
+        distances = color_distance(color, palette)
+        return palette[np.argmin(distances)]
+    else:
+        # Image array - vectorized quantization
+        h, w = color.shape[:2]
+        flat = color.reshape(-1, 3)
+        distances = np.linalg.norm(flat[:, np.newaxis] - palette, axis=2)
+        indices = np.argmin(distances, axis=1)
+        return palette[indices].reshape(h, w, 3)
+
+def color_distance(a: np.ndarray, b: np.ndarray) -> np.ndarray:
+    """
+    Calculate squared Euclidean distance between colors.
+
+    Args:
+        a: Single color (3,) or multiple colors (N, 3)
+        b: Palette colors (M, 3)
+
+    Returns:
+        Distance array
+    """
+    # Squared Euclidean distance (no sqrt needed for comparison)
+    diff = a.astype(np.int32) - b.astype(np.int32)
+    return np.sum(diff ** 2, axis=-1)
 ```
 
 ## Algorithm Comparison

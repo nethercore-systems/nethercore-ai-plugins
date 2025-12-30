@@ -91,14 +91,23 @@ Ask the user about:
 
 Create the character mesh following ZX constraints:
 
-```rust
-// Example: Generate humanoid with edge loops at joints
-let mesh = generate_character_mesh(CharacterParams {
-    height: 1.8,
-    style: Style::Stylized,
-    poly_budget: 400,
-    include_edge_loops: true,
-});
+```python
+from dataclasses import dataclass
+
+@dataclass
+class CharacterParams:
+    height: float = 1.8
+    style: str = "Stylized"  # "Realistic", "Stylized", "Chibi"
+    poly_budget: int = 400
+    include_edge_loops: bool = True
+
+# Example: Generate humanoid with edge loops at joints
+mesh = generate_character_mesh(CharacterParams(
+    height=1.8,
+    style="Stylized",
+    poly_budget=400,
+    include_edge_loops=True
+))
 ```
 
 **Key requirements:**
@@ -111,16 +120,24 @@ let mesh = generate_character_mesh(CharacterParams {
 
 Create textures that match the UV layout:
 
-```rust
-let textures = generate_character_textures(
-    &mesh,
-    CharacterColors {
-        skin: 0xFFE0BDFF,
-        clothing_primary: 0x4466AAFF,
-        clothing_secondary: 0x223344FF,
-    },
-    TextureSize::Standard, // 256x256
-);
+```python
+from dataclasses import dataclass
+
+@dataclass
+class CharacterColors:
+    skin: int = 0xFFE0BDFF
+    clothing_primary: int = 0x4466AAFF
+    clothing_secondary: int = 0x223344FF
+
+textures = generate_character_textures(
+    mesh=mesh,
+    colors=CharacterColors(
+        skin=0xFFE0BDFF,
+        clothing_primary=0x4466AAFF,
+        clothing_secondary=0x223344FF
+    ),
+    texture_size="Standard"  # 256x256
+)
 ```
 
 **Required textures:**
@@ -379,9 +396,9 @@ generator/src/
 
 **CRITICAL:** Bone hierarchies and bind poses are DATA. Extract to constants:
 
-```rust
-// constants.rs
-pub const HUMANOID_BONE_NAMES: [&str; 22] = [
+```python
+# constants.py
+HUMANOID_BONE_NAMES = [
     "root", "pelvis", "spine_01", "spine_02", "spine_03",
     "neck", "head",
     "clavicle_l", "upperarm_l", "lowerarm_l", "hand_l",
@@ -389,26 +406,37 @@ pub const HUMANOID_BONE_NAMES: [&str; 22] = [
     "thigh_l", "calf_l", "foot_l",
     "thigh_r", "calf_r", "foot_r",
     "root_offset",
-];
+]
 
-pub const HUMANOID_HIERARCHY: [(usize, usize); 21] = [
-    (1, 0), (2, 1), // pelvis->root, spine_01->pelvis
-    // ... parent relationships
-];
+# Parent relationships: (child_index, parent_index)
+HUMANOID_HIERARCHY = [
+    (1, 0), (2, 1),  # pelvis->root, spine_01->pelvis
+    # ... parent relationships
+]
 ```
 
 ### Animation Splitting
 
 Each animation type gets its own file. NEVER generate >300 lines of animation code in one file:
 
-```rust
-// animations/locomotion.rs (~100 lines)
-pub fn generate_walk_cycle(...) -> Animation { ... }
-pub fn generate_run_cycle(...) -> Animation { ... }
+```python
+# animations/locomotion.py (~100 lines)
+def generate_walk_cycle(...) -> bpy.types.Action:
+    """Generate procedural walk cycle animation."""
+    ...
 
-// animations/combat.rs (~100 lines)
-pub fn generate_attack(...) -> Animation { ... }
-pub fn generate_hit_react(...) -> Animation { ... }
+def generate_run_cycle(...) -> bpy.types.Action:
+    """Generate procedural run cycle animation."""
+    ...
+
+# animations/combat.py (~100 lines)
+def generate_attack(...) -> bpy.types.Action:
+    """Generate attack animation."""
+    ...
+
+def generate_hit_react(...) -> bpy.types.Action:
+    """Generate hit reaction animation."""
+    ...
 ```
 
 ---

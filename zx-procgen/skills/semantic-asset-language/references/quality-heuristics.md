@@ -6,27 +6,40 @@ Complete quality assessment heuristics for style-generated assets. Use these met
 
 Quality heuristics provide measurable criteria for evaluating generated assets. Each asset type has specific metrics with target ranges and issue detection.
 
-```rust
-pub trait QualityAssessment {
-    fn passes_minimum(&self) -> bool;
-    fn issues(&self) -> Vec<QualityIssue>;
-    fn score(&self) -> f32;  // 0.0 - 1.0
-    fn suggestions(&self) -> Vec<&'static str>;
-}
+```python
+from abc import ABC, abstractmethod
+from dataclasses import dataclass
+from enum import Enum
 
-pub struct QualityIssue {
-    pub severity: Severity,
-    pub category: &'static str,
-    pub message: String,
-    pub fix_suggestion: String,
-}
+class Severity(Enum):
+    INFO = "info"          # Informational, no action needed
+    WARNING = "warning"    # Should be addressed but not blocking
+    ERROR = "error"        # Must be fixed before use
+    CRITICAL = "critical"  # Asset is unusable
 
-pub enum Severity {
-    Info,      // Informational, no action needed
-    Warning,   // Should be addressed but not blocking
-    Error,     // Must be fixed before use
-    Critical,  // Asset is unusable
-}
+@dataclass
+class QualityIssue:
+    severity: Severity
+    category: str
+    message: str
+    fix_suggestion: str
+
+class QualityAssessment(ABC):
+    @abstractmethod
+    def passes_minimum(self) -> bool:
+        pass
+
+    @abstractmethod
+    def issues(self) -> list[QualityIssue]:
+        pass
+
+    @abstractmethod
+    def score(self) -> float:  # 0.0 - 1.0
+        pass
+
+    @abstractmethod
+    def suggestions(self) -> list[str]:
+        pass
 ```
 
 ---
@@ -35,25 +48,25 @@ pub enum Severity {
 
 ### Metrics
 
-```rust
-pub struct TextureQuality {
-    // Visual quality
-    pub contrast: f32,           // 0-1, histogram spread
-    pub noise_coherence: f32,    // 0-1, pattern consistency
-    pub edge_sharpness: f32,     // 0-1, detail clarity
-    pub color_variance: f32,     // 0-1, color richness
+```python
+@dataclass
+class TextureQuality:
+    # Visual quality
+    contrast: float           # 0-1, histogram spread
+    noise_coherence: float    # 0-1, pattern consistency
+    edge_sharpness: float     # 0-1, detail clarity
+    color_variance: float     # 0-1, color richness
 
-    // Technical quality
-    pub tileability: f32,        // 0-1, edge continuity
-    pub unique_colors: u32,      // Number of distinct colors
-    pub histogram_balance: f32,  // 0-1, brightness distribution
-    pub power_of_two: bool,      // Dimensions are 2^n
+    # Technical quality
+    tileability: float        # 0-1, edge continuity
+    unique_colors: int        # Number of distinct colors
+    histogram_balance: float  # 0-1, brightness distribution
+    power_of_two: bool        # Dimensions are 2^n
 
-    // Content quality
-    pub has_alpha: bool,
-    pub alpha_coverage: f32,     // % of non-transparent pixels
-    pub semantic_match: f32,     // How well it matches intent
-}
+    # Content quality
+    has_alpha: bool
+    alpha_coverage: float     # % of non-transparent pixels
+    semantic_match: float     # How well it matches intent
 ```
 
 ### Thresholds
@@ -70,138 +83,126 @@ pub struct TextureQuality {
 
 ### Implementation
 
-```rust
-impl TextureQuality {
-    pub fn analyze(image: &ImageBuffer) -> Self {
-        Self {
-            contrast: calculate_contrast(image),
-            noise_coherence: calculate_coherence(image),
-            edge_sharpness: calculate_sharpness(image),
-            color_variance: calculate_color_variance(image),
-            tileability: calculate_tileability(image),
-            unique_colors: count_unique_colors(image),
-            histogram_balance: calculate_histogram_balance(image),
-            power_of_two: is_power_of_two(image.width()) && is_power_of_two(image.height()),
-            has_alpha: image.has_alpha(),
-            alpha_coverage: calculate_alpha_coverage(image),
-            semantic_match: 0.0,  // Set externally
-        }
-    }
+```python
+import numpy as np
+from PIL import Image
 
-    pub fn passes_minimum(&self) -> bool {
-        self.contrast > 0.15 &&
-        self.noise_coherence > 0.4 &&
-        self.histogram_balance > 0.3 &&
-        self.power_of_two
-    }
+def is_power_of_two(n: int) -> bool:
+    return n > 0 and (n & (n - 1)) == 0
 
-    pub fn issues(&self) -> Vec<QualityIssue> {
-        let mut issues = vec![];
+def analyze_texture(image: Image.Image) -> TextureQuality:
+    return TextureQuality(
+        contrast=calculate_contrast(image),
+        noise_coherence=calculate_coherence(image),
+        edge_sharpness=calculate_sharpness(image),
+        color_variance=calculate_color_variance(image),
+        tileability=calculate_tileability(image),
+        unique_colors=count_unique_colors(image),
+        histogram_balance=calculate_histogram_balance(image),
+        power_of_two=is_power_of_two(image.width) and is_power_of_two(image.height),
+        has_alpha=image.mode == 'RGBA',
+        alpha_coverage=calculate_alpha_coverage(image),
+        semantic_match=0.0,  # Set externally
+    )
 
-        if self.contrast <= 0.15 {
-            issues.push(QualityIssue {
-                severity: Severity::Warning,
-                category: "contrast",
-                message: format!("Low contrast: {:.2}", self.contrast),
-                fix_suggestion: "Add more value variation, increase noise amplitude".into(),
-            });
-        }
+def passes_minimum(quality: TextureQuality) -> bool:
+    return (
+        quality.contrast > 0.15 and
+        quality.noise_coherence > 0.4 and
+        quality.histogram_balance > 0.3 and
+        quality.power_of_two
+    )
 
-        if self.noise_coherence <= 0.4 {
-            issues.push(QualityIssue {
-                severity: Severity::Warning,
-                category: "coherence",
-                message: format!("Incoherent noise: {:.2}", self.noise_coherence),
-                fix_suggestion: "Increase noise scale, reduce octaves, use perlin over white noise".into(),
-            });
-        }
+def get_texture_issues(quality: TextureQuality) -> list[QualityIssue]:
+    issues = []
 
-        if self.tileability <= 0.8 {
-            issues.push(QualityIssue {
-                severity: Severity::Error,
-                category: "tiling",
-                message: format!("Visible seams: {:.2} tileability", self.tileability),
-                fix_suggestion: "Use tileable noise, blend edges, or generate with periodic functions".into(),
-            });
-        }
+    if quality.contrast <= 0.15:
+        issues.append(QualityIssue(
+            severity=Severity.WARNING,
+            category="contrast",
+            message=f"Low contrast: {quality.contrast:.2f}",
+            fix_suggestion="Add more value variation, increase noise amplitude",
+        ))
 
-        if !self.power_of_two {
-            issues.push(QualityIssue {
-                severity: Severity::Error,
-                category: "dimensions",
-                message: "Non-power-of-two dimensions".into(),
-                fix_suggestion: "Resize to 64, 128, 256, or 512 pixels".into(),
-            });
-        }
+    if quality.noise_coherence <= 0.4:
+        issues.append(QualityIssue(
+            severity=Severity.WARNING,
+            category="coherence",
+            message=f"Incoherent noise: {quality.noise_coherence:.2f}",
+            fix_suggestion="Increase noise scale, reduce octaves, use perlin over white noise",
+        ))
 
-        if self.unique_colors < 50 {
-            issues.push(QualityIssue {
-                severity: Severity::Info,
-                category: "colors",
-                message: format!("Few unique colors: {}", self.unique_colors),
-                fix_suggestion: "Add subtle color variation for more natural appearance".into(),
-            });
-        }
+    if quality.tileability <= 0.8:
+        issues.append(QualityIssue(
+            severity=Severity.ERROR,
+            category="tiling",
+            message=f"Visible seams: {quality.tileability:.2f} tileability",
+            fix_suggestion="Use tileable noise, blend edges, or generate with periodic functions",
+        ))
 
-        issues
-    }
+    if not quality.power_of_two:
+        issues.append(QualityIssue(
+            severity=Severity.ERROR,
+            category="dimensions",
+            message="Non-power-of-two dimensions",
+            fix_suggestion="Resize to 64, 128, 256, or 512 pixels",
+        ))
 
-    pub fn score(&self) -> f32 {
-        let weights = [
-            (self.contrast, 0.2),
-            (self.noise_coherence, 0.15),
-            (self.edge_sharpness, 0.1),
-            (self.histogram_balance, 0.15),
-            (self.tileability, 0.2),
-            ((self.unique_colors as f32 / 1000.0).min(1.0), 0.1),
-            (if self.power_of_two { 1.0 } else { 0.0 }, 0.1),
-        ];
+    if quality.unique_colors < 50:
+        issues.append(QualityIssue(
+            severity=Severity.INFO,
+            category="colors",
+            message=f"Few unique colors: {quality.unique_colors}",
+            fix_suggestion="Add subtle color variation for more natural appearance",
+        ))
 
-        weights.iter().map(|(v, w)| v * w).sum()
-    }
-}
+    return issues
 
-// Measurement functions
-fn calculate_contrast(image: &ImageBuffer) -> f32 {
-    let mut min_lum = 1.0f32;
-    let mut max_lum = 0.0f32;
+def calculate_texture_score(quality: TextureQuality) -> float:
+    weights = [
+        (quality.contrast, 0.2),
+        (quality.noise_coherence, 0.15),
+        (quality.edge_sharpness, 0.1),
+        (quality.histogram_balance, 0.15),
+        (quality.tileability, 0.2),
+        (min(quality.unique_colors / 1000.0, 1.0), 0.1),
+        (1.0 if quality.power_of_two else 0.0, 0.1),
+    ]
 
-    for pixel in image.pixels() {
-        let lum = 0.299 * pixel[0] as f32 / 255.0
-                + 0.587 * pixel[1] as f32 / 255.0
-                + 0.114 * pixel[2] as f32 / 255.0;
-        min_lum = min_lum.min(lum);
-        max_lum = max_lum.max(lum);
-    }
+    return sum(v * w for v, w in weights)
 
-    max_lum - min_lum
-}
+# Measurement functions
+def calculate_contrast(image: Image.Image) -> float:
+    data = np.array(image.convert('RGB'))
+    # Calculate luminance
+    lum = 0.299 * data[:,:,0] / 255.0 + 0.587 * data[:,:,1] / 255.0 + 0.114 * data[:,:,2] / 255.0
+    return float(lum.max() - lum.min())
 
-fn calculate_tileability(image: &ImageBuffer) -> f32 {
-    let w = image.width();
-    let h = image.height();
-    let mut total_diff = 0.0f32;
-    let mut samples = 0;
+def calculate_tileability(image: Image.Image) -> float:
+    data = np.array(image.convert('RGB'))
+    h, w = data.shape[:2]
+    total_diff = 0.0
+    samples = 0
 
-    // Compare left edge to right edge
-    for y in 0..h {
-        let left = image.get_pixel(0, y);
-        let right = image.get_pixel(w - 1, y);
-        total_diff += color_distance(left, right);
-        samples += 1;
-    }
+    # Compare left edge to right edge
+    for y in range(h):
+        left = data[y, 0]
+        right = data[y, w - 1]
+        total_diff += color_distance(left, right)
+        samples += 1
 
-    // Compare top edge to bottom edge
-    for x in 0..w {
-        let top = image.get_pixel(x, 0);
-        let bottom = image.get_pixel(x, h - 1);
-        total_diff += color_distance(top, bottom);
-        samples += 1;
-    }
+    # Compare top edge to bottom edge
+    for x in range(w):
+        top = data[0, x]
+        bottom = data[h - 1, x]
+        total_diff += color_distance(top, bottom)
+        samples += 1
 
-    let avg_diff = total_diff / samples as f32;
-    1.0 - avg_diff.min(1.0)
-}
+    avg_diff = total_diff / samples
+    return 1.0 - min(avg_diff, 1.0)
+
+def color_distance(c1: np.ndarray, c2: np.ndarray) -> float:
+    return float(np.sqrt(np.sum((c1.astype(float) - c2.astype(float)) ** 2)) / 441.67)  # max distance = sqrt(255^2 * 3)
 ```
 
 ---
@@ -210,30 +211,30 @@ fn calculate_tileability(image: &ImageBuffer) -> f32 {
 
 ### Metrics
 
-```rust
-pub struct MeshQuality {
-    // Geometry
-    pub vertex_count: u32,
-    pub triangle_count: u32,
-    pub degenerate_tris: u32,
-    pub non_manifold_edges: u32,
-    pub watertight: bool,
+```python
+@dataclass
+class MeshQuality:
+    # Geometry
+    vertex_count: int
+    triangle_count: int
+    degenerate_tris: int
+    non_manifold_edges: int
+    watertight: bool
 
-    // UVs
-    pub has_uvs: bool,
-    pub uv_coverage: f32,        // 0-1, how much UV space is used
-    pub uv_overlap: f32,         // 0-1, overlapping UV regions
-    pub max_stretch: f32,        // Max UV stretch ratio
+    # UVs
+    has_uvs: bool
+    uv_coverage: float        # 0-1, how much UV space is used
+    uv_overlap: float         # 0-1, overlapping UV regions
+    max_stretch: float        # Max UV stretch ratio
 
-    // Normals
-    pub has_normals: bool,
-    pub smooth_shading: bool,
-    pub normal_consistency: f32, // 0-1, no flipped normals
+    # Normals
+    has_normals: bool
+    smooth_shading: bool
+    normal_consistency: float # 0-1, no flipped normals
 
-    // Bounds
-    pub bounds_size: [f32; 3],
-    pub center_offset: f32,      // Distance from origin
-}
+    # Bounds
+    bounds_size: tuple[float, float, float]
+    center_offset: float      # Distance from origin
 ```
 
 ### Thresholds by Use Case
@@ -248,146 +249,140 @@ pub struct MeshQuality {
 
 ### Implementation
 
-```rust
-impl MeshQuality {
-    pub fn analyze(mesh: &Mesh) -> Self {
-        Self {
-            vertex_count: mesh.vertices.len() as u32,
-            triangle_count: mesh.triangles.len() as u32 / 3,
-            degenerate_tris: count_degenerate_triangles(mesh),
-            non_manifold_edges: count_non_manifold_edges(mesh),
-            watertight: check_watertight(mesh),
-            has_uvs: mesh.uvs.len() > 0,
-            uv_coverage: calculate_uv_coverage(mesh),
-            uv_overlap: calculate_uv_overlap(mesh),
-            max_stretch: calculate_max_stretch(mesh),
-            has_normals: mesh.normals.len() > 0,
-            smooth_shading: mesh.normals.len() == mesh.vertices.len(),
-            normal_consistency: check_normal_consistency(mesh),
-            bounds_size: calculate_bounds(mesh),
-            center_offset: calculate_center_offset(mesh),
-        }
-    }
+```python
+import numpy as np
 
-    pub fn passes_for_budget(&self, max_tris: u32) -> bool {
-        self.triangle_count <= max_tris &&
-        self.degenerate_tris == 0 &&
-        self.has_uvs &&
-        self.uv_coverage > 0.9 &&
-        self.uv_overlap < 0.05 &&
-        self.max_stretch < 2.0 &&
-        self.has_normals &&
-        self.normal_consistency > 0.95
-    }
+@dataclass
+class Mesh:
+    vertices: np.ndarray  # Shape: (N, 3)
+    triangles: np.ndarray  # Shape: (M, 3) indices
+    uvs: np.ndarray  # Shape: (N, 2)
+    normals: np.ndarray  # Shape: (N, 3)
 
-    pub fn issues(&self) -> Vec<QualityIssue> {
-        let mut issues = vec![];
+def analyze_mesh(mesh: Mesh) -> MeshQuality:
+    return MeshQuality(
+        vertex_count=len(mesh.vertices),
+        triangle_count=len(mesh.triangles),
+        degenerate_tris=count_degenerate_triangles(mesh),
+        non_manifold_edges=count_non_manifold_edges(mesh),
+        watertight=check_watertight(mesh),
+        has_uvs=len(mesh.uvs) > 0,
+        uv_coverage=calculate_uv_coverage(mesh),
+        uv_overlap=calculate_uv_overlap(mesh),
+        max_stretch=calculate_max_stretch(mesh),
+        has_normals=len(mesh.normals) > 0,
+        smooth_shading=len(mesh.normals) == len(mesh.vertices),
+        normal_consistency=check_normal_consistency(mesh),
+        bounds_size=calculate_bounds(mesh),
+        center_offset=calculate_center_offset(mesh),
+    )
 
-        if self.degenerate_tris > 0 {
-            issues.push(QualityIssue {
-                severity: Severity::Error,
-                category: "geometry",
-                message: format!("{} degenerate triangles", self.degenerate_tris),
-                fix_suggestion: "Remove zero-area triangles, check for duplicate vertices".into(),
-            });
-        }
+def passes_for_budget(quality: MeshQuality, max_tris: int) -> bool:
+    return (
+        quality.triangle_count <= max_tris and
+        quality.degenerate_tris == 0 and
+        quality.has_uvs and
+        quality.uv_coverage > 0.9 and
+        quality.uv_overlap < 0.05 and
+        quality.max_stretch < 2.0 and
+        quality.has_normals and
+        quality.normal_consistency > 0.95
+    )
 
-        if self.non_manifold_edges > 0 {
-            issues.push(QualityIssue {
-                severity: Severity::Warning,
-                category: "topology",
-                message: format!("{} non-manifold edges", self.non_manifold_edges),
-                fix_suggestion: "Ensure each edge has exactly 2 adjacent faces".into(),
-            });
-        }
+def get_mesh_issues(quality: MeshQuality) -> list[QualityIssue]:
+    issues = []
 
-        if !self.has_uvs {
-            issues.push(QualityIssue {
-                severity: Severity::Error,
-                category: "uvs",
-                message: "No UV coordinates".into(),
-                fix_suggestion: "Add UV mapping using box projection, cylindrical, or unwrap".into(),
-            });
-        } else if self.uv_coverage < 0.5 {
-            issues.push(QualityIssue {
-                severity: Severity::Warning,
-                category: "uvs",
-                message: format!("Low UV coverage: {:.0}%", self.uv_coverage * 100.0),
-                fix_suggestion: "Expand UV islands to use more texture space".into(),
-            });
-        }
+    if quality.degenerate_tris > 0:
+        issues.append(QualityIssue(
+            severity=Severity.ERROR,
+            category="geometry",
+            message=f"{quality.degenerate_tris} degenerate triangles",
+            fix_suggestion="Remove zero-area triangles, check for duplicate vertices",
+        ))
 
-        if self.uv_overlap > 0.1 {
-            issues.push(QualityIssue {
-                severity: Severity::Warning,
-                category: "uvs",
-                message: format!("UV overlap: {:.0}%", self.uv_overlap * 100.0),
-                fix_suggestion: "Separate overlapping UV islands".into(),
-            });
-        }
+    if quality.non_manifold_edges > 0:
+        issues.append(QualityIssue(
+            severity=Severity.WARNING,
+            category="topology",
+            message=f"{quality.non_manifold_edges} non-manifold edges",
+            fix_suggestion="Ensure each edge has exactly 2 adjacent faces",
+        ))
 
-        if self.max_stretch > 2.0 {
-            issues.push(QualityIssue {
-                severity: Severity::Warning,
-                category: "uvs",
-                message: format!("High UV stretch: {:.1}x", self.max_stretch),
-                fix_suggestion: "Add more UV seams or relax UV islands".into(),
-            });
-        }
+    if not quality.has_uvs:
+        issues.append(QualityIssue(
+            severity=Severity.ERROR,
+            category="uvs",
+            message="No UV coordinates",
+            fix_suggestion="Add UV mapping using box projection, cylindrical, or unwrap",
+        ))
+    elif quality.uv_coverage < 0.5:
+        issues.append(QualityIssue(
+            severity=Severity.WARNING,
+            category="uvs",
+            message=f"Low UV coverage: {quality.uv_coverage * 100.0:.0f}%",
+            fix_suggestion="Expand UV islands to use more texture space",
+        ))
 
-        if !self.watertight {
-            issues.push(QualityIssue {
-                severity: Severity::Info,
-                category: "topology",
-                message: "Mesh is not watertight".into(),
-                fix_suggestion: "Fill holes if solid appearance needed".into(),
-            });
-        }
+    if quality.uv_overlap > 0.1:
+        issues.append(QualityIssue(
+            severity=Severity.WARNING,
+            category="uvs",
+            message=f"UV overlap: {quality.uv_overlap * 100.0:.0f}%",
+            fix_suggestion="Separate overlapping UV islands",
+        ))
 
-        issues
-    }
+    if quality.max_stretch > 2.0:
+        issues.append(QualityIssue(
+            severity=Severity.WARNING,
+            category="uvs",
+            message=f"High UV stretch: {quality.max_stretch:.1f}x",
+            fix_suggestion="Add more UV seams or relax UV islands",
+        ))
 
-    pub fn score(&self) -> f32 {
-        let no_errors = self.degenerate_tris == 0 && self.has_uvs && self.has_normals;
-        if !no_errors { return 0.0; }
+    if not quality.watertight:
+        issues.append(QualityIssue(
+            severity=Severity.INFO,
+            category="topology",
+            message="Mesh is not watertight",
+            fix_suggestion="Fill holes if solid appearance needed",
+        ))
 
-        let weights = [
-            (self.uv_coverage, 0.25),
-            (1.0 - self.uv_overlap, 0.15),
-            ((2.0 - self.max_stretch).max(0.0) / 2.0, 0.15),
-            (self.normal_consistency, 0.15),
-            (if self.watertight { 1.0 } else { 0.7 }, 0.1),
-            (if self.non_manifold_edges == 0 { 1.0 } else { 0.5 }, 0.1),
-            (1.0 - (self.center_offset / 10.0).min(1.0), 0.1),
-        ];
+    return issues
 
-        weights.iter().map(|(v, w)| v * w).sum()
-    }
-}
+def calculate_mesh_score(quality: MeshQuality) -> float:
+    no_errors = quality.degenerate_tris == 0 and quality.has_uvs and quality.has_normals
+    if not no_errors:
+        return 0.0
 
-fn count_degenerate_triangles(mesh: &Mesh) -> u32 {
-    let mut count = 0;
-    for tri in mesh.triangles.chunks(3) {
-        let v0 = mesh.vertices[tri[0] as usize];
-        let v1 = mesh.vertices[tri[1] as usize];
-        let v2 = mesh.vertices[tri[2] as usize];
+    weights = [
+        (quality.uv_coverage, 0.25),
+        (1.0 - quality.uv_overlap, 0.15),
+        (max(2.0 - quality.max_stretch, 0.0) / 2.0, 0.15),
+        (quality.normal_consistency, 0.15),
+        (1.0 if quality.watertight else 0.7, 0.1),
+        (1.0 if quality.non_manifold_edges == 0 else 0.5, 0.1),
+        (1.0 - min(quality.center_offset / 10.0, 1.0), 0.1),
+    ]
 
-        // Check for zero area
-        let edge1 = [v1[0] - v0[0], v1[1] - v0[1], v1[2] - v0[2]];
-        let edge2 = [v2[0] - v0[0], v2[1] - v0[1], v2[2] - v0[2]];
-        let cross = [
-            edge1[1] * edge2[2] - edge1[2] * edge2[1],
-            edge1[2] * edge2[0] - edge1[0] * edge2[2],
-            edge1[0] * edge2[1] - edge1[1] * edge2[0],
-        ];
-        let area_sq = cross[0] * cross[0] + cross[1] * cross[1] + cross[2] * cross[2];
+    return sum(v * w for v, w in weights)
 
-        if area_sq < 1e-10 {
-            count += 1;
-        }
-    }
-    count
-}
+def count_degenerate_triangles(mesh: Mesh) -> int:
+    count = 0
+    for tri in mesh.triangles:
+        v0 = mesh.vertices[tri[0]]
+        v1 = mesh.vertices[tri[1]]
+        v2 = mesh.vertices[tri[2]]
+
+        # Check for zero area
+        edge1 = v1 - v0
+        edge2 = v2 - v0
+        cross = np.cross(edge1, edge2)
+        area_sq = np.sum(cross ** 2)
+
+        if area_sq < 1e-10:
+            count += 1
+
+    return count
 ```
 
 ---
@@ -398,30 +393,30 @@ Based on the 12 Principles of Animation.
 
 ### Metrics
 
-```rust
-pub struct AnimationQuality {
-    // Timing
-    pub total_frames: u32,
-    pub fps: u32,
-    pub duration_seconds: f32,
+```python
+@dataclass
+class AnimationQuality:
+    # Timing
+    total_frames: int
+    fps: int
+    duration_seconds: float
 
-    // Principles
-    pub has_anticipation: bool,
-    pub anticipation_frames: u32,
-    pub has_follow_through: bool,
-    pub follow_through_frames: u32,
-    pub uses_arcs: bool,
-    pub arc_smoothness: f32,
-    pub has_exaggeration: bool,
-    pub exaggeration_amount: f32,
-    pub timing_variation: f32,    // 0 = robotic, 1 = organic
+    # Principles
+    has_anticipation: bool
+    anticipation_frames: int
+    has_follow_through: bool
+    follow_through_frames: int
+    uses_arcs: bool
+    arc_smoothness: float
+    has_exaggeration: bool
+    exaggeration_amount: float
+    timing_variation: float    # 0 = robotic, 1 = organic
 
-    // Technical
-    pub loops_cleanly: bool,
-    pub root_motion_distance: f32,
-    pub bone_count: u32,
-    pub keyframe_count: u32,
-}
+    # Technical
+    loops_cleanly: bool
+    root_motion_distance: float
+    bone_count: int
+    keyframe_count: int
 ```
 
 ### Animation Principle Thresholds
@@ -436,154 +431,159 @@ pub struct AnimationQuality {
 
 ### Implementation
 
-```rust
-impl AnimationQuality {
-    pub fn analyze(anim: &Animation) -> Self {
-        Self {
-            total_frames: anim.frames.len() as u32,
-            fps: anim.fps,
-            duration_seconds: anim.frames.len() as f32 / anim.fps as f32,
+```python
+from enum import Enum
 
-            has_anticipation: detect_anticipation(anim),
-            anticipation_frames: count_anticipation_frames(anim),
-            has_follow_through: detect_follow_through(anim),
-            follow_through_frames: count_follow_through_frames(anim),
-            uses_arcs: detect_arc_motion(anim),
-            arc_smoothness: calculate_arc_smoothness(anim),
-            has_exaggeration: detect_exaggeration(anim),
-            exaggeration_amount: calculate_exaggeration(anim),
-            timing_variation: calculate_timing_variation(anim),
+class AnimationType(Enum):
+    IDLE = "idle"
+    WALK = "walk"
+    ATTACK = "attack"
+    JUMP = "jump"
 
-            loops_cleanly: check_loop_continuity(anim),
-            root_motion_distance: calculate_root_motion(anim),
-            bone_count: anim.bones.len() as u32,
-            keyframe_count: count_keyframes(anim),
-        }
+@dataclass
+class Animation:
+    frames: list
+    fps: int
+    bones: list
+
+def analyze_animation(anim: Animation) -> AnimationQuality:
+    return AnimationQuality(
+        total_frames=len(anim.frames),
+        fps=anim.fps,
+        duration_seconds=len(anim.frames) / anim.fps,
+
+        has_anticipation=detect_anticipation(anim),
+        anticipation_frames=count_anticipation_frames(anim),
+        has_follow_through=detect_follow_through(anim),
+        follow_through_frames=count_follow_through_frames(anim),
+        uses_arcs=detect_arc_motion(anim),
+        arc_smoothness=calculate_arc_smoothness(anim),
+        has_exaggeration=detect_exaggeration(anim),
+        exaggeration_amount=calculate_exaggeration(anim),
+        timing_variation=calculate_timing_variation(anim),
+
+        loops_cleanly=check_loop_continuity(anim),
+        root_motion_distance=calculate_root_motion(anim),
+        bone_count=len(anim.bones),
+        keyframe_count=count_keyframes(anim),
+    )
+
+def passes_for_type(quality: AnimationQuality, anim_type: AnimationType) -> bool:
+    checks = {
+        AnimationType.IDLE: (
+            quality.loops_cleanly and
+            quality.duration_seconds >= 1.0 and
+            quality.timing_variation > 0.1
+        ),
+        AnimationType.WALK: (
+            quality.loops_cleanly and
+            quality.uses_arcs and
+            quality.has_follow_through and
+            quality.root_motion_distance > 0.5
+        ),
+        AnimationType.ATTACK: (
+            quality.has_anticipation and
+            quality.has_follow_through and
+            quality.has_exaggeration and
+            quality.anticipation_frames >= 2
+        ),
+        AnimationType.JUMP: (
+            quality.has_anticipation and
+            quality.has_exaggeration and
+            quality.uses_arcs
+        ),
     }
+    return checks.get(anim_type, False)
 
-    pub fn passes_for_type(&self, anim_type: AnimationType) -> bool {
-        match anim_type {
-            AnimationType::Idle => {
-                self.loops_cleanly &&
-                self.duration_seconds >= 1.0 &&
-                self.timing_variation > 0.1
-            }
-            AnimationType::Walk => {
-                self.loops_cleanly &&
-                self.uses_arcs &&
-                self.has_follow_through &&
-                self.root_motion_distance > 0.5
-            }
-            AnimationType::Attack => {
-                self.has_anticipation &&
-                self.has_follow_through &&
-                self.has_exaggeration &&
-                self.anticipation_frames >= 2
-            }
-            AnimationType::Jump => {
-                self.has_anticipation &&
-                self.has_exaggeration &&
-                self.uses_arcs
-            }
-        }
-    }
+def get_animation_issues(quality: AnimationQuality) -> list[QualityIssue]:
+    issues = []
 
-    pub fn issues(&self) -> Vec<QualityIssue> {
-        let mut issues = vec![];
+    if not quality.loops_cleanly:
+        issues.append(QualityIssue(
+            severity=Severity.WARNING,
+            category="looping",
+            message="Animation does not loop cleanly",
+            fix_suggestion="Ensure first and last frames match, or add transition frames",
+        ))
 
-        if !self.loops_cleanly {
-            issues.push(QualityIssue {
-                severity: Severity::Warning,
-                category: "looping",
-                message: "Animation does not loop cleanly".into(),
-                fix_suggestion: "Ensure first and last frames match, or add transition frames".into(),
-            });
-        }
+    if not quality.has_anticipation and quality.duration_seconds > 0.3:
+        issues.append(QualityIssue(
+            severity=Severity.INFO,
+            category="principles",
+            message="No anticipation detected",
+            fix_suggestion="Add a wind-up or preparation phase before main action",
+        ))
 
-        if !self.has_anticipation && self.duration_seconds > 0.3 {
-            issues.push(QualityIssue {
-                severity: Severity::Info,
-                category: "principles",
-                message: "No anticipation detected".into(),
-                fix_suggestion: "Add a wind-up or preparation phase before main action".into(),
-            });
-        }
+    if not quality.uses_arcs:
+        issues.append(QualityIssue(
+            severity=Severity.INFO,
+            category="principles",
+            message="Motion appears linear rather than arced",
+            fix_suggestion="Adjust keyframes to create curved motion paths",
+        ))
 
-        if !self.uses_arcs {
-            issues.push(QualityIssue {
-                severity: Severity::Info,
-                category: "principles",
-                message: "Motion appears linear rather than arced".into(),
-                fix_suggestion: "Adjust keyframes to create curved motion paths".into(),
-            });
-        }
+    if quality.timing_variation < 0.1:
+        issues.append(QualityIssue(
+            severity=Severity.INFO,
+            category="timing",
+            message="Robotic timing - no ease in/out",
+            fix_suggestion="Add acceleration/deceleration to keyframes",
+        ))
 
-        if self.timing_variation < 0.1 {
-            issues.push(QualityIssue {
-                severity: Severity::Info,
-                category: "timing",
-                message: "Robotic timing - no ease in/out".into(),
-                fix_suggestion: "Add acceleration/deceleration to keyframes".into(),
-            });
-        }
+    if quality.arc_smoothness < 0.5:
+        issues.append(QualityIssue(
+            severity=Severity.WARNING,
+            category="smoothness",
+            message=f"Jerky motion: {quality.arc_smoothness:.2f} smoothness",
+            fix_suggestion="Add intermediate keyframes or use spline interpolation",
+        ))
 
-        if self.arc_smoothness < 0.5 {
-            issues.push(QualityIssue {
-                severity: Severity::Warning,
-                category: "smoothness",
-                message: format!("Jerky motion: {:.2} smoothness", self.arc_smoothness),
-                fix_suggestion: "Add intermediate keyframes or use spline interpolation".into(),
-            });
-        }
+    return issues
 
-        issues
-    }
-}
+def detect_anticipation(anim: Animation) -> bool:
+    # Check if there's a "preparation" phase at the start
+    # e.g., crouch before jump, arm pull before punch
+    if len(anim.frames) < 5:
+        return False
 
-fn detect_anticipation(anim: &Animation) -> bool {
-    // Check if there's a "preparation" phase at the start
-    // e.g., crouch before jump, arm pull before punch
-    if anim.frames.len() < 5 { return false; }
+    # Look for opposite direction movement in first ~20% of frames
+    anticipation_window = int(len(anim.frames) * 0.2)
+    main_direction = calculate_main_direction(anim)
+    initial_direction = calculate_direction(anim.frames[0:anticipation_window])
 
-    // Look for opposite direction movement in first ~20% of frames
-    let anticipation_window = (anim.frames.len() as f32 * 0.2) as usize;
-    let main_direction = calculate_main_direction(anim);
-    let initial_direction = calculate_direction(&anim.frames[0..anticipation_window]);
+    # If initial movement is opposite to main movement, that's anticipation
+    return dot_product(main_direction, initial_direction) < -0.3
 
-    // If initial movement is opposite to main movement, that's anticipation
-    dot_product(&main_direction, &initial_direction) < -0.3
-}
+def calculate_arc_smoothness(anim: Animation) -> float:
+    # Measure how smooth the motion curves are
+    # 1.0 = perfectly smooth arcs, 0.0 = linear/jerky
+    total_smoothness = 0.0
+    samples = 0
 
-fn calculate_arc_smoothness(anim: &Animation) -> f32 {
-    // Measure how smooth the motion curves are
-    // 1.0 = perfectly smooth arcs, 0.0 = linear/jerky
-    let mut total_smoothness = 0.0;
-    let mut samples = 0;
+    for bone in anim.bones:
+        positions = [f.bone_positions[bone.id] for f in anim.frames]
 
-    for bone in &anim.bones {
-        let positions: Vec<_> = anim.frames.iter()
-            .map(|f| f.bone_positions[bone.id])
-            .collect();
+        if len(positions) < 3:
+            continue
 
-        if positions.len() < 3 { continue; }
-
-        // Calculate second derivative (acceleration)
-        for i in 1..positions.len() - 1 {
-            let accel = [
+        # Calculate second derivative (acceleration)
+        for i in range(1, len(positions) - 1):
+            accel = np.array([
                 positions[i+1][0] - 2.0 * positions[i][0] + positions[i-1][0],
                 positions[i+1][1] - 2.0 * positions[i][1] + positions[i-1][1],
                 positions[i+1][2] - 2.0 * positions[i][2] + positions[i-1][2],
-            ];
-            let accel_mag = (accel[0]*accel[0] + accel[1]*accel[1] + accel[2]*accel[2]).sqrt();
-            // Smaller acceleration = smoother
-            total_smoothness += 1.0 / (1.0 + accel_mag);
-            samples += 1;
-        }
-    }
+            ])
+            accel_mag = np.sqrt(np.sum(accel ** 2))
+            # Smaller acceleration = smoother
+            total_smoothness += 1.0 / (1.0 + accel_mag)
+            samples += 1
 
-    if samples == 0 { return 1.0; }
-    total_smoothness / samples as f32
-}
+    if samples == 0:
+        return 1.0
+    return total_smoothness / samples
+
+def dot_product(a: list, b: list) -> float:
+    return sum(x * y for x, y in zip(a, b))
 ```
 
 ---
@@ -592,26 +592,26 @@ fn calculate_arc_smoothness(anim: &Animation) -> f32 {
 
 ### Metrics
 
-```rust
-pub struct SoundQuality {
-    // Format
-    pub sample_rate: u32,
-    pub bit_depth: u16,
-    pub channels: u8,
-    pub duration_seconds: f32,
+```python
+@dataclass
+class SoundQuality:
+    # Format
+    sample_rate: int
+    bit_depth: int
+    channels: int
+    duration_seconds: float
 
-    // Audio
-    pub peak_amplitude: f32,     // 0-1, highest sample
-    pub rms_level: f32,          // 0-1, average loudness
-    pub dynamic_range: f32,      // Difference between loud and quiet
-    pub has_clipping: bool,      // Peak > 1.0
+    # Audio
+    peak_amplitude: float     # 0-1, highest sample
+    rms_level: float          # 0-1, average loudness
+    dynamic_range: float      # Difference between loud and quiet
+    has_clipping: bool        # Peak > 1.0
 
-    // Content
-    pub attack_time: f32,        // Time to reach peak (seconds)
-    pub decay_time: f32,         // Time from peak to silence
-    pub has_silence: bool,       // Excessive silence at start/end
-    pub silence_percent: f32,
-}
+    # Content
+    attack_time: float        # Time to reach peak (seconds)
+    decay_time: float         # Time from peak to silence
+    has_silence: bool         # Excessive silence at start/end
+    silence_percent: float
 ```
 
 ### ZX Audio Requirements
@@ -626,125 +626,116 @@ pub struct SoundQuality {
 
 ### Implementation
 
-```rust
-impl SoundQuality {
-    pub fn analyze(audio: &AudioBuffer) -> Self {
-        let samples = &audio.samples;
+```python
+@dataclass
+class AudioBuffer:
+    samples: np.ndarray
+    sample_rate: int
+    bit_depth: int
+    channels: int
 
-        Self {
-            sample_rate: audio.sample_rate,
-            bit_depth: audio.bit_depth,
-            channels: audio.channels,
-            duration_seconds: samples.len() as f32 / audio.sample_rate as f32,
+def analyze_sound(audio: AudioBuffer) -> SoundQuality:
+    samples = audio.samples
 
-            peak_amplitude: calculate_peak(samples),
-            rms_level: calculate_rms(samples),
-            dynamic_range: calculate_dynamic_range(samples),
-            has_clipping: detect_clipping(samples),
+    return SoundQuality(
+        sample_rate=audio.sample_rate,
+        bit_depth=audio.bit_depth,
+        channels=audio.channels,
+        duration_seconds=len(samples) / audio.sample_rate,
 
-            attack_time: calculate_attack_time(samples, audio.sample_rate),
-            decay_time: calculate_decay_time(samples, audio.sample_rate),
-            has_silence: detect_silence(samples),
-            silence_percent: calculate_silence_percent(samples),
-        }
-    }
+        peak_amplitude=calculate_peak(samples),
+        rms_level=calculate_rms(samples),
+        dynamic_range=calculate_dynamic_range(samples),
+        has_clipping=detect_clipping(samples),
 
-    pub fn passes_zx_requirements(&self) -> bool {
-        self.sample_rate == 22050 &&
-        self.bit_depth == 16 &&
-        self.channels == 1 &&
-        !self.has_clipping &&
-        self.peak_amplitude < 0.95 &&
-        self.silence_percent < 0.2
-    }
+        attack_time=calculate_attack_time(samples, audio.sample_rate),
+        decay_time=calculate_decay_time(samples, audio.sample_rate),
+        has_silence=detect_silence(samples),
+        silence_percent=calculate_silence_percent(samples),
+    )
 
-    pub fn issues(&self) -> Vec<QualityIssue> {
-        let mut issues = vec![];
+def passes_zx_requirements(quality: SoundQuality) -> bool:
+    return (
+        quality.sample_rate == 22050 and
+        quality.bit_depth == 16 and
+        quality.channels == 1 and
+        not quality.has_clipping and
+        quality.peak_amplitude < 0.95 and
+        quality.silence_percent < 0.2
+    )
 
-        if self.sample_rate != 22050 {
-            issues.push(QualityIssue {
-                severity: Severity::Error,
-                category: "format",
-                message: format!("Wrong sample rate: {} Hz", self.sample_rate),
-                fix_suggestion: "Resample to 22050 Hz for ZX compatibility".into(),
-            });
-        }
+def get_sound_issues(quality: SoundQuality) -> list[QualityIssue]:
+    issues = []
 
-        if self.channels != 1 {
-            issues.push(QualityIssue {
-                severity: Severity::Error,
-                category: "format",
-                message: format!("Stereo audio ({} channels)", self.channels),
-                fix_suggestion: "Convert to mono (mix or use left channel)".into(),
-            });
-        }
+    if quality.sample_rate != 22050:
+        issues.append(QualityIssue(
+            severity=Severity.ERROR,
+            category="format",
+            message=f"Wrong sample rate: {quality.sample_rate} Hz",
+            fix_suggestion="Resample to 22050 Hz for ZX compatibility",
+        ))
 
-        if self.has_clipping {
-            issues.push(QualityIssue {
-                severity: Severity::Error,
-                category: "audio",
-                message: "Audio clipping detected".into(),
-                fix_suggestion: "Reduce amplitude or apply limiting".into(),
-            });
-        }
+    if quality.channels != 1:
+        issues.append(QualityIssue(
+            severity=Severity.ERROR,
+            category="format",
+            message=f"Stereo audio ({quality.channels} channels)",
+            fix_suggestion="Convert to mono (mix or use left channel)",
+        ))
 
-        if self.peak_amplitude < 0.3 {
-            issues.push(QualityIssue {
-                severity: Severity::Warning,
-                category: "audio",
-                message: format!("Low amplitude: {:.2}", self.peak_amplitude),
-                fix_suggestion: "Normalize audio to increase loudness".into(),
-            });
-        }
+    if quality.has_clipping:
+        issues.append(QualityIssue(
+            severity=Severity.ERROR,
+            category="audio",
+            message="Audio clipping detected",
+            fix_suggestion="Reduce amplitude or apply limiting",
+        ))
 
-        if self.silence_percent > 0.3 {
-            issues.push(QualityIssue {
-                severity: Severity::Warning,
-                category: "content",
-                message: format!("{:.0}% silence", self.silence_percent * 100.0),
-                fix_suggestion: "Trim silence from start and end".into(),
-            });
-        }
+    if quality.peak_amplitude < 0.3:
+        issues.append(QualityIssue(
+            severity=Severity.WARNING,
+            category="audio",
+            message=f"Low amplitude: {quality.peak_amplitude:.2f}",
+            fix_suggestion="Normalize audio to increase loudness",
+        ))
 
-        if self.duration_seconds > 5.0 {
-            issues.push(QualityIssue {
-                severity: Severity::Warning,
-                category: "duration",
-                message: format!("Long SFX: {:.1}s", self.duration_seconds),
-                fix_suggestion: "Consider shorter duration for memory efficiency".into(),
-            });
-        }
+    if quality.silence_percent > 0.3:
+        issues.append(QualityIssue(
+            severity=Severity.WARNING,
+            category="content",
+            message=f"{quality.silence_percent * 100.0:.0f}% silence",
+            fix_suggestion="Trim silence from start and end",
+        ))
 
-        issues
-    }
-}
+    if quality.duration_seconds > 5.0:
+        issues.append(QualityIssue(
+            severity=Severity.WARNING,
+            category="duration",
+            message=f"Long SFX: {quality.duration_seconds:.1f}s",
+            fix_suggestion="Consider shorter duration for memory efficiency",
+        ))
 
-fn calculate_peak(samples: &[f32]) -> f32 {
-    samples.iter().map(|s| s.abs()).fold(0.0f32, |a, b| a.max(b))
-}
+    return issues
 
-fn calculate_rms(samples: &[f32]) -> f32 {
-    let sum_sq: f32 = samples.iter().map(|s| s * s).sum();
-    (sum_sq / samples.len() as f32).sqrt()
-}
+def calculate_peak(samples: np.ndarray) -> float:
+    return float(np.max(np.abs(samples)))
 
-fn detect_clipping(samples: &[f32]) -> bool {
-    // Check for consecutive max-value samples (clipping indicator)
-    let threshold = 0.99;
-    let mut consecutive = 0;
+def calculate_rms(samples: np.ndarray) -> float:
+    return float(np.sqrt(np.mean(samples ** 2)))
 
-    for sample in samples {
-        if sample.abs() > threshold {
-            consecutive += 1;
-            if consecutive > 3 {
-                return true;
-            }
-        } else {
-            consecutive = 0;
-        }
-    }
-    false
-}
+def detect_clipping(samples: np.ndarray) -> bool:
+    # Check for consecutive max-value samples (clipping indicator)
+    threshold = 0.99
+    consecutive = 0
+
+    for sample in samples:
+        if abs(sample) > threshold:
+            consecutive += 1
+            if consecutive > 3:
+                return True
+        else:
+            consecutive = 0
+    return False
 ```
 
 ---
@@ -753,36 +744,27 @@ fn detect_clipping(samples: &[f32]) -> bool {
 
 Quality checks can operate at different strictness levels:
 
-```rust
-pub enum Strictness {
-    Lenient,   // Only critical errors
-    Normal,    // Errors and warnings
-    Strict,    // All issues including info
-}
+```python
+class Strictness(Enum):
+    LENIENT = "lenient"   # Only critical errors
+    NORMAL = "normal"     # Errors and warnings
+    STRICT = "strict"     # All issues including info
 
-impl Strictness {
-    pub fn filter_issues(&self, issues: Vec<QualityIssue>) -> Vec<QualityIssue> {
-        match self {
-            Strictness::Lenient => issues.into_iter()
-                .filter(|i| matches!(i.severity, Severity::Error | Severity::Critical))
-                .collect(),
-            Strictness::Normal => issues.into_iter()
-                .filter(|i| !matches!(i.severity, Severity::Info))
-                .collect(),
-            Strictness::Strict => issues,
-        }
+def filter_issues(strictness: Strictness, issues: list[QualityIssue]) -> list[QualityIssue]:
+    filters = {
+        Strictness.LENIENT: lambda i: i.severity in (Severity.ERROR, Severity.CRITICAL),
+        Strictness.NORMAL: lambda i: i.severity != Severity.INFO,
+        Strictness.STRICT: lambda i: True,
     }
+    return [i for i in issues if filters[strictness](i)]
 
-    pub fn passes(&self, issues: &[QualityIssue]) -> bool {
-        match self {
-            Strictness::Lenient => !issues.iter().any(|i|
-                matches!(i.severity, Severity::Critical)),
-            Strictness::Normal => !issues.iter().any(|i|
-                matches!(i.severity, Severity::Error | Severity::Critical)),
-            Strictness::Strict => issues.is_empty(),
-        }
+def passes(strictness: Strictness, issues: list[QualityIssue]) -> bool:
+    checks = {
+        Strictness.LENIENT: lambda: not any(i.severity == Severity.CRITICAL for i in issues),
+        Strictness.NORMAL: lambda: not any(i.severity in (Severity.ERROR, Severity.CRITICAL) for i in issues),
+        Strictness.STRICT: lambda: len(issues) == 0,
     }
-}
+    return checks[strictness]()
 ```
 
 ---

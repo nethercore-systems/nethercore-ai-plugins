@@ -118,13 +118,17 @@ For each asset type, apply tier-appropriate enhancements:
 | → Hero | Add edge loops, secondary shapes, micro-detail |
 
 **Enhancement code modifications:**
-```rust
-// Temp → Final: Add bevels
-mesh.apply(Bevel { width: 0.02, segments: 1 });
+```python
+import bpy
 
-// Final → Hero: Add detail
-mesh.apply(EdgeLoops { near_features: true });
-mesh.apply(SurfaceNoise { amplitude: 0.002, scale: 20.0 });
+# Temp → Final: Add bevels
+bpy.ops.object.modifier_add(type='BEVEL')
+bpy.context.object.modifiers["Bevel"].width = 0.02
+bpy.context.object.modifiers["Bevel"].segments = 1
+
+# Final → Hero: Add detail
+add_edge_loops(obj, near_features=True)
+apply_surface_noise(obj, amplitude=0.002, scale=20.0)
 ```
 
 #### Texture Enhancement
@@ -136,14 +140,19 @@ mesh.apply(SurfaceNoise { amplitude: 0.002, scale: 20.0 });
 | → Hero | Add wear maps, all channels, micro-variation |
 
 **Enhancement code modifications:**
-```rust
-// Temp → Final: Add contrast and layers
-tex.apply_curves(contrast_boost);
-tex.blend(&detail_noise, BlendMode::Overlay, 0.2);
+```python
+import numpy as np
+from PIL import Image, ImageEnhance
 
-// Final → Hero: Add wear
-tex.apply_edge_wear(0.3);
-tex.apply_cavity_dirt(0.4);
+# Temp → Final: Add contrast and layers
+enhancer = ImageEnhance.Contrast(tex)
+tex = enhancer.enhance(1.3)  # Contrast boost
+detail_noise = generate_detail_noise(tex.size)
+tex = blend_overlay(tex, detail_noise, alpha=0.2)
+
+# Final → Hero: Add wear
+tex = apply_edge_wear(tex, intensity=0.3)
+tex = apply_cavity_dirt(tex, intensity=0.4)
 ```
 
 #### Audio Enhancement
@@ -155,15 +164,21 @@ tex.apply_cavity_dirt(0.4);
 | → Hero | Add variation, harmonic richness, spatial cues |
 
 **Enhancement code modifications:**
-```rust
-// Temp → Final: Add layers
-audio.add(&body_layer, 0.7);
-audio.add(&transient_layer, 0.5);
-audio.effect(Effect::Compressor { ... });
+```python
+import numpy as np
+from scipy import signal
 
-// Final → Hero: Add variation
-audio.add_pitch_variation(0.02);
-audio.effect(Effect::Saturation { drive: 0.15 });
+# Temp → Final: Add layers
+audio = mix_audio([
+    (audio, 1.0),
+    (body_layer, 0.7),
+    (transient_layer, 0.5)
+])
+audio = apply_compressor(audio, threshold=-20, ratio=4)
+
+# Final → Hero: Add variation
+audio = add_pitch_variation(audio, amount=0.02)
+audio = apply_saturation(audio, drive=0.15)
 ```
 
 ### Step 5: Validation

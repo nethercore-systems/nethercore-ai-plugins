@@ -570,43 +570,50 @@ hybrid = blend_styles("steampunk", "gothic", 0.3)
 
 ## Language Examples
 
-### Rust
-
-```rust
-use proc_gen::sadl::*;
-
-let style = StyleToken::Cyberpunk;
-let modifiers = style.modifiers();
-
-// Apply to generation
-let recipe = GenerationRecipe::new("crate")
-    .with_style(style)
-    .with_material(MaterialId::from_str("metal.chrome"));
-```
-
 ### Python
 
 ```python
+from dataclasses import dataclass
+from enum import Enum
+
+class DetailLevel(Enum):
+    LOW = "low"
+    MEDIUM = "medium"
+    HIGH = "high"
+    EXTREME = "extreme"
+
+@dataclass
+class StyleModifiers:
+    roughness_offset: float
+    saturation_scale: float
+    detail_level: DetailLevel
+    edge_hardness: float
+    noise_octaves_offset: int
+    damage_amount: float
+    color_temperature: float
+    pattern_scale: float
+    emission_tendency: float
+
 STYLE_TOKENS = {
-    "cyberpunk": {
-        "roughness_offset": -0.2,
-        "saturation_scale": 1.4,
-        "detail_level": "high",
-        "edge_hardness": 0.9,
-        "noise_octaves_offset": 0,
-        "damage_amount": 0.2,
-        "color_temperature": -0.3,
-        "pattern_scale": 0.7,
-        "emission_tendency": 0.7,
-    },
+    "cyberpunk": StyleModifiers(
+        roughness_offset=-0.2,
+        saturation_scale=1.4,
+        detail_level=DetailLevel.HIGH,
+        edge_hardness=0.9,
+        noise_octaves_offset=0,
+        damage_amount=0.2,
+        color_temperature=-0.3,
+        pattern_scale=0.7,
+        emission_tendency=0.7,
+    ),
     # ... other styles
 }
 
-def apply_style(base_params, style_name):
+def apply_style(base_params: dict, style_name: str) -> dict:
     style = STYLE_TOKENS[style_name]
     return {
-        "roughness": base_params["roughness"] + style["roughness_offset"],
-        "saturation": base_params["saturation"] * style["saturation_scale"],
+        "roughness": base_params["roughness"] + style.roughness_offset,
+        "saturation": base_params["saturation"] * style.saturation_scale,
         # ... apply other modifiers
     }
 ```

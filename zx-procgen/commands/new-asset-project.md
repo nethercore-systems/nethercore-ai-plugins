@@ -125,58 +125,106 @@ proc-gen = { path = "../../nethercore/tools/proc-gen", features = ["wav-export"]
 glam = "0.27"
 ```
 
-**generator/src/main.rs:**
+**generator/main.py:**
 Create a basic generator that outputs to `../assets/`:
 
-```rust
-use proc_gen::*;
-use std::path::Path;
+```python
+import os
+import numpy as np
+from PIL import Image
+from pyfastnoiselite import FastNoiseLite, NoiseType
+import soundfile as sf
 
-fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let assets_dir = Path::new("assets");
-    std::fs::create_dir_all(assets_dir.join("textures"))?;
-    std::fs::create_dir_all(assets_dir.join("meshes"))?;
-    std::fs::create_dir_all(assets_dir.join("audio"))?;
+def main():
+    assets_dir = "assets"
+    os.makedirs(os.path.join(assets_dir, "textures"), exist_ok=True)
+    os.makedirs(os.path.join(assets_dir, "meshes"), exist_ok=True)
+    os.makedirs(os.path.join(assets_dir, "audio"), exist_ok=True)
 
-    println!("Generating assets...");
+    print("Generating assets...")
 
-    // Generate textures
-    generate_textures(assets_dir)?;
+    # Generate textures
+    generate_textures(assets_dir)
 
-    // Generate meshes (if selected)
-    generate_meshes(assets_dir)?;
+    # Generate meshes (if selected)
+    generate_meshes(assets_dir)
 
-    // Generate sounds (if selected)
-    generate_sounds(assets_dir)?;
+    # Generate sounds (if selected)
+    generate_sounds(assets_dir)
 
-    println!("Assets generated successfully!");
-    Ok(())
-}
+    print("Assets generated successfully!")
 
-fn generate_textures(assets_dir: &Path) -> Result<(), Box<dyn std::error::Error>> {
-    let mut tex = TextureBuffer::new(256, 256);
-    tex.solid(0x8B4513FF);  // Brown base
-    tex.perlin(0.03, 42, 0x00000000, 0x40302010);  // Noise variation
-    tex.write_png(assets_dir.join("textures/example.png"))?;
-    println!("  Generated: textures/example.png");
-    Ok(())
-}
+def generate_textures(assets_dir: str):
+    """Generate example texture with noise variation."""
+    width, height = 256, 256
+    tex = np.zeros((height, width, 4), dtype=np.uint8)
 
-fn generate_meshes(assets_dir: &Path) -> Result<(), Box<dyn std::error::Error>> {
-    let mesh = generate_cube_uv(1.0, 1.0, 1.0);
-    write_obj(&mesh, assets_dir.join("meshes/cube.obj"))?;
-    println!("  Generated: meshes/cube.obj");
-    Ok(())
-}
+    # Brown base color
+    tex[:, :] = [139, 69, 19, 255]  # 0x8B4513FF
 
-fn generate_sounds(assets_dir: &Path) -> Result<(), Box<dyn std::error::Error>> {
-    let synth = Synth::new(22050);
-    let beep = synth.coin();
-    let pcm = to_pcm_i16(&beep);
-    write_wav(&pcm, 22050, assets_dir.join("audio/coin.wav"))?;
-    println!("  Generated: audio/coin.wav");
-    Ok(())
-}
+    # Add Perlin noise variation
+    noise = FastNoiseLite(seed=42)
+    noise.noise_type = NoiseType.NoiseType_Perlin
+    for y in range(height):
+        for x in range(width):
+            n = noise.get_noise_2d(x * 0.03, y * 0.03)
+            variation = int((n + 1.0) * 0.5 * 64)  # 0-64 range
+            tex[y, x, 0] = min(255, tex[y, x, 0] + variation)
+            tex[y, x, 1] = min(255, tex[y, x, 1] + variation // 2)
+            tex[y, x, 2] = min(255, tex[y, x, 2] + variation // 4)
+
+    img = Image.fromarray(tex, 'RGBA')
+    img.save(os.path.join(assets_dir, "textures", "example.png"))
+    print("  Generated: textures/example.png")
+
+def generate_meshes(assets_dir: str):
+    """Generate cube mesh using bpy (requires Blender)."""
+    try:
+        import bpy
+        # Clear scene
+        bpy.ops.object.select_all(action='SELECT')
+        bpy.ops.object.delete()
+
+        # Create cube with UVs
+        bpy.ops.mesh.primitive_cube_add(size=2.0)
+        obj = bpy.context.active_object
+        bpy.ops.object.editmode_toggle()
+        bpy.ops.uv.smart_project()
+        bpy.ops.object.editmode_toggle()
+
+        # Export
+        bpy.ops.export_scene.obj(
+            filepath=os.path.join(assets_dir, "meshes", "cube.obj"),
+            use_selection=True
+        )
+        print("  Generated: meshes/cube.obj")
+    except ImportError:
+        print("  Skipped meshes (requires Blender with bpy)")
+
+def generate_sounds(assets_dir: str):
+    """Generate coin pickup sound."""
+    SAMPLE_RATE = 22050
+
+    # Simple ascending arpeggio for coin sound
+    freqs = [523, 659, 784]  # C5, E5, G5
+    duration = 0.3
+    t = np.linspace(0, duration, int(SAMPLE_RATE * duration))
+    audio = np.zeros_like(t)
+
+    for i, freq in enumerate(freqs):
+        note_start = i * 0.08
+        note_env = np.where(t >= note_start,
+                          np.exp(-(t - note_start) * 20), 0)
+        audio += np.sin(2 * np.pi * freq * t) * note_env * 0.3
+
+    # Normalize
+    audio = audio / np.max(np.abs(audio)) * 0.9
+    sf.write(os.path.join(assets_dir, "audio", "coin.wav"),
+             audio, SAMPLE_RATE, subtype='PCM_16')
+    print("  Generated: audio/coin.wav")
+
+if __name__ == "__main__":
+    main()
 ```
 
 **game/nether.toml (with build.script chaining):**
@@ -189,7 +237,7 @@ version = "0.1.0"
 
 # Build pipeline: generate assets THEN compile WASM
 [build]
-script = "cargo run -p generator --release && cargo build -p game --target wasm32-unknown-unknown --release"
+script = "python generator/main.py && cargo build -p game --target wasm32-unknown-unknown --release"
 wasm = "target/wasm32-unknown-unknown/release/game.wasm"
 
 # Declare generated assets (paths relative to game/ directory)

@@ -4,141 +4,235 @@ Working with mesh UV coordinates for texture generation.
 
 ## UV Bounds
 
-```rust
-use glam::Vec2;
+```python
+import numpy as np
+from dataclasses import dataclass
+from typing import Optional, List
 
-struct UvBounds {
-    min_u: f32, max_u: f32,
-    min_v: f32, max_v: f32,
-}
+@dataclass
+class UvBounds:
+    min_u: float
+    max_u: float
+    min_v: float
+    max_v: float
 
-impl UvBounds {
-    fn width(&self) -> f32 { self.max_u - self.min_u }
-    fn height(&self) -> f32 { self.max_v - self.min_v }
-}
+    @property
+    def width(self) -> float:
+        return self.max_u - self.min_u
 
-fn get_uv_bounds(mesh: &MeshUV) -> UvBounds {
-    let mut bounds = UvBounds {
-        min_u: f32::INFINITY, max_u: f32::NEG_INFINITY,
-        min_v: f32::INFINITY, max_v: f32::NEG_INFINITY,
-    };
+    @property
+    def height(self) -> float:
+        return self.max_v - self.min_v
 
-    for uv in &mesh.uvs {
-        bounds.min_u = bounds.min_u.min(uv[0]);
-        bounds.max_u = bounds.max_u.max(uv[0]);
-        bounds.min_v = bounds.min_v.min(uv[1]);
-        bounds.max_v = bounds.max_v.max(uv[1]);
-    }
+def get_uv_bounds(uvs: np.ndarray) -> UvBounds:
+    """Get UV bounds from mesh UV coordinates.
 
-    bounds
-}
+    Args:
+        uvs: Array of shape (N, 2) containing UV coordinates
+
+    Returns:
+        UvBounds with min/max U and V values
+    """
+    return UvBounds(
+        min_u=float(np.min(uvs[:, 0])),
+        max_u=float(np.max(uvs[:, 0])),
+        min_v=float(np.min(uvs[:, 1])),
+        max_v=float(np.max(uvs[:, 1])),
+    )
 ```
 
 ## Texture Resolution Calculation
 
 Match resolution to mesh detail level:
 
-```rust
-fn calculate_texture_resolution(
-    mesh: &MeshUV,
-    target_texel_density: f32,  // Texels per world unit
-) -> (u32, u32) {
-    // Calculate world-space surface area
-    let mut total_area = 0.0;
-    for tri in mesh.triangles.chunks(3) {
-        total_area += triangle_area(
-            mesh.positions[tri[0] as usize].into(),
-            mesh.positions[tri[1] as usize].into(),
-            mesh.positions[tri[2] as usize].into(),
-        );
-    }
+```python
+import numpy as np
 
-    // Calculate UV-space coverage
-    let bounds = get_uv_bounds(mesh);
-    let uv_coverage = bounds.width() * bounds.height();
+def triangle_area(a: np.ndarray, b: np.ndarray, c: np.ndarray) -> float:
+    """Calculate the area of a triangle given three 3D points."""
+    ab = b - a
+    ac = c - a
+    return float(np.linalg.norm(np.cross(ab, ac)) * 0.5)
 
-    // Desired size based on density
-    let desired_texels = (total_area * target_texel_density.powi(2)).sqrt();
-    let raw_size = (desired_texels / uv_coverage.sqrt()) as u32;
+def next_power_of_two(n: int) -> int:
+    """Return the smallest power of 2 >= n."""
+    return 1 << (n - 1).bit_length() if n > 0 else 1
 
-    // Snap to power of 2, respect ZX limits
-    let size = raw_size.next_power_of_two().clamp(64, 512);
-    (size, size)
-}
+def calculate_texture_resolution(
+    positions: np.ndarray,
+    triangles: np.ndarray,
+    uvs: np.ndarray,
+    target_texel_density: float,  # Texels per world unit
+) -> tuple[int, int]:
+    """Calculate optimal texture resolution based on mesh and target density.
 
-fn triangle_area(a: Vec3, b: Vec3, c: Vec3) -> f32 {
-    let ab = b - a;
-    let ac = c - a;
-    ab.cross(ac).length() * 0.5
-}
+    Args:
+        positions: Array of shape (N, 3) containing vertex positions
+        triangles: Array of shape (M, 3) containing triangle indices
+        uvs: Array of shape (N, 2) containing UV coordinates
+        target_texel_density: Desired texels per world unit
+
+    Returns:
+        Tuple of (width, height) for texture resolution
+    """
+    # Calculate world-space surface area (vectorized)
+    v0 = positions[triangles[:, 0]]
+    v1 = positions[triangles[:, 1]]
+    v2 = positions[triangles[:, 2]]
+    edges1 = v1 - v0
+    edges2 = v2 - v0
+    crosses = np.cross(edges1, edges2)
+    triangle_areas = np.linalg.norm(crosses, axis=1) * 0.5
+    total_area = float(np.sum(triangle_areas))
+
+    # Calculate UV-space coverage
+    bounds = get_uv_bounds(uvs)
+    uv_coverage = bounds.width * bounds.height
+
+    # Desired size based on density
+    desired_texels = np.sqrt(total_area * (target_texel_density ** 2))
+    raw_size = int(desired_texels / np.sqrt(uv_coverage)) if uv_coverage > 0 else 64
+
+    # Snap to power of 2, respect ZX limits
+    size = max(64, min(512, next_power_of_two(raw_size)))
+    return (size, size)
 ```
 
 ## UV Island Detection
 
 Identify connected UV regions:
 
-```rust
-struct UvIsland {
-    triangle_indices: Vec<usize>,
-    min_uv: [f32; 2],
-    max_uv: [f32; 2],
-    name: Option<String>,  // "body", "head", etc.
-}
+```python
+import numpy as np
+from dataclasses import dataclass, field
+from typing import Optional, List
 
-struct UvIslandMapper {
-    islands: Vec<UvIsland>,
-}
+@dataclass
+class UvIsland:
+    triangle_indices: List[int] = field(default_factory=list)
+    min_uv: np.ndarray = field(default_factory=lambda: np.array([0.0, 0.0]))
+    max_uv: np.ndarray = field(default_factory=lambda: np.array([1.0, 1.0]))
+    name: Optional[str] = None  # "body", "head", etc.
 
-impl UvIslandMapper {
-    fn from_mesh(mesh: &MeshUV) -> Self {
-        let mut visited = vec![false; mesh.triangles.len() / 3];
-        let mut islands = Vec::new();
+    def contains_uv(self, u: float, v: float) -> bool:
+        """Check if UV coordinate is within this island's bounds."""
+        return (self.min_uv[0] <= u <= self.max_uv[0] and
+                self.min_uv[1] <= v <= self.max_uv[1])
 
-        for tri_idx in 0..mesh.triangles.len() / 3 {
-            if visited[tri_idx] { continue; }
-            let island = flood_fill_uv_island(mesh, tri_idx, &mut visited);
-            islands.push(island);
-        }
+class UvIslandMapper:
+    def __init__(self, islands: List[UvIsland]):
+        self.islands = islands
 
-        Self { islands }
-    }
+    @classmethod
+    def from_mesh(cls, triangles: np.ndarray, uvs: np.ndarray) -> "UvIslandMapper":
+        """Create UV island mapper from mesh data.
 
-    fn island_at(&self, u: f32, v: f32) -> Option<usize> {
-        for (idx, island) in self.islands.iter().enumerate() {
-            if u >= island.min_uv[0] && u <= island.max_uv[0] &&
-               v >= island.min_uv[1] && v <= island.max_uv[1] {
-                if island.contains_uv(u, v) {
-                    return Some(idx);
-                }
-            }
-        }
-        None
-    }
-}
+        Args:
+            triangles: Array of shape (M, 3) containing triangle vertex indices
+            uvs: Array of shape (N, 2) containing UV coordinates
+        """
+        num_triangles = len(triangles)
+        visited = np.zeros(num_triangles, dtype=bool)
+        islands = []
+
+        for tri_idx in range(num_triangles):
+            if visited[tri_idx]:
+                continue
+            island = flood_fill_uv_island(triangles, uvs, tri_idx, visited)
+            islands.append(island)
+
+        return cls(islands)
+
+    def island_at(self, u: float, v: float) -> Optional[int]:
+        """Find the island index containing the given UV coordinate."""
+        for idx, island in enumerate(self.islands):
+            if (island.min_uv[0] <= u <= island.max_uv[0] and
+                island.min_uv[1] <= v <= island.max_uv[1]):
+                if island.contains_uv(u, v):
+                    return idx
+        return None
+
+def flood_fill_uv_island(
+    triangles: np.ndarray,
+    uvs: np.ndarray,
+    start_idx: int,
+    visited: np.ndarray
+) -> UvIsland:
+    """Flood fill to find connected UV island starting from a triangle."""
+    island_tris = []
+    stack = [start_idx]
+
+    while stack:
+        tri_idx = stack.pop()
+        if visited[tri_idx]:
+            continue
+        visited[tri_idx] = True
+        island_tris.append(tri_idx)
+
+        # Find adjacent triangles (simplified - check for shared vertices)
+        # In practice, use proper adjacency data structure
+        for other_idx in range(len(triangles)):
+            if not visited[other_idx]:
+                if np.any(np.isin(triangles[tri_idx], triangles[other_idx])):
+                    stack.append(other_idx)
+
+    # Calculate bounds
+    island_uvs = uvs[triangles[island_tris].flatten()]
+    min_uv = np.min(island_uvs, axis=0)
+    max_uv = np.max(island_uvs, axis=0)
+
+    return UvIsland(
+        triangle_indices=island_tris,
+        min_uv=min_uv,
+        max_uv=max_uv,
+    )
 ```
 
 ## Per-Island Texture Generation
 
-```rust
-fn generate_island_textured(
-    islands: &UvIslandMapper,
-    width: u32, height: u32,
-    materials: &[MaterialGenerator],
-) -> TextureBuffer {
-    let mut texture = TextureBuffer::new(width, height);
+```python
+import numpy as np
+from PIL import Image
+from typing import List, Callable
 
-    for y in 0..height {
-        for x in 0..width {
-            let u = x as f32 / width as f32;
-            let v = y as f32 / height as f32;
+def generate_island_textured(
+    islands: UvIslandMapper,
+    width: int,
+    height: int,
+    material_samplers: List[Callable[[float, float], np.ndarray]],
+) -> np.ndarray:
+    """Generate texture with different materials per UV island.
 
-            if let Some(island_idx) = islands.island_at(u, v) {
-                let color = materials[island_idx].sample(u, v);
-                texture.set(x, y, color);
-            }
-        }
-    }
+    Args:
+        islands: UvIslandMapper with detected islands
+        width: Texture width in pixels
+        height: Texture height in pixels
+        material_samplers: List of functions that sample color at (u, v)
 
-    texture
-}
+    Returns:
+        RGBA texture array of shape (height, width, 4)
+    """
+    texture = np.zeros((height, width, 4), dtype=np.uint8)
+
+    # Create UV coordinate grids (vectorized)
+    v_coords, u_coords = np.mgrid[0:height, 0:width]
+    u_normalized = u_coords.astype(np.float32) / width
+    v_normalized = v_coords.astype(np.float32) / height
+
+    # Process each pixel
+    for y in range(height):
+        for x in range(width):
+            u = u_normalized[y, x]
+            v = v_normalized[y, x]
+
+            island_idx = islands.island_at(u, v)
+            if island_idx is not None and island_idx < len(material_samplers):
+                color = material_samplers[island_idx](u, v)
+                texture[y, x] = (color * 255).astype(np.uint8)
+
+    return texture
+
+def texture_to_image(texture: np.ndarray) -> Image.Image:
+    """Convert texture array to PIL Image."""
+    return Image.fromarray(texture, mode='RGBA')
 ```

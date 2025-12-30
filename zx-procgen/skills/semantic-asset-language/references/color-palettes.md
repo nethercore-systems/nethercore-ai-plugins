@@ -4,54 +4,56 @@ Complete color palette definitions for style guides. Each palette defines HSL ra
 
 ## Palette Structure
 
-```rust
-pub enum ColorPalette {
-    // Warm palettes
-    WarmEarthy,
-    Autumn,
-    Sunset,
-    Fire,
+```python
+from dataclasses import dataclass
+from enum import Enum
 
-    // Cool palettes
-    CoolMetal,
-    Ocean,
-    Arctic,
-    Night,
+class ColorPalette(Enum):
+    # Warm palettes
+    WARM_EARTHY = "warm_earthy"
+    AUTUMN = "autumn"
+    SUNSET = "sunset"
+    FIRE = "fire"
 
-    // Vibrant palettes
-    Neon,
-    Vibrant,
-    Tropical,
-    Rainbow,
+    # Cool palettes
+    COOL_METAL = "cool_metal"
+    OCEAN = "ocean"
+    ARCTIC = "arctic"
+    NIGHT = "night"
 
-    // Muted palettes
-    Muted,
-    Grayscale,
-    Sepia,
-    Dusty,
+    # Vibrant palettes
+    NEON = "neon"
+    VIBRANT = "vibrant"
+    TROPICAL = "tropical"
+    RAINBOW = "rainbow"
 
-    // Soft palettes
-    Pastel,
-    Cotton,
-    Dawn,
-    Lavender,
+    # Muted palettes
+    MUTED = "muted"
+    GRAYSCALE = "grayscale"
+    SEPIA = "sepia"
+    DUSTY = "dusty"
 
-    // Monochromatic
-    Monochrome,
-    BloodRed,
-    ForestGreen,
-    RoyalBlue,
-}
+    # Soft palettes
+    PASTEL = "pastel"
+    COTTON = "cotton"
+    DAWN = "dawn"
+    LAVENDER = "lavender"
 
-pub struct PaletteSpec {
-    pub name: &'static str,
-    pub hue_ranges: Vec<(f32, f32)>,      // Allowed hue ranges (0-360)
-    pub saturation_range: (f32, f32),     // Min-max saturation (0-1)
-    pub lightness_range: (f32, f32),      // Min-max lightness (0-1)
-    pub accent_hue_offset: f32,           // Offset for accent colors (degrees)
-    pub primary_weight: f32,              // Weight for primary vs accent (0-1)
-    pub contrast_preference: f32,         // 0 = low contrast, 1 = high contrast
-}
+    # Monochromatic
+    MONOCHROME = "monochrome"
+    BLOOD_RED = "blood_red"
+    FOREST_GREEN = "forest_green"
+    ROYAL_BLUE = "royal_blue"
+
+@dataclass
+class PaletteSpec:
+    name: str
+    hue_ranges: list[tuple[float, float]]      # Allowed hue ranges (0-360)
+    saturation_range: tuple[float, float]      # Min-max saturation (0-1)
+    lightness_range: tuple[float, float]       # Min-max lightness (0-1)
+    accent_hue_offset: float                   # Offset for accent colors (degrees)
+    primary_weight: float                      # Weight for primary vs accent (0-1)
+    contrast_preference: float                 # 0 = low contrast, 1 = high contrast
 ```
 
 ---
@@ -62,15 +64,17 @@ pub struct PaletteSpec {
 
 Natural browns, oranges, and tans for organic materials.
 
-```rust
-ColorPalette::WarmEarthy => PaletteSpec {
-    name: "warm_earthy",
-    hue_ranges: vec![(15.0, 45.0)],       // Orange-brown range
-    saturation_range: (0.3, 0.6),
-    lightness_range: (0.2, 0.5),
-    accent_hue_offset: 30.0,              // Yellow accents
-    primary_weight: 0.8,
-    contrast_preference: 0.4,
+```python
+PALETTES = {
+    ColorPalette.WARM_EARTHY: PaletteSpec(
+        name="warm_earthy",
+        hue_ranges=[(15.0, 45.0)],        # Orange-brown range
+        saturation_range=(0.3, 0.6),
+        lightness_range=(0.2, 0.5),
+        accent_hue_offset=30.0,           # Yellow accents
+        primary_weight=0.8,
+        contrast_preference=0.4,
+    ),
 }
 ```
 
@@ -89,15 +93,17 @@ ColorPalette::WarmEarthy => PaletteSpec {
 
 Fall foliage - reds, oranges, yellows, browns.
 
-```rust
-ColorPalette::Autumn => PaletteSpec {
-    name: "autumn",
-    hue_ranges: vec![(0.0, 50.0)],        // Red through yellow
-    saturation_range: (0.5, 0.8),
-    lightness_range: (0.3, 0.55),
-    accent_hue_offset: -20.0,             // Deep red accents
-    primary_weight: 0.6,
-    contrast_preference: 0.5,
+```python
+PALETTES = {
+    ColorPalette.AUTUMN: PaletteSpec(
+        name="autumn",
+        hue_ranges=[(0.0, 50.0)],         # Red through yellow
+        saturation_range=(0.5, 0.8),
+        lightness_range=(0.3, 0.55),
+        accent_hue_offset=-20.0,          # Deep red accents
+        primary_weight=0.6,
+        contrast_preference=0.5,
+    ),
 }
 ```
 
@@ -115,15 +121,17 @@ ColorPalette::Autumn => PaletteSpec {
 
 Warm gradient from yellow through orange to purple.
 
-```rust
-ColorPalette::Sunset => PaletteSpec {
-    name: "sunset",
-    hue_ranges: vec![(0.0, 60.0), (280.0, 320.0)],  // Warm + purple
-    saturation_range: (0.6, 0.9),
-    lightness_range: (0.4, 0.65),
-    accent_hue_offset: 180.0,             // Complementary
-    primary_weight: 0.5,
-    contrast_preference: 0.6,
+```python
+PALETTES = {
+    ColorPalette.SUNSET: PaletteSpec(
+        name="sunset",
+        hue_ranges=[(0.0, 60.0), (280.0, 320.0)],  # Warm + purple
+        saturation_range=(0.6, 0.9),
+        lightness_range=(0.4, 0.65),
+        accent_hue_offset=180.0,          # Complementary
+        primary_weight=0.5,
+        contrast_preference=0.6,
+    ),
 }
 ```
 
@@ -135,15 +143,17 @@ ColorPalette::Sunset => PaletteSpec {
 
 Intense flames - reds, oranges, yellows, whites.
 
-```rust
-ColorPalette::Fire => PaletteSpec {
-    name: "fire",
-    hue_ranges: vec![(0.0, 45.0)],        // Red to yellow
-    saturation_range: (0.8, 1.0),
-    lightness_range: (0.4, 0.7),
-    accent_hue_offset: 0.0,
-    primary_weight: 0.4,                  // Lots of variation
-    contrast_preference: 0.8,
+```python
+PALETTES = {
+    ColorPalette.FIRE: PaletteSpec(
+        name="fire",
+        hue_ranges=[(0.0, 45.0)],         # Red to yellow
+        saturation_range=(0.8, 1.0),
+        lightness_range=(0.4, 0.7),
+        accent_hue_offset=0.0,
+        primary_weight=0.4,               # Lots of variation
+        contrast_preference=0.8,
+    ),
 }
 ```
 
@@ -157,15 +167,17 @@ ColorPalette::Fire => PaletteSpec {
 
 Silvers, blues, and grays for metallic surfaces.
 
-```rust
-ColorPalette::CoolMetal => PaletteSpec {
-    name: "cool_metal",
-    hue_ranges: vec![(200.0, 240.0)],     // Blue-gray range
-    saturation_range: (0.1, 0.3),
-    lightness_range: (0.4, 0.7),
-    accent_hue_offset: 30.0,              // Cyan accents
-    primary_weight: 0.85,
-    contrast_preference: 0.5,
+```python
+PALETTES = {
+    ColorPalette.COOL_METAL: PaletteSpec(
+        name="cool_metal",
+        hue_ranges=[(200.0, 240.0)],      # Blue-gray range
+        saturation_range=(0.1, 0.3),
+        lightness_range=(0.4, 0.7),
+        accent_hue_offset=30.0,           # Cyan accents
+        primary_weight=0.85,
+        contrast_preference=0.5,
+    ),
 }
 ```
 
@@ -184,15 +196,17 @@ ColorPalette::CoolMetal => PaletteSpec {
 
 Deep blues and teals with foam highlights.
 
-```rust
-ColorPalette::Ocean => PaletteSpec {
-    name: "ocean",
-    hue_ranges: vec![(180.0, 220.0)],     // Cyan to blue
-    saturation_range: (0.4, 0.7),
-    lightness_range: (0.25, 0.55),
-    accent_hue_offset: -30.0,             // Green-teal accents
-    primary_weight: 0.7,
-    contrast_preference: 0.6,
+```python
+PALETTES = {
+    ColorPalette.OCEAN: PaletteSpec(
+        name="ocean",
+        hue_ranges=[(180.0, 220.0)],      # Cyan to blue
+        saturation_range=(0.4, 0.7),
+        lightness_range=(0.25, 0.55),
+        accent_hue_offset=-30.0,          # Green-teal accents
+        primary_weight=0.7,
+        contrast_preference=0.6,
+    ),
 }
 ```
 
@@ -204,15 +218,17 @@ ColorPalette::Ocean => PaletteSpec {
 
 Icy blues, whites, and pale cyans.
 
-```rust
-ColorPalette::Arctic => PaletteSpec {
-    name: "arctic",
-    hue_ranges: vec![(190.0, 210.0)],     // Pale cyan-blue
-    saturation_range: (0.15, 0.4),
-    lightness_range: (0.7, 0.95),
-    accent_hue_offset: 20.0,
-    primary_weight: 0.8,
-    contrast_preference: 0.3,             // Low contrast
+```python
+PALETTES = {
+    ColorPalette.ARCTIC: PaletteSpec(
+        name="arctic",
+        hue_ranges=[(190.0, 210.0)],      # Pale cyan-blue
+        saturation_range=(0.15, 0.4),
+        lightness_range=(0.7, 0.95),
+        accent_hue_offset=20.0,
+        primary_weight=0.8,
+        contrast_preference=0.3,          # Low contrast
+    ),
 }
 ```
 
@@ -224,15 +240,17 @@ ColorPalette::Arctic => PaletteSpec {
 
 Deep blues and purples with star-like highlights.
 
-```rust
-ColorPalette::Night => PaletteSpec {
-    name: "night",
-    hue_ranges: vec![(220.0, 280.0)],     // Blue to purple
-    saturation_range: (0.3, 0.6),
-    lightness_range: (0.1, 0.3),
-    accent_hue_offset: 60.0,              // Cyan stars
-    primary_weight: 0.75,
-    contrast_preference: 0.7,
+```python
+PALETTES = {
+    ColorPalette.NIGHT: PaletteSpec(
+        name="night",
+        hue_ranges=[(220.0, 280.0)],      # Blue to purple
+        saturation_range=(0.3, 0.6),
+        lightness_range=(0.1, 0.3),
+        accent_hue_offset=60.0,           # Cyan stars
+        primary_weight=0.75,
+        contrast_preference=0.7,
+    ),
 }
 ```
 
@@ -246,15 +264,17 @@ ColorPalette::Night => PaletteSpec {
 
 High-saturation magentas, cyans, and greens.
 
-```rust
-ColorPalette::Neon => PaletteSpec {
-    name: "neon",
-    hue_ranges: vec![(280.0, 320.0), (160.0, 200.0)],  // Magenta + Cyan
-    saturation_range: (0.8, 1.0),
-    lightness_range: (0.5, 0.7),
-    accent_hue_offset: 120.0,             // Complementary neon
-    primary_weight: 0.5,                  // Equal distribution
-    contrast_preference: 0.9,             // High contrast
+```python
+PALETTES = {
+    ColorPalette.NEON: PaletteSpec(
+        name="neon",
+        hue_ranges=[(280.0, 320.0), (160.0, 200.0)],  # Magenta + Cyan
+        saturation_range=(0.8, 1.0),
+        lightness_range=(0.5, 0.7),
+        accent_hue_offset=120.0,          # Complementary neon
+        primary_weight=0.5,               # Equal distribution
+        contrast_preference=0.9,          # High contrast
+    ),
 }
 ```
 
@@ -272,15 +292,17 @@ ColorPalette::Neon => PaletteSpec {
 
 High-saturation, full spectrum colors.
 
-```rust
-ColorPalette::Vibrant => PaletteSpec {
-    name: "vibrant",
-    hue_ranges: vec![(0.0, 360.0)],       // Full spectrum
-    saturation_range: (0.7, 1.0),
-    lightness_range: (0.4, 0.6),
-    accent_hue_offset: 180.0,             // Complementary
-    primary_weight: 0.5,
-    contrast_preference: 0.7,
+```python
+PALETTES = {
+    ColorPalette.VIBRANT: PaletteSpec(
+        name="vibrant",
+        hue_ranges=[(0.0, 360.0)],        # Full spectrum
+        saturation_range=(0.7, 1.0),
+        lightness_range=(0.4, 0.6),
+        accent_hue_offset=180.0,          # Complementary
+        primary_weight=0.5,
+        contrast_preference=0.7,
+    ),
 }
 ```
 
@@ -292,15 +314,17 @@ ColorPalette::Vibrant => PaletteSpec {
 
 Bright greens, blues, pinks, and yellows.
 
-```rust
-ColorPalette::Tropical => PaletteSpec {
-    name: "tropical",
-    hue_ranges: vec![(80.0, 180.0), (320.0, 360.0)],  // Greens/cyans + pinks
-    saturation_range: (0.6, 0.9),
-    lightness_range: (0.45, 0.65),
-    accent_hue_offset: 40.0,
-    primary_weight: 0.6,
-    contrast_preference: 0.6,
+```python
+PALETTES = {
+    ColorPalette.TROPICAL: PaletteSpec(
+        name="tropical",
+        hue_ranges=[(80.0, 180.0), (320.0, 360.0)],  # Greens/cyans + pinks
+        saturation_range=(0.6, 0.9),
+        lightness_range=(0.45, 0.65),
+        accent_hue_offset=40.0,
+        primary_weight=0.6,
+        contrast_preference=0.6,
+    ),
 }
 ```
 
@@ -312,15 +336,17 @@ ColorPalette::Tropical => PaletteSpec {
 
 Full spectrum with even distribution.
 
-```rust
-ColorPalette::Rainbow => PaletteSpec {
-    name: "rainbow",
-    hue_ranges: vec![(0.0, 360.0)],       // Full spectrum
-    saturation_range: (0.75, 0.95),
-    lightness_range: (0.5, 0.6),
-    accent_hue_offset: 30.0,              // Adjacent colors
-    primary_weight: 0.3,                  // Highly varied
-    contrast_preference: 0.5,
+```python
+PALETTES = {
+    ColorPalette.RAINBOW: PaletteSpec(
+        name="rainbow",
+        hue_ranges=[(0.0, 360.0)],        # Full spectrum
+        saturation_range=(0.75, 0.95),
+        lightness_range=(0.5, 0.6),
+        accent_hue_offset=30.0,           # Adjacent colors
+        primary_weight=0.3,               # Highly varied
+        contrast_preference=0.5,
+    ),
 }
 ```
 
@@ -334,15 +360,17 @@ ColorPalette::Rainbow => PaletteSpec {
 
 Low saturation, any hue - worn, aged look.
 
-```rust
-ColorPalette::Muted => PaletteSpec {
-    name: "muted",
-    hue_ranges: vec![(0.0, 360.0)],       // Any hue
-    saturation_range: (0.1, 0.3),
-    lightness_range: (0.3, 0.6),
-    accent_hue_offset: 180.0,
-    primary_weight: 0.7,
-    contrast_preference: 0.4,
+```python
+PALETTES = {
+    ColorPalette.MUTED: PaletteSpec(
+        name="muted",
+        hue_ranges=[(0.0, 360.0)],        # Any hue
+        saturation_range=(0.1, 0.3),
+        lightness_range=(0.3, 0.6),
+        accent_hue_offset=180.0,
+        primary_weight=0.7,
+        contrast_preference=0.4,
+    ),
 }
 ```
 
@@ -354,15 +382,17 @@ ColorPalette::Muted => PaletteSpec {
 
 Pure black to white, no color.
 
-```rust
-ColorPalette::Grayscale => PaletteSpec {
-    name: "grayscale",
-    hue_ranges: vec![(0.0, 0.0)],         // No hue
-    saturation_range: (0.0, 0.0),
-    lightness_range: (0.0, 1.0),
-    accent_hue_offset: 0.0,
-    primary_weight: 0.5,
-    contrast_preference: 0.6,
+```python
+PALETTES = {
+    ColorPalette.GRAYSCALE: PaletteSpec(
+        name="grayscale",
+        hue_ranges=[(0.0, 0.0)],          # No hue
+        saturation_range=(0.0, 0.0),
+        lightness_range=(0.0, 1.0),
+        accent_hue_offset=0.0,
+        primary_weight=0.5,
+        contrast_preference=0.6,
+    ),
 }
 ```
 
@@ -374,15 +404,17 @@ ColorPalette::Grayscale => PaletteSpec {
 
 Warm brown monochrome, vintage feel.
 
-```rust
-ColorPalette::Sepia => PaletteSpec {
-    name: "sepia",
-    hue_ranges: vec![(30.0, 45.0)],       // Warm brown
-    saturation_range: (0.2, 0.4),
-    lightness_range: (0.2, 0.7),
-    accent_hue_offset: 0.0,
-    primary_weight: 0.9,
-    contrast_preference: 0.5,
+```python
+PALETTES = {
+    ColorPalette.SEPIA: PaletteSpec(
+        name="sepia",
+        hue_ranges=[(30.0, 45.0)],        # Warm brown
+        saturation_range=(0.2, 0.4),
+        lightness_range=(0.2, 0.7),
+        accent_hue_offset=0.0,
+        primary_weight=0.9,
+        contrast_preference=0.5,
+    ),
 }
 ```
 
@@ -394,15 +426,17 @@ ColorPalette::Sepia => PaletteSpec {
 
 Desaturated, slightly warm - desert/dust feel.
 
-```rust
-ColorPalette::Dusty => PaletteSpec {
-    name: "dusty",
-    hue_ranges: vec![(20.0, 60.0)],       // Warm beiges
-    saturation_range: (0.15, 0.35),
-    lightness_range: (0.4, 0.65),
-    accent_hue_offset: 180.0,
-    primary_weight: 0.8,
-    contrast_preference: 0.3,
+```python
+PALETTES = {
+    ColorPalette.DUSTY: PaletteSpec(
+        name="dusty",
+        hue_ranges=[(20.0, 60.0)],        # Warm beiges
+        saturation_range=(0.15, 0.35),
+        lightness_range=(0.4, 0.65),
+        accent_hue_offset=180.0,
+        primary_weight=0.8,
+        contrast_preference=0.3,
+    ),
 }
 ```
 
@@ -416,15 +450,17 @@ ColorPalette::Dusty => PaletteSpec {
 
 Soft, light, low-saturation pastels.
 
-```rust
-ColorPalette::Pastel => PaletteSpec {
-    name: "pastel",
-    hue_ranges: vec![(0.0, 360.0)],       // Any hue
-    saturation_range: (0.3, 0.5),
-    lightness_range: (0.7, 0.85),
-    accent_hue_offset: 30.0,
-    primary_weight: 0.6,
-    contrast_preference: 0.2,             // Low contrast
+```python
+PALETTES = {
+    ColorPalette.PASTEL: PaletteSpec(
+        name="pastel",
+        hue_ranges=[(0.0, 360.0)],        # Any hue
+        saturation_range=(0.3, 0.5),
+        lightness_range=(0.7, 0.85),
+        accent_hue_offset=30.0,
+        primary_weight=0.6,
+        contrast_preference=0.2,          # Low contrast
+    ),
 }
 ```
 
@@ -444,15 +480,17 @@ ColorPalette::Pastel => PaletteSpec {
 
 Soft whites and very pale colors.
 
-```rust
-ColorPalette::Cotton => PaletteSpec {
-    name: "cotton",
-    hue_ranges: vec![(0.0, 360.0)],
-    saturation_range: (0.05, 0.2),
-    lightness_range: (0.85, 0.98),
-    accent_hue_offset: 60.0,
-    primary_weight: 0.9,
-    contrast_preference: 0.1,
+```python
+PALETTES = {
+    ColorPalette.COTTON: PaletteSpec(
+        name="cotton",
+        hue_ranges=[(0.0, 360.0)],
+        saturation_range=(0.05, 0.2),
+        lightness_range=(0.85, 0.98),
+        accent_hue_offset=60.0,
+        primary_weight=0.9,
+        contrast_preference=0.1,
+    ),
 }
 ```
 
@@ -464,15 +502,17 @@ ColorPalette::Cotton => PaletteSpec {
 
 Soft pinks, oranges, and pale blues of sunrise.
 
-```rust
-ColorPalette::Dawn => PaletteSpec {
-    name: "dawn",
-    hue_ranges: vec![(320.0, 60.0), (200.0, 220.0)],  // Pinks/oranges + pale blue
-    saturation_range: (0.25, 0.5),
-    lightness_range: (0.65, 0.85),
-    accent_hue_offset: 180.0,
-    primary_weight: 0.5,
-    contrast_preference: 0.3,
+```python
+PALETTES = {
+    ColorPalette.DAWN: PaletteSpec(
+        name="dawn",
+        hue_ranges=[(320.0, 60.0), (200.0, 220.0)],  # Pinks/oranges + pale blue
+        saturation_range=(0.25, 0.5),
+        lightness_range=(0.65, 0.85),
+        accent_hue_offset=180.0,
+        primary_weight=0.5,
+        contrast_preference=0.3,
+    ),
 }
 ```
 
@@ -484,15 +524,17 @@ ColorPalette::Dawn => PaletteSpec {
 
 Soft purples and pinks.
 
-```rust
-ColorPalette::Lavender => PaletteSpec {
-    name: "lavender",
-    hue_ranges: vec![(260.0, 310.0)],     // Purple-pink range
-    saturation_range: (0.25, 0.45),
-    lightness_range: (0.65, 0.82),
-    accent_hue_offset: 40.0,
-    primary_weight: 0.75,
-    contrast_preference: 0.25,
+```python
+PALETTES = {
+    ColorPalette.LAVENDER: PaletteSpec(
+        name="lavender",
+        hue_ranges=[(260.0, 310.0)],      # Purple-pink range
+        saturation_range=(0.25, 0.45),
+        lightness_range=(0.65, 0.82),
+        accent_hue_offset=40.0,
+        primary_weight=0.75,
+        contrast_preference=0.25,
+    ),
 }
 ```
 
@@ -506,26 +548,31 @@ ColorPalette::Lavender => PaletteSpec {
 
 Single hue with varied saturation and lightness.
 
-```rust
-ColorPalette::Monochrome => PaletteSpec {
-    name: "monochrome",
-    // Hue is set dynamically based on user choice
-    hue_ranges: vec![(0.0, 0.0)],         // Single hue (configurable)
-    saturation_range: (0.2, 0.8),
-    lightness_range: (0.15, 0.85),
-    accent_hue_offset: 0.0,               // Same hue
-    primary_weight: 0.5,
-    contrast_preference: 0.6,
+```python
+PALETTES = {
+    ColorPalette.MONOCHROME: PaletteSpec(
+        name="monochrome",
+        # Hue is set dynamically based on user choice
+        hue_ranges=[(0.0, 0.0)],          # Single hue (configurable)
+        saturation_range=(0.2, 0.8),
+        lightness_range=(0.15, 0.85),
+        accent_hue_offset=0.0,            # Same hue
+        primary_weight=0.5,
+        contrast_preference=0.6,
+    ),
 }
 
-impl Monochrome {
-    pub fn with_hue(hue: f32) -> PaletteSpec {
-        PaletteSpec {
-            hue_ranges: vec![(hue, hue)],
-            ..Monochrome::default()
-        }
-    }
-}
+def monochrome_with_hue(hue: float) -> PaletteSpec:
+    base = PALETTES[ColorPalette.MONOCHROME]
+    return PaletteSpec(
+        name=base.name,
+        hue_ranges=[(hue, hue)],
+        saturation_range=base.saturation_range,
+        lightness_range=base.lightness_range,
+        accent_hue_offset=base.accent_hue_offset,
+        primary_weight=base.primary_weight,
+        contrast_preference=base.contrast_preference,
+    )
 ```
 
 ---
@@ -534,15 +581,17 @@ impl Monochrome {
 
 Deep reds monochrome.
 
-```rust
-ColorPalette::BloodRed => PaletteSpec {
-    name: "blood_red",
-    hue_ranges: vec![(350.0, 10.0)],      // Red
-    saturation_range: (0.5, 0.9),
-    lightness_range: (0.15, 0.5),
-    accent_hue_offset: 0.0,
-    primary_weight: 0.7,
-    contrast_preference: 0.7,
+```python
+PALETTES = {
+    ColorPalette.BLOOD_RED: PaletteSpec(
+        name="blood_red",
+        hue_ranges=[(350.0, 10.0)],       # Red
+        saturation_range=(0.5, 0.9),
+        lightness_range=(0.15, 0.5),
+        accent_hue_offset=0.0,
+        primary_weight=0.7,
+        contrast_preference=0.7,
+    ),
 }
 ```
 
@@ -554,15 +603,17 @@ ColorPalette::BloodRed => PaletteSpec {
 
 Deep greens monochrome.
 
-```rust
-ColorPalette::ForestGreen => PaletteSpec {
-    name: "forest_green",
-    hue_ranges: vec![(100.0, 150.0)],     // Green
-    saturation_range: (0.3, 0.7),
-    lightness_range: (0.15, 0.45),
-    accent_hue_offset: 0.0,
-    primary_weight: 0.7,
-    contrast_preference: 0.5,
+```python
+PALETTES = {
+    ColorPalette.FOREST_GREEN: PaletteSpec(
+        name="forest_green",
+        hue_ranges=[(100.0, 150.0)],      # Green
+        saturation_range=(0.3, 0.7),
+        lightness_range=(0.15, 0.45),
+        accent_hue_offset=0.0,
+        primary_weight=0.7,
+        contrast_preference=0.5,
+    ),
 }
 ```
 
@@ -574,15 +625,17 @@ ColorPalette::ForestGreen => PaletteSpec {
 
 Deep blues monochrome.
 
-```rust
-ColorPalette::RoyalBlue => PaletteSpec {
-    name: "royal_blue",
-    hue_ranges: vec![(220.0, 250.0)],     // Blue
-    saturation_range: (0.5, 0.8),
-    lightness_range: (0.2, 0.5),
-    accent_hue_offset: 0.0,
-    primary_weight: 0.7,
-    contrast_preference: 0.6,
+```python
+PALETTES = {
+    ColorPalette.ROYAL_BLUE: PaletteSpec(
+        name="royal_blue",
+        hue_ranges=[(220.0, 250.0)],      # Blue
+        saturation_range=(0.5, 0.8),
+        lightness_range=(0.2, 0.5),
+        accent_hue_offset=0.0,
+        primary_weight=0.7,
+        contrast_preference=0.6,
+    ),
 }
 ```
 
@@ -594,92 +647,104 @@ ColorPalette::RoyalBlue => PaletteSpec {
 
 ### HSL to RGB Conversion
 
-```rust
-pub fn hsl_to_rgb(h: f32, s: f32, l: f32) -> [f32; 3] {
-    let c = (1.0 - (2.0 * l - 1.0).abs()) * s;
-    let x = c * (1.0 - ((h / 60.0) % 2.0 - 1.0).abs());
-    let m = l - c / 2.0;
+```python
+def hsl_to_rgb(h: float, s: float, l: float) -> tuple[float, float, float]:
+    c = (1.0 - abs(2.0 * l - 1.0)) * s
+    x = c * (1.0 - abs((h / 60.0) % 2.0 - 1.0))
+    m = l - c / 2.0
 
-    let (r, g, b) = match (h as i32) / 60 {
-        0 => (c, x, 0.0),
-        1 => (x, c, 0.0),
-        2 => (0.0, c, x),
-        3 => (0.0, x, c),
-        4 => (x, 0.0, c),
-        _ => (c, 0.0, x),
-    };
+    sector = int(h) // 60
+    rgb_map = {
+        0: (c, x, 0.0),
+        1: (x, c, 0.0),
+        2: (0.0, c, x),
+        3: (0.0, x, c),
+        4: (x, 0.0, c),
+    }
+    r, g, b = rgb_map.get(sector, (c, 0.0, x))
 
-    [r + m, g + m, b + m]
-}
+    return (r + m, g + m, b + m)
 ```
 
 ### Palette Sampling
 
-```rust
-impl ColorPalette {
-    /// Sample a random color from this palette
-    pub fn sample(&self, rng: &mut impl Rng) -> [f32; 3] {
-        let spec = self.spec();
-        let range_idx = rng.gen_range(0..spec.hue_ranges.len());
-        let (h_min, h_max) = spec.hue_ranges[range_idx];
+```python
+import random
+from dataclasses import dataclass
 
-        let h = rng.gen_range(h_min..h_max);
-        let s = rng.gen_range(spec.saturation_range.0..spec.saturation_range.1);
-        let l = rng.gen_range(spec.lightness_range.0..spec.lightness_range.1);
+@dataclass
+class FullPalette:
+    primary: tuple[float, float, float]
+    secondary: tuple[float, float, float]
+    accent: tuple[float, float, float]
+    dark: tuple[float, float, float]
+    light: tuple[float, float, float]
 
-        hsl_to_rgb(h, s, l)
-    }
+def sample_palette(palette: ColorPalette) -> tuple[float, float, float]:
+    """Sample a random color from this palette."""
+    spec = PALETTES[palette]
+    range_idx = random.randint(0, len(spec.hue_ranges) - 1)
+    h_min, h_max = spec.hue_ranges[range_idx]
 
-    /// Sample a contrasting pair (primary + accent)
-    pub fn sample_pair(&self, rng: &mut impl Rng) -> ([f32; 3], [f32; 3]) {
-        let spec = self.spec();
-        let primary = self.sample(rng);
+    h = random.uniform(h_min, h_max)
+    s = random.uniform(spec.saturation_range[0], spec.saturation_range[1])
+    l = random.uniform(spec.lightness_range[0], spec.lightness_range[1])
 
-        // Sample accent with hue offset
-        let (h_min, h_max) = spec.hue_ranges[0];
-        let accent_h = ((h_min + h_max) / 2.0 + spec.accent_hue_offset) % 360.0;
-        let accent_s = rng.gen_range(spec.saturation_range.0..spec.saturation_range.1);
-        let accent_l = rng.gen_range(spec.lightness_range.0..spec.lightness_range.1);
+    return hsl_to_rgb(h, s, l)
 
-        (primary, hsl_to_rgb(accent_h, accent_s, accent_l))
-    }
+def sample_pair(palette: ColorPalette) -> tuple[tuple[float, float, float], tuple[float, float, float]]:
+    """Sample a contrasting pair (primary + accent)."""
+    spec = PALETTES[palette]
+    primary = sample_palette(palette)
 
-    /// Sample a full palette (primary, secondary, accent, dark, light)
-    pub fn sample_full(&self, rng: &mut impl Rng) -> FullPalette {
-        let spec = self.spec();
+    # Sample accent with hue offset
+    h_min, h_max = spec.hue_ranges[0]
+    accent_h = ((h_min + h_max) / 2.0 + spec.accent_hue_offset) % 360.0
+    accent_s = random.uniform(spec.saturation_range[0], spec.saturation_range[1])
+    accent_l = random.uniform(spec.lightness_range[0], spec.lightness_range[1])
 
-        FullPalette {
-            primary: self.sample(rng),
-            secondary: self.sample(rng),
-            accent: self.sample_accent(rng),
-            dark: self.sample_dark(rng),
-            light: self.sample_light(rng),
-        }
-    }
-}
+    return (primary, hsl_to_rgb(accent_h, accent_s, accent_l))
+
+def sample_full(palette: ColorPalette) -> FullPalette:
+    """Sample a full palette (primary, secondary, accent, dark, light)."""
+    return FullPalette(
+        primary=sample_palette(palette),
+        secondary=sample_palette(palette),
+        accent=sample_pair(palette)[1],
+        dark=sample_palette(palette),  # Would use sample_dark in full impl
+        light=sample_palette(palette),  # Would use sample_light in full impl
+    )
 ```
 
 ### Blending Palettes
 
-```rust
-pub fn blend_palettes(a: &PaletteSpec, b: &PaletteSpec, weight: f32) -> PaletteSpec {
-    let w = weight.clamp(0.0, 1.0);
-    let inv = 1.0 - w;
+```python
+def blend_hue_ranges(
+    a: list[tuple[float, float]],
+    b: list[tuple[float, float]],
+    weight: float
+) -> list[tuple[float, float]]:
+    """Blend two lists of hue ranges."""
+    # Implementation depends on desired behavior
+    return a if weight < 0.5 else b
 
-    PaletteSpec {
-        name: "blended",
-        hue_ranges: blend_hue_ranges(&a.hue_ranges, &b.hue_ranges, w),
-        saturation_range: (
-            a.saturation_range.0 * inv + b.saturation_range.0 * w,
-            a.saturation_range.1 * inv + b.saturation_range.1 * w,
+def blend_palettes(a: PaletteSpec, b: PaletteSpec, weight: float) -> PaletteSpec:
+    w = max(0.0, min(1.0, weight))
+    inv = 1.0 - w
+
+    return PaletteSpec(
+        name="blended",
+        hue_ranges=blend_hue_ranges(a.hue_ranges, b.hue_ranges, w),
+        saturation_range=(
+            a.saturation_range[0] * inv + b.saturation_range[0] * w,
+            a.saturation_range[1] * inv + b.saturation_range[1] * w,
         ),
-        lightness_range: (
-            a.lightness_range.0 * inv + b.lightness_range.0 * w,
-            a.lightness_range.1 * inv + b.lightness_range.1 * w,
+        lightness_range=(
+            a.lightness_range[0] * inv + b.lightness_range[0] * w,
+            a.lightness_range[1] * inv + b.lightness_range[1] * w,
         ),
-        accent_hue_offset: a.accent_hue_offset * inv + b.accent_hue_offset * w,
-        primary_weight: a.primary_weight * inv + b.primary_weight * w,
-        contrast_preference: a.contrast_preference * inv + b.contrast_preference * w,
-    }
-}
+        accent_hue_offset=a.accent_hue_offset * inv + b.accent_hue_offset * w,
+        primary_weight=a.primary_weight * inv + b.primary_weight * w,
+        contrast_preference=a.contrast_preference * inv + b.contrast_preference * w,
+    )
 ```

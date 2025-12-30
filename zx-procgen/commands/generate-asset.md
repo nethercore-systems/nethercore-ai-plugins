@@ -51,90 +51,145 @@ Use AskUserQuestion to ask:
 
 ## Step 3: Generate Code
 
-Based on the type and description, generate appropriate Rust code using the proc-gen library.
+Based on the type and description, generate appropriate Python code using numpy, PIL, scipy, and bpy.
 
 ### For Textures
 
-Generate code using `proc_gen::texture::*`:
+Generate code using numpy and PIL:
 
-```rust
-use proc_gen::texture::*;
+```python
+import numpy as np
+from PIL import Image
+from pyfastnoiselite import FastNoiseLite, NoiseType
 
-fn main() {
-    let mut tex = TextureBuffer::new(256, 256);
+def main():
+    # Create texture buffer
+    width, height = 256, 256
+    tex = np.zeros((height, width, 4), dtype=np.uint8)
 
-    // [Generated based on description]
-    // Example for "mossy stone":
-    tex.stone(0x606050FF, 42);
-    tex.perlin(0.1, 123, 0x00000000, 0x2a4a2aFF); // Green moss overlay
+    # [Generated based on description]
+    # Example for "mossy stone":
+    # Stone base with Perlin noise
+    noise = FastNoiseLite(seed=42)
+    noise.noise_type = NoiseType.NoiseType_Perlin
+    for y in range(height):
+        for x in range(width):
+            n = noise.get_noise_2d(x * 0.1, y * 0.1)
+            gray = int((n + 1.0) * 0.5 * 96) + 96  # 96-192 range
+            tex[y, x] = [gray, gray - 16, gray - 16, 255]  # Stone color
 
-    tex.write_png("assets/textures/mossy_stone.png").unwrap();
-    println!("Generated: assets/textures/mossy_stone.png");
-}
+    # Green moss overlay
+    for y in range(height):
+        for x in range(width):
+            n = noise.get_noise_2d(x * 0.05, y * 0.05)
+            if n > 0.3:
+                blend = (n - 0.3) * 0.5
+                tex[y, x] = [
+                    int(tex[y, x, 0] * (1 - blend) + 42 * blend),
+                    int(tex[y, x, 1] * (1 - blend) + 74 * blend),
+                    int(tex[y, x, 2] * (1 - blend) + 42 * blend),
+                    255
+                ]
+
+    img = Image.fromarray(tex, 'RGBA')
+    img.save("assets/textures/mossy_stone.png")
+    print("Generated: assets/textures/mossy_stone.png")
+
+if __name__ == "__main__":
+    main()
 ```
 
 ### For Meshes
 
-Generate code using `proc_gen::mesh::*`:
+Generate code using Blender bpy:
 
-```rust
-use proc_gen::mesh::*;
-use glam::Vec3;
+```python
+import bpy
+import os
 
-fn main() {
-    // [Generated based on description]
-    // Example for "rounded cube":
-    let mut mesh: UnpackedMesh = generate_cube(1.0, 1.0, 1.0);
-    mesh.apply(Subdivide { iterations: 2 });
-    mesh.apply(SmoothNormals);
+def main():
+    # Clear scene
+    bpy.ops.object.select_all(action='SELECT')
+    bpy.ops.object.delete()
 
-    write_obj(&mesh, "assets/meshes/rounded_cube.obj", "rounded_cube").unwrap();
-    println!("Generated: assets/meshes/rounded_cube.obj");
-}
+    # [Generated based on description]
+    # Example for "rounded cube":
+    bpy.ops.mesh.primitive_cube_add(size=2.0)
+    obj = bpy.context.active_object
+
+    # Add subdivision for roundness
+    mod = obj.modifiers.new("Subsurf", type='SUBSURF')
+    mod.levels = 2
+    bpy.ops.object.modifier_apply(modifier=mod.name)
+
+    # Smooth normals
+    bpy.ops.object.shade_smooth()
+
+    # Export as OBJ
+    bpy.ops.export_scene.obj(
+        filepath="assets/meshes/rounded_cube.obj",
+        use_selection=True
+    )
+    print("Generated: assets/meshes/rounded_cube.obj")
+
+if __name__ == "__main__":
+    main()
 ```
 
 ### For Sounds
 
-Generate code using `proc_gen::audio::*`:
+Generate code using numpy and scipy:
 
-```rust
-use proc_gen::audio::*;
+```python
+import numpy as np
+import soundfile as sf
+from scipy import signal
 
-fn main() {
-    let synth = Synth::new(SAMPLE_RATE);
+SAMPLE_RATE = 22050
 
-    // [Generated based on description]
-    // Example for "laser shot":
-    let samples = synth.sweep(
-        Waveform::Saw,
-        2000.0,  // Start high
-        200.0,   // End low
-        0.15,    // Quick
-        Envelope::zap(),
-    );
+def main():
+    # [Generated based on description]
+    # Example for "laser shot":
+    duration = 0.15
+    t = np.linspace(0, duration, int(SAMPLE_RATE * duration))
 
-    let pcm = to_pcm_i16(&samples);
-    write_wav(&pcm, SAMPLE_RATE, "assets/audio/laser.wav").unwrap();
-    println!("Generated: assets/audio/laser.wav");
-}
+    # Descending saw wave sweep
+    start_freq = 2000.0
+    end_freq = 200.0
+    freq_sweep = np.linspace(start_freq, end_freq, len(t))
+    phase = np.cumsum(2 * np.pi * freq_sweep / SAMPLE_RATE)
+    samples = signal.sawtooth(phase)
+
+    # Zap envelope (quick decay)
+    envelope = np.exp(-t * 15)
+    samples = samples * envelope
+
+    # Normalize and export
+    samples = samples / np.max(np.abs(samples)) * 0.9
+    sf.write("assets/audio/laser.wav", samples, SAMPLE_RATE, subtype='PCM_16')
+    print("Generated: assets/audio/laser.wav")
+
+if __name__ == "__main__":
+    main()
 ```
 
 ## Step 4: Provide the Code
 
 Output the generated code with:
 
-1. The complete Rust code block
-2. Required Cargo.toml dependencies:
-```toml
-[dependencies]
-proc-gen = { path = "../nethercore/tools/proc-gen", features = ["wav-export"] }
-glam = "0.27"  # if mesh
+1. The complete Python code block
+2. Required pip dependencies:
+```bash
+pip install numpy pillow pyfastnoiselite scipy soundfile
+# For mesh generation, requires Blender with Python API (bpy)
 ```
 
 3. How to run it:
 ```bash
-# Save the code as gen_asset.rs, then:
-cargo run
+# Save the code as gen_asset.py, then:
+python gen_asset.py
+# Or for mesh generation with Blender:
+blender --background --python gen_asset.py
 ```
 
 4. How to use in a game:
