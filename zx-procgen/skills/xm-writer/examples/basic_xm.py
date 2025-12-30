@@ -31,7 +31,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent / "scripts"))
 
 from xm_writer import (
     XmModule, XmPattern, XmNote, XmInstrument,
-    write_xm, validate_xm
+    write_xm, validate_xm, calculate_pitch_correction, ZX_SAMPLE_RATE
 )
 
 
@@ -39,8 +39,14 @@ from xm_writer import (
 # Simple Sample Generators
 # ============================================================================
 
-def generate_kick_sample(sample_rate: int = 22050) -> bytes:
-    """Generate a simple kick drum sample (sine sweep)."""
+import struct
+
+def generate_kick_sample(sample_rate: int = ZX_SAMPLE_RATE) -> bytes:
+    """
+    Generate a simple kick drum sample (sine sweep).
+
+    Returns 16-bit signed little-endian PCM data.
+    """
     duration = int(sample_rate * 0.15)  # 150ms
     samples = []
 
@@ -51,13 +57,18 @@ def generate_kick_sample(sample_rate: int = 22050) -> bytes:
         # Exponential decay
         amp = math.exp(-t * 15)
         value = math.sin(2 * math.pi * freq * t) * amp
-        samples.append(int(value * 127) & 0xFF)
+        samples.append(int(value * 32767))
 
-    return bytes(samples)
+    # Convert to 16-bit little-endian bytes
+    return struct.pack(f"<{len(samples)}h", *samples)
 
 
-def generate_snare_sample(sample_rate: int = 22050) -> bytes:
-    """Generate a simple snare drum sample (noise + tone)."""
+def generate_snare_sample(sample_rate: int = ZX_SAMPLE_RATE) -> bytes:
+    """
+    Generate a simple snare drum sample (noise + tone).
+
+    Returns 16-bit signed little-endian PCM data.
+    """
     import random
     duration = int(sample_rate * 0.1)  # 100ms
     samples = []
@@ -71,13 +82,17 @@ def generate_snare_sample(sample_rate: int = 22050) -> bytes:
         # Exponential decay
         amp = math.exp(-t * 25)
         value = (noise * 0.7 + tone * 0.3) * amp
-        samples.append(int(value * 127) & 0xFF)
+        samples.append(int(value * 32767))
 
-    return bytes(samples)
+    return struct.pack(f"<{len(samples)}h", *samples)
 
 
-def generate_hihat_sample(sample_rate: int = 22050) -> bytes:
-    """Generate a simple hi-hat sample (filtered noise)."""
+def generate_hihat_sample(sample_rate: int = ZX_SAMPLE_RATE) -> bytes:
+    """
+    Generate a simple hi-hat sample (filtered noise).
+
+    Returns 16-bit signed little-endian PCM data.
+    """
     import random
     duration = int(sample_rate * 0.05)  # 50ms
     samples = []
@@ -89,9 +104,9 @@ def generate_hihat_sample(sample_rate: int = 22050) -> bytes:
         # Sharp decay
         amp = math.exp(-t * 50)
         value = noise * amp
-        samples.append(int(value * 127) & 0xFF)
+        samples.append(int(value * 32767))
 
-    return bytes(samples)
+    return struct.pack(f"<{len(samples)}h", *samples)
 
 
 # ============================================================================
@@ -140,26 +155,35 @@ def main():
     print(f"  Hi-hat: {len(hihat_sample)} bytes")
 
     # Define instruments WITH embedded samples
+    # Using sample_rate=ZX_SAMPLE_RATE auto-calculates finetune and relative_note
+    # so samples play at the correct pitch (essential for ZX 22050 Hz samples!)
     instruments = [
-        XmInstrument(
+        XmInstrument.for_zx(  # Convenience constructor for ZX samples
             name="kick",
             sample_data=kick_sample,
-            sample_bits=8,
             sample_loop_type=0  # One-shot
         ),
-        XmInstrument(
+        XmInstrument(  # Explicit sample_rate approach
             name="snare",
             sample_data=snare_sample,
-            sample_bits=8,
+            sample_rate=ZX_SAMPLE_RATE,  # Auto-calculates pitch correction
+            sample_bits=16,
             sample_loop_type=0  # One-shot
         ),
         XmInstrument(
             name="hihat",
             sample_data=hihat_sample,
-            sample_bits=8,
+            sample_rate=ZX_SAMPLE_RATE,
+            sample_bits=16,
             sample_loop_type=0  # One-shot
         ),
     ]
+
+    # Show pitch correction info
+    finetune, relative_note = calculate_pitch_correction(ZX_SAMPLE_RATE)
+    print(f"\nPitch correction for {ZX_SAMPLE_RATE} Hz samples:")
+    print(f"  finetune={finetune}, relative_note={relative_note}")
+    print(f"  (auto-calculated when sample_rate is set)")
 
     # Create patterns
     patterns = [
