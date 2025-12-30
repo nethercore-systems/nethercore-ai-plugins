@@ -51,18 +51,25 @@ Bridge procedural mesh and texture generation with UV-aware workflows.
 
 ## Basic UV Bounds Reading
 
-```rust
-struct UvBounds { min_u: f32, max_u: f32, min_v: f32, max_v: f32 }
+```python
+from dataclasses import dataclass
+import numpy as np
 
-fn get_uv_bounds(mesh: &MeshUV) -> UvBounds {
-    let mut bounds = UvBounds { /* infinity defaults */ };
-    for uv in &mesh.uvs {
-        bounds.min_u = bounds.min_u.min(uv[0]);
-        bounds.max_u = bounds.max_u.max(uv[0]);
-        // ... etc
-    }
-    bounds
-}
+@dataclass
+class UvBounds:
+    min_u: float
+    max_u: float
+    min_v: float
+    max_v: float
+
+def get_uv_bounds(uvs: np.ndarray) -> UvBounds:
+    """Calculate UV bounds from mesh UV coordinates."""
+    return UvBounds(
+        min_u=float(np.min(uvs[:, 0])),
+        max_u=float(np.max(uvs[:, 0])),
+        min_v=float(np.min(uvs[:, 1])),
+        max_v=float(np.max(uvs[:, 1]))
+    )
 ```
 
 For detailed implementation, see `references/uv-mapping.md`.
@@ -71,14 +78,24 @@ For detailed implementation, see `references/uv-mapping.md`.
 
 Match texture resolution to mesh detail:
 
-```rust
-fn calculate_texture_resolution(mesh: &MeshUV, target_density: f32) -> (u32, u32) {
-    let total_area = calculate_surface_area(mesh);
-    let uv_coverage = get_uv_bounds(mesh);
-    let desired_texels = (total_area * target_density.powi(2)).sqrt();
-    let size = (desired_texels / uv_coverage.sqrt()).next_power_of_two().clamp(64, 512);
-    (size, size)
-}
+```python
+import math
+
+def calculate_texture_resolution(
+    mesh_area: float,
+    uv_bounds: UvBounds,
+    target_density: float
+) -> tuple[int, int]:
+    """Calculate optimal texture resolution for mesh."""
+    desired_texels = math.sqrt(mesh_area * target_density**2)
+    uv_coverage = (uv_bounds.max_u - uv_bounds.min_u) * (uv_bounds.max_v - uv_bounds.min_v)
+    size = desired_texels / math.sqrt(uv_coverage)
+
+    # Round to next power of 2, clamp to 64-512
+    size = 2 ** math.ceil(math.log2(size))
+    size = max(64, min(512, size))
+
+    return (size, size)
 ```
 
 ## Character Workflow Summary

@@ -102,16 +102,16 @@ draw_sprite_region(sprites, x, y, state * width, 0, width, height);
 Sprite generation code bloats quickly. Use modular structure:
 
 ```
-generator/src/sprites/
-├── mod.rs           # Re-exports
-├── ui.rs            # Buttons, panels (~150 lines)
-├── tiles.rs         # Basic tiles (~100 lines)
-├── autotile.rs      # Autotile logic (~150 lines)
-└── characters.rs    # Sprite sheets (~150 lines)
+generator/sprites/
+├── __init__.py      # Re-exports
+├── ui.py            # Buttons, panels (~150 lines)
+├── tiles.py         # Basic tiles (~100 lines)
+├── autotile.py      # Autotile logic (~150 lines)
+└── characters.py    # Sprite sheets (~150 lines)
 
-generator/src/data/
-├── autotile_47.rs   # Neighbor map (DATA ONLY)
-├── palettes.rs      # NES, PICO-8, etc.
+generator/data/
+├── autotile_47.py   # Neighbor map (DATA ONLY)
+├── palettes.py      # NES, PICO-8, etc.
 ```
 
 **Critical:** Keep data tables (autotile maps, palettes) in separate `data/` modules.

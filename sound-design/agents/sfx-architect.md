@@ -96,61 +96,94 @@ Optional Layer 4: SWEETENER
 For each layer, provide synthesis parameters:
 
 **Synthesis specification format:**
-```rust
-// Layer: [Name]
-// Purpose: [What this provides]
+```python
+# Layer: [Name]
+# Purpose: [What this provides]
 
-Waveform: [Sine/Square/Saw/Triangle/Noise]
-Frequency: [Hz or sweep range]
-Envelope:
-  Attack:  [ms]
-  Decay:   [ms]
-  Sustain: [0.0-1.0]
-  Release: [ms]
-Filter:
-  Type: [LowPass/HighPass/BandPass]
-  Cutoff: [Hz]
-  Resonance: [Q value]
-  Envelope: [Amount in Hz]
-Effects:
-  - [Effect 1]: [Parameters]
-  - [Effect 2]: [Parameters]
+# Waveform: [Sine/Square/Saw/Triangle/Noise]
+# Frequency: [Hz or sweep range]
+# Envelope:
+#   Attack:  [ms]
+#   Decay:   [ms]
+#   Sustain: [0.0-1.0]
+#   Release: [ms]
+# Filter:
+#   Type: [LowPass/HighPass/BandPass]
+#   Cutoff: [Hz]
+#   Resonance: [Q value]
+#   Envelope: [Amount in Hz]
+# Effects:
+#   - [Effect 1]: [Parameters]
+#   - [Effect 2]: [Parameters]
 ```
 
 ### Step 4: Provide Implementation
 
 Provide actual code when appropriate:
 
-```rust
-fn synthesize_coin_pickup() -> Vec<f32> {
-    let sample_rate = 22050;
-    let synth = Synth::new(sample_rate);
+```python
+import numpy as np
+from scipy import signal
+import soundfile as sf
 
-    // Layer 1: First ping (high)
-    let ping1 = synth.tone(
-        Waveform::Square,
-        987.77,  // B5
-        0.08,
-        Envelope::pluck(),
-    );
+def synthesize_coin_pickup(sample_rate: int = 22050) -> np.ndarray:
+    """Synthesize a coin pickup sound with two ascending pings."""
 
-    // Layer 2: Second ping (higher)
-    let ping2 = synth.tone(
-        Waveform::Square,
-        1318.5,  // E6
-        0.12,
-        Envelope::pluck(),
-    );
+    # Layer 1: First ping (high) - B5
+    ping1 = synthesize_tone(
+        frequency=987.77,  # B5
+        duration=0.08,
+        waveform='square',
+        envelope='pluck',
+        sample_rate=sample_rate
+    )
 
-    // Combine with timing
-    let mut result = ping1.clone();
-    result.extend(ping2);
+    # Layer 2: Second ping (higher) - E6
+    ping2 = synthesize_tone(
+        frequency=1318.5,  # E6
+        duration=0.12,
+        waveform='square',
+        envelope='pluck',
+        sample_rate=sample_rate
+    )
 
-    // Apply gentle high-pass to remove mud
-    high_pass(&mut result, 400.0, sample_rate);
+    # Combine with timing
+    result = np.concatenate([ping1, ping2])
 
-    result
-}
+    # Apply gentle high-pass filter to remove mud
+    result = apply_highpass(result, cutoff=400.0, sample_rate=sample_rate)
+
+    return result
+
+def synthesize_tone(frequency: float, duration: float, waveform: str,
+                    envelope: str, sample_rate: int) -> np.ndarray:
+    """Generate a tone with specified waveform and envelope."""
+    t = np.arange(int(duration * sample_rate)) / sample_rate
+
+    # Generate waveform
+    if waveform == 'square':
+        audio = signal.square(2.0 * np.pi * frequency * t)
+    elif waveform == 'sine':
+        audio = np.sin(2.0 * np.pi * frequency * t)
+    elif waveform == 'saw':
+        audio = signal.sawtooth(2.0 * np.pi * frequency * t)
+    else:
+        audio = np.sin(2.0 * np.pi * frequency * t)
+
+    # Apply envelope
+    if envelope == 'pluck':
+        env = np.exp(-5.0 * t / duration)
+        audio *= env
+
+    return audio.astype(np.float32)
+
+def apply_highpass(audio: np.ndarray, cutoff: float,
+                   sample_rate: int) -> np.ndarray:
+    """Apply high-pass filter."""
+    nyquist = sample_rate / 2
+    normalized_cutoff = cutoff / nyquist
+    b, a = signal.butter(4, normalized_cutoff, btype='high')
+    return signal.filtfilt(b, a, audio).astype(np.float32)
 ```
 
 ## Sound Design Templates
@@ -276,20 +309,58 @@ Layers:
 
 For repeated sounds, provide variation strategy:
 
-```rust
-struct SoundVariation {
-    // Pre-made variations
-    variations: Vec<Sound>,
+```python
+from dataclasses import dataclass
+from typing import List
+import numpy as np
 
-    // Runtime randomization
-    pitch_range: (f32, f32),      // semitones: (-2.0, 2.0)
-    volume_range: (f32, f32),     // dB: (-2.0, 2.0)
-    filter_range: (f32, f32),     // Hz offset
+@dataclass
+class SoundVariation:
+    """Configuration for runtime sound variation."""
 
-    // Selection
-    round_robin: bool,            // vs random
-    no_repeat: bool,              // don't play same twice
-}
+    # Pre-made variations
+    variations: List[np.ndarray]
+
+    # Runtime randomization ranges
+    pitch_range: tuple[float, float] = (-2.0, 2.0)  # semitones
+    volume_range: tuple[float, float] = (-2.0, 2.0)  # dB
+    filter_range: tuple[float, float] = (-100.0, 100.0)  # Hz offset
+
+    # Selection strategy
+    round_robin: bool = False  # vs random
+    no_repeat: bool = True  # don't play same twice in a row
+
+    # Internal state
+    _last_index: int = -1
+    _current_index: int = 0
+
+def apply_variation(audio: np.ndarray, variation: SoundVariation,
+                   sample_rate: int) -> np.ndarray:
+    """Apply random variation to audio sample."""
+    import random
+
+    # Select variation
+    if variation.round_robin:
+        idx = variation._current_index % len(variation.variations)
+        variation._current_index += 1
+    else:
+        idx = random.randint(0, len(variation.variations) - 1)
+        if variation.no_repeat:
+            while idx == variation._last_index and len(variation.variations) > 1:
+                idx = random.randint(0, len(variation.variations) - 1)
+
+    variation._last_index = idx
+    result = variation.variations[idx].copy()
+
+    # Apply pitch shift
+    pitch_shift = random.uniform(*variation.pitch_range)
+    result = shift_pitch(result, pitch_shift, sample_rate)
+
+    # Apply volume change
+    volume_db = random.uniform(*variation.volume_range)
+    result *= 10 ** (volume_db / 20.0)
+
+    return result
 ```
 
 ## Output Format
@@ -320,7 +391,7 @@ For each sound design, provide:
 
 ### Synthesis Code
 
-```rust
+```python
 [Implementation code]
 ```
 

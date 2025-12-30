@@ -10,15 +10,16 @@ Autotiles automatically select the correct tile graphic based on neighboring til
 
 Standard bit encoding for neighbor presence:
 
-```rust
-const N:  u8 = 0b00000001;  // North
-const S:  u8 = 0b00000010;  // South
-const E:  u8 = 0b00000100;  // East
-const W:  u8 = 0b00001000;  // West
-const NE: u8 = 0b00010000;  // North-East
-const NW: u8 = 0b00100000;  // North-West
-const SE: u8 = 0b01000000;  // South-East
-const SW: u8 = 0b10000000;  // South-West
+```python
+# Neighbor bit flags
+N  = 0b00000001  # North
+S  = 0b00000010  # South
+E  = 0b00000100  # East
+W  = 0b00001000  # West
+NE = 0b00010000  # North-East
+NW = 0b00100000  # North-West
+SE = 0b01000000  # South-East
+SW = 0b10000000  # South-West
 ```
 
 ---
@@ -29,16 +30,16 @@ Simplest autotile system. Only considers cardinal directions (N, S, E, W). Corne
 
 ### Tile Index Calculation
 
-```rust
-fn get_tile_index_16(neighbors: u8) -> usize {
-    let n = (neighbors & N) != 0;
-    let s = (neighbors & S) != 0;
-    let e = (neighbors & E) != 0;
-    let w = (neighbors & W) != 0;
+```python
+def get_tile_index_16(neighbors: int) -> int:
+    """Calculate 16-tile index from neighbor flags (cardinal directions only)."""
+    n = bool(neighbors & N)
+    s = bool(neighbors & S)
+    e = bool(neighbors & E)
+    w = bool(neighbors & W)
 
-    // 4-bit index: NSEW
-    ((n as usize) << 3) | ((s as usize) << 2) | ((e as usize) << 1) | (w as usize)
-}
+    # 4-bit index: NSEW
+    return (int(n) << 3) | (int(s) << 2) | (int(e) << 1) | int(w)
 ```
 
 ### 16-Tile Layout
@@ -92,11 +93,13 @@ A diagonal neighbor (NE, NW, SE, SW) only affects the tile if BOTH adjacent card
 
 The 47-tile system maps 256 possible neighbor combinations to 47 unique tiles:
 
-```rust
-/// Maps 8-bit neighbor flags to 47-tile index
-const AUTOTILE_47_MAP: [u8; 256] = [
-    // Generated from blob rules - each index is the 8-bit neighbor flag
-    // Value is the tile index (0-46)
+```python
+import numpy as np
+
+# Maps 8-bit neighbor flags to 47-tile index
+# Generated from blob rules - each index is the 8-bit neighbor flag
+# Value is the tile index (0-46)
+AUTOTILE_47_MAP = np.array([
      0,  1,  2,  3,  1,  1,  3,  3,  4,  5,  6,  7,  5,  5,  7,  7,
      8,  9, 10, 11,  9,  9, 11, 11, 12, 13, 14, 15, 13, 13, 15, 15,
      4,  5,  6,  7,  5,  5,  7,  7,  4,  5,  6,  7,  5,  5,  7,  7,
@@ -113,11 +116,11 @@ const AUTOTILE_47_MAP: [u8; 256] = [
     40, 41, 42, 43, 41, 41, 43, 43, 44, 45, 46, 46, 45, 45, 46, 46,
     36, 37, 38, 39, 37, 37, 39, 39, 36, 37, 38, 39, 37, 37, 39, 39,
     44, 45, 46, 46, 45, 45, 46, 46, 44, 45, 46, 46, 45, 45, 46, 46,
-];
+], dtype=np.uint8)
 
-fn get_tile_index_47(neighbors: u8) -> usize {
-    AUTOTILE_47_MAP[neighbors as usize] as usize
-}
+def get_tile_index_47(neighbors: int) -> int:
+    """Get 47-tile index from 8-bit neighbor flags."""
+    return int(AUTOTILE_47_MAP[neighbors])
 ```
 
 ### 47-Tile Descriptions
@@ -202,22 +205,22 @@ Complete 8-neighbor system with all 256 unique combinations. Maximum visual qual
 
 Direct use of 8-bit neighbor flags as index:
 
-```rust
-fn get_tile_index_256(neighbors: u8) -> usize {
-    neighbors as usize
-}
+```python
+def get_tile_index_256(neighbors: int) -> int:
+    """Get 256-tile index (direct use of 8-bit neighbor flags)."""
+    return neighbors
 ```
 
 ### Atlas Layout (16x16)
 
 Tiles arranged by index (0-255) in row-major order:
 
-```rust
-fn atlas_position_256(index: usize, tile_size: u32) -> (u32, u32) {
-    let col = (index % 16) as u32;
-    let row = (index / 16) as u32;
-    (col * tile_size, row * tile_size)
-}
+```python
+def atlas_position_256(index: int, tile_size: int) -> tuple[int, int]:
+    """Calculate atlas position for 256-tile system."""
+    col = index % 16
+    row = index // 16
+    return (col * tile_size, row * tile_size)
 ```
 
 ---
@@ -226,60 +229,80 @@ fn atlas_position_256(index: usize, tile_size: u32) -> (u32, u32) {
 
 ### 47-Tile Generator
 
-```rust
-fn generate_autotile_47(
-    tile_size: u32,
-    fill_color: u32,
-    edge_color: u32,
-    corner_radius: u32,
-) -> TextureBuffer {
-    let mut atlas = TextureBuffer::new(tile_size * 8, tile_size * 6);
+```python
+import numpy as np
+from PIL import Image
+from enum import Enum
 
-    for tile_idx in 0..47 {
-        let tile = generate_tile_for_index(tile_idx, tile_size, fill_color, edge_color, corner_radius);
-        let col = tile_idx % 8;
-        let row = tile_idx / 8;
-        atlas.blit(&tile, (col * tile_size as usize) as u32, (row * tile_size as usize) as u32);
-    }
+class Edge(Enum):
+    NORTH = "north"
+    SOUTH = "south"
+    EAST = "east"
+    WEST = "west"
 
-    atlas
-}
+class Corner(Enum):
+    NW = "nw"
+    NE = "ne"
+    SW = "sw"
+    SE = "se"
 
-fn generate_tile_for_index(
-    idx: usize,
-    size: u32,
-    fill: u32,
-    edge: u32,
-    radius: u32,
-) -> TextureBuffer {
-    let mut tile = TextureBuffer::new(size, size);
+def generate_autotile_47(
+    tile_size: int,
+    fill_color: int,
+    edge_color: int,
+    corner_radius: int
+) -> Image.Image:
+    """Generate complete 47-tile autotile atlas."""
+    atlas = np.zeros((tile_size * 6, tile_size * 8, 4), dtype=np.uint8)
 
-    // Decode which edges/corners this tile needs
-    let (has_n, has_s, has_e, has_w, has_ne, has_nw, has_se, has_sw) = decode_tile_47(idx);
+    for tile_idx in range(47):
+        tile = generate_tile_for_index(tile_idx, tile_size, fill_color, edge_color, corner_radius)
+        col = tile_idx % 8
+        row = tile_idx // 8
+        y, x = row * tile_size, col * tile_size
+        atlas[y:y + tile_size, x:x + tile_size] = tile
 
-    // Fill base
-    tile.solid(fill);
+    return Image.fromarray(atlas)
 
-    // Draw edges where no neighbor
-    if !has_n { draw_edge(&mut tile, Edge::North, edge, radius); }
-    if !has_s { draw_edge(&mut tile, Edge::South, edge, radius); }
-    if !has_e { draw_edge(&mut tile, Edge::East, edge, radius); }
-    if !has_w { draw_edge(&mut tile, Edge::West, edge, radius); }
+def generate_tile_for_index(
+    idx: int,
+    size: int,
+    fill: int,
+    edge: int,
+    radius: int
+) -> np.ndarray:
+    """Generate a single autotile based on its index."""
+    # Convert colors to RGBA
+    def to_rgba(c: int) -> tuple:
+        return ((c >> 24) & 0xFF, (c >> 16) & 0xFF, (c >> 8) & 0xFF, c & 0xFF)
 
-    // Draw outer corners (where both adjacent edges exist)
-    if !has_n && !has_w { draw_outer_corner(&mut tile, Corner::NW, edge, radius); }
-    if !has_n && !has_e { draw_outer_corner(&mut tile, Corner::NE, edge, radius); }
-    if !has_s && !has_w { draw_outer_corner(&mut tile, Corner::SW, edge, radius); }
-    if !has_s && !has_e { draw_outer_corner(&mut tile, Corner::SE, edge, radius); }
+    fill_rgba = to_rgba(fill)
+    edge_rgba = to_rgba(edge)
 
-    // Draw inner corners (where diagonal missing but cardinals present)
-    if has_n && has_w && !has_nw { draw_inner_corner(&mut tile, Corner::NW, edge, radius); }
-    if has_n && has_e && !has_ne { draw_inner_corner(&mut tile, Corner::NE, edge, radius); }
-    if has_s && has_w && !has_sw { draw_inner_corner(&mut tile, Corner::SW, edge, radius); }
-    if has_s && has_e && !has_se { draw_inner_corner(&mut tile, Corner::SE, edge, radius); }
+    tile = np.full((size, size, 4), fill_rgba, dtype=np.uint8)
 
-    tile
-}
+    # Decode which edges/corners this tile needs
+    has_n, has_s, has_e, has_w, has_ne, has_nw, has_se, has_sw = decode_tile_47(idx)
+
+    # Draw edges where no neighbor
+    if not has_n: draw_edge(tile, Edge.NORTH, edge_rgba, radius)
+    if not has_s: draw_edge(tile, Edge.SOUTH, edge_rgba, radius)
+    if not has_e: draw_edge(tile, Edge.EAST, edge_rgba, radius)
+    if not has_w: draw_edge(tile, Edge.WEST, edge_rgba, radius)
+
+    # Draw outer corners (where both adjacent edges exist)
+    if not has_n and not has_w: draw_outer_corner(tile, Corner.NW, edge_rgba, radius)
+    if not has_n and not has_e: draw_outer_corner(tile, Corner.NE, edge_rgba, radius)
+    if not has_s and not has_w: draw_outer_corner(tile, Corner.SW, edge_rgba, radius)
+    if not has_s and not has_e: draw_outer_corner(tile, Corner.SE, edge_rgba, radius)
+
+    # Draw inner corners (where diagonal missing but cardinals present)
+    if has_n and has_w and not has_nw: draw_inner_corner(tile, Corner.NW, edge_rgba, radius)
+    if has_n and has_e and not has_ne: draw_inner_corner(tile, Corner.NE, edge_rgba, radius)
+    if has_s and has_w and not has_sw: draw_inner_corner(tile, Corner.SW, edge_rgba, radius)
+    if has_s and has_e and not has_se: draw_inner_corner(tile, Corner.SE, edge_rgba, radius)
+
+    return tile
 ```
 
 ---
@@ -288,57 +311,69 @@ fn generate_tile_for_index(
 
 ### Calculating Neighbors at Runtime
 
-```rust
-fn get_neighbor_flags(map: &Tilemap, x: i32, y: i32, tile_type: u8) -> u8 {
-    let mut flags = 0u8;
+```python
+import numpy as np
+from enum import Enum
+from typing import Optional
 
-    let same = |dx: i32, dy: i32| -> bool {
-        map.get(x + dx, y + dy).map_or(false, |t| t == tile_type)
-    };
+class AutotileSystem(Enum):
+    TILE16 = "tile16"
+    TILE47 = "tile47"
+    TILE256 = "tile256"
 
-    if same(0, -1) { flags |= N; }
-    if same(0, 1)  { flags |= S; }
-    if same(1, 0)  { flags |= E; }
-    if same(-1, 0) { flags |= W; }
-    if same(1, -1) { flags |= NE; }
-    if same(-1, -1) { flags |= NW; }
-    if same(1, 1)  { flags |= SE; }
-    if same(-1, 1) { flags |= SW; }
+def get_neighbor_flags(tilemap: np.ndarray, x: int, y: int, tile_type: int) -> int:
+    """Calculate 8-bit neighbor flags for a tile position."""
+    h, w = tilemap.shape
+    flags = 0
 
-    flags
-}
+    def same(dx: int, dy: int) -> bool:
+        nx, ny = x + dx, y + dy
+        if 0 <= nx < w and 0 <= ny < h:
+            return tilemap[ny, nx] == tile_type
+        return False
 
-fn draw_autotile(
-    map: &Tilemap,
-    atlas: u32,
-    x: i32, y: i32,
-    tile_type: u8,
-    tile_size: u32,
-    system: AutotileSystem,
-) {
-    let neighbors = get_neighbor_flags(map, x, y, tile_type);
-    let tile_idx = match system {
-        AutotileSystem::Tile16 => get_tile_index_16(neighbors),
-        AutotileSystem::Tile47 => get_tile_index_47(neighbors),
-        AutotileSystem::Tile256 => neighbors as usize,
-    };
+    if same(0, -1):  flags |= N
+    if same(0, 1):   flags |= S
+    if same(1, 0):   flags |= E
+    if same(-1, 0):  flags |= W
+    if same(1, -1):  flags |= NE
+    if same(-1, -1): flags |= NW
+    if same(1, 1):   flags |= SE
+    if same(-1, 1):  flags |= SW
 
-    let (atlas_cols, _) = match system {
-        AutotileSystem::Tile16 => (4, 4),
-        AutotileSystem::Tile47 => (8, 6),
-        AutotileSystem::Tile256 => (16, 16),
-    };
+    return flags
 
-    let src_x = (tile_idx % atlas_cols) as u32 * tile_size;
-    let src_y = (tile_idx / atlas_cols) as u32 * tile_size;
+def get_autotile_src_rect(
+    neighbors: int,
+    tile_size: int,
+    system: AutotileSystem
+) -> tuple[int, int, int, int]:
+    """
+    Get source rectangle for autotile based on neighbor flags.
 
-    draw_sprite_region(
-        atlas,
-        x as u32 * tile_size, y as u32 * tile_size,
-        src_x, src_y,
-        tile_size, tile_size,
-    );
-}
+    Returns:
+        (src_x, src_y, width, height) for sprite region
+    """
+    if system == AutotileSystem.TILE16:
+        tile_idx = get_tile_index_16(neighbors)
+        atlas_cols = 4
+    elif system == AutotileSystem.TILE47:
+        tile_idx = get_tile_index_47(neighbors)
+        atlas_cols = 8
+    else:  # TILE256
+        tile_idx = neighbors
+        atlas_cols = 16
+
+    src_x = (tile_idx % atlas_cols) * tile_size
+    src_y = (tile_idx // atlas_cols) * tile_size
+
+    return (src_x, src_y, tile_size, tile_size)
+
+# Example usage in game code (pseudo-code):
+# def draw_autotile(tilemap, atlas_handle, x, y, tile_type, tile_size, system):
+#     neighbors = get_neighbor_flags(tilemap, x, y, tile_type)
+#     src_x, src_y, w, h = get_autotile_src_rect(neighbors, tile_size, system)
+#     draw_sprite_region(atlas_handle, x * tile_size, y * tile_size, src_x, src_y, w, h)
 ```
 
 ---

@@ -8,52 +8,143 @@ Detailed techniques for upgrading animation quality through the tier system, bas
 
 Transform linear motion into timed motion:
 
-```rust
-// Before: Linear interpolation
-animation.set_interpolation(Interpolation::Linear);
+```python
+from enum import Enum
+from dataclasses import dataclass, field
+from typing import List, Dict, Any
 
-// After: Add basic easing
-animation.set_interpolation(Interpolation::EaseInOut);
+class Interpolation(Enum):
+    LINEAR = 'linear'
+    EASE_IN_OUT = 'ease_in_out'
 
-// Per-keyframe timing
-for keyframe in animation.keyframes_mut() {
-    keyframe.set_easing(Easing::QuadInOut);
-}
+class Easing(Enum):
+    LINEAR = 'linear'
+    QUAD_IN = 'quad_in'
+    QUAD_OUT = 'quad_out'
+    QUAD_IN_OUT = 'quad_in_out'
+    CUBIC_IN_OUT = 'cubic_in_out'
+    SINE_IN_OUT = 'sine_in_out'
+    SINE_OUT = 'sine_out'
+
+@dataclass
+class Keyframe:
+    time: float
+    value: Any
+    easing: Easing = Easing.LINEAR
+
+@dataclass
+class Animation:
+    keyframes: List[Keyframe] = field(default_factory=list)
+    interpolation: Interpolation = Interpolation.LINEAR
+
+    def set_interpolation(self, interp: Interpolation):
+        self.interpolation = interp
+
+    def set_all_easing(self, easing: Easing):
+        for kf in self.keyframes:
+            kf.easing = easing
+
+# Before: Linear interpolation
+animation = Animation()
+animation.set_interpolation(Interpolation.LINEAR)
+
+# After: Add basic easing
+animation.set_interpolation(Interpolation.EASE_IN_OUT)
+
+# Per-keyframe timing
+animation.set_all_easing(Easing.QUAD_IN_OUT)
 ```
 
 ### Add Keyframes for Clarity
 
 Placeholder animations often have too few keyframes:
 
-```rust
-// Walk cycle minimum keyframes
-let walk_keyframes = [
-    (0.0, Pose::contact_right()),    // Right foot contact
-    (0.25, Pose::passing_right()),   // Right leg passing
-    (0.5, Pose::contact_left()),     // Left foot contact
-    (0.75, Pose::passing_left()),    // Left leg passing
-    (1.0, Pose::contact_right()),    // Loop back
-];
+```python
+from dataclasses import dataclass
+from typing import Dict
 
-for (time, pose) in walk_keyframes {
-    animation.add_keyframe(time, pose);
-}
+@dataclass
+class Pose:
+    """Represents a character pose with bone transforms."""
+    bone_transforms: Dict[str, tuple]  # bone_name -> (position, rotation)
+
+    @staticmethod
+    def contact_right() -> 'Pose':
+        return Pose({'right_foot': ((0, 0, 0), (0, 0, 0))})
+
+    @staticmethod
+    def passing_right() -> 'Pose':
+        return Pose({'right_foot': ((0, 0.1, 0), (15, 0, 0))})
+
+    @staticmethod
+    def contact_left() -> 'Pose':
+        return Pose({'left_foot': ((0, 0, 0), (0, 0, 0))})
+
+    @staticmethod
+    def passing_left() -> 'Pose':
+        return Pose({'left_foot': ((0, 0.1, 0), (15, 0, 0))})
+
+def add_walk_cycle_keyframes(animation: Animation):
+    """Add walk cycle minimum keyframes."""
+    walk_keyframes = [
+        (0.0, Pose.contact_right()),    # Right foot contact
+        (0.25, Pose.passing_right()),   # Right leg passing
+        (0.5, Pose.contact_left()),     # Left foot contact
+        (0.75, Pose.passing_left()),    # Left leg passing
+        (1.0, Pose.contact_right()),    # Loop back
+    ]
+
+    for time, pose in walk_keyframes:
+        animation.keyframes.append(Keyframe(time=time, value=pose))
 ```
 
 ### Fix Loop Points
 
 Ensure seamless looping:
 
-```rust
-// Check loop continuity
-let start_pose = animation.pose_at(0.0);
-let end_pose = animation.pose_at(1.0);
+```python
+import numpy as np
+from dataclasses import dataclass
+from typing import Dict
 
-if !poses_match(&start_pose, &end_pose, threshold: 0.01) {
-    // Add transition keyframe
-    animation.add_keyframe(0.95, end_pose.blend(&start_pose, 0.5));
-    animation.set_keyframe(1.0, start_pose.clone());
-}
+def poses_match(pose_a: Pose, pose_b: Pose, threshold: float = 0.01) -> bool:
+    """Check if two poses are similar within threshold."""
+    for bone in pose_a.bone_transforms:
+        if bone not in pose_b.bone_transforms:
+            return False
+        pos_a, rot_a = pose_a.bone_transforms[bone]
+        pos_b, rot_b = pose_b.bone_transforms[bone]
+        pos_diff = np.linalg.norm(np.array(pos_a) - np.array(pos_b))
+        rot_diff = np.linalg.norm(np.array(rot_a) - np.array(rot_b))
+        if pos_diff > threshold or rot_diff > threshold:
+            return False
+    return True
+
+def blend_poses(pose_a: Pose, pose_b: Pose, factor: float) -> Pose:
+    """Blend between two poses."""
+    result = {}
+    for bone in pose_a.bone_transforms:
+        if bone in pose_b.bone_transforms:
+            pos_a, rot_a = pose_a.bone_transforms[bone]
+            pos_b, rot_b = pose_b.bone_transforms[bone]
+            pos = tuple(a * (1 - factor) + b * factor for a, b in zip(pos_a, pos_b))
+            rot = tuple(a * (1 - factor) + b * factor for a, b in zip(rot_a, rot_b))
+            result[bone] = (pos, rot)
+    return Pose(result)
+
+def fix_loop_continuity(animation: Animation, threshold: float = 0.01):
+    """Ensure animation loops seamlessly."""
+    if not animation.keyframes:
+        return
+
+    start_pose = animation.keyframes[0].value
+    end_pose = animation.keyframes[-1].value
+
+    if not poses_match(start_pose, end_pose, threshold):
+        # Add transition keyframe
+        blended = blend_poses(end_pose, start_pose, 0.5)
+        animation.keyframes.insert(-1, Keyframe(time=0.95, value=blended))
+        animation.keyframes[-1].value = start_pose
 ```
 
 ---
@@ -64,109 +155,193 @@ if !poses_match(&start_pose, &end_pose, threshold: 0.01) {
 
 Natural motion accelerates and decelerates:
 
-```rust
-// Configure easing per bone/property
-fn apply_easing_profile(animation: &mut Animation, profile: EasingProfile) {
-    for track in animation.tracks_mut() {
-        match track.bone_type {
-            // Root motion: smooth ease
-            BoneType::Root => track.set_easing(Easing::CubicInOut),
-            // Extremities: snappier
-            BoneType::Hand | BoneType::Foot =>
-                track.set_easing(Easing::QuadOut),
-            // Spine: smooth follow-through
-            BoneType::Spine => track.set_easing(Easing::SineInOut),
-            _ => track.set_easing(Easing::QuadInOut),
-        }
-    }
-}
+```python
+from enum import Enum
+from dataclasses import dataclass
+from typing import List, Optional
+
+class BoneType(Enum):
+    ROOT = 'root'
+    SPINE = 'spine'
+    HAND = 'hand'
+    FOOT = 'foot'
+    HEAD = 'head'
+    OTHER = 'other'
+
+@dataclass
+class AnimationTrack:
+    bone_name: str
+    bone_type: BoneType
+    keyframes: List[Keyframe]
+    easing: Easing = Easing.LINEAR
+
+    def set_easing(self, easing: Easing):
+        self.easing = easing
+
+@dataclass
+class AnimationWithTracks:
+    tracks: List[AnimationTrack]
+
+def apply_easing_profile(animation: AnimationWithTracks):
+    """Configure easing per bone/property."""
+    for track in animation.tracks:
+        if track.bone_type == BoneType.ROOT:
+            # Root motion: smooth ease
+            track.set_easing(Easing.CUBIC_IN_OUT)
+        elif track.bone_type in (BoneType.HAND, BoneType.FOOT):
+            # Extremities: snappier
+            track.set_easing(Easing.QUAD_OUT)
+        elif track.bone_type == BoneType.SPINE:
+            # Spine: smooth follow-through
+            track.set_easing(Easing.SINE_IN_OUT)
+        else:
+            track.set_easing(Easing.QUAD_IN_OUT)
 ```
 
 ### Add Secondary Motion
 
 Body parts don't all move at once:
 
-```rust
-// Offset secondary elements
-fn add_secondary_motion(animation: &mut Animation) {
-    let offsets = [
-        ("head", 0.02),        // Head follows slightly
-        ("hair", 0.04),        // Hair lags more
-        ("cape", 0.05),        // Cape lags most
-        ("weapon", 0.03),      // Weapon has inertia
-    ];
+```python
+from typing import Dict, Optional
 
-    for (bone_name, delay) in offsets {
-        if let Some(track) = animation.get_track_mut(bone_name) {
-            track.offset_time(delay);
-        }
-    }
-}
+def offset_track_time(track: AnimationTrack, delay: float):
+    """Offset all keyframe times in a track."""
+    for kf in track.keyframes:
+        kf.time += delay
+
+def get_track_by_name(animation: AnimationWithTracks,
+                      bone_name: str) -> Optional[AnimationTrack]:
+    """Get animation track by bone name."""
+    for track in animation.tracks:
+        if track.bone_name == bone_name:
+            return track
+    return None
+
+def add_secondary_motion(animation: AnimationWithTracks):
+    """Offset secondary elements for drag/follow-through effect."""
+    offsets = [
+        ("head", 0.02),        # Head follows slightly
+        ("hair", 0.04),        # Hair lags more
+        ("cape", 0.05),        # Cape lags most
+        ("weapon", 0.03),      # Weapon has inertia
+    ]
+
+    for bone_name, delay in offsets:
+        track = get_track_by_name(animation, bone_name)
+        if track:
+            offset_track_time(track, delay)
 ```
 
 ### Implement Arc Motion
 
 Natural motion follows arcs, not straight lines:
 
-```rust
-// Convert linear motion to arcs
-fn arcify_motion(animation: &mut Animation, bone: &str) {
-    let track = animation.get_track_mut(bone).unwrap();
+```python
+import numpy as np
+from typing import Tuple
 
-    // For each keyframe pair
-    for i in 0..track.keyframes.len() - 1 {
-        let start = &track.keyframes[i];
-        let end = &track.keyframes[i + 1];
+@dataclass
+class PositionKeyframe:
+    time: float
+    position: Tuple[float, float, float]
+    easing: Easing = Easing.LINEAR
 
-        // Calculate arc control point
-        let mid_time = (start.time + end.time) / 2.0;
-        let arc_height = (end.position - start.position).length() * 0.2;
+@dataclass
+class PositionTrack:
+    bone_name: str
+    keyframes: List[PositionKeyframe]
 
-        // Add arc keyframe
-        let arc_pos = (start.position + end.position) / 2.0
-            + Vec3::Y * arc_height;
+    def insert_keyframe(self, time: float, position: Tuple[float, float, float],
+                        easing: Easing):
+        """Insert keyframe at specified time, maintaining sorted order."""
+        kf = PositionKeyframe(time=time, position=position, easing=easing)
+        # Find insertion point
+        for i, existing in enumerate(self.keyframes):
+            if existing.time > time:
+                self.keyframes.insert(i, kf)
+                return
+        self.keyframes.append(kf)
 
-        track.insert_keyframe(mid_time, arc_pos, Easing::SineInOut);
-    }
-}
+def arcify_motion(track: PositionTrack):
+    """Convert linear motion to arcs for natural movement."""
+    # Work backwards to avoid index issues when inserting
+    for i in range(len(track.keyframes) - 2, -1, -1):
+        start = track.keyframes[i]
+        end = track.keyframes[i + 1]
+
+        start_pos = np.array(start.position)
+        end_pos = np.array(end.position)
+
+        # Calculate arc control point
+        mid_time = (start.time + end.time) / 2.0
+        arc_height = np.linalg.norm(end_pos - start_pos) * 0.2
+
+        # Add arc keyframe (lift in Y direction)
+        arc_pos = (start_pos + end_pos) / 2.0
+        arc_pos[1] += arc_height  # Y is up
+
+        track.insert_keyframe(mid_time, tuple(arc_pos), Easing.SINE_IN_OUT)
 ```
 
 ### Improve Weight and Timing
 
 Different actions have different timing feels:
 
-```rust
-// Timing guidelines by action type
-fn get_timing_profile(action: ActionType) -> TimingProfile {
-    match action {
-        ActionType::Walk => TimingProfile {
-            total_frames: 16,
-            contact_frame: 0,
-            passing_frame: 4,
-            key_poses: vec![0, 4, 8, 12],
-        },
-        ActionType::Run => TimingProfile {
-            total_frames: 12,
-            contact_frame: 0,
-            passing_frame: 3,
-            key_poses: vec![0, 3, 6, 9],
-        },
-        ActionType::Jump => TimingProfile {
-            total_frames: 24,
-            anticipation_frames: 4,
-            air_frames: 16,
-            landing_frames: 4,
-            key_poses: vec![0, 4, 12, 20, 24],
-        },
-        ActionType::Attack => TimingProfile {
-            total_frames: 20,
-            anticipation_frames: 6,
-            action_frames: 4,
-            follow_through_frames: 10,
-            key_poses: vec![0, 6, 10, 20],
-        },
+```python
+from enum import Enum, auto
+from dataclasses import dataclass
+from typing import List, Optional
+
+class ActionType(Enum):
+    WALK = auto()
+    RUN = auto()
+    JUMP = auto()
+    ATTACK = auto()
+
+@dataclass
+class TimingProfile:
+    total_frames: int
+    key_poses: List[int]
+    contact_frame: int = 0
+    passing_frame: Optional[int] = None
+    anticipation_frames: Optional[int] = None
+    air_frames: Optional[int] = None
+    landing_frames: Optional[int] = None
+    action_frames: Optional[int] = None
+    follow_through_frames: Optional[int] = None
+
+def get_timing_profile(action: ActionType) -> TimingProfile:
+    """Get timing guidelines by action type."""
+    profiles = {
+        ActionType.WALK: TimingProfile(
+            total_frames=16,
+            contact_frame=0,
+            passing_frame=4,
+            key_poses=[0, 4, 8, 12],
+        ),
+        ActionType.RUN: TimingProfile(
+            total_frames=12,
+            contact_frame=0,
+            passing_frame=3,
+            key_poses=[0, 3, 6, 9],
+        ),
+        ActionType.JUMP: TimingProfile(
+            total_frames=24,
+            anticipation_frames=4,
+            air_frames=16,
+            landing_frames=4,
+            key_poses=[0, 4, 12, 20, 24],
+        ),
+        ActionType.ATTACK: TimingProfile(
+            total_frames=20,
+            anticipation_frames=6,
+            action_frames=4,
+            follow_through_frames=10,
+            key_poses=[0, 6, 10, 20],
+        ),
     }
-}
+    return profiles.get(action, profiles[ActionType.WALK])
 ```
 
 ---
@@ -177,80 +352,131 @@ fn get_timing_profile(action: ActionType) -> TimingProfile {
 
 Preparation before main action:
 
-```rust
-// Anticipation for jump
-fn add_jump_anticipation(animation: &mut Animation) {
-    // Before jump: crouch down
-    let anticipation_pose = Pose {
-        root_y: -0.1,  // Squat down
-        spine_rotation: -5.0,  // Lean forward slightly
-        knee_bend: 30.0,  // Bend knees
-        arm_position: ArmPosition::Back,  // Arms back
-    };
+```python
+from dataclasses import dataclass
+from enum import Enum
+from typing import Dict
 
-    // Insert anticipation before jump
-    animation.insert_keyframe(0.0, anticipation_pose);
-    animation.insert_keyframe(0.15, anticipation_pose.deeper(1.2));  // Deeper squat
-    // Original jump starts at 0.2
-}
+class ArmPosition(Enum):
+    NEUTRAL = 'neutral'
+    BACK = 'back'
+    FORWARD = 'forward'
 
-// Anticipation for punch
-fn add_punch_anticipation(animation: &mut Animation) {
-    let wind_up = Pose {
-        shoulder_rotation: -30.0,  // Pull back
-        elbow_bend: 120.0,  // Coil arm
-        torso_rotation: -15.0,  // Wind up body
-        weight_shift: -0.1,  // Lean back
-    };
+@dataclass
+class JumpPose:
+    root_y: float = 0.0
+    spine_rotation: float = 0.0
+    knee_bend: float = 0.0
+    arm_position: ArmPosition = ArmPosition.NEUTRAL
 
-    animation.insert_keyframe(0.0, wind_up);
-    animation.insert_keyframe(0.1, wind_up.exaggerated(1.1));
-    // Strike starts at 0.15
-}
+    def deeper(self, factor: float) -> 'JumpPose':
+        """Return a deeper version of this pose."""
+        return JumpPose(
+            root_y=self.root_y * factor,
+            spine_rotation=self.spine_rotation * factor,
+            knee_bend=self.knee_bend * factor,
+            arm_position=self.arm_position,
+        )
+
+@dataclass
+class PunchPose:
+    shoulder_rotation: float = 0.0
+    elbow_bend: float = 0.0
+    torso_rotation: float = 0.0
+    weight_shift: float = 0.0
+
+    def exaggerated(self, factor: float) -> 'PunchPose':
+        """Return an exaggerated version of this pose."""
+        return PunchPose(
+            shoulder_rotation=self.shoulder_rotation * factor,
+            elbow_bend=self.elbow_bend * factor,
+            torso_rotation=self.torso_rotation * factor,
+            weight_shift=self.weight_shift * factor,
+        )
+
+def add_jump_anticipation(animation: Animation):
+    """Add anticipation before jump."""
+    # Before jump: crouch down
+    anticipation_pose = JumpPose(
+        root_y=-0.1,           # Squat down
+        spine_rotation=-5.0,   # Lean forward slightly
+        knee_bend=30.0,        # Bend knees
+        arm_position=ArmPosition.BACK,  # Arms back
+    )
+
+    # Insert anticipation before jump
+    animation.keyframes.insert(0, Keyframe(time=0.0, value=anticipation_pose))
+    animation.keyframes.insert(1, Keyframe(time=0.15, value=anticipation_pose.deeper(1.2)))
+    # Original jump starts at 0.2
+
+def add_punch_anticipation(animation: Animation):
+    """Add anticipation before punch."""
+    wind_up = PunchPose(
+        shoulder_rotation=-30.0,  # Pull back
+        elbow_bend=120.0,         # Coil arm
+        torso_rotation=-15.0,     # Wind up body
+        weight_shift=-0.1,        # Lean back
+    )
+
+    animation.keyframes.insert(0, Keyframe(time=0.0, value=wind_up))
+    animation.keyframes.insert(1, Keyframe(time=0.1, value=wind_up.exaggerated(1.1)))
+    # Strike starts at 0.15
 ```
 
 ### Add Follow-Through
 
 Motion continues after main action:
 
-```rust
-// Follow-through for punch
-fn add_punch_follow_through(animation: &mut Animation) {
-    // After impact: arm continues, body follows
-    let follow_poses = [
-        (0.0, "impact"),
-        (0.05, Pose {
-            arm_extension: 1.1,  // Overextend
-            shoulder_forward: 10.0,
-            torso_rotation: 20.0,
-        }),
-        (0.15, Pose {
-            arm_extension: 1.05,  // Slight recoil
-            shoulder_forward: 5.0,
-            torso_rotation: 15.0,
-        }),
-        (0.3, Pose {
-            arm_extension: 0.9,  // Return
-            shoulder_forward: 0.0,
-            torso_rotation: 5.0,
-        }),
-    ];
+```python
+from dataclasses import dataclass
+from typing import List, Tuple, Union
 
-    for (time_offset, pose) in follow_poses {
-        animation.add_keyframe(impact_time + time_offset, pose);
-    }
-}
+@dataclass
+class FollowThroughPose:
+    arm_extension: float = 1.0
+    shoulder_forward: float = 0.0
+    torso_rotation: float = 0.0
+
+def add_punch_follow_through(animation: Animation, impact_time: float):
+    """Add follow-through after punch impact."""
+    # After impact: arm continues, body follows
+    follow_poses: List[Tuple[float, FollowThroughPose]] = [
+        (0.05, FollowThroughPose(
+            arm_extension=1.1,      # Overextend
+            shoulder_forward=10.0,
+            torso_rotation=20.0,
+        )),
+        (0.15, FollowThroughPose(
+            arm_extension=1.05,     # Slight recoil
+            shoulder_forward=5.0,
+            torso_rotation=15.0,
+        )),
+        (0.3, FollowThroughPose(
+            arm_extension=0.9,      # Return
+            shoulder_forward=0.0,
+            torso_rotation=5.0,
+        )),
+    ]
+
+    for time_offset, pose in follow_poses:
+        animation.keyframes.append(
+            Keyframe(time=impact_time + time_offset, value=pose)
+        )
 ```
 
 ### Overlapping Action
 
 Different body parts move at different times:
 
-```rust
-// Overlapping action for character turn
-fn add_overlapping_turn(animation: &mut Animation) {
-    // Order of movement: hips → spine → shoulders → head → hair
-    let overlap_delays = [
+```python
+from typing import List, Tuple
+
+def add_overlapping_turn(animation: AnimationWithTracks):
+    """Add overlapping action for character turn.
+
+    Order of movement: hips -> spine -> shoulders -> head -> hair
+    """
+    overlap_delays: List[Tuple[str, float]] = [
         ("hips", 0.0),
         ("spine_lower", 0.02),
         ("spine_upper", 0.04),
@@ -259,103 +485,156 @@ fn add_overlapping_turn(animation: &mut Animation) {
         ("head", 0.10),
         ("hair_base", 0.12),
         ("hair_tip", 0.15),
-    ];
+    ]
 
-    for (bone, delay) in overlap_delays {
-        if let Some(track) = animation.get_track_mut(bone) {
-            track.offset_time(delay);
-            // Also ease the delayed motion
-            track.set_easing(Easing::SineOut);
-        }
-    }
-}
+    for bone, delay in overlap_delays:
+        track = get_track_by_name(animation, bone)
+        if track:
+            offset_track_time(track, delay)
+            # Also ease the delayed motion
+            track.set_easing(Easing.SINE_OUT)
 ```
 
 ### Exaggeration
 
 Push poses beyond realistic for readability:
 
-```rust
-// Exaggerate key poses
-fn exaggerate_keyframes(animation: &mut Animation, amount: f32) {
-    // Find key poses (extremes)
-    let key_frames = animation.find_extreme_poses();
+```python
+from enum import Enum, auto
+from typing import List, Any
+import numpy as np
 
-    for frame in key_frames {
-        let pose = animation.pose_at(frame);
-        let neutral = animation.get_neutral_pose();
+class AnimationType(Enum):
+    IDLE = auto()
+    WALK = auto()
+    RUN = auto()
+    ATTACK = auto()
+    HURT = auto()
+    DEATH = auto()
 
-        // Exaggerate away from neutral
-        let exaggerated = Pose::lerp(&neutral, &pose, 1.0 + amount);
+def lerp_pose(neutral: Pose, target: Pose, factor: float) -> Pose:
+    """Linearly interpolate between poses."""
+    result = {}
+    for bone in neutral.bone_transforms:
+        if bone in target.bone_transforms:
+            n_pos, n_rot = neutral.bone_transforms[bone]
+            t_pos, t_rot = target.bone_transforms[bone]
+            pos = tuple(n + (t - n) * factor for n, t in zip(n_pos, t_pos))
+            rot = tuple(n + (t - n) * factor for n, t in zip(n_rot, t_rot))
+            result[bone] = (pos, rot)
+    return Pose(result)
 
-        animation.set_keyframe(frame, exaggerated);
+def find_extreme_poses(animation: Animation) -> List[int]:
+    """Find frames with extreme poses (local maxima/minima)."""
+    # Simple heuristic: every 4th frame in the animation
+    return list(range(0, len(animation.keyframes), 4))
+
+def exaggerate_keyframes(animation: Animation, neutral_pose: Pose, amount: float):
+    """Exaggerate key poses away from neutral."""
+    key_frames = find_extreme_poses(animation)
+
+    for frame_idx in key_frames:
+        if frame_idx < len(animation.keyframes):
+            pose = animation.keyframes[frame_idx].value
+            if isinstance(pose, Pose):
+                # Exaggerate away from neutral
+                exaggerated = lerp_pose(neutral_pose, pose, 1.0 + amount)
+                animation.keyframes[frame_idx].value = exaggerated
+
+def get_exaggeration_amount(anim_type: AnimationType) -> float:
+    """Get exaggeration amount by animation type."""
+    amounts = {
+        AnimationType.IDLE: 0.05,     # Subtle
+        AnimationType.WALK: 0.1,      # Noticeable
+        AnimationType.RUN: 0.15,      # Clear
+        AnimationType.ATTACK: 0.25,   # Dramatic
+        AnimationType.HURT: 0.3,      # Very dramatic
+        AnimationType.DEATH: 0.35,    # Maximum
     }
-}
-
-// Different exaggeration by animation type
-fn get_exaggeration_amount(anim_type: AnimationType) -> f32 {
-    match anim_type {
-        AnimationType::Idle => 0.05,     // Subtle
-        AnimationType::Walk => 0.1,      // Noticeable
-        AnimationType::Run => 0.15,      // Clear
-        AnimationType::Attack => 0.25,   // Dramatic
-        AnimationType::Hurt => 0.3,      // Very dramatic
-        AnimationType::Death => 0.35,    // Maximum
-    }
-}
+    return amounts.get(anim_type, 0.1)
 ```
 
 ### Squash and Stretch
 
 Volume preservation with deformation:
 
-```rust
-// Squash on landing
-fn add_landing_squash(animation: &mut Animation, impact_frame: usize) {
-    let pre_impact = animation.pose_at(impact_frame - 1);
-    let impact = animation.pose_at(impact_frame);
+```python
+from dataclasses import dataclass
+from typing import Tuple
+import numpy as np
 
-    // Calculate squash based on fall velocity
-    let velocity = (impact.root_y - pre_impact.root_y).abs();
-    let squash_amount = (velocity * 2.0).min(0.3);
+STRETCH_THRESHOLD = 0.1
 
-    // Apply squash (compress Y, expand XZ)
-    let squashed = impact.with_scale(Vec3::new(
-        1.0 + squash_amount * 0.5,  // Wider
-        1.0 - squash_amount,         // Shorter
-        1.0 + squash_amount * 0.5,  // Deeper
-    ));
+@dataclass
+class ScaledPose:
+    base_pose: Pose
+    scale: Tuple[float, float, float]  # x, y, z scale
 
-    animation.set_keyframe(impact_frame, squashed);
+@dataclass
+class PoseWithPosition:
+    bone_transforms: dict
+    root_position: Tuple[float, float, float]
+    root_y: float
 
-    // Recovery frames
-    animation.insert_keyframe(
-        impact_frame + 2,
-        impact.with_scale(Vec3::new(0.95, 1.05, 0.95)),  // Slight stretch
-    );
-    animation.insert_keyframe(
-        impact_frame + 4,
-        impact,  // Return to normal
-    );
-}
+    def with_scale(self, scale: Tuple[float, float, float]) -> 'ScaledPose':
+        return ScaledPose(base_pose=Pose(self.bone_transforms), scale=scale)
 
-// Stretch during fast motion
-fn add_motion_stretch(animation: &mut Animation) {
-    for i in 1..animation.frame_count() - 1 {
-        let prev = animation.pose_at(i - 1);
-        let curr = animation.pose_at(i);
-        let velocity = (curr.root_position - prev.root_position).length();
+    def stretch_along(self, direction: np.ndarray, stretch: float) -> 'ScaledPose':
+        # Stretch along motion direction, compress perpendicular
+        scale_along = stretch
+        scale_perp = 1.0 / np.sqrt(stretch)  # Preserve volume
+        # Simplified: assume stretch is along Y
+        return self.with_scale((scale_perp, scale_along, scale_perp))
 
-        if velocity > STRETCH_THRESHOLD {
-            let stretch = 1.0 + (velocity - STRETCH_THRESHOLD) * 0.5;
-            let direction = (curr.root_position - prev.root_position).normalize();
+def add_landing_squash(animation: Animation, impact_frame: int):
+    """Add squash on landing impact."""
+    if impact_frame < 1 or impact_frame >= len(animation.keyframes):
+        return
 
-            // Stretch along motion direction
-            let stretched = curr.stretch_along(direction, stretch);
-            animation.set_keyframe(i, stretched);
-        }
-    }
-}
+    pre_impact = animation.keyframes[impact_frame - 1].value
+    impact = animation.keyframes[impact_frame].value
+
+    # Calculate squash based on fall velocity
+    if hasattr(pre_impact, 'root_y') and hasattr(impact, 'root_y'):
+        velocity = abs(impact.root_y - pre_impact.root_y)
+        squash_amount = min(velocity * 2.0, 0.3)
+
+        # Apply squash (compress Y, expand XZ)
+        squashed = impact.with_scale((
+            1.0 + squash_amount * 0.5,  # Wider
+            1.0 - squash_amount,         # Shorter
+            1.0 + squash_amount * 0.5,  # Deeper
+        ))
+        animation.keyframes[impact_frame].value = squashed
+
+        # Recovery frames
+        animation.keyframes.insert(
+            impact_frame + 1,
+            Keyframe(time=impact_frame + 2, value=impact.with_scale((0.95, 1.05, 0.95)))
+        )
+        animation.keyframes.insert(
+            impact_frame + 2,
+            Keyframe(time=impact_frame + 4, value=impact)
+        )
+
+def add_motion_stretch(animation: Animation):
+    """Add stretch during fast motion."""
+    for i in range(1, len(animation.keyframes) - 1):
+        prev = animation.keyframes[i - 1].value
+        curr = animation.keyframes[i].value
+
+        if hasattr(prev, 'root_position') and hasattr(curr, 'root_position'):
+            prev_pos = np.array(prev.root_position)
+            curr_pos = np.array(curr.root_position)
+            velocity = np.linalg.norm(curr_pos - prev_pos)
+
+            if velocity > STRETCH_THRESHOLD:
+                stretch = 1.0 + (velocity - STRETCH_THRESHOLD) * 0.5
+                direction = (curr_pos - prev_pos) / velocity
+
+                # Stretch along motion direction
+                stretched = curr.stretch_along(direction, stretch)
+                animation.keyframes[i].value = stretched
 ```
 
 ---
@@ -433,64 +712,163 @@ fn add_motion_stretch(animation: &mut Animation) {
 
 ### Loop Continuity Check
 
-```rust
-fn check_loop_quality(animation: &Animation) -> LoopQuality {
-    let start = animation.pose_at(0.0);
-    let end = animation.pose_at(animation.duration());
+```python
+from dataclasses import dataclass
+import numpy as np
 
-    LoopQuality {
-        position_error: (end.root_position - start.root_position).length(),
-        rotation_error: (end.root_rotation - start.root_rotation).angle(),
-        velocity_match: check_velocity_continuity(animation),
-        acceleration_match: check_acceleration_continuity(animation),
-    }
-}
+@dataclass
+class LoopQuality:
+    position_error: float
+    rotation_error: float
+    velocity_match: float
+    acceleration_match: float
+
+def check_velocity_continuity(animation: Animation) -> float:
+    """Check if velocity is continuous at loop point."""
+    if len(animation.keyframes) < 3:
+        return 1.0
+
+    # Velocity at start
+    kf0, kf1 = animation.keyframes[0], animation.keyframes[1]
+    if hasattr(kf0.value, 'root_position') and hasattr(kf1.value, 'root_position'):
+        v_start = np.array(kf1.value.root_position) - np.array(kf0.value.root_position)
+    else:
+        return 1.0
+
+    # Velocity at end
+    kf_n1, kf_n = animation.keyframes[-2], animation.keyframes[-1]
+    if hasattr(kf_n1.value, 'root_position') and hasattr(kf_n.value, 'root_position'):
+        v_end = np.array(kf_n.value.root_position) - np.array(kf_n1.value.root_position)
+    else:
+        return 1.0
+
+    diff = np.linalg.norm(v_end - v_start)
+    return max(0.0, 1.0 - diff)
+
+def check_acceleration_continuity(animation: Animation) -> float:
+    """Check if acceleration is continuous at loop point."""
+    # Simplified: check velocity change rate
+    return check_velocity_continuity(animation) * 0.9
+
+def check_loop_quality(animation: Animation) -> LoopQuality:
+    """Check loop quality metrics."""
+    if not animation.keyframes:
+        return LoopQuality(0, 0, 0, 0)
+
+    start = animation.keyframes[0].value
+    end = animation.keyframes[-1].value
+
+    position_error = 0.0
+    rotation_error = 0.0
+
+    if hasattr(start, 'root_position') and hasattr(end, 'root_position'):
+        position_error = float(np.linalg.norm(
+            np.array(end.root_position) - np.array(start.root_position)
+        ))
+
+    if hasattr(start, 'root_rotation') and hasattr(end, 'root_rotation'):
+        rotation_error = float(np.linalg.norm(
+            np.array(end.root_rotation) - np.array(start.root_rotation)
+        ))
+
+    return LoopQuality(
+        position_error=position_error,
+        rotation_error=rotation_error,
+        velocity_match=check_velocity_continuity(animation),
+        acceleration_match=check_acceleration_continuity(animation),
+    )
 ```
 
 ### Motion Arc Check
 
-```rust
-fn check_arc_quality(animation: &Animation, bone: &str) -> f32 {
-    let track = animation.get_track(bone).unwrap();
-    let mut total_deviation = 0.0;
-    let mut samples = 0;
+```python
+import numpy as np
+from typing import Optional
 
-    // Sample motion path
-    for t in (0..100).map(|i| i as f32 / 100.0) {
-        let prev = track.position_at(t - 0.01);
-        let curr = track.position_at(t);
-        let next = track.position_at(t + 0.01);
+def get_position_at_time(track: PositionTrack, t: float) -> Optional[np.ndarray]:
+    """Interpolate position at given time."""
+    if not track.keyframes:
+        return None
 
-        // Check if path curves smoothly
-        let expected_next = curr + (curr - prev);
-        let deviation = (next - expected_next).length();
-        total_deviation += deviation;
-        samples += 1;
-    }
+    # Find surrounding keyframes
+    prev_kf = track.keyframes[0]
+    next_kf = track.keyframes[-1]
 
-    1.0 - (total_deviation / samples as f32).min(1.0)
-}
+    for i, kf in enumerate(track.keyframes):
+        if kf.time >= t:
+            next_kf = kf
+            if i > 0:
+                prev_kf = track.keyframes[i - 1]
+            break
+        prev_kf = kf
+
+    # Linear interpolation
+    if next_kf.time == prev_kf.time:
+        return np.array(prev_kf.position)
+
+    factor = (t - prev_kf.time) / (next_kf.time - prev_kf.time)
+    factor = max(0, min(1, factor))
+
+    prev_pos = np.array(prev_kf.position)
+    next_pos = np.array(next_kf.position)
+    return prev_pos + (next_pos - prev_pos) * factor
+
+def check_arc_quality(track: PositionTrack) -> float:
+    """Check how smoothly the motion follows arcs."""
+    total_deviation = 0.0
+    samples = 0
+
+    # Sample motion path
+    for i in range(100):
+        t = i / 100.0
+        prev = get_position_at_time(track, t - 0.01)
+        curr = get_position_at_time(track, t)
+        next_pos = get_position_at_time(track, t + 0.01)
+
+        if prev is None or curr is None or next_pos is None:
+            continue
+
+        # Check if path curves smoothly
+        expected_next = curr + (curr - prev)
+        deviation = np.linalg.norm(next_pos - expected_next)
+        total_deviation += deviation
+        samples += 1
+
+    if samples == 0:
+        return 1.0
+
+    return 1.0 - min(total_deviation / samples, 1.0)
 ```
 
 ### Timing Variation Check
 
-```rust
-fn check_timing_quality(animation: &Animation) -> f32 {
-    let velocities: Vec<f32> = (0..animation.frame_count() - 1)
-        .map(|i| {
-            let p0 = animation.root_position_at(i);
-            let p1 = animation.root_position_at(i + 1);
-            (p1 - p0).length()
-        })
-        .collect();
+```python
+import numpy as np
+from typing import List
 
-    // Check for variation (not constant velocity)
-    let mean = velocities.iter().sum::<f32>() / velocities.len() as f32;
-    let variance = velocities.iter()
-        .map(|v| (v - mean).powi(2))
-        .sum::<f32>() / velocities.len() as f32;
+def check_timing_quality(animation: Animation) -> float:
+    """Check for timing variation (not constant velocity).
 
-    // Higher variance = better timing
-    (variance / mean.max(0.001)).min(1.0)
-}
+    Higher variance = better timing (more interesting movement).
+    """
+    velocities: List[float] = []
+
+    for i in range(len(animation.keyframes) - 1):
+        kf0 = animation.keyframes[i].value
+        kf1 = animation.keyframes[i + 1].value
+
+        if hasattr(kf0, 'root_position') and hasattr(kf1, 'root_position'):
+            p0 = np.array(kf0.root_position)
+            p1 = np.array(kf1.root_position)
+            velocities.append(float(np.linalg.norm(p1 - p0)))
+
+    if not velocities:
+        return 0.0
+
+    velocities_arr = np.array(velocities)
+    mean = np.mean(velocities_arr)
+    variance = np.var(velocities_arr)
+
+    # Higher variance = better timing
+    return min(variance / max(mean, 0.001), 1.0)
 ```

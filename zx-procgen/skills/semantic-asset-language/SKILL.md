@@ -27,43 +27,45 @@ Style tokens modify base generation parameters to achieve a visual style. Each t
 
 ### Core Style Token Structure
 
-```rust
-pub struct StyleModifiers {
-    pub roughness_offset: f32,      // Added to base roughness (-0.3 to +0.5)
-    pub saturation_scale: f32,      // Multiplied with saturation (0.5 to 1.5)
-    pub detail_level: DetailLevel,  // Low, Medium, High, Extreme
-    pub edge_hardness: f32,         // 0.0 = soft organic, 1.0 = sharp geometric
-    pub noise_octaves_offset: i32,  // Added to noise octaves (-2 to +3)
-    pub damage_amount: f32,         // 0.0 = pristine, 1.0 = destroyed
-    pub color_temperature: f32,     // -1.0 = cool, 0.0 = neutral, 1.0 = warm
-}
+```python
+from dataclasses import dataclass
+from enum import Enum
 
-pub enum DetailLevel {
-    Low,      // Minimal detail, flat surfaces
-    Medium,   // Standard detail
-    High,     // Rich detail, many features
-    Extreme,  // Maximum detail (use sparingly)
-}
+class DetailLevel(Enum):
+    LOW = "low"          # Minimal detail, flat surfaces
+    MEDIUM = "medium"    # Standard detail
+    HIGH = "high"        # Rich detail, many features
+    EXTREME = "extreme"  # Maximum detail (use sparingly)
+
+@dataclass
+class StyleModifiers:
+    roughness_offset: float     # Added to base roughness (-0.3 to +0.5)
+    saturation_scale: float     # Multiplied with saturation (0.5 to 1.5)
+    detail_level: DetailLevel   # Low, Medium, High, Extreme
+    edge_hardness: float        # 0.0 = soft organic, 1.0 = sharp geometric
+    noise_octaves_offset: int   # Added to noise octaves (-2 to +3)
+    damage_amount: float        # 0.0 = pristine, 1.0 = destroyed
+    color_temperature: float    # -1.0 = cool, 0.0 = neutral, 1.0 = warm
 ```
 
 ### Applying Style Tokens
 
-```rust
-pub fn apply_style(base: &MaterialParams, style: StyleToken) -> MaterialParams {
-    let mods = style.modifiers();
-    MaterialParams {
-        roughness: (base.roughness + mods.roughness_offset).clamp(0.0, 1.0),
-        saturation: (base.saturation * mods.saturation_scale).clamp(0.0, 1.0),
-        detail_level: mods.detail_level,
-        edge_hardness: mods.edge_hardness,
-        damage: mods.damage_amount,
-        // ... apply other modifiers
-    }
-}
+```python
+def apply_style(base: MaterialParams, style: StyleToken) -> MaterialParams:
+    """Apply style modifiers to base material parameters."""
+    mods = style.modifiers()
+    return MaterialParams(
+        roughness=np.clip(base.roughness + mods.roughness_offset, 0.0, 1.0),
+        saturation=np.clip(base.saturation * mods.saturation_scale, 0.0, 1.0),
+        detail_level=mods.detail_level,
+        edge_hardness=mods.edge_hardness,
+        damage=mods.damage_amount,
+        # ... apply other modifiers
+    )
 
-// Usage
-let base = MaterialParams::default();
-let styled = apply_style(&base, StyleToken::Cyberpunk);
+# Usage
+base = MaterialParams()
+styled = apply_style(base, StyleToken.CYBERPUNK)
 ```
 
 For the complete list of **15+ style tokens** with full parameter values, see `references/style-tokens.md`.
@@ -76,33 +78,37 @@ Color palettes define HSL ranges for consistent color schemes. Each palette spec
 
 ### Palette Structure
 
-```rust
-pub struct PaletteSpec {
-    pub hue_ranges: Vec<(f32, f32)>,      // Allowed hue ranges (0-360)
-    pub saturation_range: (f32, f32),     // Min-max saturation (0-1)
-    pub lightness_range: (f32, f32),      // Min-max lightness (0-1)
-    pub accent_hue_offset: f32,           // Offset for accent colors
-    pub primary_weight: f32,              // Weight for primary vs accent (0-1)
-}
+```python
+from dataclasses import dataclass
+from typing import List
+import random
+import colorsys
 
-impl ColorPalette {
-    /// Sample a color from this palette
-    pub fn sample(&self, rng: &mut impl Rng) -> [f32; 3] {
-        let spec = self.spec();
-        let hue_range = &spec.hue_ranges[rng.gen_range(0..spec.hue_ranges.len())];
-        let h = rng.gen_range(hue_range.0..hue_range.1);
-        let s = rng.gen_range(spec.saturation_range.0..spec.saturation_range.1);
-        let l = rng.gen_range(spec.lightness_range.0..spec.lightness_range.1);
-        hsl_to_rgb(h, s, l)
-    }
+@dataclass
+class PaletteSpec:
+    hue_ranges: List[tuple[float, float]]  # Allowed hue ranges (0-360)
+    saturation_range: tuple[float, float]   # Min-max saturation (0-1)
+    lightness_range: tuple[float, float]    # Min-max lightness (0-1)
+    accent_hue_offset: float                # Offset for accent colors
+    primary_weight: float                    # Weight for primary vs accent (0-1)
 
-    /// Sample primary and accent colors
-    pub fn sample_pair(&self, rng: &mut impl Rng) -> ([f32; 3], [f32; 3]) {
-        let primary = self.sample(rng);
-        let accent = self.sample_accent(rng);
-        (primary, accent)
-    }
-}
+class ColorPalette:
+    def __init__(self, spec: PaletteSpec):
+        self.spec = spec
+
+    def sample(self) -> tuple[float, float, float]:
+        """Sample a color from this palette."""
+        hue_range = random.choice(self.spec.hue_ranges)
+        h = random.uniform(hue_range[0], hue_range[1]) / 360.0  # Normalize to 0-1
+        s = random.uniform(*self.spec.saturation_range)
+        l = random.uniform(*self.spec.lightness_range)
+        return colorsys.hls_to_rgb(h, l, s)  # Returns RGB tuple
+
+    def sample_pair(self) -> tuple[tuple[float, float, float], tuple[float, float, float]]:
+        """Sample primary and accent colors."""
+        primary = self.sample()
+        accent = self.sample_accent()
+        return (primary, accent)
 ```
 
 ### Common Palettes
@@ -126,36 +132,38 @@ Materials map semantic descriptors to PBR parameters. Use dot notation: `categor
 
 ### Material Structure
 
-```rust
-pub struct PbrParams {
-    pub base_color: [f32; 3],     // RGB (0-1)
-    pub metallic: f32,            // 0 = dielectric, 1 = metal
-    pub roughness: f32,           // 0 = mirror, 1 = rough
-    pub normal_strength: f32,     // Normal map intensity
-    pub ao_strength: f32,         // Ambient occlusion
-    pub emission: f32,            // 0 = none, >0 = glow
+```python
+from dataclasses import dataclass
+from typing import Optional
+
+@dataclass
+class PbrParams:
+    base_color: tuple[float, float, float]  # RGB (0-1)
+    metallic: float = 0.0           # 0 = dielectric, 1 = metal
+    roughness: float = 0.5          # 0 = mirror, 1 = rough
+    normal_strength: float = 1.0    # Normal map intensity
+    ao_strength: float = 1.0        # Ambient occlusion
+    emission: float = 0.0           # 0 = none, >0 = glow
+
+# Material database
+MATERIALS = {
+    "metal.polished": PbrParams(
+        base_color=(0.9, 0.9, 0.9),
+        metallic=1.0,
+        roughness=0.1
+    ),
+    "wood.weathered": PbrParams(
+        base_color=(0.35, 0.30, 0.25),
+        metallic=0.0,
+        roughness=0.9,
+        normal_strength=1.0
+    ),
+    # ... more materials
 }
 
-/// Lookup material by semantic descriptor
-pub fn material_from_semantic(descriptor: &str) -> Option<PbrParams> {
-    match descriptor {
-        "metal.polished" => Some(PbrParams {
-            base_color: [0.9, 0.9, 0.9],
-            metallic: 1.0,
-            roughness: 0.1,
-            ..Default::default()
-        }),
-        "wood.weathered" => Some(PbrParams {
-            base_color: [0.35, 0.30, 0.25],
-            metallic: 0.0,
-            roughness: 0.9,
-            normal_strength: 1.0,
-            ..Default::default()
-        }),
-        // ... more materials
-        _ => None,
-    }
-}
+def material_from_semantic(descriptor: str) -> Optional[PbrParams]:
+    """Lookup material by semantic descriptor."""
+    return MATERIALS.get(descriptor)
 ```
 
 ### Material Categories
@@ -181,72 +189,73 @@ Recipes combine style tokens, palettes, materials, and constraints into safe, re
 
 ### Recipe Structure
 
-```rust
-pub struct GenerationRecipe {
-    pub name: &'static str,
-    pub description: &'static str,
-    pub base_style: StyleToken,
-    pub palette: ColorPalette,
-    pub material: &'static str,
-    pub shape_hints: Vec<&'static str>,
+```python
+from dataclasses import dataclass
+from typing import List
+import random
 
-    // Constraints
-    pub scale_range: (f32, f32),
-    pub noise_amplitude_range: (f32, f32),
-    pub poly_budget: (u32, u32),
-    pub texture_resolution: u32,
-    pub uv_texel_density: f32,
-}
+@dataclass
+class GenerationRecipe:
+    name: str
+    description: str
+    base_style: StyleToken
+    palette: ColorPalette
+    material: str
+    shape_hints: List[str]
 
-impl GenerationRecipe {
-    /// Generate parameters from this recipe
-    pub fn generate(&self, rng: &mut impl Rng) -> GeneratedParams {
-        let style_mods = self.base_style.modifiers();
-        let base_material = material_from_semantic(self.material).unwrap();
-        let color = self.palette.sample(rng);
+    # Constraints
+    scale_range: tuple[float, float]
+    noise_amplitude_range: tuple[float, float]
+    poly_budget: tuple[int, int]
+    texture_resolution: int
+    uv_texel_density: float
 
-        GeneratedParams {
-            material: apply_style(&base_material, self.base_style),
-            color,
-            scale: rng.gen_range(self.scale_range.0..self.scale_range.1),
-            noise_amp: rng.gen_range(self.noise_amplitude_range.0..self.noise_amplitude_range.1),
-            max_polys: rng.gen_range(self.poly_budget.0..self.poly_budget.1),
-            texture_size: self.texture_resolution,
-        }
-    }
-}
+    def generate(self) -> 'GeneratedParams':
+        """Generate parameters from this recipe."""
+        style_mods = self.base_style.modifiers()
+        base_material = material_from_semantic(self.material)
+        color = self.palette.sample()
+
+        return GeneratedParams(
+            material=apply_style(base_material, self.base_style),
+            color=color,
+            scale=random.uniform(*self.scale_range),
+            noise_amp=random.uniform(*self.noise_amplitude_range),
+            max_polys=random.randint(*self.poly_budget),
+            texture_size=self.texture_resolution
+        )
 ```
 
 ### Example Recipes
 
-```rust
-pub const MEDIEVAL_PROP: GenerationRecipe = GenerationRecipe {
-    name: "medieval_prop",
-    description: "Medieval-fantasy props (barrels, crates, furniture)",
-    base_style: StyleToken::Rustic,
-    palette: ColorPalette::WarmEarthy,
-    material: "wood.weathered",
-    shape_hints: vec!["crate", "barrel", "chest"],
-    scale_range: (0.5, 2.0),
-    noise_amplitude_range: (0.01, 0.05),
-    poly_budget: (100, 500),
-    texture_resolution: 256,
-    uv_texel_density: 256.0,
-};
+```python
+MEDIEVAL_PROP = GenerationRecipe(
+    name="medieval_prop",
+    description="Medieval-fantasy props (barrels, crates, furniture)",
+    base_style=StyleToken.RUSTIC,
+    palette=ColorPalette.WARM_EARTHY,
+    material="wood.weathered",
+    shape_hints=["crate", "barrel", "chest"],
+    scale_range=(0.5, 2.0),
+    noise_amplitude_range=(0.01, 0.05),
+    poly_budget=(100, 500),
+    texture_resolution=256,
+    uv_texel_density=256.0,
+)
 
-pub const SCIFI_PANEL: GenerationRecipe = GenerationRecipe {
-    name: "scifi_panel",
-    description: "Sci-fi wall panels, consoles, tech surfaces",
-    base_style: StyleToken::Geometric,
-    palette: ColorPalette::CoolMetal,
-    material: "metal.brushed",
-    shape_hints: vec!["panel", "console", "terminal"],
-    scale_range: (1.0, 4.0),
-    noise_amplitude_range: (0.0, 0.01),
-    poly_budget: (50, 200),
-    texture_resolution: 256,
-    uv_texel_density: 512.0,
-};
+SCIFI_PANEL = GenerationRecipe(
+    name="scifi_panel",
+    description="Sci-fi wall panels, consoles, tech surfaces",
+    base_style=StyleToken.GEOMETRIC,
+    palette=ColorPalette.COOL_METAL,
+    material="metal.brushed",
+    shape_hints=["panel", "console", "terminal"],
+    scale_range=(1.0, 4.0),
+    noise_amplitude_range=(0.0, 0.01),
+    poly_budget=(50, 200),
+    texture_resolution=256,
+    uv_texel_density=512.0,
+)
 ```
 
 ---
@@ -257,55 +266,55 @@ The style guide includes self-assessment heuristics for generated assets. Use th
 
 ### Texture Quality
 
-```rust
-pub struct TextureQuality {
-    pub contrast: f32,         // Should be > 0.15
-    pub noise_coherence: f32,  // Should be > 0.4
-    pub tileability: f32,      // Should be > 0.8 for tiling textures
-    pub unique_colors: u32,    // Should be > 50
-    pub histogram_balance: f32, // Should be > 0.3
-}
+```python
+from dataclasses import dataclass
+from typing import List
 
-impl TextureQuality {
-    pub fn passes_minimum(&self) -> bool {
-        self.contrast > 0.15 &&
-        self.noise_coherence > 0.4 &&
-        self.histogram_balance > 0.3
-    }
+@dataclass
+class TextureQuality:
+    contrast: float         # Should be > 0.15
+    noise_coherence: float  # Should be > 0.4
+    tileability: float      # Should be > 0.8 for tiling textures
+    unique_colors: int      # Should be > 50
+    histogram_balance: float # Should be > 0.3
 
-    pub fn issues(&self) -> Vec<&'static str> {
-        let mut issues = vec![];
-        if self.contrast <= 0.15 {
-            issues.push("Too flat - add more variation");
-        }
-        if self.tileability <= 0.8 {
-            issues.push("Visible seams when tiled");
-        }
-        issues
-    }
-}
+    def passes_minimum(self) -> bool:
+        return (
+            self.contrast > 0.15 and
+            self.noise_coherence > 0.4 and
+            self.histogram_balance > 0.3
+        )
+
+    def issues(self) -> List[str]:
+        issues = []
+        if self.contrast <= 0.15:
+            issues.append("Too flat - add more variation")
+        if self.tileability <= 0.8:
+            issues.append("Visible seams when tiled")
+        return issues
 ```
 
 ### Mesh Quality
 
-```rust
-pub struct MeshQuality {
-    pub triangle_count: u32,
-    pub degenerate_tris: u32,      // Should be 0
-    pub uv_coverage: f32,          // Should be > 0.95
-    pub uv_overlap: f32,           // Should be < 0.05
-    pub max_stretch: f32,          // Should be < 2.0
-    pub watertight: bool,          // No holes
-}
+```python
+from dataclasses import dataclass
 
-impl MeshQuality {
-    pub fn passes_for_budget(&self, max_triangles: u32) -> bool {
-        self.triangle_count <= max_triangles &&
-        self.degenerate_tris == 0 &&
-        self.uv_coverage > 0.95 &&
-        self.max_stretch < 2.0
-    }
-}
+@dataclass
+class MeshQuality:
+    triangle_count: int
+    degenerate_tris: int      # Should be 0
+    uv_coverage: float        # Should be > 0.95
+    uv_overlap: float         # Should be < 0.05
+    max_stretch: float        # Should be < 2.0
+    watertight: bool          # No holes
+
+    def passes_for_budget(self, max_triangles: int) -> bool:
+        return (
+            self.triangle_count <= max_triangles and
+            self.degenerate_tris == 0 and
+            self.uv_coverage > 0.95 and
+            self.max_stretch < 2.0
+        )
 ```
 
 ### Animation Quality (12 Principles)

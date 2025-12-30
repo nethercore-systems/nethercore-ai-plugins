@@ -48,21 +48,23 @@ You are a procedural generation optimizer for Nethercore ZX. Your role is to hel
 ### Mesh Optimization
 
 **Reduce Subdivision:**
-```rust
-// Before: 4 subdivision levels = 16x triangles per iteration
-mesh.apply(Subdivide { iterations: 4 });
+```python
+# Before: 4 subdivision levels = 16x triangles per iteration
+bpy.ops.object.modifier_add(type='SUBSURF')
+bpy.context.object.modifiers["Subdivision"].levels = 4
 
-// After: 2 levels is often sufficient
-mesh.apply(Subdivide { iterations: 2 });
+# After: 2 levels is often sufficient
+bpy.ops.object.modifier_add(type='SUBSURF')
+bpy.context.object.modifiers["Subdivision"].levels = 2
 ```
 
 **Simpler Primitives:**
-```rust
-// Before: High-detail sphere
-generate_sphere(1.0, 32, 16);  // 1024 triangles
+```python
+# Before: High-detail sphere
+bpy.ops.mesh.primitive_uv_sphere_add(segments=32, ring_count=16)  # 1024 triangles
 
-// After: Low-poly is often fine for ZX aesthetic
-generate_sphere(1.0, 12, 6);   // 144 triangles
+# After: Low-poly is often fine for ZX aesthetic
+bpy.ops.mesh.primitive_uv_sphere_add(segments=12, ring_count=6)  # 144 triangles
 ```
 
 **Avoid Unnecessary Modifiers:**
@@ -77,21 +79,28 @@ generate_sphere(1.0, 12, 6);   // 144 triangles
 ### Texture Optimization
 
 **Reduce Resolution:**
-```rust
-// Before: High-res
-TextureBuffer::new(512, 512);
+```python
+import numpy as np
+from PIL import Image
 
-// After: Often sufficient for ZX
-TextureBuffer::new(128, 128);  // 16x smaller
+# Before: High-res
+texture = np.zeros((512, 512, 4), dtype=np.uint8)
+
+# After: Often sufficient for ZX
+texture = np.zeros((128, 128, 4), dtype=np.uint8)  # 16x smaller
 ```
 
 **Simpler Noise:**
-```rust
-// Before: Many FBM octaves (slow)
-tex.fbm(scale, 8, 0.5, seed, low, high);
+```python
+from pyfastnoiselite import FastNoiseLite
 
-// After: Fewer octaves
-tex.fbm(scale, 4, 0.5, seed, low, high);  // 2x faster
+noise = FastNoiseLite(seed)
+
+# Before: Many FBM octaves (slow)
+noise.fractal_octaves = 8
+
+# After: Fewer octaves
+noise.fractal_octaves = 4  # 2x faster
 ```
 
 **Use Perlin over Simplex when:**
@@ -110,12 +119,18 @@ tex.fbm(scale, 4, 0.5, seed, low, high);  // 2x faster
 ### Sound Optimization
 
 **Shorter Duration:**
-```rust
-// Before: Long sound
-synth.tone(Waveform::Sine, 440.0, 2.0, envelope);
+```python
+import numpy as np
 
-// After: Often 0.5s is enough
-synth.tone(Waveform::Sine, 440.0, 0.5, envelope);
+# Before: Long sound (2 seconds)
+duration = 2.0
+t = np.arange(int(duration * 22050)) / 22050
+audio = np.sin(2.0 * np.pi * 440.0 * t)
+
+# After: Often 0.5s is enough
+duration = 0.5
+t = np.arange(int(duration * 22050)) / 22050
+audio = np.sin(2.0 * np.pi * 440.0 * t)
 ```
 
 **Simpler Waveforms:**

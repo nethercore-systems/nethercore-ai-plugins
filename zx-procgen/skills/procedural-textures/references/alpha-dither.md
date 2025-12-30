@@ -280,9 +280,9 @@ generate_foliage_alpha("leaves", (60, 120, 40, 255), (80, 60, 30, 255), leaf_den
 
 Beyond texture alpha, control transparency via uniforms:
 
-```rust
-// Game code
-set_alpha(0.5);  // 50% overall transparency (multiplied with texture alpha)
+```python
+# Game code
+set_alpha(0.5)  # 50% overall transparency (multiplied with texture alpha)
 ```
 
 ---

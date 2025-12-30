@@ -4,114 +4,149 @@ Combine multiple textures into a single atlas with UV remapping.
 
 ## Atlas Data Structures
 
-```rust
-struct AtlasRect {
-    x: u32, y: u32,
-    width: u32, height: u32,
-}
+```python
+import numpy as np
+from dataclasses import dataclass
+from typing import List, Tuple
+from PIL import Image
 
-struct TextureAtlas {
-    texture: TextureBuffer,
-    uv_transforms: Vec<UvTransform>,
-    placements: Vec<AtlasRect>,
-}
+@dataclass
+class AtlasRect:
+    x: int
+    y: int
+    width: int
+    height: int
 
-struct UvTransform {
-    offset: [f32; 2],
-    scale: [f32; 2],
-}
+@dataclass
+class UvTransform:
+    offset: Tuple[float, float]  # (u_offset, v_offset)
+    scale: Tuple[float, float]   # (u_scale, v_scale)
+
+@dataclass
+class TextureAtlas:
+    texture: np.ndarray           # RGBA array
+    uv_transforms: List[UvTransform]
+    placements: List[AtlasRect]
 ```
 
 ## Shelf Packing Algorithm
 
-```rust
-impl TextureAtlas {
-    fn pack(textures: &[&TextureBuffer], padding: u32) -> Self {
-        // Sort by height (descending) for better packing
-        let mut indices: Vec<usize> = (0..textures.len()).collect();
-        indices.sort_by(|&a, &b| textures[b].height.cmp(&textures[a].height));
+```python
+import numpy as np
+from PIL import Image
+from typing import List
 
-        // Calculate required atlas size
-        let total_area: u32 = textures.iter()
-            .map(|t| (t.width + padding) * (t.height + padding))
-            .sum();
-        let min_size = (total_area as f32).sqrt() as u32;
-        let atlas_size = min_size.next_power_of_two().max(256).min(2048);
+def next_power_of_two(n: int) -> int:
+    """Return the smallest power of 2 >= n."""
+    return 1 << (n - 1).bit_length() if n > 0 else 1
 
-        let mut atlas = TextureBuffer::new(atlas_size, atlas_size);
-        let mut placements = vec![AtlasRect::default(); textures.len()];
-        let mut uv_transforms = vec![UvTransform::default(); textures.len()];
+def pack_textures(textures: List[np.ndarray], padding: int = 2) -> TextureAtlas:
+    """Pack multiple textures into a single atlas using shelf packing.
 
-        // Shelf packing
-        let mut shelf_y = 0u32;
-        let mut shelf_height = 0u32;
-        let mut x = 0u32;
+    Args:
+        textures: List of RGBA texture arrays
+        padding: Padding between textures in pixels
 
-        for &idx in &indices {
-            let tex = textures[idx];
-            let w = tex.width + padding;
-            let h = tex.height + padding;
+    Returns:
+        TextureAtlas with packed texture and UV transforms
+    """
+    # Get texture dimensions
+    tex_sizes = [(tex.shape[1], tex.shape[0]) for tex in textures]  # (width, height)
 
-            // New shelf if doesn't fit
-            if x + w > atlas_size {
-                x = 0;
-                shelf_y += shelf_height;
-                shelf_height = 0;
-            }
+    # Sort by height (descending) for better packing
+    indices = sorted(range(len(textures)), key=lambda i: -tex_sizes[i][1])
 
-            if shelf_y + h > atlas_size {
-                panic!("Atlas too small for textures");
-            }
+    # Calculate required atlas size
+    total_area = sum((w + padding) * (h + padding) for w, h in tex_sizes)
+    min_size = int(np.sqrt(total_area))
+    atlas_size = max(256, min(2048, next_power_of_two(min_size)))
 
-            // Place texture
-            atlas.blit(tex, x, shelf_y);
+    # Initialize atlas and tracking arrays
+    atlas = np.zeros((atlas_size, atlas_size, 4), dtype=np.uint8)
+    placements = [AtlasRect(0, 0, 0, 0) for _ in textures]
+    uv_transforms = [UvTransform((0, 0), (1, 1)) for _ in textures]
 
-            placements[idx] = AtlasRect {
-                x, y: shelf_y,
-                width: tex.width, height: tex.height,
-            };
+    # Shelf packing
+    shelf_y = 0
+    shelf_height = 0
+    x = 0
 
-            uv_transforms[idx] = UvTransform {
-                offset: [x as f32 / atlas_size as f32, shelf_y as f32 / atlas_size as f32],
-                scale: [tex.width as f32 / atlas_size as f32, tex.height as f32 / atlas_size as f32],
-            };
+    for idx in indices:
+        tex = textures[idx]
+        h, w = tex.shape[:2]
+        padded_w = w + padding
+        padded_h = h + padding
 
-            x += w;
-            shelf_height = shelf_height.max(h);
-        }
+        # New shelf if doesn't fit
+        if x + padded_w > atlas_size:
+            x = 0
+            shelf_y += shelf_height
+            shelf_height = 0
 
-        Self { texture: atlas, uv_transforms, placements }
-    }
+        if shelf_y + padded_h > atlas_size:
+            raise ValueError("Atlas too small for textures")
 
-    fn remap_uvs(&self, mesh: &mut MeshUV, atlas_index: usize) {
-        let transform = &self.uv_transforms[atlas_index];
+        # Place texture (blit)
+        atlas[shelf_y:shelf_y + h, x:x + w] = tex
 
-        for uv in &mut mesh.uvs {
-            uv[0] = uv[0] * transform.scale[0] + transform.offset[0];
-            uv[1] = uv[1] * transform.scale[1] + transform.offset[1];
-        }
-    }
-}
+        placements[idx] = AtlasRect(x=x, y=shelf_y, width=w, height=h)
+
+        uv_transforms[idx] = UvTransform(
+            offset=(x / atlas_size, shelf_y / atlas_size),
+            scale=(w / atlas_size, h / atlas_size),
+        )
+
+        x += padded_w
+        shelf_height = max(shelf_height, padded_h)
+
+    return TextureAtlas(texture=atlas, uv_transforms=uv_transforms, placements=placements)
+
+def remap_uvs(uvs: np.ndarray, transform: UvTransform) -> np.ndarray:
+    """Remap UV coordinates using atlas transform.
+
+    Args:
+        uvs: Array of shape (N, 2) containing UV coordinates
+        transform: UvTransform with offset and scale
+
+    Returns:
+        Remapped UV coordinates
+    """
+    remapped = uvs.copy()
+    remapped[:, 0] = uvs[:, 0] * transform.scale[0] + transform.offset[0]
+    remapped[:, 1] = uvs[:, 1] * transform.scale[1] + transform.offset[1]
+    return remapped
 ```
 
 ## Batch Atlasing Multiple Props
 
-```rust
-fn create_prop_atlas(props: &[PropAsset]) -> (TextureAtlas, Vec<MeshUV>) {
-    let textures: Vec<&TextureBuffer> = props.iter().map(|p| &p.texture).collect();
-    let atlas = TextureAtlas::pack(&textures, 2);
+```python
+import numpy as np
+from dataclasses import dataclass
+from typing import List, Tuple
 
-    let remapped_meshes: Vec<MeshUV> = props.iter()
-        .enumerate()
-        .map(|(idx, prop)| {
-            let mut mesh = prop.mesh.clone();
-            atlas.remap_uvs(&mut mesh, idx);
-            mesh
-        })
-        .collect();
+@dataclass
+class PropAsset:
+    texture: np.ndarray  # RGBA texture array
+    uvs: np.ndarray      # UV coordinates (N, 2)
 
-    (atlas, remapped_meshes)
-}
+def create_prop_atlas(props: List[PropAsset]) -> Tuple[TextureAtlas, List[np.ndarray]]:
+    """Create texture atlas from multiple props and remap their UVs.
+
+    Args:
+        props: List of PropAsset with texture and UV data
+
+    Returns:
+        Tuple of (TextureAtlas, list of remapped UV arrays)
+    """
+    textures = [prop.texture for prop in props]
+    atlas = pack_textures(textures, padding=2)
+
+    remapped_uvs = [
+        remap_uvs(prop.uvs, atlas.uv_transforms[idx])
+        for idx, prop in enumerate(props)
+    ]
+
+    return atlas, remapped_uvs
 ```
 
 ## Python Implementation
