@@ -1,5 +1,5 @@
 ---
-description: Interactive wizard to establish the visual style for a game project. Creates a SADL specification.
+description: Interactive wizard to establish the visual style for a game project.
 argument-hint: "[game name or concept]"
 allowed-tools:
   - Read
@@ -10,18 +10,18 @@ allowed-tools:
 
 # Establish Visual Style
 
-Guide the user through creating a Semantic Asset Description Language (SADL) specification for their game's visual assets.
+Guide the user through creating a visual style specification for their game's assets.
 
 ## Process Overview
 
 Walk through these phases to establish visual direction:
 
 1. **Understand the Game** - Genre, setting, aesthetic
-2. **Define Style Token** - Primary visual style
+2. **Define Style** - Primary visual style
 3. **Establish Color Palette** - Color direction
 4. **Select Material Preferences** - Surface treatments
 5. **Configure Quality Parameters** - Detail level and constraints
-6. **Output Specification** - Create SADL document
+6. **Output Specification** - Create style document
 
 ## Phase 1: Understand the Game
 

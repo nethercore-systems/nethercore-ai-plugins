@@ -1,27 +1,19 @@
 ---
-name: SADL Audio Specification
+name: Audio Style Guide
 description: |
-  Use this skill when the user asks about audio style, sound direction, or wants consistent audio generation. This is the AUDIO portion of SADL (Semantic Asset Description Language).
+  Use this skill when generating audio assets (music, SFX, instruments) and you need consistent style.
 
-  **Trigger phrases:** "SADL audio", "sonic identity", "audio style", "how should it sound", "sound direction", "music style", "audio mood", "sound palette", "instrument palette", "audio aesthetic", "dark fantasy audio", "retro sounds", "cinematic".
+  **Triggers:** "audio style", "how should it sound", "sound direction", "music style", "audio mood", "instrument palette", "dark fantasy audio", "retro sounds".
 
-  **Also triggers on:** "establish sonic identity", "define audio direction", "consistent audio", "sound cohesion".
-
-  **Before generating audio:** Check `.studio/sonic-identity.local.md` for existing specs. If none exists, suggest `/establish-sonic-identity` first.
-
-  Bridges creative intent ("dark and tense") and audio parameters (key=Cm, tempo=80, reverb=cathedral).
-version: 2.0.0
+  **Before generating:** Check `.studio/sonic-identity.local.md` for project audio direction. If none exists and user wants consistency, suggest `/establish-sonic-identity`.
+version: 3.0.0
 ---
 
-# SADL Audio Specification
+# Audio Style Guide
 
-The audio portion of SADL (Semantic Asset Description Language). Bridges creative audio intent and sound implementation. Instead of guessing synthesis parameters or instrument choices, describe your audio semantically and translate to concrete specifications.
+Reference for maintaining consistent audio style across procedurally generated sounds and music.
 
-For VISUAL assets, see: zx-procgen:semantic-asset-language
-
-## Core Concepts
-
-SADL Audio has five pillars:
+## Core Elements
 
 1. **Sonic Styles** - Overall audio aesthetic (Orchestral, Chiptune, Industrial)
 2. **Mood Palettes** - Emotional character (Tense, Triumphant, Mysterious)
