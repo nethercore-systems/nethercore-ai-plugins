@@ -117,14 +117,67 @@ XmModule(
 
 ## Nethercore Integration
 
-Generated XM files have **sample_length=0**. Samples are loaded from ROM at runtime.
+### Approach 1: Embedded Samples (Recommended - Auto-Extraction)
 
-**Critical:** Instrument names MUST match `[[assets.sounds]]` IDs exactly.
+XM files can contain embedded sample data. At pack time, `nether pack` automatically:
+- Extracts all samples from the XM file
+- Converts them to 22050 Hz mono i16 format
+- Creates ROM sound IDs from instrument names (sanitized: `"My Kick!"` → `"my_kick"`)
+- Deduplicates identical samples across files (by content hash)
+- Makes samples available via `rom_sound("instrument_name")`
+
+**Benefits:**
+- No manual sample export from tracker
+- No `[[assets.sounds]]` manifest entries needed
+- Automatic deduplication across tracks
+- Samples stay with the music file
+
+**Example:**
+
+```python
+# Generate XM with embedded samples (use real sample data, not zeros!)
+module = XmModule(
+    name="Boss Theme",
+    instruments=[
+        XmInstrument(name="Kick_Drum", sample_data=kick_samples),
+        XmInstrument(name="Bass_Synth", sample_data=bass_samples),
+    ],
+    # ...
+)
+write_xm(module, "boss_theme.xm")
+```
+
+```toml
+# nether.toml - Just add the XM file, samples auto-extracted!
+[[assets.trackers]]
+id = "boss_theme"
+path = "music/boss_theme.xm"
+# Instruments automatically become: rom_sound("kick_drum"), rom_sound("bass_synth")
+```
+
+```rust
+// In game code - samples are available!
+let kick = rom_sound(b"kick_drum", 10);
+let bass = rom_sound(b"bass_synth", 10);
+let music = rom_tracker(b"boss_theme", 10);
+music_play(music, 0.8, 1);
+```
+
+### Approach 2: ROM-Only References (Legacy - Sample-less XM)
+
+XM files can have `sample_length=0`, with instrument names mapping to separately
+loaded `[[assets.sounds]]` IDs in nether.toml.
+
+**Use when:**
+- Sharing samples across many XM files without embedding
+- Samples loaded from other sources (procedural generation, WAV files)
+
+**Example:**
 
 ```toml
 # nether.toml
 [[assets.sounds]]
-id = "kick"          # Must match XmInstrument(name="kick")
+id = "kick"          # Must match XmInstrument(name="kick") exactly
 path = "samples/kick.wav"
 
 [[assets.trackers]]
@@ -132,11 +185,7 @@ id = "my_song"
 path = "music/my_song.xm"
 ```
 
-```rust
-// In game code
-let music = rom_tracker(b"my_song", 7);
-music_play(music, 0.8, 1);  // volume 0.8, loop=true
-```
+**Note:** You can mix both approaches - auto-extracted samples supplement (not replace) manual entries.
 
 ## Common Patterns
 

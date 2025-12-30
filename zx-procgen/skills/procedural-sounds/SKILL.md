@@ -3,6 +3,8 @@ name: Procedural Sound Generation with NumPy/SciPy
 description: |
   Use this skill when the user wants to GENERATE or CODE sound effects for ZX games. Trigger phrases: "generate sound", "create SFX", "write audio code", "synthesize WAV", "numpy audio", "scipy sound", "procedural SFX", "make laser sound", "explosion sound code", "footstep generator", "FM synthesis", "Karplus-Strong".
 
+  **CRITICAL WORKFLOW:** (1) Check `references/sfx-recipes/` FIRST for matching recipe, (2) Apply quality standards (default: Temp tier = 2+ layers + envelope + filter), (3) Verify checklist before rendering. See "Sound Generation Workflow" section.
+
   **Before generating:** Check `.studio/sonic-identity.local.md` for project audio specs (reverb, character, processing). Apply those constraints for consistent audio. If no spec exists, ask about style or suggest `/establish-sonic-identity`.
 
   This skill provides IMPLEMENTATION CODE using numpy/scipy to produce WAV files at build time for ZX ROM assets.
@@ -77,6 +79,28 @@ See `references/numpy-scipy-workflow.md` for complete workflow patterns.
 | Max Duration | ~2 seconds | Typical SFX budget |
 | Simultaneous | 16 channels | Plus 1 dedicated music channel |
 
+## Quality Standards
+
+**Default: Temp Tier (50-70%)** - Good enough for development, recognizable, usable.
+
+Minimum requirements for ALL generated SFX:
+- **2-3 synthesis layers** (main + harmonic/sub/detuned)
+- **Proper envelope** (attack transient + exponential decay, NOT linear fade)
+- **Filtering** (lowpass sweep OR static resonant)
+- **Richness** (harmonics OR detuning for thickness)
+- **Normalization** (scale to 0.9 peak)
+
+**Anti-patterns to avoid:**
+- ❌ Simple sine wave + linear fade (produces thin, chiptuney sounds)
+- ❌ Single oscillator, no harmonics, no filtering
+- ❌ Instant attack causing clicks
+
+**See `references/quality-standards.md` for:**
+- Quality tier comparison table (Temp/Final/Hero)
+- Pre-generation checklist
+- Quality-focused code template
+- Detailed guidelines and examples
+
 ## Technique Selection
 
 | Technique | Best For | Key Functions |
@@ -131,57 +155,65 @@ def karplus_strong(freq, duration, damping=0.996):
 
 See `references/numpy-scipy-building-blocks.md` for complete function reference.
 
-## Common SFX Patterns
+## Sound Generation Workflow
 
-### Laser/Zap
-Descending frequency sweep with harmonics:
-```python
-def make_laser(duration=0.2, start_freq=1200, end_freq=200):
-    t = np.linspace(0, duration, int(SAMPLE_RATE * duration))
-    freq_sweep = np.linspace(start_freq, end_freq, len(t))
-    phase = np.cumsum(2 * np.pi * freq_sweep / SAMPLE_RATE)
-    osc = np.sin(phase) + 0.3 * np.sin(2 * phase)  # Add harmonics
-    env = np.exp(-t * 15)  # Quick decay
-    return osc * env
-```
+When asked to generate a sound effect, **follow these steps:**
 
-### Explosion
-Noise burst with lowpass sweep:
-```python
-def make_explosion(duration=0.8):
-    t = np.linspace(0, duration, int(SAMPLE_RATE * duration))
-    noise = np.random.randn(len(t))  # White noise
-    env = np.exp(-t * 3)  # Slower decay
+### Step 1: Check Recipe Files First
 
-    # Sweep filter from high to low
-    cutoff_sweep = np.linspace(0.3, 0.02, len(t))
-    filtered = np.zeros_like(noise)
-    for i, cutoff in enumerate(cutoff_sweep[::100]):
-        start, end = i*100, min((i+1)*100, len(t))
-        b, a = signal.butter(2, cutoff, btype='low')
-        filtered[start:end] = signal.lfilter(b, a, noise[start:end])
+**Before generating custom code**, check if a recipe matches your sound type:
 
-    return filtered * env
-```
+| Sound Type | Recipe File | Quality |
+|------------|-------------|---------|
+| Laser/Zap/Projectile | `references/sfx-recipes/laser.py` | Temp→Final |
+| Explosion/Blast | `references/sfx-recipes/explosion.py` | Final |
+| Hit/Impact/Punch | `references/sfx-recipes/hit.py` | Temp |
+| Coin/Pickup/Reward | `references/sfx-recipes/coin.py` | Temp |
+| Jump/Hop/Bounce | `references/sfx-recipes/jump.py` | Temp |
+| Powerup/Buff/Magic | `references/sfx-recipes/powerup.py` | Final |
+| Footstep/Walk | `references/sfx-recipes/footstep.py` | Temp |
+| UI Click/Button | `references/sfx-recipes/ui-click.py` | Temp |
 
-### Coin/Pickup
-Ascending arpeggio with quick decay:
-```python
-def make_coin(duration=0.4):
-    freqs = [523, 659, 784, 1047]  # C5, E5, G5, C6
-    t = np.linspace(0, duration, int(SAMPLE_RATE * duration))
-    audio = np.zeros_like(t)
+**If recipe matches:** Read the file, copy `build_*()` function, customize parameters.
+**If no match:** Use quality standards and build from scratch (see `references/quality-standards.md` for template).
 
-    for i, freq in enumerate(freqs):
-        note_start = i * 0.08
-        note_env = np.where(t >= note_start,
-                          np.exp(-(t - note_start) * 25), 0)
-        audio += np.sin(2 * np.pi * freq * t) * note_env * 0.3
+### Step 2: Apply Quality Tier
 
-    return audio
-```
+Default to **Temp tier (50-70%)**: 2-3 layers, proper envelope, filtering, harmonics/detuning, normalization.
 
-See `references/sfx-recipes/` for complete production-ready recipes for all common game sounds.
+### Step 3: Verify Checklist
+
+Before rendering, ensure: layering ✓, attack transient ✓, exp decay ✓, filtering ✓, richness ✓, normalized ✓.
+
+See `references/quality-standards.md` for complete checklist and quality-focused code template.
+
+## Production-Quality Recipe Library
+
+The `references/sfx-recipes/` directory contains 8 complete, production-ready recipes demonstrating advanced synthesis techniques. **Use these as your primary reference.**
+
+### Combat & Action
+- **laser.py** - Multi-osc detuning, harmonics, freq sweep (Temp→Final)
+- **explosion.py** - 3-layer (noise + sub-bass + sizzle), reverb (Final)
+- **hit.py** - Noise transient, shaped envelope (Temp)
+
+### Gameplay Events
+- **coin.py** - Ascending arpeggio, individual note envelopes (Temp)
+- **jump.py** - Pitch arc, natural feel (Temp)
+- **powerup.py** - FM synthesis, sparkle overlay (Final)
+
+### Character & UI
+- **footstep.py** - Surface-specific filtering, batch generation (Temp)
+- **ui-click.py** - Quick blip, subtle (Temp)
+
+**Each recipe includes:**
+- Clear parameter documentation at top
+- Quality features (layering, proper envelopes, filtering)
+- Variation functions for different contexts
+- Complete working code ready to customize
+
+**How to use:** (1) Identify closest match from table above, (2) Read the recipe file, (3) Copy `build_*()` function, (4) Customize parameters, (5) Use variation functions (e.g., `laser_retro()`, `coin_gem()`).
+
+See `references/sfx-recipes/README.md` for quick reference and quality comparison examples.
 
 ## Output Integration
 

@@ -71,12 +71,41 @@ Each cell in a pattern contains:
 | Effect | 0-35 | Effect command |
 | Effect Param | 00-FF | Effect parameter |
 
-## ⚠️ IMPORTANT: Nethercore XM Format Difference
+## ⚠️ IMPORTANT: Nethercore Sample Handling (Two Approaches)
 
-**Nethercore uses a MODIFIED XM format.** Unlike standard XM files which embed samples directly:
+Nethercore supports TWO workflows for XM sample handling:
 
-| Standard XM | Nethercore XM |
-|-------------|---------------|
+### Approach 1: Embedded Samples (Recommended - Auto-Extraction)
+
+**XM files with embedded samples** - the standard tracker workflow! At pack time, `nether pack` automatically:
+- Extracts all samples from the XM file
+- Converts them to 22050 Hz mono i16 format
+- Creates ROM sound IDs from instrument names (sanitized: `"My Kick!"` → `"my_kick"`)
+- Deduplicates identical samples across files (by content hash)
+- Makes samples available via `rom_sound("instrument_name")`
+
+**Benefits:**
+- ✅ No manual sample export from tracker
+- ✅ No `[[assets.sounds]]` manifest entries needed
+- ✅ Automatic deduplication across tracks
+- ✅ Samples stay with the music file
+
+**Example workflow:**
+1. Create XM file in MilkyTracker with embedded samples
+2. Add to `nether.toml`:
+   ```toml
+   [[assets.trackers]]
+   id = "boss_theme"
+   path = "music/boss_theme.xm"
+   ```
+3. Done! Samples auto-extracted and available as `rom_sound("kick")`, etc.
+
+### Approach 2: ROM-Only References (Legacy - Sample-less XM)
+
+**XM files WITHOUT embedded samples** - samples loaded separately:
+
+| Standard XM | Nethercore Sample-less XM |
+|-------------|---------------------------|
 | Samples embedded in .xm file | Samples stripped from .xm |
 | Large file sizes (MB) | Tiny pattern-only files (KB) |
 | Self-contained | References ROM samples by name |
@@ -86,10 +115,12 @@ Each cell in a pattern contains:
 2. During `nether pack`, sample data is stripped from the XM
 3. At runtime, the player resolves instrument names to ROM samples
 
-This means:
-- **Same samples can be shared** between music tracks AND sound effects
-- **Much smaller ROM sizes** (no duplicate sample data)
+**Use when:**
+- Sharing samples across many XM files without embedding
+- Samples loaded from other sources (procedural generation, WAV files)
 - **Instrument names MUST match** your `[[assets.sounds]]` IDs exactly
+
+**Note:** You can mix both approaches - auto-extracted samples supplement (not replace) manual `[[assets.sounds]]` entries.
 
 ## ⚠️ CRITICAL: Standard FastTracker 2 Format Required
 

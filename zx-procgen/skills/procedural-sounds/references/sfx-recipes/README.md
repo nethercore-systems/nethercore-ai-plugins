@@ -15,6 +15,100 @@ Production-ready NumPy/SciPy recipes for common game sound effects.
 | Footstep | `footstep.py` | 0.05-0.15s | Filtered noise |
 | UI Click | `ui-click.py` | 0.02-0.08s | Sine blip |
 
+## What Makes These Recipes High-Quality?
+
+These recipes demonstrate production-quality techniques that produce professional-sounding SFX, not thin chiptuney sounds. Here's what separates high-quality SFX from low-quality placeholder sounds:
+
+### ❌ Bad Example (< 30% quality)
+
+Simple sine wave + linear fade:
+
+```python
+# DON'T DO THIS - Produces thin, chiptuney sound
+t = np.linspace(0, 0.3, int(22050 * 0.3))
+audio = np.sin(2 * np.pi * 440 * t)
+audio *= np.linspace(1, 0, len(t))  # Linear fade
+```
+
+**Problems:**
+- Single oscillator (no richness)
+- No harmonics or detuning (thin sound)
+- Linear fade (unnatural decay)
+- No filtering (harsh, static timbre)
+- No attack transient (clicks/pops)
+- No normalization (may clip)
+
+**Result:** Thin, 8-bit, chiptuney sound unsuitable even for prototyping.
+
+### ✓ Good Example (Temp tier, 50-70% quality)
+
+From `laser.py` recipe:
+
+```python
+# Production-quality approach
+freq = np.linspace(800, 200, len(t))  # Frequency sweep
+phase = np.cumsum(2 * np.pi * freq / 22050)
+
+# LAYER 1: Main oscillator
+layer1 = np.sin(phase)
+
+# LAYER 2: 2nd harmonic for richness
+layer2 = 0.3 * np.sin(2 * phase)
+
+# LAYER 3: Detuned oscillator for thickness
+layer3 = 0.2 * np.sin(phase * 1.02)
+
+audio = (layer1 + layer2 + layer3) / 1.5
+
+# Proper envelope: attack + exponential decay
+env = np.exp(-t * 15)  # Exponential (NOT linear)
+env[:220] *= np.linspace(0, 1, 220)  # 10ms attack transient
+
+audio *= env
+
+# Filtering for tone shaping
+b, a = signal.butter(2, 4000/11025, btype='low')
+audio = signal.filtfilt(b, a, audio)
+
+# Normalization
+audio = audio / np.max(np.abs(audio)) * 0.9
+```
+
+**Quality features:**
+- ✓ 3 synthesis layers (depth)
+- ✓ Harmonics + detuning (richness)
+- ✓ Exponential decay (natural)
+- ✓ Attack transient (clean start, no clicks)
+- ✓ Lowpass filter (tone shaping)
+- ✓ Normalization (no clipping)
+
+**Result:** Rich, professional, recognizable laser sound suitable for production.
+
+### Quality Checklist
+
+Every recipe in this directory includes:
+
+1. **Multiple layers** - Harmonics, detuning, or complementary synthesis
+2. **Proper envelopes** - Attack transient + exponential decay curves
+3. **Filtering** - Static or swept for timbral evolution
+4. **Effects** (where appropriate) - Reverb, distortion, modulation
+5. **Variation functions** - Different presets for different contexts
+6. **Clear parameters** - Documented at top for easy customization
+7. **Normalization** - Clean output without clipping
+
+**Use these patterns as your templates.** When generating custom SFX, apply the same quality standards you see in these recipes.
+
+### Quality Tier Examples
+
+**Temp Tier (50-70%)** - Good for development:
+- `laser.py` - 3 layers, harmonics, filtering
+- `coin.py` - Arpeggio with individual note envelopes
+- `hit.py` - Noise transient with shaped envelope
+
+**Final Tier (70-90%)** - Ship-ready production:
+- `explosion.py` - 4 layers (main + sub + sizzle + reverb), dynamic filtering
+- `powerup.py` - FM synthesis + arpeggio overlay, multiple variations
+
 ## Prerequisites
 
 ```bash
