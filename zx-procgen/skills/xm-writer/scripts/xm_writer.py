@@ -6,8 +6,40 @@ This module provides low-level primitives for creating XM tracker modules.
 For composition theory (melody, chords, song structure), use the sound-design
 plugin's music-composition skill.
 
-Nethercore-specific: Generated XM files have sample_length=0. Instrument names
-map to ROM samples at runtime via [[assets.sounds]] IDs in nether.toml.
+## Nethercore Sample Handling (Two Approaches)
+
+### 1. Embedded Samples (Recommended - Auto-Extraction)
+XM files can contain embedded sample data. At pack time, nether-cli automatically:
+- Extracts all samples from the XM file
+- Converts them to 22050 Hz mono i16 format
+- Creates ROM sound IDs from instrument names (sanitized: "My Kick!" → "my_kick")
+- Deduplicates identical samples across multiple XM files (by content hash)
+- Makes samples available via rom_sound("instrument_name")
+
+**Benefits:**
+- No manual sample export from tracker
+- No [[assets.sounds]] manifest entries needed
+- Automatic deduplication across tracks
+- Samples stay with the music file
+
+**Example nether.toml:**
+```toml
+[[assets.trackers]]
+id = "boss_theme"
+path = "music/boss_theme.xm"
+# Samples auto-extracted! Instrument "Kick" becomes rom_sound("kick")
+```
+
+### 2. ROM-Only References (Sample-less XM)
+XM files can have sample_length=0, with instrument names mapping to separately
+loaded [[assets.sounds]] IDs in nether.toml.
+
+**Use when:**
+- Sharing samples across many XM files without embedding
+- Samples loaded from other sources (WAV files, procedural generation)
+
+**Note:** Even with embedded samples, you can still add explicit [[assets.sounds]]
+entries. The auto-extracted samples supplement (not replace) manual entries.
 """
 
 from dataclasses import dataclass, field
