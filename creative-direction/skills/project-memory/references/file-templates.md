@@ -268,9 +268,9 @@ This document captures the visual style decisions for the project.
 
 [Link to or describe reference images/mood boards]
 
-## SADL Style Tokens
+## Style Presets
 
-For procedural assets, use these SADL tokens:
+For procedural assets, use these style presets:
 - Style: [token]
 - Palette: [token]
 - Materials: [comma-separated list]

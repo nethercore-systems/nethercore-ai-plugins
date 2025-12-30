@@ -169,7 +169,7 @@ Tasks:
 - `integration-assistant` - Asset hookup
 
 ### Asset Agents
-- `asset-designer` - SADL specs
+- `asset-designer` - style specs
 - `asset-generator` - Procedural code
 - `character-generator` - Full characters
 - `sfx-architect` - Sound effects
@@ -188,7 +188,7 @@ Four agents handle asset quality - choose based on your need:
 
 | Agent | Question It Answers | Use When |
 |-------|---------------------|----------|
-| `asset-critic` | "Does this match the SADL spec?" | Comparing output to creative intent/specification |
+| `asset-critic` | "Does this match the style spec?" | Comparing output to creative intent/specification |
 | `asset-quality-reviewer` | "Does this fit ZX limits?" | Checking technical compliance (budgets, formats) |
 | `quality-analyzer` | "How good is this overall?" | Holistic assessment with scores and priorities |
 | `quality-enhancer` | "Make this better" | Actively improving assets to higher tiers |
@@ -215,7 +215,7 @@ Typical quality workflow:
 
 | Request | Route To |
 |---------|----------|
-| "Does this mesh match my SADL?" | `asset-critic` |
+| "Does this mesh match my style spec?" | `asset-critic` |
 | "Will these textures fit in ROM?" | `asset-quality-reviewer` |
 | "Rate my asset quality" | `quality-analyzer` |
 | "Make these textures better" | `quality-enhancer` |
@@ -243,7 +243,7 @@ What do you need?
 │   (GDD → Assets → Code → Test → Publish)
 │
 ├── "Generate all assets for my GDD" → creative-orchestrator
-│   (SADL → Generation → Validation)
+│   (Style → Generation → Validation)
 │
 ├── "I have a complex request" ─────→ request-dispatcher
 │   (Parses intent, routes to expert)
@@ -261,7 +261,7 @@ What do you need?
 
 **creative-orchestrator:**
 - Have GDD/asset specs, need assets generated
-- Want SADL-based asset pipeline
+- Want style-based asset pipeline
 - Autonomous asset generation workflow
 
 **request-dispatcher:**

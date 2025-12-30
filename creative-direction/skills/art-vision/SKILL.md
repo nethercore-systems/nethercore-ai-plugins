@@ -89,7 +89,7 @@ Create color key paintings for:
 
 ### 4. Material Definitions
 
-For ZX games, reference SADL material tokens. Define how materials should look:
+For ZX games, reference visual style material tokens. Define how materials should look:
 - Surface roughness
 - Specular behavior
 - Color temperature shifts
@@ -135,9 +135,9 @@ When reviewing assets for coherence, check:
 - Does it compete or complement existing visual hierarchy?
 - Does it maintain the established spatial relationships?
 
-## Integration with SADL
+## Integration with the style guide
 
-When working with Nethercore ZX procgen assets, map art direction to SADL:
+When working with Nethercore ZX procgen assets, map art direction to style presets:
 
 **Style Tokens**
 Select style tokens that match the established style:
@@ -145,7 +145,7 @@ Select style tokens that match the established style:
 - Consistent token usage across related asset types
 
 **Palettes**
-Map the defined palette to SADL palette tokens:
+Map the defined palette to palette tokens:
 - `warm_earthy`, `cool_metal`, `neon`, `pastel`, etc.
 - Maintain palette consistency in generation prompts
 
@@ -199,9 +199,9 @@ For detailed guidance on specific topics:
 - **`references/composition.md`** - Visual hierarchy and composition principles
 - **`references/style-spectrums.md`** - Detailed spectrum definitions with examples
 
-### SADL Integration
+### Style Integration
 
-For ZX games, consult the SADL skill in `zx-procgen`:
+For ZX games, consult the style guide skill in `zx-procgen`:
 - Style token definitions
 - Material database
 - Palette specifications

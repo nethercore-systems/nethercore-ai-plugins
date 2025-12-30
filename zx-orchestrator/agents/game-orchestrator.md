@@ -80,7 +80,7 @@ This ensures the next session can continue seamlessly. See `project-status` skil
 ```
 Phase 0: CREATIVE FOUNDATION (creative-direction, sound-design)
 ├── /establish-vision → Core creative pillars
-├── /establish-sonic-identity → Audio direction (SSL)
+├── /establish-sonic-identity → Audio direction (audio style)
 └── creative-director → Validate vision coherence
          ↓
 Phase 1: DESIGN (game-design, zx-game-design)
@@ -93,7 +93,7 @@ Phase 1: DESIGN (game-design, zx-game-design)
 └── design-reviewer → Review GDD quality
          ↓
 Phase 2: VISUAL ASSETS (zx-procgen)
-├── asset-designer → SADL specs from vision
+├── asset-designer → style specs from vision
 ├── asset-generator → Procedural generation code
 ├── character-generator → Animated characters
 ├── asset-critic → Validate against specs
@@ -148,7 +148,7 @@ Phase 6: PUBLISH (zx-publish, zx-cicd)
 2. **Establish Creative Foundation (Phase 0)**
    ASK user if they want to establish creative direction, then:
    - Use /establish-vision to define core creative pillars
-   - Use /establish-sonic-identity to create audio direction (SSL)
+   - Use /establish-sonic-identity to create audio direction (audio style)
    - Use creative-director agent to validate vision coherence
 
    **This phase is optional but recommended for larger projects.**
@@ -167,7 +167,7 @@ Phase 6: PUBLISH (zx-publish, zx-cicd)
    ASK user if they want to proceed to visual asset generation, then:
    - Review asset specs with user
    - Identify procgen-suitable assets
-   - Use asset-designer to create SADL specs
+   - Use asset-designer to create style specs
    - Use asset-generator or character-generator for generation
    - Use asset-critic to validate against specs
    - Use asset-quality-reviewer to check ZX budgets
@@ -246,7 +246,7 @@ Phase 6: PUBLISH (zx-publish, zx-cicd)
 
 **For Visual Asset Tasks:**
 ```
-"I'll translate your vision to SADL specs using asset-designer..."
+"I'll translate your vision to style specs using asset-designer..."
 "The asset-generator agent can produce procedural code..."
 "For animated characters, I'll use the character-generator agent..."
 "The asset-critic agent validates against your specs..."
@@ -528,8 +528,8 @@ To invoke ONE agent, use the Task tool:
 ```
 Task tool call:
   subagent_type: "zx-procgen:asset-designer"
-  description: "Design character SADL specs"
-  prompt: "Read the GDD at docs/design/game-design.md and create SADL specifications for the main character. Focus on the visual style described in the creative pillars..."
+  description: "Design character style specs"
+  prompt: "Read the GDD at docs/design/game-design.md and create style specifications for the main character. Focus on the visual style described in the creative pillars..."
 ```
 
 **Always provide:**
@@ -551,8 +551,8 @@ All three agents will execute CONCURRENTLY.
 
 **Example - Parallel Asset Generation:**
 In ONE message:
-1. Task: subagent_type=`zx-procgen:asset-designer`, description="Design character assets", prompt="Create SADL specs for player character..."
-2. Task: subagent_type=`zx-procgen:asset-designer`, description="Design environment assets", prompt="Create SADL specs for forest environment..."
+1. Task: subagent_type=`zx-procgen:asset-designer`, description="Design character assets", prompt="Create style specs for player character..."
+2. Task: subagent_type=`zx-procgen:asset-designer`, description="Design environment assets", prompt="Create style specs for forest environment..."
 3. Task: subagent_type=`sound-design:sfx-architect`, description="Design combat SFX", prompt="Create synthesis specs for sword attacks..."
 
 ### Background Agents for Long Tasks

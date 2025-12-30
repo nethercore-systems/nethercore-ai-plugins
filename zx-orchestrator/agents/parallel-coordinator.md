@@ -210,17 +210,17 @@ Message 1:
   Task tool call #1:
     subagent_type: "zx-procgen:asset-designer"
     description: "Design character assets"
-    prompt: "Create SADL specifications for the player character based on..."
+    prompt: "Create style specifications for the player character based on..."
 
   Task tool call #2:
     subagent_type: "zx-procgen:asset-designer"
     description: "Design environment assets"
-    prompt: "Create SADL specifications for the forest environment..."
+    prompt: "Create style specifications for the forest environment..."
 
   Task tool call #3:
     subagent_type: "zx-procgen:asset-designer"
     description: "Design UI elements"
-    prompt: "Create SADL specifications for the HUD elements..."
+    prompt: "Create style specifications for the HUD elements..."
 
 → All three execute CONCURRENTLY
 ```
@@ -267,13 +267,13 @@ In ONE message, send THREE Task calls:
 
 Task #1:
   subagent_type: "zx-procgen:asset-designer"
-  description: "Design character SADL"
-  prompt: "Read docs/design/game-design.md and create SADL specs for the warrior character. Include armor, weapon, and idle/walk/attack poses."
+  description: "Design character style"
+  prompt: "Read docs/design/game-design.md and create style specs for the warrior character. Include armor, weapon, and idle/walk/attack poses."
 
 Task #2:
   subagent_type: "zx-procgen:asset-designer"
-  description: "Design environment SADL"
-  prompt: "Read docs/design/game-design.md and create SADL specs for the dungeon environment. Include floor tiles, wall segments, torches, doors."
+  description: "Design environment style"
+  prompt: "Read docs/design/game-design.md and create style specs for the dungeon environment. Include floor tiles, wall segments, torches, doors."
 
 Task #3:
   subagent_type: "sound-design:sfx-architect"
@@ -294,7 +294,7 @@ Task #1:
 Task #2:
   subagent_type: "creative-direction:sound-director"
   description: "Review audio coherence"
-  prompt: "Review all audio in assets/audio/ for consistency with the SSL in docs/design/sonic-style.md"
+  prompt: "Review all audio in assets/audio/ for consistency with the audio style guide in docs/design/sonic-style.md"
 
 Task #3:
   subagent_type: "creative-direction:tech-director"
@@ -339,8 +339,8 @@ After parallel tasks complete, aggregate results:
 
 | Task | Agent | Status | Summary |
 |------|-------|--------|---------|
-| Character SADL | asset-designer | ✅ | Created 3 character specs |
-| Environment SADL | asset-designer | ✅ | Created 12 prop specs |
+| Character style | asset-designer | ✅ | Created 3 character specs |
+| Environment style | asset-designer | ✅ | Created 12 prop specs |
 | Combat SFX | sfx-architect | ✅ | Created 5 sound specs |
 
 ### Combined Output
@@ -451,7 +451,7 @@ Recommend agents for common parallel workflows:
 **Audio Asset Pipeline:**
 - `music-architect` × N (parallel track composition)
 - `sfx-architect` × N (parallel effect synthesis)
-- `sonic-designer` (after SSL established)
+- `sonic-designer` (after audio style established)
 - `sound-director` (final coherence review)
 
 **Implementation Sprint:**

@@ -44,7 +44,7 @@
         "hooks": [
           {
             "type": "prompt",
-            "prompt": "ASSET DESIGN COMPLETED - GENERATION PENDING\n\nThe asset-designer created SADL specifications but NOT actual assets.\n\nNEXT STEPS REQUIRED:\n1. Review the SADL specs (design document, not asset files)\n2. Run asset-generator with the SADL specs to create actual assets\n3. After generation, run integration-assistant to hook up assets\n\nSADL specs alone don't produce a playable game - generation and integration must follow."
+            "prompt": "ASSET DESIGN COMPLETED - GENERATION PENDING\n\nThe asset-designer created style specifications but NOT actual assets.\n\nNEXT STEPS REQUIRED:\n1. Review the style specs (design document, not asset files)\n2. Run asset-generator with the style specs to create actual assets\n3. After generation, run integration-assistant to hook up assets\n\nstyle specs alone don't produce a playable game - generation and integration must follow."
           }
         ]
       }

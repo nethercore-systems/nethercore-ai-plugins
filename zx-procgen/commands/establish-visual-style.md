@@ -119,7 +119,7 @@ Ask: "Any specific ZX constraints to note?" (ROM budget concerns, render mode pr
 
 ## Phase 6: Output Specification
 
-Create the SADL specification document.
+Create the style specification document.
 
 **Output location:** `.studio/visual-style.local.md`
 
@@ -185,7 +185,7 @@ Create the SADL specification document.
 
 ## Style Examples
 
-Natural language → SADL translation for this project:
+Natural language → style translation for this project:
 
 | Description | Translation |
 |-------------|-------------|

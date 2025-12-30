@@ -9,7 +9,7 @@ The orchestrator manages end-to-end ZX game development across 7 phases:
 ```
 Phase 0: CREATIVE FOUNDATION (creative-direction, sound-design)
 ├── Establish creative vision
-├── Define audio direction (SSL)
+├── Define audio direction (audio style)
 └── Validate vision coherence
          ↓
 Phase 1: DESIGN (game-design, zx-game-design)
