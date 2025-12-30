@@ -1,7 +1,13 @@
 ---
 name: Procedural Texture Generation for ZX
-description: This skill should be used when the user asks to "generate a texture", "create procedural texture", "make a noise pattern", "perlin noise texture", "simplex noise", "voronoi pattern", "tile texture", "seamless texture", "material texture", "gradient texture", "generate tileable image", "procedural material", "MRE texture", "metallic roughness", "specular map", "albedo texture", "SSE texture", "Mode 0 textures", "Mode 1 textures", "Mode 2 textures", "Mode 3 textures", "generate PBR textures", "matcap texture", "generate matcap", "dither transparency", "alpha texture", "FastNoiseLite", "PIL texture", "NumPy texture", "texture atlas", "material recipe", "brushed metal texture", "wood grain texture", "stone texture", or mentions texture generation, noise algorithms, pattern generation, material channels, render modes, or matcap generation for ZX game assets.
-version: 2.0.0
+description: |
+  Use this skill to GENERATE textures for ZX 3D meshes. Trigger phrases: "generate texture", "procedural texture", "noise pattern", "MRE texture", "albedo", "matcap", "seamless texture", "material recipe".
+
+  Covers ZX render modes 0-3, noise algorithms, material layers, atlas packing.
+
+  For UV-AWARE TEXTURING (projecting onto meshes): use mesh-texturing-workflows.
+  For 2D SPRITES (pixel art, tilesets): use procedural-sprites.
+version: 2.1.0
 ---
 
 # Procedural Texture Generation

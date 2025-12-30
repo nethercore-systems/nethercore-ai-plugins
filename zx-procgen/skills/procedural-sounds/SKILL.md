@@ -4,7 +4,9 @@ description: |
   Use this skill when the user wants to GENERATE or CODE sound effects for ZX games. Trigger phrases: "generate sound", "create SFX", "write audio code", "synthesize WAV", "numpy audio", "scipy sound", "procedural SFX", "make laser sound", "explosion sound code", "footstep generator", "FM synthesis", "Karplus-Strong".
 
   This skill provides IMPLEMENTATION CODE using numpy/scipy to produce WAV files at build time for ZX ROM assets.
-version: 3.1.0
+
+  For DESIGN PATTERNS (layering, sound categories, what makes a good impact): use sound-design:sfx-design.
+version: 3.2.0
 ---
 
 # Procedural Sound Generation with NumPy/SciPy

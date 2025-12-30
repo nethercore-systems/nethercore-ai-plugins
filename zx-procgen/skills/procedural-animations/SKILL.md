@@ -1,6 +1,13 @@
 ---
 name: Procedural Animation Generation
-description: This skill should be used when the user asks to "animate mesh", "create animation", "rig character", "add bones", "skeletal animation", "walk cycle", "idle animation", "attack animation", "spinning pickup", "bobbing item", "door animation", "platform animation", "export GLB with animation", "keyframe animation", "armature", "bone weights", "skinning", "motion capture", "BVH import", "Rigify", "animation clip", or mentions animating 3D objects, creating skeletal rigs, generating animation clips for glTF export, or procedural motion for game assets. Provides comprehensive Blender bpy workflow for both object/transform animations (rigid objects) and skeletal animations (deforming meshes), outputting game-ready .glb files.
+description: |
+  Use this skill to CREATE ANIMATIONS for ZX game assets. Trigger phrases: "animate mesh", "walk cycle", "skeletal animation", "rig character", "bone weights", "BVH import", "keyframe animation", "spinning pickup".
+
+  Covers object animation (rigid), skeletal animation (deforming), rigging, skinning, mocap import.
+
+  For MESH GENERATION (the model to animate): use procedural-meshes.
+  For CHARACTER GENERATION (mesh + rig + animation): use character-generator agent.
+version: 1.1.0
 ---
 
 # Procedural Animation Generation
