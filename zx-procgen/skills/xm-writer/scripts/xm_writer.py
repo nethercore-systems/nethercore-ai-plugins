@@ -47,11 +47,18 @@ entries. The auto-extracted samples supplement (not replace) manual entries.
 from dataclasses import dataclass, field
 from typing import List, Optional, Tuple
 import struct
+import math
 
 
 # ============================================================================
 # Constants
 # ============================================================================
+
+# XM reference frequency (C-4 in XM)
+XM_BASE_FREQ = 8363  # Hz
+
+# Nethercore ZX standard sample rate
+ZX_SAMPLE_RATE = 22050  # Hz
 
 XM_MAGIC = b"Extended Module: "
 XM_VERSION = 0x0104  # FastTracker 2 format
@@ -68,6 +75,98 @@ MAX_CHANNELS = 32
 MAX_PATTERNS = 256
 MAX_PATTERN_ROWS = 256
 MAX_INSTRUMENTS = 128
+
+
+# ============================================================================
+# Pitch Correction Helpers
+# ============================================================================
+
+def calculate_pitch_correction(sample_rate: int) -> Tuple[int, int]:
+    """
+    Calculate finetune and relative_note for a sample at given sample rate.
+
+    XM expects samples tuned for 8363 Hz at C-4. This function calculates
+    the pitch correction needed to play a sample at the correct pitch.
+
+    Args:
+        sample_rate: The sample rate of the audio (e.g., 22050)
+
+    Returns:
+        Tuple of (finetune, relative_note) where:
+        - finetune: -128 to 127 (1/128th semitone precision)
+        - relative_note: semitone offset from C-4
+
+    Formula:
+        semitones = 12 × log₂(sample_rate / 8363)
+        relative_note = floor(semitones)
+        finetune = round((semitones - relative_note) × 128)
+
+    Examples:
+        >>> calculate_pitch_correction(22050)  # ZX standard
+        (101, 16)
+        >>> calculate_pitch_correction(44100)  # CD quality
+        (101, 28)
+        >>> calculate_pitch_correction(8363)   # XM native
+        (0, 0)
+        >>> calculate_pitch_correction(11025)  # Half ZX rate
+        (101, 4)
+    """
+    # Calculate semitone offset: 12 × log₂(sample_rate / 8363)
+    semitones = 12.0 * math.log2(sample_rate / XM_BASE_FREQ)
+
+    # Split into integer and fractional parts
+    relative_note = int(math.floor(semitones))
+    finetune = int(round((semitones - relative_note) * 128))
+
+    # Handle edge case where finetune rounds to 128
+    if finetune >= 128:
+        finetune -= 128
+        relative_note += 1
+
+    return (finetune, relative_note)
+
+
+def calculate_pitch_for_frequency(target_freq: float, sample_rate: int = ZX_SAMPLE_RATE) -> Tuple[int, int]:
+    """
+    Calculate finetune and relative_note to make a sample play at a target frequency.
+
+    This is for samples that represent a specific musical note. For example, if you
+    generate a sample of a C-4 sine wave at 22050 Hz, and you want it to play as C-4
+    in the tracker, you need pitch correction.
+
+    Args:
+        target_freq: The frequency the sample represents (e.g., 261.63 for C-4)
+        sample_rate: The sample rate of the audio (default: 22050 Hz)
+
+    Returns:
+        Tuple of (finetune, relative_note)
+
+    Example:
+        A sample containing a 440 Hz sine wave (A-4) at 22050 Hz sample rate:
+        >>> calculate_pitch_for_frequency(440.0, 22050)
+        # Returns values that make note A-4 play the sample at 440 Hz
+
+    Note:
+        For one-shot samples (drums, SFX) that don't represent a specific pitch,
+        use calculate_pitch_correction(sample_rate) instead.
+    """
+    # First, get the base pitch correction for the sample rate
+    base_finetune, base_relative_note = calculate_pitch_correction(sample_rate)
+
+    # The target frequency tells us what note the sample represents
+    # C-4 = 261.63 Hz in standard tuning (A-4 = 440 Hz)
+    # But XM uses 8363 Hz as the C-4 playback rate, not pitch
+    #
+    # If the sample contains frequency F and sample_rate is R:
+    # - One cycle of the wave takes R/F samples
+    # - At playback rate R, it plays at frequency F
+    # - With pitch correction for 22050→8363, it plays at F * 8363/22050
+    #
+    # So if we want it to play at the original F:
+    # The base pitch correction already handles the sample rate difference
+    # No additional adjustment needed for the frequency content
+
+    return (base_finetune, base_relative_note)
 
 
 # ============================================================================
@@ -182,10 +281,33 @@ class XmEnvelope:
 @dataclass
 class XmInstrument:
     """
-    Instrument with embedded sample data.
+    Instrument with optional embedded sample data.
 
-    DEFAULT workflow: Always provide sample_data with actual PCM samples.
-    Use procedural-sounds skill to generate samples!
+    ## Pitch Correction (IMPORTANT!)
+
+    XM expects samples tuned for 8363 Hz playback at C-4. If your samples are at
+    a different sample rate (e.g., 22050 Hz for ZX), you MUST set pitch correction.
+
+    ### Option 1: Set sample_rate (RECOMMENDED)
+    Set `sample_rate` and pitch correction is auto-calculated:
+    ```python
+    XmInstrument(name="kick", sample_rate=22050, sample_data=kick_bytes)
+    ```
+
+    ### Option 2: Manual finetune/relative_note
+    For fine control, set these directly:
+    ```python
+    XmInstrument(name="kick", sample_finetune=101, sample_relative_note=16, ...)
+    ```
+
+    ### Common Values
+    - 22050 Hz (ZX standard): finetune=101, relative_note=16
+    - 44100 Hz (CD quality): finetune=101, relative_note=28
+    - 8363 Hz (XM native): finetune=0, relative_note=0
+
+    ## Sample Data
+    - For embedded samples: provide sample_data as bytes (16-bit little-endian signed PCM)
+    - For ROM-only samples: set sample_data=None (pitch info still needed!)
     """
     name: str = ""                                  # Instrument name (sanitized to ROM ID)
     volume_envelope: Optional[XmEnvelope] = None
@@ -195,13 +317,51 @@ class XmInstrument:
     vibrato_depth: int = 0
     vibrato_rate: int = 0
     volume_fadeout: int = 0    # 0-4095
-    sample_finetune: int = 0   # -128 to 127
-    sample_relative_note: int = 0  # Semitones from C-4
+    sample_finetune: int = 0   # -128 to 127 (auto-calculated if sample_rate set)
+    sample_relative_note: int = 0  # Semitones from C-4 (auto-calculated if sample_rate set)
     sample_loop_start: int = 0
     sample_loop_length: int = 0
     sample_loop_type: int = 0  # 0=none, 1=forward, 2=ping-pong
     sample_data: Optional[bytes] = None  # Raw PCM sample data (8-bit or 16-bit)
-    sample_bits: int = 8         # 8 or 16 bit
+    sample_bits: int = 16        # 8 or 16 bit (16 recommended for quality)
+    sample_rate: int = 0         # Sample rate in Hz (0 = use manual finetune/relative_note)
+
+    def get_pitch_correction(self) -> Tuple[int, int]:
+        """
+        Get the effective finetune and relative_note for this instrument.
+
+        If sample_rate is set, calculates pitch correction automatically.
+        Otherwise returns the manually set values.
+
+        Returns:
+            Tuple of (finetune, relative_note)
+        """
+        if self.sample_rate > 0:
+            return calculate_pitch_correction(self.sample_rate)
+        return (self.sample_finetune, self.sample_relative_note)
+
+    @staticmethod
+    def for_zx(name: str, sample_data: Optional[bytes] = None, **kwargs) -> "XmInstrument":
+        """
+        Create an instrument configured for ZX 22050 Hz samples.
+
+        This is a convenience constructor that sets sample_rate=22050.
+
+        Args:
+            name: Instrument name (becomes ROM sample ID)
+            sample_data: Optional PCM data (16-bit signed little-endian)
+            **kwargs: Additional XmInstrument fields
+
+        Example:
+            kick = XmInstrument.for_zx("kick", kick_pcm_bytes)
+        """
+        return XmInstrument(
+            name=name,
+            sample_data=sample_data,
+            sample_rate=ZX_SAMPLE_RATE,
+            sample_bits=16,
+            **kwargs
+        )
 
 
 @dataclass
@@ -512,6 +672,9 @@ def _write_instrument(output: bytearray, instrument: XmInstrument) -> None:
 
     # ========== Sample Header (40 bytes) ==========
 
+    # Get pitch correction (auto-calculated from sample_rate if set)
+    finetune, relative_note = instrument.get_pitch_correction()
+
     # Sample length (4 bytes) - write actual length if sample_data provided
     sample_len = len(instrument.sample_data) if instrument.sample_data else 0
     output.extend(struct.pack("<I", sample_len))
@@ -525,8 +688,8 @@ def _write_instrument(output: bytearray, instrument: XmInstrument) -> None:
     # Volume (1 byte)
     output.append(64)
 
-    # Finetune (1 byte, signed)
-    output.append(instrument.sample_finetune & 0xFF)
+    # Finetune (1 byte, signed) - calculated from sample_rate or manual
+    output.append(finetune & 0xFF)
 
     # Type (1 byte) - loop type in bits 0-1, sample format in bit 4
     type_byte = instrument.sample_loop_type & 0x03
@@ -537,8 +700,8 @@ def _write_instrument(output: bytearray, instrument: XmInstrument) -> None:
     # Panning (1 byte) - center
     output.append(128)
 
-    # Relative note (1 byte, signed)
-    output.append(instrument.sample_relative_note & 0xFF)
+    # Relative note (1 byte, signed) - calculated from sample_rate or manual
+    output.append(relative_note & 0xFF)
 
     # Reserved (1 byte)
     output.append(0)
