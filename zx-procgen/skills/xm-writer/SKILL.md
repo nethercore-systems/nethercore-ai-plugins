@@ -28,12 +28,16 @@ This skill provides a Python library (`xm_writer.py`) for generating valid FastT
 ```python
 from xm_writer import XmModule, XmPattern, XmNote, XmInstrument, write_xm
 
+# Generate sample data (use procedural-sounds skill for complex synthesis!)
+kick_sample = generate_kick_sample()  # Returns bytes
+snare_sample = generate_snare_sample()  # Returns bytes
+
 # Create pattern
 pattern = XmPattern.empty(64, num_channels=4)
 pattern.set_note(0, 0, XmNote.play("C-4", instrument=1, volume=64))
 pattern.set_note(16, 1, XmNote.play("C-4", instrument=2, volume=60))
 
-# Create module
+# Create module WITH embedded samples (DEFAULT workflow)
 module = XmModule(
     name="My Song",
     num_channels=4,
@@ -42,8 +46,8 @@ module = XmModule(
     order_table=[0],
     patterns=[pattern],
     instruments=[
-        XmInstrument(name="kick"),    # Maps to ROM sample
-        XmInstrument(name="snare"),
+        XmInstrument(name="kick", sample_data=kick_sample, sample_bits=8),
+        XmInstrument(name="snare", sample_data=snare_sample, sample_bits=8),
     ]
 )
 
@@ -83,11 +87,16 @@ pattern.set_note(row, channel, note)           # Set note at position
 
 ### XmInstrument
 
-Instrument metadata. **Name maps to ROM sample ID.**
+Instrument with embedded sample data. **Always provide sample_data!**
 
 ```python
 XmInstrument(
-    name="kick",              # MUST match [[assets.sounds]] id
+    name="kick",              # Instrument name (becomes ROM sound ID)
+    sample_data=kick_bytes,   # REQUIRED: Raw PCM sample data (bytes)
+    sample_bits=8,            # 8 or 16 bit (default: 8)
+    sample_loop_type=0,       # 0=one-shot, 1=forward, 2=ping-pong
+    sample_loop_start=0,      # Loop start in samples
+    sample_loop_length=0,     # Loop length in samples
     volume_envelope=None,     # Optional XmEnvelope
     panning_envelope=None,
     vibrato_type=0,           # 0=sine, 1=square, 2=ramp down, 3=ramp up
@@ -117,7 +126,7 @@ XmModule(
 
 ## Nethercore Integration
 
-### Approach 1: Embedded Samples (Recommended - Auto-Extraction)
+### DEFAULT: Embedded Samples with Auto-Extraction
 
 XM files can contain embedded sample data. At pack time, `nether pack` automatically:
 - Extracts all samples from the XM file
@@ -135,16 +144,37 @@ XM files can contain embedded sample data. At pack time, `nether pack` automatic
 **Example:**
 
 ```python
-# Generate XM with embedded samples (use real sample data, not zeros!)
+# Generate or load sample data (8-bit signed PCM)
+# Use procedural-sounds skill for complex synthesis!
+kick_samples = generate_kick_sample()  # Returns bytes of int8 PCM
+bass_samples = generate_bass_sample()  # Returns bytes of int8 PCM
+
 module = XmModule(
     name="Boss Theme",
     instruments=[
-        XmInstrument(name="Kick_Drum", sample_data=kick_samples),
-        XmInstrument(name="Bass_Synth", sample_data=bass_samples),
+        XmInstrument(
+            name="Kick_Drum",
+            sample_data=kick_samples,
+            sample_bits=8,
+            sample_loop_type=0  # No loop
+        ),
+        XmInstrument(
+            name="Bass_Synth",
+            sample_data=bass_samples,
+            sample_bits=8,
+            sample_loop_type=1,  # Forward loop
+            sample_loop_start=100,
+            sample_loop_length=500
+        ),
     ],
-    # ...
+    # ... patterns, order_table, etc.
 )
 write_xm(module, "boss_theme.xm")
+
+# Note: Sample data must be raw PCM:
+# - 8-bit: signed int8 (-128 to 127)
+# - 16-bit: signed int16 (-32768 to 32767), little-endian
+# See examples/with_samples.py for waveform generation examples.
 ```
 
 ```toml
@@ -163,14 +193,15 @@ let music = rom_tracker(b"boss_theme", 10);
 music_play(music, 0.8, 1);
 ```
 
-### Approach 2: ROM-Only References (Legacy - Sample-less XM)
+### ALTERNATIVE: ROM-Only References (Legacy - Sample-less XM)
 
-XM files can have `sample_length=0`, with instrument names mapping to separately
-loaded `[[assets.sounds]]` IDs in nether.toml.
+**Only use this approach if you have a specific reason to avoid embedded samples.**
+
+XM files can have `sample_length=0`, with instrument names mapping to separately loaded `[[assets.sounds]]` IDs in nether.toml.
 
 **Use when:**
-- Sharing samples across many XM files without embedding
-- Samples loaded from other sources (procedural generation, WAV files)
+- Sharing the exact same samples across many XM files (deduplication)
+- Samples must come from external WAV files for some reason
 
 **Example:**
 

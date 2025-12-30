@@ -8,129 +8,129 @@ Classic game palettes and color quantization algorithms for pixel art generation
 
 The popular fantasy console palette, excellent for retro games:
 
-```rust
-const PICO8_PALETTE: [u32; 16] = [
-    0x000000FF,  // 0: Black
-    0x1D2B53FF,  // 1: Dark Blue
-    0x7E2553FF,  // 2: Dark Purple
-    0x008751FF,  // 3: Dark Green
-    0xAB5236FF,  // 4: Brown
-    0x5F574FFF,  // 5: Dark Gray
-    0xC2C3C7FF,  // 6: Light Gray
-    0xFFF1E8FF,  // 7: White
-    0xFF004DFF,  // 8: Red
-    0xFFA300FF,  // 9: Orange
-    0xFFEC27FF,  // 10: Yellow
-    0x00E436FF,  // 11: Green
-    0x29ADFFFF,  // 12: Blue
-    0x83769CFF,  // 13: Lavender
-    0xFF77A8FF,  // 14: Pink
-    0xFFCCAAFF,  // 15: Peach
-];
+```python
+PICO8_PALETTE = [
+    0x000000FF,  # 0: Black
+    0x1D2B53FF,  # 1: Dark Blue
+    0x7E2553FF,  # 2: Dark Purple
+    0x008751FF,  # 3: Dark Green
+    0xAB5236FF,  # 4: Brown
+    0x5F574FFF,  # 5: Dark Gray
+    0xC2C3C7FF,  # 6: Light Gray
+    0xFFF1E8FF,  # 7: White
+    0xFF004DFF,  # 8: Red
+    0xFFA300FF,  # 9: Orange
+    0xFFEC27FF,  # 10: Yellow
+    0x00E436FF,  # 11: Green
+    0x29ADFFFF,  # 12: Blue
+    0x83769CFF,  # 13: Lavender
+    0xFF77A8FF,  # 14: Pink
+    0xFFCCAAFF,  # 15: Peach
+]
 ```
 
 ### NES (54 colors)
 
 The Nintendo Entertainment System's PPU palette:
 
-```rust
-const NES_PALETTE: [u32; 54] = [
-    // Grays
+```python
+NES_PALETTE = [
+    # Grays
     0x666666FF, 0x002A88FF, 0x1412A7FF, 0x3B00A4FF,
     0x5C007EFF, 0x6E0040FF, 0x6C0600FF, 0x561D00FF,
     0x333500FF, 0x0B4800FF, 0x005200FF, 0x004F08FF,
     0x00404DFF, 0x000000FF, 0x000000FF, 0x000000FF,
-    // Mid-tones
+    # Mid-tones
     0xADADADFF, 0x155FD9FF, 0x4240FFFF, 0x7527FEFF,
     0xA01ACCFF, 0xB71E7BFF, 0xB53120FF, 0x994E00FF,
     0x6B6D00FF, 0x388700FF, 0x0C9300FF, 0x008F32FF,
     0x007C8DFF, 0x000000FF, 0x000000FF, 0x000000FF,
-    // Highlights
+    # Highlights
     0xFFFEFFFF, 0x64B0FFFF, 0x9290FFFF, 0xC676FFFF,
     0xF36AFFFF, 0xFE6ECCFF, 0xFE8170FF, 0xEA9E22FF,
     0xBCBE00FF, 0x88D800FF, 0x5CE430FF, 0x45E082FF,
     0x48CDDEFF, 0x4F4F4FFF, 0x000000FF, 0x000000FF,
-    // Pastels
+    # Pastels
     0xFFFEFFFF, 0xC0DFFFFF, 0xD3D2FFFF, 0xE8C8FFFF,
     0xFBC2FFFF, 0xFEC4EAFF,
-];
+]
 ```
 
 ### Game Boy (4 colors)
 
 The classic monochrome palette:
 
-```rust
-const GAMEBOY_PALETTE: [u32; 4] = [
-    0x0F380FFF,  // Darkest green
-    0x306230FF,  // Dark green
-    0x8BAC0FFF,  // Light green
-    0x9BBC0FFF,  // Lightest green
-];
+```python
+GAMEBOY_PALETTE = [
+    0x0F380FFF,  # Darkest green
+    0x306230FF,  # Dark green
+    0x8BAC0FFF,  # Light green
+    0x9BBC0FFF,  # Lightest green
+]
 
-// Alternative "Pocket" palette
-const GAMEBOY_POCKET: [u32; 4] = [
-    0x000000FF,  // Black
-    0x555555FF,  // Dark gray
-    0xAAAAAAAA,  // Light gray
-    0xFFFFFFFF,  // White
-];
+# Alternative "Pocket" palette
+GAMEBOY_POCKET = [
+    0x000000FF,  # Black
+    0x555555FF,  # Dark gray
+    0xAAAAAAAA,  # Light gray
+    0xFFFFFFFF,  # White
+]
 ```
 
 ### CGA (16 colors)
 
 IBM PC Color Graphics Adapter:
 
-```rust
-const CGA_PALETTE: [u32; 16] = [
-    0x000000FF,  // Black
-    0x0000AAFF,  // Blue
-    0x00AA00FF,  // Green
-    0x00AAAAFF,  // Cyan
-    0xAA0000FF,  // Red
-    0xAA00AAFF,  // Magenta
-    0xAA5500FF,  // Brown
-    0xAAAAAAFF,  // Light Gray
-    0x555555FF,  // Dark Gray
-    0x5555FFFF,  // Light Blue
-    0x55FF55FF,  // Light Green
-    0x55FFFFFF,  // Light Cyan
-    0xFF5555FF,  // Light Red
-    0xFF55FFFF,  // Light Magenta
-    0xFFFF55FF,  // Yellow
-    0xFFFFFFFF,  // White
-];
+```python
+CGA_PALETTE = [
+    0x000000FF,  # Black
+    0x0000AAFF,  # Blue
+    0x00AA00FF,  # Green
+    0x00AAAAFF,  # Cyan
+    0xAA0000FF,  # Red
+    0xAA00AAFF,  # Magenta
+    0xAA5500FF,  # Brown
+    0xAAAAAAFF,  # Light Gray
+    0x555555FF,  # Dark Gray
+    0x5555FFFF,  # Light Blue
+    0x55FF55FF,  # Light Green
+    0x55FFFFFF,  # Light Cyan
+    0xFF5555FF,  # Light Red
+    0xFF55FFFF,  # Light Magenta
+    0xFFFF55FF,  # Yellow
+    0xFFFFFFFF,  # White
+]
 ```
 
 ### Commodore 64 (16 colors)
 
-```rust
-const C64_PALETTE: [u32; 16] = [
-    0x000000FF,  // Black
-    0xFFFFFFFF,  // White
-    0x880000FF,  // Red
-    0xAAFFEEFF,  // Cyan
-    0xCC44CCFF,  // Purple
-    0x00CC55FF,  // Green
-    0x0000AAFF,  // Blue
-    0xEEEE77FF,  // Yellow
-    0xDD8855FF,  // Orange
-    0x664400FF,  // Brown
-    0xFF7777FF,  // Light Red
-    0x333333FF,  // Dark Gray
-    0x777777FF,  // Medium Gray
-    0xAAFF66FF,  // Light Green
-    0x0088FFFF,  // Light Blue
-    0xBBBBBBFF,  // Light Gray
-];
+```python
+C64_PALETTE = [
+    0x000000FF,  # Black
+    0xFFFFFFFF,  # White
+    0x880000FF,  # Red
+    0xAAFFEEFF,  # Cyan
+    0xCC44CCFF,  # Purple
+    0x00CC55FF,  # Green
+    0x0000AAFF,  # Blue
+    0xEEEE77FF,  # Yellow
+    0xDD8855FF,  # Orange
+    0x664400FF,  # Brown
+    0xFF7777FF,  # Light Red
+    0x333333FF,  # Dark Gray
+    0x777777FF,  # Medium Gray
+    0xAAFF66FF,  # Light Green
+    0x0088FFFF,  # Light Blue
+    0xBBBBBBFF,  # Light Gray
+]
 ```
 
 ### Endesga 32 (32 colors)
 
 Modern pixel art palette by Endesga, popular for indie games:
 
-```rust
-const ENDESGA32_PALETTE: [u32; 32] = [
+```python
+ENDESGA32_PALETTE = [
     0xBE4A2FFF, 0xD77643FF, 0xEAD4AAFF, 0xE4A672FF,
     0xB86F50FF, 0x733E39FF, 0x3E2731FF, 0xA22633FF,
     0xE43B44FF, 0xF77622FF, 0xFEAE34FF, 0xFEE761FF,
@@ -139,7 +139,7 @@ const ENDESGA32_PALETTE: [u32; 32] = [
     0xC0CBDCFF, 0x8B9BB4FF, 0x5A6988FF, 0x3A4466FF,
     0x262B44FF, 0x181425FF, 0xFF0044FF, 0x68386CFF,
     0xB55088FF, 0xF6757AFF, 0xE8B796FF, 0xC28569FF,
-];
+]
 ```
 
 ---
@@ -148,115 +148,114 @@ const ENDESGA32_PALETTE: [u32; 32] = [
 
 ### Color Quantization
 
-```rust
-fn quantize_to_palette(color: u32, palette: &[u32]) -> u32 {
-    palette.iter()
-        .min_by_key(|&&p| color_distance_squared(color, p))
-        .copied()
-        .unwrap_or(color)
-}
+```python
+def quantize_to_palette(color: int, palette: list[int]) -> int:
+    """Find closest color in palette using weighted distance."""
+    min_dist = float('inf')
+    closest = color
 
-fn color_distance_squared(a: u32, b: u32) -> u32 {
-    let dr = ((a >> 24) & 0xFF) as i32 - ((b >> 24) & 0xFF) as i32;
-    let dg = ((a >> 16) & 0xFF) as i32 - ((b >> 16) & 0xFF) as i32;
-    let db = ((a >> 8) & 0xFF) as i32 - ((b >> 8) & 0xFF) as i32;
+    for p in palette:
+        dist = color_distance_squared(color, p)
+        if dist < min_dist:
+            min_dist = dist
+            closest = p
 
-    // Weighted distance (human eye more sensitive to green)
-    (dr * dr * 2 + dg * dg * 4 + db * db * 3) as u32
-}
+    return closest
+
+def color_distance_squared(a: int, b: int) -> int:
+    """Calculate weighted color distance (perceptual)."""
+    dr = ((a >> 24) & 0xFF) - ((b >> 24) & 0xFF)
+    dg = ((a >> 16) & 0xFF) - ((b >> 16) & 0xFF)
+    db = ((a >> 8) & 0xFF) - ((b >> 8) & 0xFF)
+
+    # Weighted distance (human eye more sensitive to green)
+    return dr * dr * 2 + dg * dg * 4 + db * db * 3
 ```
 
 ### Palette Extraction (Median Cut)
 
-```rust
-fn extract_palette(image: &TextureBuffer, max_colors: usize) -> Vec<u32> {
-    // Collect all unique colors
-    let mut colors: Vec<u32> = Vec::new();
-    for y in 0..image.height {
-        for x in 0..image.width {
-            let c = image.get(x, y) | 0xFF; // Ignore alpha
-            if !colors.contains(&c) {
-                colors.push(c);
-            }
-        }
-    }
+```python
+import numpy as np
+from PIL import Image
+from typing import List, Tuple
 
-    if colors.len() <= max_colors {
-        return colors;
-    }
+def extract_palette(image: Image.Image, max_colors: int) -> List[int]:
+    """Extract palette from image using median cut algorithm."""
+    # Collect all unique colors
+    pixels = np.array(image.convert('RGB'))
+    unique_colors = []
+    seen = set()
 
-    // Median cut algorithm
-    let mut buckets = vec![colors];
+    for y in range(pixels.shape[0]):
+        for x in range(pixels.shape[1]):
+            r, g, b = pixels[y, x]
+            color = (r << 24) | (g << 16) | (b << 8) | 0xFF
+            if color not in seen:
+                seen.add(color)
+                unique_colors.append(color)
 
-    while buckets.len() < max_colors {
-        // Find bucket with widest range
-        let (bucket_idx, axis) = find_widest_bucket(&buckets);
-        let bucket = buckets.remove(bucket_idx);
+    if len(unique_colors) <= max_colors:
+        return unique_colors
 
-        // Sort by the widest axis and split
-        let (low, high) = split_bucket_by_axis(bucket, axis);
-        buckets.push(low);
-        buckets.push(high);
-    }
+    # Median cut algorithm
+    buckets = [unique_colors]
 
-    // Average each bucket
-    buckets.iter()
-        .map(|b| average_color(b))
-        .collect()
-}
+    while len(buckets) < max_colors:
+        # Find bucket with widest range
+        bucket_idx, axis = find_widest_bucket(buckets)
+        bucket = buckets.pop(bucket_idx)
 
-fn find_widest_bucket(buckets: &[Vec<u32>]) -> (usize, usize) {
-    let mut max_range = 0;
-    let mut result = (0, 0);
+        # Sort by the widest axis and split
+        low, high = split_bucket_by_axis(bucket, axis)
+        buckets.append(low)
+        buckets.append(high)
 
-    for (i, bucket) in buckets.iter().enumerate() {
-        for axis in 0..3 {
-            let range = color_range(bucket, axis);
-            if range > max_range {
-                max_range = range;
-                result = (i, axis);
-            }
-        }
-    }
+    # Average each bucket
+    return [average_color(b) for b in buckets]
 
-    result
-}
+def find_widest_bucket(buckets: List[List[int]]) -> Tuple[int, int]:
+    """Find bucket with widest color range and the axis."""
+    max_range = 0
+    result = (0, 0)
 
-fn color_range(colors: &[u32], axis: usize) -> u32 {
-    let shift = (2 - axis) * 8 + 8; // R=24, G=16, B=8
-    let values: Vec<u32> = colors.iter()
-        .map(|&c| (c >> shift) & 0xFF)
-        .collect();
+    for i, bucket in enumerate(buckets):
+        for axis in range(3):
+            r = color_range(bucket, axis)
+            if r > max_range:
+                max_range = r
+                result = (i, axis)
 
-    values.iter().max().unwrap_or(&0) - values.iter().min().unwrap_or(&0)
-}
+    return result
 
-fn split_bucket_by_axis(mut bucket: Vec<u32>, axis: usize) -> (Vec<u32>, Vec<u32>) {
-    let shift = (2 - axis) * 8 + 8;
-    bucket.sort_by_key(|&c| (c >> shift) & 0xFF);
+def color_range(colors: List[int], axis: int) -> int:
+    """Calculate color range along a specific axis (R=0, G=1, B=2)."""
+    shift = (2 - axis) * 8 + 8  # R=24, G=16, B=8
+    values = [(c >> shift) & 0xFF for c in colors]
+    return max(values) - min(values)
 
-    let mid = bucket.len() / 2;
-    let high = bucket.split_off(mid);
-    (bucket, high)
-}
+def split_bucket_by_axis(bucket: List[int], axis: int) -> Tuple[List[int], List[int]]:
+    """Split bucket along the specified axis."""
+    shift = (2 - axis) * 8 + 8
+    sorted_bucket = sorted(bucket, key=lambda c: (c >> shift) & 0xFF)
 
-fn average_color(colors: &[u32]) -> u32 {
-    if colors.is_empty() { return 0x000000FF; }
+    mid = len(sorted_bucket) // 2
+    return sorted_bucket[:mid], sorted_bucket[mid:]
 
-    let (mut r, mut g, mut b) = (0u64, 0u64, 0u64);
-    for &c in colors {
-        r += ((c >> 24) & 0xFF) as u64;
-        g += ((c >> 16) & 0xFF) as u64;
-        b += ((c >> 8) & 0xFF) as u64;
-    }
+def average_color(colors: List[int]) -> int:
+    """Calculate average color from a list of colors."""
+    if not colors:
+        return 0x000000FF
 
-    let n = colors.len() as u64;
-    let ar = (r / n) as u32;
-    let ag = (g / n) as u32;
-    let ab = (b / n) as u32;
+    r_sum = sum((c >> 24) & 0xFF for c in colors)
+    g_sum = sum((c >> 16) & 0xFF for c in colors)
+    b_sum = sum((c >> 8) & 0xFF for c in colors)
 
-    (ar << 24) | (ag << 16) | (ab << 8) | 0xFF
-}
+    n = len(colors)
+    ar = r_sum // n
+    ag = g_sum // n
+    ab = b_sum // n
+
+    return (ar << 24) | (ag << 16) | (ab << 8) | 0xFF
 ```
 
 ---
@@ -370,78 +369,76 @@ def apply_palette(image_path, palette, output_path):
 
 ### Lighten/Darken
 
-```rust
-fn lighten(color: u32, amount: f32) -> u32 {
-    let r = ((color >> 24) & 0xFF) as f32;
-    let g = ((color >> 16) & 0xFF) as f32;
-    let b = ((color >> 8) & 0xFF) as f32;
-    let a = color & 0xFF;
+```python
+def lighten(color: int, amount: float) -> int:
+    """Lighten a color by the given amount (0.0-1.0)."""
+    r = ((color >> 24) & 0xFF)
+    g = ((color >> 16) & 0xFF)
+    b = ((color >> 8) & 0xFF)
+    a = color & 0xFF
 
-    let nr = (r + (255.0 - r) * amount).min(255.0) as u32;
-    let ng = (g + (255.0 - g) * amount).min(255.0) as u32;
-    let nb = (b + (255.0 - b) * amount).min(255.0) as u32;
+    nr = min(255, int(r + (255 - r) * amount))
+    ng = min(255, int(g + (255 - g) * amount))
+    nb = min(255, int(b + (255 - b) * amount))
 
-    (nr << 24) | (ng << 16) | (nb << 8) | a
-}
+    return (nr << 24) | (ng << 16) | (nb << 8) | a
 
-fn darken(color: u32, amount: f32) -> u32 {
-    let r = ((color >> 24) & 0xFF) as f32;
-    let g = ((color >> 16) & 0xFF) as f32;
-    let b = ((color >> 8) & 0xFF) as f32;
-    let a = color & 0xFF;
+def darken(color: int, amount: float) -> int:
+    """Darken a color by the given amount (0.0-1.0)."""
+    r = ((color >> 24) & 0xFF)
+    g = ((color >> 16) & 0xFF)
+    b = ((color >> 8) & 0xFF)
+    a = color & 0xFF
 
-    let nr = (r * (1.0 - amount)) as u32;
-    let ng = (g * (1.0 - amount)) as u32;
-    let nb = (b * (1.0 - amount)) as u32;
+    nr = int(r * (1.0 - amount))
+    ng = int(g * (1.0 - amount))
+    nb = int(b * (1.0 - amount))
 
-    (nr << 24) | (ng << 16) | (nb << 8) | a
-}
+    return (nr << 24) | (ng << 16) | (nb << 8) | a
 ```
 
 ### Desaturate
 
-```rust
-fn desaturate(color: u32, amount: f32) -> u32 {
-    let r = ((color >> 24) & 0xFF) as f32;
-    let g = ((color >> 16) & 0xFF) as f32;
-    let b = ((color >> 8) & 0xFF) as f32;
-    let a = color & 0xFF;
+```python
+def desaturate(color: int, amount: float) -> int:
+    """Desaturate a color by the given amount (0.0-1.0)."""
+    r = ((color >> 24) & 0xFF)
+    g = ((color >> 16) & 0xFF)
+    b = ((color >> 8) & 0xFF)
+    a = color & 0xFF
 
-    // Luminance
-    let lum = r * 0.299 + g * 0.587 + b * 0.114;
+    # Luminance
+    lum = r * 0.299 + g * 0.587 + b * 0.114
 
-    let nr = (r + (lum - r) * amount) as u32;
-    let ng = (g + (lum - g) * amount) as u32;
-    let nb = (b + (lum - b) * amount) as u32;
+    nr = int(r + (lum - r) * amount)
+    ng = int(g + (lum - g) * amount)
+    nb = int(b + (lum - b) * amount)
 
-    (nr << 24) | (ng << 16) | (nb << 8) | a
-}
+    return (nr << 24) | (ng << 16) | (nb << 8) | a
 ```
 
 ### Hue Shift
 
-```rust
-fn hue_shift(color: u32, degrees: f32) -> u32 {
-    let r = ((color >> 24) & 0xFF) as f32 / 255.0;
-    let g = ((color >> 16) & 0xFF) as f32 / 255.0;
-    let b = ((color >> 8) & 0xFF) as f32 / 255.0;
-    let a = color & 0xFF;
+```python
+import colorsys
 
-    // RGB to HSV
-    let (h, s, v) = rgb_to_hsv(r, g, b);
+def hue_shift(color: int, degrees: float) -> int:
+    """Shift the hue of a color by the given degrees."""
+    r = ((color >> 24) & 0xFF) / 255.0
+    g = ((color >> 16) & 0xFF) / 255.0
+    b = ((color >> 8) & 0xFF) / 255.0
+    a = color & 0xFF
 
-    // Shift hue
-    let new_h = (h + degrees / 360.0).fract();
-    if new_h < 0.0 { new_h += 1.0; }
+    # RGB to HSV
+    h, s, v = colorsys.rgb_to_hsv(r, g, b)
 
-    // HSV to RGB
-    let (nr, ng, nb) = hsv_to_rgb(new_h, s, v);
+    # Shift hue
+    new_h = (h + degrees / 360.0) % 1.0
 
-    ((nr * 255.0) as u32) << 24 |
-    ((ng * 255.0) as u32) << 16 |
-    ((nb * 255.0) as u32) << 8 |
-    a
-}
+    # HSV to RGB
+    nr, ng, nb = colorsys.hsv_to_rgb(new_h, s, v)
+
+    return (int(nr * 255) << 24) | (int(ng * 255) << 16) | (int(nb * 255) << 8) | a
 ```
 
 ---
@@ -450,61 +447,66 @@ fn hue_shift(color: u32, degrees: f32) -> u32 {
 
 ### Bayer Matrices
 
-```rust
-// 2x2 Bayer matrix
-const BAYER_2X2: [f32; 4] = [
-    0.0/4.0, 2.0/4.0,
-    3.0/4.0, 1.0/4.0,
-];
+```python
+import numpy as np
 
-// 4x4 Bayer matrix
-const BAYER_4X4: [f32; 16] = [
-     0.0/16.0,  8.0/16.0,  2.0/16.0, 10.0/16.0,
-    12.0/16.0,  4.0/16.0, 14.0/16.0,  6.0/16.0,
-     3.0/16.0, 11.0/16.0,  1.0/16.0,  9.0/16.0,
-    15.0/16.0,  7.0/16.0, 13.0/16.0,  5.0/16.0,
-];
+# 2x2 Bayer matrix
+BAYER_2X2 = np.array([
+    [0.0/4.0, 2.0/4.0],
+    [3.0/4.0, 1.0/4.0],
+], dtype=np.float32)
 
-// 8x8 Bayer matrix
-const BAYER_8X8: [f32; 64] = [
-     0.0/64.0, 32.0/64.0,  8.0/64.0, 40.0/64.0,  2.0/64.0, 34.0/64.0, 10.0/64.0, 42.0/64.0,
-    48.0/64.0, 16.0/64.0, 56.0/64.0, 24.0/64.0, 50.0/64.0, 18.0/64.0, 58.0/64.0, 26.0/64.0,
-    12.0/64.0, 44.0/64.0,  4.0/64.0, 36.0/64.0, 14.0/64.0, 46.0/64.0,  6.0/64.0, 38.0/64.0,
-    60.0/64.0, 28.0/64.0, 52.0/64.0, 20.0/64.0, 62.0/64.0, 30.0/64.0, 54.0/64.0, 22.0/64.0,
-     3.0/64.0, 35.0/64.0, 11.0/64.0, 43.0/64.0,  1.0/64.0, 33.0/64.0,  9.0/64.0, 41.0/64.0,
-    51.0/64.0, 19.0/64.0, 59.0/64.0, 27.0/64.0, 49.0/64.0, 17.0/64.0, 57.0/64.0, 25.0/64.0,
-    15.0/64.0, 47.0/64.0,  7.0/64.0, 39.0/64.0, 13.0/64.0, 45.0/64.0,  5.0/64.0, 37.0/64.0,
-    63.0/64.0, 31.0/64.0, 55.0/64.0, 23.0/64.0, 61.0/64.0, 29.0/64.0, 53.0/64.0, 21.0/64.0,
-];
+# 4x4 Bayer matrix
+BAYER_4X4 = np.array([
+    [ 0.0/16.0,  8.0/16.0,  2.0/16.0, 10.0/16.0],
+    [12.0/16.0,  4.0/16.0, 14.0/16.0,  6.0/16.0],
+    [ 3.0/16.0, 11.0/16.0,  1.0/16.0,  9.0/16.0],
+    [15.0/16.0,  7.0/16.0, 13.0/16.0,  5.0/16.0],
+], dtype=np.float32)
+
+# 8x8 Bayer matrix
+BAYER_8X8 = np.array([
+    [ 0.0/64.0, 32.0/64.0,  8.0/64.0, 40.0/64.0,  2.0/64.0, 34.0/64.0, 10.0/64.0, 42.0/64.0],
+    [48.0/64.0, 16.0/64.0, 56.0/64.0, 24.0/64.0, 50.0/64.0, 18.0/64.0, 58.0/64.0, 26.0/64.0],
+    [12.0/64.0, 44.0/64.0,  4.0/64.0, 36.0/64.0, 14.0/64.0, 46.0/64.0,  6.0/64.0, 38.0/64.0],
+    [60.0/64.0, 28.0/64.0, 52.0/64.0, 20.0/64.0, 62.0/64.0, 30.0/64.0, 54.0/64.0, 22.0/64.0],
+    [ 3.0/64.0, 35.0/64.0, 11.0/64.0, 43.0/64.0,  1.0/64.0, 33.0/64.0,  9.0/64.0, 41.0/64.0],
+    [51.0/64.0, 19.0/64.0, 59.0/64.0, 27.0/64.0, 49.0/64.0, 17.0/64.0, 57.0/64.0, 25.0/64.0],
+    [15.0/64.0, 47.0/64.0,  7.0/64.0, 39.0/64.0, 13.0/64.0, 45.0/64.0,  5.0/64.0, 37.0/64.0],
+    [63.0/64.0, 31.0/64.0, 55.0/64.0, 23.0/64.0, 61.0/64.0, 29.0/64.0, 53.0/64.0, 21.0/64.0],
+], dtype=np.float32)
 ```
 
 ### Error Diffusion Kernels
 
-```rust
-// Floyd-Steinberg (right, bottom-left, bottom, bottom-right)
-const FLOYD_STEINBERG: [(i32, i32, f32); 4] = [
+```python
+from typing import List, Tuple
+
+# Floyd-Steinberg (right, bottom-left, bottom, bottom-right)
+# Format: (dx, dy, weight)
+FLOYD_STEINBERG: List[Tuple[int, int, float]] = [
     (1, 0, 7.0/16.0),
     (-1, 1, 3.0/16.0),
     (0, 1, 5.0/16.0),
     (1, 1, 1.0/16.0),
-];
+]
 
-// Atkinson (6 neighbors, each 1/8)
-const ATKINSON: [(i32, i32, f32); 6] = [
+# Atkinson (6 neighbors, each 1/8)
+ATKINSON: List[Tuple[int, int, float]] = [
     (1, 0, 1.0/8.0),
     (2, 0, 1.0/8.0),
     (-1, 1, 1.0/8.0),
     (0, 1, 1.0/8.0),
     (1, 1, 1.0/8.0),
     (0, 2, 1.0/8.0),
-];
+]
 
-// Jarvis-Judice-Ninke (12 neighbors)
-const JJN: [(i32, i32, f32); 12] = [
+# Jarvis-Judice-Ninke (12 neighbors)
+JJN: List[Tuple[int, int, float]] = [
     (1, 0, 7.0/48.0), (2, 0, 5.0/48.0),
     (-2, 1, 3.0/48.0), (-1, 1, 5.0/48.0), (0, 1, 7.0/48.0), (1, 1, 5.0/48.0), (2, 1, 3.0/48.0),
     (-2, 2, 1.0/48.0), (-1, 2, 3.0/48.0), (0, 2, 5.0/48.0), (1, 2, 3.0/48.0), (2, 2, 1.0/48.0),
-];
+]
 ```
 
 ---
