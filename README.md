@@ -404,9 +404,11 @@ Publishing workflow plugin.
 
 ### zx-orchestrator
 
-Meta-orchestration plugin.
+Meta-orchestration plugin coordinating multi-plugin workflows.
 
-**Skills (2):** Agent registry, project status
+**Skills (2):**
+- `agent-registry` - Complete Task tool subagent_type lookup (shared by all orchestrators)
+- `project-status` - Session continuity and progress tracking
 
 **Commands:** `orchestrate`
 
@@ -503,6 +505,46 @@ Use `integration-assistant` to verify assets are wired up in `nether.toml` and l
 
 ---
 
+## Skill Architecture
+
+### Progressive Disclosure Pattern
+
+Skills follow a **lean core + detailed references** pattern for context efficiency:
+
+```
+skill/
+├── SKILL.md           # Lean overview (~150-250 lines)
+│   └── "Load references when:" directives
+└── references/
+    ├── topic-a.md     # Detailed implementation (~100-300 lines)
+    ├── topic-b.md
+    └── topic-c.md
+```
+
+**Why?** Agentic AI loads only what's needed per task instead of 700+ line monoliths.
+
+**Example from `gameplay-mechanics`:**
+```yaml
+description: |
+  **Load references when:**
+  - Platformer physics → `references/platformer-mechanics.md`
+  - Combat/damage systems → `references/combat-mechanics.md`
+  - Items, equipment → `references/inventory-systems.md`
+```
+
+### Agent Registry
+
+The `agent-registry` skill (`zx-orchestrator`) provides a single source of truth for all Task tool `subagent_type` values across all plugins. Orchestrator agents reference this skill instead of duplicating agent lookup tables.
+
+```
+agent-registry
+├── Quick lookup by task type (design, assets, audio, code, test, publish)
+├── Invocation patterns (single, parallel, background, resume)
+└── Agent categories (proactive, domain experts, meta-orchestrators)
+```
+
+---
+
 ## Contributing
 
 Plugins are developed in this repository. Each plugin has:
@@ -511,6 +553,13 @@ Plugins are developed in this repository. Each plugin has:
 - `commands/` - Slash commands
 - `agents/` - Specialized sub-agents
 - `hooks.json` - (optional) Lifecycle hooks
+
+### Skill Guidelines
+
+1. **Keep SKILL.md lean** - Target 150-250 lines for core content
+2. **Use references/** - Extract detailed code/tables to reference files
+3. **Add loading hints** - Use "Load references when:" in descriptions
+4. **Reference shared skills** - Use `agent-registry` instead of duplicating agent tables
 
 ## License
 

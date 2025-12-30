@@ -174,31 +174,7 @@ Execution:
 
 You MUST use the Task tool to launch agents. Agents are identified by **fully-qualified subagent_type** names.
 
-### Agent Registry (Quick Reference)
-
-| Agent | subagent_type |
-|-------|---------------|
-| Asset Designer | `zx-procgen:asset-designer` |
-| Asset Generator | `zx-procgen:asset-generator` |
-| Character Generator | `zx-procgen:character-generator` |
-| Asset Critic | `zx-procgen:asset-critic` |
-| Asset Quality Reviewer | `zx-procgen:asset-quality-reviewer` |
-| Procgen Optimizer | `zx-procgen:procgen-optimizer` |
-| Code Scaffolder | `zx-dev:code-scaffolder` |
-| Feature Implementer | `zx-dev:feature-implementer` |
-| Integration Assistant | `zx-dev:integration-assistant` |
-| Rollback Reviewer | `zx-dev:rollback-reviewer` |
-| Art Director | `creative-direction:art-director` |
-| Sound Director | `creative-direction:sound-director` |
-| Tech Director | `creative-direction:tech-director` |
-| Creative Director | `creative-direction:creative-director` |
-| Test Runner | `zx-test:test-runner` |
-| Build Analyzer | `zx-optimize:build-analyzer` |
-| Optimizer | `zx-optimize:optimizer` |
-| SFX Architect | `sound-design:sfx-architect` |
-| Music Architect | `sound-design:music-architect` |
-| Design Reviewer | `game-design:design-reviewer` |
-| Accessibility Auditor | `game-design:accessibility-auditor` |
+**For the complete agent registry, load the `agent-registry` skill.**
 
 ### CRITICAL: Parallel Execution Pattern
 

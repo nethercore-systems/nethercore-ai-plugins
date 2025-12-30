@@ -1,170 +1,114 @@
+---
+name: Agent Registry
+description: |
+  Use this skill for agent discovery, routing decisions, and understanding what specialists are available.
+
+  **Triggers:** "which agent", "find agent for", "route to", "specialist for", "who handles"
+
+  Contains the complete registry of all Task tool subagent_types across all plugins.
+version: 1.0.0
+---
+
 # Agent Registry
 
-This skill provides the complete registry of available agents for orchestration tasks. Use this when spawning sub-agents with the Task tool.
+Complete registry of Task tool `subagent_type` values for agent invocation.
 
-## CRITICAL: Fully-Qualified Agent Names
+## Quick Lookup by Task Type
 
-When using the Task tool, you MUST use the **fully-qualified subagent_type** format:
-```
-plugin-name:agent-name
-```
+| Task | Agent | Plugin |
+|------|-------|--------|
+| **Design & Planning** |||
+| Game concept → GDD | `zx-game-design:gdd-generator` | zx-game-design |
+| Mechanic deep-dive | `zx-game-design:mechanic-designer` | zx-game-design |
+| Scope/feasibility check | `zx-game-design:scope-advisor` | zx-game-design |
+| Balance analysis | `game-design:balance-analyzer` | game-design |
+| Accessibility audit | `game-design:accessibility-auditor` | game-design |
+| **Creative Direction** |||
+| Visual coherence | `creative-direction:art-director` | creative-direction |
+| Audio coherence | `creative-direction:sound-director` | creative-direction |
+| Code architecture | `creative-direction:tech-director` | creative-direction |
+| Holistic vision | `creative-direction:creative-director` | creative-direction |
+| **Asset Generation** |||
+| Style specs from concept | `zx-procgen:asset-designer` | zx-procgen |
+| Code from specs | `zx-procgen:asset-generator` | zx-procgen |
+| Spec compliance check | `zx-procgen:asset-critic` | zx-procgen |
+| ZX budget validation | `zx-procgen:asset-quality-reviewer` | zx-procgen |
+| Quality improvement | `zx-procgen:quality-enhancer` | zx-procgen |
+| Full character pipeline | `zx-procgen:character-generator` | zx-procgen |
+| Full asset pipeline | `zx-procgen:creative-orchestrator` | zx-procgen |
+| **Sound Design** |||
+| Creative → audio specs | `sound-design:sonic-designer` | sound-design |
+| SFX implementation | `sound-design:sfx-architect` | sound-design |
+| Music composition | `sound-design:music-architect` | sound-design |
+| Audio coherence review | `sound-design:audio-coherence-reviewer` | sound-design |
+| **Code Development** |||
+| Scaffold game systems | `zx-dev:code-scaffolder` | zx-dev |
+| Full feature implementation | `zx-dev:feature-implementer` | zx-dev |
+| Asset integration | `zx-dev:integration-assistant` | zx-dev |
+| Rollback safety review | `zx-dev:rollback-reviewer` | zx-dev |
+| **Testing & QA** |||
+| Run test suite | `zx-test:test-runner` | zx-test |
+| Debug desync issues | `zx-test:desync-investigator` | zx-test |
+| **Optimization** |||
+| Analyze build size | `zx-optimize:build-analyzer` | zx-optimize |
+| Apply optimizations | `zx-optimize:optimizer` | zx-optimize |
+| **Publishing** |||
+| Release validation | `zx-publish:release-validator` | zx-publish |
+| Autonomous publish prep | `zx-publish:publish-preparer` | zx-publish |
+| **CI/CD** |||
+| Set up GitHub Actions | `zx-cicd:ci-scaffolder` | zx-cicd |
+| Optimize pipeline | `zx-cicd:pipeline-optimizer` | zx-cicd |
+| Add quality gates | `zx-cicd:quality-gate-enforcer` | zx-cicd |
+| **Orchestration** |||
+| Full game pipeline | `zx-orchestrator:game-orchestrator` | zx-orchestrator |
+| Parallel task coordination | `zx-orchestrator:parallel-coordinator` | zx-orchestrator |
+| Request routing | `ai-game-studio:request-dispatcher` | ai-game-studio |
+| Completion verification | `ai-game-studio:completion-auditor` | ai-game-studio |
+| Next step suggestion | `ai-game-studio:next-step-suggester` | ai-game-studio |
+| Project health check | `ai-game-studio:project-health-monitor` | ai-game-studio |
 
-Do NOT use short names like `asset-designer`. Use `zx-procgen:asset-designer`.
-
-## Complete Agent Registry
-
-### Creative Direction (`creative-direction`)
-
-| Agent | subagent_type | Purpose |
-|-------|---------------|---------|
-| Creative Director | `creative-direction:creative-director` | Meta-director for overall vision alignment |
-| Art Director | `creative-direction:art-director` | Visual coherence and style consistency |
-| Sound Director | `creative-direction:sound-director` | Audio coherence and sonic identity |
-| Tech Director | `creative-direction:tech-director` | Architecture, code quality, file organization |
-
-### Game Design (`game-design`)
-
-| Agent | subagent_type | Purpose |
-|-------|---------------|---------|
-| Design Reviewer | `game-design:design-reviewer` | GDD coherence and completeness |
-| Genre Advisor | `game-design:genre-advisor` | Genre-appropriate design patterns |
-| Accessibility Auditor | `game-design:accessibility-auditor` | Accessibility barriers and improvements |
-| Balance Analyzer | `game-design:balance-analyzer` | Stats, difficulty curves, economy balance |
-| Narrative Generator | `game-design:narrative-generator` | Story content, dialogue, lore |
-
-### ZX Game Design (`zx-game-design`)
-
-| Agent | subagent_type | Purpose |
-|-------|---------------|---------|
-| GDD Generator | `zx-game-design:gdd-generator` | Autonomous GDD creation |
-| Mechanic Designer | `zx-game-design:mechanic-designer` | Detailed mechanic specs |
-| Constraint Analyzer | `zx-game-design:constraint-analyzer` | ZX feasibility checking |
-| Scope Advisor | `zx-game-design:scope-advisor` | Project scope assessment |
-
-### Procedural Generation (`zx-procgen`)
-
-| Agent | subagent_type | Purpose |
-|-------|---------------|---------|
-| Asset Designer | `zx-procgen:asset-designer` | Creative vision → style specs |
-| Asset Generator | `zx-procgen:asset-generator` | style specs → procedural code |
-| Character Generator | `zx-procgen:character-generator` | Complete animated character creation |
-| Asset Critic | `zx-procgen:asset-critic` | Spec compliance review |
-| Asset Quality Reviewer | `zx-procgen:asset-quality-reviewer` | ZX budget compliance |
-| Procgen Optimizer | `zx-procgen:procgen-optimizer` | Generation optimization |
-| Creative Orchestrator | `zx-procgen:creative-orchestrator` | Full asset pipeline coordination |
-
-### Sound Design (`sound-design`)
-
-| Agent | subagent_type | Purpose |
-|-------|---------------|---------|
-| Sonic Designer | `sound-design:sonic-designer` | Audio intent → audio style specs |
-| SFX Architect | `sound-design:sfx-architect` | Sound effect synthesis |
-| Music Architect | `sound-design:music-architect` | Music composition |
-| Audio Coherence Reviewer | `sound-design:audio-coherence-reviewer` | Sonic identity validation |
-
-### ZX Development (`zx-dev`)
-
-| Agent | subagent_type | Purpose |
-|-------|---------------|---------|
-| Code Scaffolder | `zx-dev:code-scaffolder` | Boilerplate code generation |
-| Feature Implementer | `zx-dev:feature-implementer` | Complete feature implementation |
-| Integration Assistant | `zx-dev:integration-assistant` | Asset-to-code connection |
-| Rollback Reviewer | `zx-dev:rollback-reviewer` | Netcode safety analysis |
-
-### Testing (`zx-test`)
-
-| Agent | subagent_type | Purpose |
-|-------|---------------|---------|
-| Test Runner | `zx-test:test-runner` | Sync and regression tests |
-| Desync Investigator | `zx-test:desync-investigator` | Non-determinism debugging |
-
-### Optimization (`zx-optimize`)
-
-| Agent | subagent_type | Purpose |
-|-------|---------------|---------|
-| Build Analyzer | `zx-optimize:build-analyzer` | Build size analysis |
-| Optimizer | `zx-optimize:optimizer` | Apply optimizations |
-
-### Publishing (`zx-publish`)
-
-| Agent | subagent_type | Purpose |
-|-------|---------------|---------|
-| Release Validator | `zx-publish:release-validator` | Release requirements check |
-| Publish Preparer | `zx-publish:publish-preparer` | Autonomous release preparation |
-
-### CI/CD (`zx-cicd`)
-
-| Agent | subagent_type | Purpose |
-|-------|---------------|---------|
-| CI Scaffolder | `zx-cicd:ci-scaffolder` | GitHub Actions setup |
-| Pipeline Optimizer | `zx-cicd:pipeline-optimizer` | CI performance tuning |
-| Quality Gate Enforcer | `zx-cicd:quality-gate-enforcer` | Quality check configuration |
-
-### Orchestration (`zx-orchestrator`)
-
-| Agent | subagent_type | Purpose |
-|-------|---------------|---------|
-| Game Orchestrator | `zx-orchestrator:game-orchestrator` | Full development pipeline |
-| Parallel Coordinator | `zx-orchestrator:parallel-coordinator` | Parallel task execution |
-
-## Task Tool Usage
+## Invocation Patterns
 
 ### Single Agent
-
 ```
-Task tool call:
-  subagent_type: "zx-procgen:asset-designer"
-  description: "Design character specs"
-  prompt: "Create style specifications for..."
+Task tool with subagent_type="zx-procgen:asset-generator"
 ```
 
 ### Parallel Agents
-
-Send ONE message with MULTIPLE Task tool calls:
-
+Send multiple Task tool calls in a single message:
 ```
-Message containing:
-  Task #1: subagent_type="creative-direction:art-director", ...
-  Task #2: subagent_type="creative-direction:sound-director", ...
-  Task #3: subagent_type="creative-direction:tech-director", ...
-
-→ All execute concurrently
+Task 1: subagent_type="zx-procgen:asset-generator", prompt="Generate mesh..."
+Task 2: subagent_type="sound-design:sfx-architect", prompt="Create SFX..."
 ```
 
 ### Background Agent
-
 ```
-Task tool call:
-  subagent_type: "zx-procgen:character-generator"
-  description: "Generate player"
-  prompt: "..."
-  run_in_background: true
-
-→ Returns task_id immediately
-→ Use TaskOutput to retrieve results later
+Task tool with subagent_type="zx-test:test-runner", run_in_background=true
 ```
 
-## Common Parallel Patterns
+### Resume Agent
+```
+Task tool with resume="{agent_id_from_previous_run}"
+```
 
-### Quality Review Suite
-- `creative-direction:art-director`
-- `creative-direction:sound-director`
-- `creative-direction:tech-director`
-- Then: `creative-direction:creative-director` (after individual reviews)
+## Agent Categories
 
-### Asset Generation Pipeline
-- Wave 1: Multiple `zx-procgen:asset-designer` (parallel)
-- Wave 2: Multiple `zx-procgen:asset-generator` (parallel)
-- Wave 3: `zx-procgen:asset-critic` + `asset-quality-reviewer` (parallel)
+### Proactive Agents
+These should be invoked automatically when conditions are met:
+- `ai-game-studio:completion-auditor` - After any significant work
+- `zx-publish:release-validator` - After builds, before release
+- `zx-game-design:scope-advisor` - When design seems ambitious
+- `game-design:accessibility-auditor` - When reviewing designs
 
-### Validation Suite
-- `zx-test:test-runner`
-- `zx-optimize:build-analyzer`
-- `zx-dev:rollback-reviewer`
-- `zx-publish:release-validator`
+### Domain Experts
+Route based on domain:
+- **Visual**: art-director, asset-designer, asset-generator
+- **Audio**: sound-director, sonic-designer, sfx-architect, music-architect
+- **Code**: tech-director, code-scaffolder, feature-implementer
+- **Design**: gdd-generator, mechanic-designer, balance-analyzer
 
-### Design Review
-- `game-design:design-reviewer`
-- `game-design:accessibility-auditor`
-- `zx-game-design:constraint-analyzer`
-- `zx-game-design:scope-advisor`
+### Meta-Orchestrators
+For complex multi-domain requests:
+- `ai-game-studio:request-dispatcher` - Parses intent, routes to experts
+- `zx-orchestrator:game-orchestrator` - Full pipeline coordination
+- `zx-procgen:creative-orchestrator` - Asset pipeline coordination

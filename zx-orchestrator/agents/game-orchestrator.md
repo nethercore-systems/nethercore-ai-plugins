@@ -478,48 +478,7 @@ When resuming work or after completing a sub-task:
 
 You have access to the Task tool. You MUST use it to spawn specialized agents. Agents are identified by their **fully-qualified subagent_type** (plugin:agent-name format).
 
-### Agent Registry (Fully-Qualified Names)
-
-| Phase | Agent | subagent_type |
-|-------|-------|---------------|
-| **Creative** | Creative Director | `creative-direction:creative-director` |
-| | Art Director | `creative-direction:art-director` |
-| | Sound Director | `creative-direction:sound-director` |
-| | Tech Director | `creative-direction:tech-director` |
-| **Design** | GDD Generator | `zx-game-design:gdd-generator` |
-| | Mechanic Designer | `zx-game-design:mechanic-designer` |
-| | Constraint Analyzer | `zx-game-design:constraint-analyzer` |
-| | Scope Advisor | `zx-game-design:scope-advisor` |
-| | Design Reviewer | `game-design:design-reviewer` |
-| | Genre Advisor | `game-design:genre-advisor` |
-| | Accessibility Auditor | `game-design:accessibility-auditor` |
-| | Balance Analyzer | `game-design:balance-analyzer` |
-| | Narrative Generator | `game-design:narrative-generator` |
-| **Visual Assets** | Asset Designer | `zx-procgen:asset-designer` |
-| | Asset Generator | `zx-procgen:asset-generator` |
-| | Character Generator | `zx-procgen:character-generator` |
-| | Asset Critic | `zx-procgen:asset-critic` |
-| | Asset Quality Reviewer | `zx-procgen:asset-quality-reviewer` |
-| | Procgen Optimizer | `zx-procgen:procgen-optimizer` |
-| | Creative Orchestrator | `zx-procgen:creative-orchestrator` |
-| **Audio** | Sonic Designer | `sound-design:sonic-designer` |
-| | SFX Architect | `sound-design:sfx-architect` |
-| | Music Architect | `sound-design:music-architect` |
-| | Audio Coherence Reviewer | `sound-design:audio-coherence-reviewer` |
-| **Implementation** | Code Scaffolder | `zx-dev:code-scaffolder` |
-| | Feature Implementer | `zx-dev:feature-implementer` |
-| | Integration Assistant | `zx-dev:integration-assistant` |
-| | Rollback Reviewer | `zx-dev:rollback-reviewer` |
-| **Testing** | Test Runner | `zx-test:test-runner` |
-| | Desync Investigator | `zx-test:desync-investigator` |
-| **Optimization** | Build Analyzer | `zx-optimize:build-analyzer` |
-| | Optimizer | `zx-optimize:optimizer` |
-| **Publish** | Release Validator | `zx-publish:release-validator` |
-| | Publish Preparer | `zx-publish:publish-preparer` |
-| **CI/CD** | CI Scaffolder | `zx-cicd:ci-scaffolder` |
-| | Pipeline Optimizer | `zx-cicd:pipeline-optimizer` |
-| | Quality Gate Enforcer | `zx-cicd:quality-gate-enforcer` |
-| **Coordination** | Parallel Coordinator | `zx-orchestrator:parallel-coordinator` |
+**For the complete agent registry, load the `agent-registry` skill.** Key agents by phase are shown in the Development Pipeline section above.
 
 ### Single Agent Invocation
 

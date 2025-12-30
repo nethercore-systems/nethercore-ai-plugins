@@ -1,6 +1,14 @@
 ---
 name: Gameplay Mechanics Library
-description: This skill should be used when the user asks about "platformer physics", "variable jump", "coyote time", "jump buffer", "wall jump", "hitbox", "hurtbox", "combat system", "i-frames", "invincibility frames", "knockback", "combo system", "inventory", "item pickup", "equipment", "dialogue system", "text box", "typewriter effect", "movement mechanics", "acceleration", "dash", "dodge", "8-directional movement", or implements common gameplay patterns for Nethercore ZX games.
+description: |
+  Use this skill for gameplay patterns: "platformer", "variable jump", "coyote time", "wall jump", "hitbox", "combat", "i-frames", "knockback", "combo", "inventory", "dialogue", "typewriter", "dash", "dodge".
+
+  **Load references when:**
+  - Platformer physics → `references/platformer-mechanics.md`
+  - Combat/damage systems → `references/combat-mechanics.md`
+  - 8-dir movement, acceleration → `references/movement-patterns.md`
+  - Items, equipment, pickups → `references/inventory-systems.md`
+  - Text boxes, choices, branching → `references/dialogue-systems.md`
 version: 0.1.0
 ---
 
