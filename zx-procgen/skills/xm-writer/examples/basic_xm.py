@@ -2,31 +2,28 @@
 """
 Basic XM Generation Example
 
-Generates a simple 4-channel drum loop with kick, snare, and hi-hat.
-Demonstrates the core xm_writer API.
+Generates a simple 4-channel drum loop with embedded samples.
+This is the DEFAULT workflow - always generate samples!
 
 Usage:
     python basic_xm.py
 
 Output:
-    drum_loop.xm - Valid FastTracker 2 XM file
+    drum_loop.xm - Valid FastTracker 2 XM file with embedded samples
 
 Integration with Nethercore:
-    1. Add samples to nether.toml with matching IDs:
-       [[assets.sounds]]
-       id = "kick"
-       path = "samples/kick.wav"
+    Just add the XM file to nether.toml - samples are auto-extracted!
 
-    2. Add the generated XM:
-       [[assets.trackers]]
-       id = "drum_loop"
-       path = "music/drum_loop.xm"
+    [[assets.trackers]]
+    id = "drum_loop"
+    path = "music/drum_loop.xm"
 
-    3. Play in game:
-       music_play(rom_tracker(b"drum_loop", 9), 0.8, 1)
+    In game:
+    music_play(rom_tracker(b"drum_loop", 9), 0.8, 1)
 """
 
 import sys
+import math
 from pathlib import Path
 
 # Add scripts directory to path for import
@@ -37,6 +34,69 @@ from xm_writer import (
     write_xm, validate_xm
 )
 
+
+# ============================================================================
+# Simple Sample Generators
+# ============================================================================
+
+def generate_kick_sample(sample_rate: int = 22050) -> bytes:
+    """Generate a simple kick drum sample (sine sweep)."""
+    duration = int(sample_rate * 0.15)  # 150ms
+    samples = []
+
+    for i in range(duration):
+        t = i / sample_rate
+        # Frequency sweep from 150Hz to 40Hz
+        freq = 150 * (1 - t / 0.15) + 40
+        # Exponential decay
+        amp = math.exp(-t * 15)
+        value = math.sin(2 * math.pi * freq * t) * amp
+        samples.append(int(value * 127) & 0xFF)
+
+    return bytes(samples)
+
+
+def generate_snare_sample(sample_rate: int = 22050) -> bytes:
+    """Generate a simple snare drum sample (noise + tone)."""
+    import random
+    duration = int(sample_rate * 0.1)  # 100ms
+    samples = []
+
+    for i in range(duration):
+        t = i / sample_rate
+        # Noise component
+        noise = random.uniform(-1, 1)
+        # Tone component (200Hz)
+        tone = math.sin(2 * math.pi * 200 * t) * 0.3
+        # Exponential decay
+        amp = math.exp(-t * 25)
+        value = (noise * 0.7 + tone * 0.3) * amp
+        samples.append(int(value * 127) & 0xFF)
+
+    return bytes(samples)
+
+
+def generate_hihat_sample(sample_rate: int = 22050) -> bytes:
+    """Generate a simple hi-hat sample (filtered noise)."""
+    import random
+    duration = int(sample_rate * 0.05)  # 50ms
+    samples = []
+
+    for i in range(duration):
+        t = i / sample_rate
+        # High-passed noise
+        noise = random.uniform(-1, 1)
+        # Sharp decay
+        amp = math.exp(-t * 50)
+        value = noise * amp
+        samples.append(int(value * 127) & 0xFF)
+
+    return bytes(samples)
+
+
+# ============================================================================
+# Pattern Creation
+# ============================================================================
 
 def create_drum_pattern(num_rows: int = 64) -> XmPattern:
     """
@@ -68,11 +128,37 @@ def create_drum_pattern(num_rows: int = 64) -> XmPattern:
 
 
 def main():
-    # Define instruments (names MUST match [[assets.sounds]] IDs in nether.toml)
+    print("Generating drum samples...")
+
+    # Generate sample data
+    kick_sample = generate_kick_sample()
+    snare_sample = generate_snare_sample()
+    hihat_sample = generate_hihat_sample()
+
+    print(f"  Kick: {len(kick_sample)} bytes")
+    print(f"  Snare: {len(snare_sample)} bytes")
+    print(f"  Hi-hat: {len(hihat_sample)} bytes")
+
+    # Define instruments WITH embedded samples
     instruments = [
-        XmInstrument(name="kick"),
-        XmInstrument(name="snare"),
-        XmInstrument(name="hihat"),
+        XmInstrument(
+            name="kick",
+            sample_data=kick_sample,
+            sample_bits=8,
+            sample_loop_type=0  # One-shot
+        ),
+        XmInstrument(
+            name="snare",
+            sample_data=snare_sample,
+            sample_bits=8,
+            sample_loop_type=0  # One-shot
+        ),
+        XmInstrument(
+            name="hihat",
+            sample_data=hihat_sample,
+            sample_bits=8,
+            sample_loop_type=0  # One-shot
+        ),
     ]
 
     # Create patterns
@@ -81,6 +167,7 @@ def main():
     ]
 
     # Build module
+    print("\nBuilding XM module...")
     module = XmModule(
         name="Drum Loop",
         num_channels=4,
@@ -94,21 +181,24 @@ def main():
 
     # Write XM file
     output_path = "drum_loop.xm"
+    print(f"Writing {output_path}...")
     write_xm(module, output_path)
 
     # Validate the output
     try:
         validate_xm(output_path)
-        print(f"Created: {output_path}")
+        print(f"\n[OK] Created: {output_path}")
         print(f"  Channels: {module.num_channels}")
         print(f"  Patterns: {len(module.patterns)}")
         print(f"  Instruments: {len(module.instruments)}")
         print(f"  Tempo: {module.default_bpm} BPM, speed {module.default_speed}")
-        print("\nInstrument names (must match nether.toml [[assets.sounds]] IDs):")
+        print("\nInstruments with embedded samples:")
         for i, inst in enumerate(instruments, 1):
-            print(f"  {i}: {inst.name}")
+            size = len(inst.sample_data) if inst.sample_data else 0
+            print(f"  {i}: {inst.name} ({size} bytes)")
+        print("\nSamples are embedded! Just add XM to nether.toml - no separate [[assets.sounds]] needed.")
     except ValueError as e:
-        print(f"Validation failed: {e}")
+        print(f"[ERROR] Validation failed: {e}")
         return 1
 
     return 0

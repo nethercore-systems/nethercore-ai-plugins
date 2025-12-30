@@ -6,9 +6,9 @@ This module provides low-level primitives for creating XM tracker modules.
 For composition theory (melody, chords, song structure), use the sound-design
 plugin's music-composition skill.
 
-## Nethercore Sample Handling (Two Approaches)
+## Nethercore Sample Handling
 
-### 1. Embedded Samples (Recommended - Auto-Extraction)
+### DEFAULT: Embedded Samples with Auto-Extraction
 XM files can contain embedded sample data. At pack time, nether-cli automatically:
 - Extracts all samples from the XM file
 - Converts them to 22050 Hz mono i16 format
@@ -30,13 +30,15 @@ path = "music/boss_theme.xm"
 # Samples auto-extracted! Instrument "Kick" becomes rom_sound("kick")
 ```
 
-### 2. ROM-Only References (Sample-less XM)
-XM files can have sample_length=0, with instrument names mapping to separately
-loaded [[assets.sounds]] IDs in nether.toml.
+### ALTERNATIVE: ROM-Only References (Legacy - Sample-less XM)
+Only use if you have a specific reason to avoid embedded samples!
+
+XM files can have sample_length=0 (set sample_data=None), with instrument names
+mapping to separately loaded [[assets.sounds]] IDs in nether.toml.
 
 **Use when:**
-- Sharing samples across many XM files without embedding
-- Samples loaded from other sources (WAV files, procedural generation)
+- Sharing the exact same samples across many XM files (deduplication)
+- Samples must come from external WAV files for some reason
 
 **Note:** Even with embedded samples, you can still add explicit [[assets.sounds]]
 entries. The auto-extracted samples supplement (not replace) manual entries.
@@ -179,8 +181,13 @@ class XmEnvelope:
 
 @dataclass
 class XmInstrument:
-    """Instrument metadata (name maps to ROM sample ID)."""
-    name: str = ""                                  # Maps to [[assets.sounds]] id
+    """
+    Instrument with embedded sample data.
+
+    DEFAULT workflow: Always provide sample_data with actual PCM samples.
+    Use procedural-sounds skill to generate samples!
+    """
+    name: str = ""                                  # Instrument name (sanitized to ROM ID)
     volume_envelope: Optional[XmEnvelope] = None
     panning_envelope: Optional[XmEnvelope] = None
     vibrato_type: int = 0      # 0=sine, 1=square, 2=ramp down, 3=ramp up
@@ -193,6 +200,8 @@ class XmInstrument:
     sample_loop_start: int = 0
     sample_loop_length: int = 0
     sample_loop_type: int = 0  # 0=none, 1=forward, 2=ping-pong
+    sample_data: Optional[bytes] = None  # Raw PCM sample data (8-bit or 16-bit)
+    sample_bits: int = 8         # 8 or 16 bit
 
 
 @dataclass
@@ -381,6 +390,34 @@ def write_xm(module: XmModule, output_path: str) -> None:
         f.write(output)
 
 
+def _delta_encode_16bit(sample_data: bytes) -> bytes:
+    """
+    Delta-encode 16-bit signed PCM samples for XM format.
+
+    XM uses delta encoding for 16-bit samples to improve compression.
+    Each sample value is stored as the difference from the previous sample.
+
+    Args:
+        sample_data: Raw 16-bit signed PCM data (little-endian int16)
+
+    Returns:
+        Delta-encoded sample data as bytes
+    """
+    # Convert bytes to int16 array
+    num_samples = len(sample_data) // 2
+    samples = struct.unpack(f"<{num_samples}h", sample_data)
+
+    # Delta encode: store differences instead of absolute values
+    encoded = []
+    prev = 0
+    for sample in samples:
+        delta = (sample - prev) & 0xFFFF
+        encoded.append(delta)
+        prev = sample
+
+    return struct.pack(f"<{len(encoded)}H", *encoded)
+
+
 def _write_instrument(output: bytearray, instrument: XmInstrument) -> None:
     """Write a single instrument to the output buffer."""
 
@@ -475,8 +512,9 @@ def _write_instrument(output: bytearray, instrument: XmInstrument) -> None:
 
     # ========== Sample Header (40 bytes) ==========
 
-    # Sample length (4 bytes) - SET TO 0 (Nethercore strips samples)
-    output.extend(struct.pack("<I", 0))
+    # Sample length (4 bytes) - write actual length if sample_data provided
+    sample_len = len(instrument.sample_data) if instrument.sample_data else 0
+    output.extend(struct.pack("<I", sample_len))
 
     # Sample loop start (4 bytes)
     output.extend(struct.pack("<I", instrument.sample_loop_start))
@@ -490,8 +528,11 @@ def _write_instrument(output: bytearray, instrument: XmInstrument) -> None:
     # Finetune (1 byte, signed)
     output.append(instrument.sample_finetune & 0xFF)
 
-    # Type (1 byte) - loop type in lower 2 bits
-    output.append(instrument.sample_loop_type & 0x03)
+    # Type (1 byte) - loop type in bits 0-1, sample format in bit 4
+    type_byte = instrument.sample_loop_type & 0x03
+    if instrument.sample_bits == 16:
+        type_byte |= 0x10  # Set bit 4 for 16-bit samples
+    output.append(type_byte)
 
     # Panning (1 byte) - center
     output.append(128)
@@ -505,7 +546,15 @@ def _write_instrument(output: bytearray, instrument: XmInstrument) -> None:
     # Sample name (22 bytes) - use instrument name
     output.extend(name_bytes.ljust(22, b"\x00"))
 
-    # NO SAMPLE DATA (sample_length = 0)
+    # ========== Sample Data ==========
+    if instrument.sample_data:
+        # Write sample data (delta-encoded for 16-bit, raw for 8-bit)
+        if instrument.sample_bits == 16:
+            # 16-bit: delta encode
+            output.extend(_delta_encode_16bit(instrument.sample_data))
+        else:
+            # 8-bit: write raw signed PCM
+            output.extend(instrument.sample_data)
 
 
 # ============================================================================
