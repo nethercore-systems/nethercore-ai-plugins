@@ -155,7 +155,6 @@ Tasks:
 ### Analysis Agents
 - `project-health-monitor` - Overall project health
 - `gdd-implementation-tracker` - Feature gap analysis
-- `quality-analyzer` - Asset quality assessment
 - `completion-auditor` - Semantic verification
 
 ### Direction Agents
@@ -170,7 +169,7 @@ Tasks:
 - `integration-assistant` - Asset hookup
 
 ### Asset Agents
-- `asset-designer` - SADL specs
+- `asset-designer` - style specs
 - `asset-generator` - Procedural code
 - `character-generator` - Full characters
 - `sfx-architect` - Sound effects
@@ -180,3 +179,113 @@ Tasks:
 - `rollback-reviewer` - Netcode safety
 - `release-validator` - Release readiness
 - `test-runner` - Sync tests
+
+---
+
+## Quality Agent Selection Guide
+
+Four agents handle asset quality - choose based on your need:
+
+| Agent | Question It Answers | Use When |
+|-------|---------------------|----------|
+| `asset-critic` | "Does this match the style spec?" | Comparing output to creative intent/specification |
+| `asset-quality-reviewer` | "Does this fit ZX limits?" | Checking technical compliance (budgets, formats) |
+| `quality-analyzer` | "How good is this overall?" | Holistic assessment with scores and priorities |
+| `quality-enhancer` | "Make this better" | Actively improving assets to higher tiers |
+
+### Decision Flow
+
+```
+"Check my assets" →
+├── Against spec/intent? → asset-critic
+├── Against ZX budgets? → asset-quality-reviewer
+├── Overall quality?    → quality-analyzer
+└── Improve them?       → quality-enhancer
+```
+
+### Quality Pipeline Order
+
+Typical quality workflow:
+1. **asset-critic** - Verify spec compliance after generation
+2. **asset-quality-reviewer** - Verify ZX technical limits
+3. **quality-analyzer** - Get holistic quality score
+4. **quality-enhancer** - Improve if score is low
+
+### Examples
+
+| Request | Route To |
+|---------|----------|
+| "Does this mesh match my style spec?" | `asset-critic` |
+| "Will these textures fit in ROM?" | `asset-quality-reviewer` |
+| "Rate my asset quality" | `quality-analyzer` |
+| "Make these textures better" | `quality-enhancer` |
+| "Are these production ready?" | `quality-analyzer` → then `asset-quality-reviewer` |
+
+---
+
+## Orchestrator Selection Guide
+
+Four orchestrators exist at different abstraction levels:
+
+| Orchestrator | Plugin | Scope | Use When |
+|--------------|--------|-------|----------|
+| `game-orchestrator` | zx-orchestrator | Full 7-phase pipeline | Building complete game from GDD to ROM |
+| `creative-orchestrator` | zx-procgen | Asset generation | Generating assets for existing project |
+| `request-dispatcher` | ai-game-studio | Single request | Have a vague or complex request |
+| `parallel-coordinator` | zx-orchestrator | Task parallelization | 4+ independent tasks to run |
+
+### Decision Flow
+
+```
+What do you need?
+│
+├── "Build a complete game" ────────→ game-orchestrator
+│   (GDD → Assets → Code → Test → Publish)
+│
+├── "Generate all assets for my GDD" → creative-orchestrator
+│   (Style → Generation → Validation)
+│
+├── "I have a complex request" ─────→ request-dispatcher
+│   (Parses intent, routes to expert)
+│
+└── "Run these tasks in parallel" ──→ parallel-coordinator
+    (Dependency analysis, parallel execution)
+```
+
+### When to Use Each
+
+**game-orchestrator:**
+- Starting a new game from scratch
+- Need human-driven development with checkpoints
+- Want 7-phase pipeline (Creative → Design → Visual → Audio → Code → Test → Publish)
+
+**creative-orchestrator:**
+- Have GDD/asset specs, need assets generated
+- Want style-based asset pipeline
+- Autonomous asset generation workflow
+
+**request-dispatcher:**
+- Have a single, possibly vague request
+- Don't know which agent to use
+- Request spans multiple domains
+
+**parallel-coordinator:**
+- Have 4+ independent tasks
+- Need dependency analysis
+- Want to maximize parallel execution
+
+### Examples
+
+| Request | Route To |
+|---------|----------|
+| "Make a fighting game" | `game-orchestrator` |
+| "Generate all characters from GDD" | `creative-orchestrator` |
+| "Improve my game" | `request-dispatcher` (will clarify and route) |
+| "Generate textures, meshes, and sounds" | `parallel-coordinator` (runs in parallel) |
+
+### Orchestrator Nesting
+
+Orchestrators can invoke each other:
+- `game-orchestrator` may invoke `creative-orchestrator` for asset phase
+- `request-dispatcher` may invoke `parallel-coordinator` for multi-domain requests
+- `creative-orchestrator` may invoke asset agents in parallel via `parallel-coordinator`

@@ -1,27 +1,19 @@
 ---
-name: Semantic Asset Description Language (SADL)
-description: This skill should be used when the user asks about "SADL", "semantic asset", "style token", "design asset", "creative asset", "asset description", "material semantic", "shape vocabulary", "color palette semantic", "style guide", "asset recipe", "constrained generation", "quality heuristics", "asset quality metrics", "creative workflow", "asset pipeline design", or wants to translate creative intent ("make it look rustic", "cyberpunk vibe", "weathered medieval") into procedural generation parameters. Provides the Semantic Asset Description Language specification for bridging creative descriptions and procedural code.
-version: 1.0.0
+name: Visual Style Guide
+description: |
+  Use this skill when generating visual assets (textures, meshes, sprites) and you need consistent style.
+
+  **Triggers:** "visual style", "art style", "how should it look", "look and feel", "make it look [X]", "color palette", "material", "PBR".
+
+  **Before generating:** Check `.studio/visual-style.local.md` for project style. If none exists and user wants consistency, suggest `/establish-visual-style`.
+version: 3.0.0
 ---
 
-# Semantic Asset Description Language (SADL)
+# Visual Style Guide
 
-SADL bridges creative intent and procedural generation. Instead of manually guessing parameter values, describe assets semantically and let the system translate to concrete parameters.
+Reference for maintaining consistent visual style across procedurally generated assets.
 
-## Core Concepts
-
-SADL has four pillars:
-
-1. **Style Tokens** - Visual style descriptors (rustic, cyberpunk, organic)
-2. **Color Palettes** - Semantic color schemes (warm_earthy, neon, pastel)
-3. **Materials** - PBR parameter presets (metal.polished, wood.weathered)
-4. **Shape Vocabulary** - Base primitive descriptors (barrel, crystal, humanoid)
-
-These combine into **Generation Recipes** - constrained parameter bundles that produce consistent, quality results.
-
----
-
-## Style Tokens
+## Style Presets
 
 Style tokens modify base generation parameters to achieve a visual style. Each token defines offsets and multipliers for roughness, saturation, detail level, edge hardness, noise, and damage.
 
@@ -253,7 +245,7 @@ pub const SCIFI_PANEL: GenerationRecipe = GenerationRecipe {
 
 ## Quality Heuristics
 
-SADL includes self-assessment heuristics for generated assets. Use these to validate output quality.
+The style guide includes self-assessment heuristics for generated assets. Use these to validate output quality.
 
 ### Texture Quality
 
@@ -324,7 +316,7 @@ For complete quality heuristics with measurement code, see `references/quality-h
 
 ## Creative Workflow
 
-SADL supports an iterative creative workflow:
+The style guide supports an iterative creative workflow:
 
 ```
 1. DESCRIBE  →  "I want a weathered medieval barrel"
@@ -339,7 +331,7 @@ SADL supports an iterative creative workflow:
 
 ### Creative Agents
 
-SADL is implemented by four specialized agents:
+The style guide is implemented by four specialized agents:
 
 | Agent | Role | Mode |
 |-------|------|------|
@@ -354,7 +346,7 @@ SADL is implemented by four specialized agents:
 
 ### Semantic Description Examples
 
-| Natural Language | SADL Translation |
+| Natural Language | Style Translation |
 |------------------|------------------|
 | "rusty old barrel" | Style: Rustic, Material: metal.rusted, Shape: barrel |
 | "glowing crystal" | Style: Fantasy, Material: crystal.magical, Emission: 0.8 |

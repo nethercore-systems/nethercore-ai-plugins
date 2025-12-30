@@ -31,7 +31,7 @@ First, scan for existing project documentation:
 ```
 .studio/
 ├── creative-direction.local.md   # Creative direction
-├── sonic-identity.local.md       # Audio direction (SSL)
+├── sonic-identity.local.md       # Audio direction (audio style)
 ├── project-status.md             # Project status tracking
 └── architecture/
     └── decisions.md              # ADRs
@@ -97,7 +97,7 @@ If not skipping audio:
   - "Your art style is [dark fantasy]. What audio mood matches?"
   - "Your creative pillars include [tension]. How should audio reinforce that?"
 - Key outputs:
-  - SSL specification
+  - audio style specification
   - Music direction
   - SFX character
 
@@ -129,7 +129,7 @@ Based on your GDD, recommended next actions:
 ## Quick Reference
 - **Concept:** [one-liner from GDD]
 - **Art Style:** [from creative direction]
-- **Sonic Mood:** [from SSL]
+- **Sonic Mood:** [from audio style]
 - **Architecture:** [from tech direction]
 ```
 

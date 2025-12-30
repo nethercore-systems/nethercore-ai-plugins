@@ -1,7 +1,12 @@
 ---
-name: Level Design Patterns
-description: This skill should be used when the user asks about "level design", "tile map", "world layout", "level generation", "map design", "room generation", "dungeon generation", "procedural levels", "pacing", "difficulty curve", "tileset", "world streaming", "level chunks", or discusses spatial content design for Nethercore ZX games.
-version: 0.1.0
+name: Level Design Patterns for ZX
+description: |
+  Use this skill for ZX-SPECIFIC level implementation - data formats, storage, and generation. Trigger phrases: "tile map", "level data format", "procedural level generation", "room templates", "dungeon generator code", "level chunks", "tileset organization", "level streaming".
+
+  This skill provides ZX IMPLEMENTATION - tile storage, ROM constraints, generation algorithms, tileset patterns.
+
+  For CONCEPTUAL DESIGN (flow, pacing, challenge curves): use game-design:level-design instead.
+version: 0.1.1
 ---
 
 # Level Design Patterns

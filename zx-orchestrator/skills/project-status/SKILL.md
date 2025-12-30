@@ -58,7 +58,7 @@ my-game/
 | Date | Agent | Action | Result |
 |------|-------|--------|--------|
 | 2024-01-15 | game-orchestrator | Created GDD | Complete |
-| 2024-01-15 | asset-designer | Designed player | 3 SADL specs |
+| 2024-01-15 | asset-designer | Designed player | 3 style specs |
 ```
 
 ---

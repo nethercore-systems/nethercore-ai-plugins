@@ -1,6 +1,6 @@
 # Color Palettes Reference
 
-Complete color palette definitions for SADL. Each palette defines HSL ranges for consistent, harmonious color schemes.
+Complete color palette definitions for style guides. Each palette defines HSL ranges for consistent, harmonious color schemes.
 
 ## Palette Structure
 

@@ -1,6 +1,6 @@
 # Material Database Reference
 
-Complete material definitions for SADL. Materials map semantic descriptors to PBR parameters using dot notation: `category.variant`.
+Complete material definitions for style guides. Materials map semantic descriptors to PBR parameters using dot notation: `category.variant`.
 
 ## Material Structure
 

@@ -1,6 +1,6 @@
 ---
 name: asset-quality-reviewer
-description: Use this agent when the user needs to verify assets meet ZX TECHNICAL REQUIREMENTS and BUDGET CONSTRAINTS (not SADL spec compliance - use asset-critic for that). Validates poly counts, texture dimensions/sizes, audio sample rates, file formats, and memory budgets. Triggers on requests like "check if my assets fit ZX limits", "validate texture sizes", "are these meshes too high poly", "check audio format", "will this fit in ROM", "asset budget audit", or before packaging for release.
+description: Use this agent when the user needs to verify assets meet ZX TECHNICAL REQUIREMENTS and BUDGET CONSTRAINTS (not style spec compliance - use asset-critic for that). Validates poly counts, texture dimensions/sizes, audio sample rates, file formats, and memory budgets. Triggers on requests like "check if my assets fit ZX limits", "validate texture sizes", "are these meshes too high poly", "check audio format", "will this fit in ROM", "asset budget audit", or before packaging for release.
 
 <example>
 Context: User has generated procedural meshes for their game

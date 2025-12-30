@@ -1,7 +1,12 @@
 ---
 name: Procedural Instrument Synthesis
-description: This skill should be used when the user asks to "generate instrument", "create instrument sample", "synthesize piano", "make guitar sound", "procedural instrument", "instrument sample", "realistic instrument", "high quality synth", "FM electric piano", "Karplus-Strong", "physical modeling instrument", "wavetable pad", "instrument for music", "better sounding instruments", "not chiptuney", "realistic samples", or mentions needing instrument samples for game music that sound better than basic oscillators. Provides production-quality instrument synthesis using advanced techniques.
-version: 1.0.0
+description: |
+  Use this skill to GENERATE instrument samples for ZX game music. Trigger phrases: "generate instrument", "synthesize piano", "make guitar sound", "instrument sample", "FM electric piano", "Karplus-Strong", "physical modeling", "wavetable pad", "realistic samples".
+
+  **Before generating:** Check `.studio/sonic-identity.local.md` for project audio specs (instrument palette, sonic style). Match instrument character to overall audio direction. If no spec exists, ask about audio style.
+
+  Provides production-quality synthesis (not chiptuney) using FM, physical modeling, and wavetable techniques.
+version: 1.1.0
 ---
 
 # Procedural Instrument Synthesis

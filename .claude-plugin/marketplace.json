@@ -120,7 +120,7 @@
     },
     {
       "name": "sound-design",
-      "description": "Platform-agnostic game audio design - Sonic Style Language (SSL), synthesis techniques, music composition, SFX design patterns, and audio integration workflows.",
+      "description": "Platform-agnostic game audio design - audio style guide, synthesis techniques, music composition, SFX design patterns, and audio integration workflows.",
       "version": "0.0.1",
       "author": {
         "name": "Nethercore Systems",

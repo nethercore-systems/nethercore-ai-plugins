@@ -1,12 +1,21 @@
 ---
-name: Sound Effects Design
-description: This skill should be used when the user asks about "sound effect design", "SFX design", "foley", "impact sounds", "whoosh", "UI sounds", "feedback sounds", "footsteps", "ambient sounds", "explosion design", "weapon sounds", "layering sounds", "sound sweetening", "sound design layers", "transient design", or wants to create or design sound effects for games. Provides comprehensive patterns for designing game sound effects.
-version: 1.0.0
+name: Sound Effects Design Patterns
+description: |
+  Use this skill when DESIGNING sound effects - deciding what sounds to create, how to layer them, and what character they should have. Trigger phrases: "what makes a good impact sound", "how to layer SFX", "UI sound design", "ambient layer recipe", "weapon sound components".
+
+  This skill provides DESIGN PATTERNS - layering approaches, material signatures, frequency allocation, category templates.
+
+  For IMPLEMENTATION CODE (numpy/scipy): use zx-procgen:procedural-sounds instead.
+version: 1.1.0
 ---
 
 # Sound Effects Design
 
 Game SFX communicate information, provide feedback, and enhance immersion. Every sound must serve a purpose.
+
+> **Note:** Tables below show CONVENTIONAL patterns as starting points, not rules.
+> Your project's audio style guide or creative direction ALWAYS overrides these defaults.
+> Distinctive sound design often comes from intentionally breaking expectations.
 
 ## Design Philosophy
 
@@ -103,16 +112,18 @@ Collisions between objects.
 | Footstep | Short thud | Material body | Room tail | 200ms total |
 | Menu click | Crisp click | Minimal | None | 50ms total |
 
-**Material Signatures:**
+**Material Signatures (Conventional Defaults):**
 
-| Material | Frequency | Decay | Character |
-|----------|-----------|-------|-----------|
-| Metal | High mids, resonant | Long ring | Clangy, bright |
-| Wood | Low mids | Medium | Thuddy, warm |
-| Stone | Wide band | Short | Crunchy, solid |
-| Flesh | Low mids | Short | Thuddy, soft |
-| Glass | Very high | Medium | Shatter, tinkle |
-| Plastic | Upper mids | Short | Clicky, cheap |
+These reflect real-world acoustic expectations. Subverting them can define your game's unique sonic identity.
+
+| Material | Typical Frequency | Typical Decay | Conventional Feel | Subversion Ideas |
+|----------|-------------------|---------------|-------------------|------------------|
+| Metal | High mids, resonant | Long ring | Clangy, bright | Dull thud (rusted), silent (magical) |
+| Wood | Low mids | Medium | Thuddy, warm | Hollow ring (drums), sharp crack (dry) |
+| Stone | Wide band | Short | Crunchy, solid | Deep boom (caverns), crystalline (magic) |
+| Flesh | Low mids | Short | Thuddy, soft | Wet squelch (gore), silent (stylized) |
+| Glass | Very high | Medium | Shatter, tinkle | Deep crunch (thick), musical (chimes) |
+| Plastic | Upper mids | Short | Clicky, cheap | Solid thunk (heavy), squeaky (toys) |
 
 ---
 
@@ -138,27 +149,10 @@ Whooshes, swipes, and motion.
 | Landing | 150ms | Falling | Impact + settle |
 
 **Synthesis Approach:**
-```rust
-fn whoosh(duration: f32, speed: f32) -> Vec<f32> {
-    // Filtered noise with envelope
-    let noise = white_noise(duration);
-
-    // Higher speed = brighter filter
-    let cutoff = 1000.0 + speed * 3000.0;
-    low_pass(&mut noise, cutoff);
-
-    // Shape with envelope
-    let env = Envelope {
-        attack: 0.05,
-        decay: duration * 0.3,
-        sustain: 0.0,
-        release: duration * 0.5,
-    };
-    apply_envelope(&mut noise, &env);
-
-    noise
-}
-```
+- Base: Filtered white noise
+- Speed mapping: Faster = brighter cutoff (1-4kHz)
+- Envelope: Fast attack, medium decay, no sustain
+- Optional: Pitch sweep for direction cue
 
 ---
 
@@ -285,16 +279,16 @@ Attacks, projectiles, and weapon feedback.
 | Impact | Hit feedback | 0.1-0.5s |
 | Tail | Aftermath | 0.2-2s |
 
-**Weapon Type Signatures:**
+**Weapon Type Signatures (Common Patterns):**
 
-| Weapon | Fire Sound | Character |
-|--------|------------|-----------|
-| Sword | Swoosh + ring | Metallic, sharp |
-| Bow | Twang + whoosh | Wooden, airy |
-| Gun | Explosion + crack | Punchy, mechanical |
-| Magic | Synth + sparkle | Synthetic, ethereal |
-| Fist | Thud + whoosh | Fleshy, impact |
-| Laser | Zap + beam | Bright, sustained |
+| Weapon | Conventional Sound | Typical Character | Alternative Approaches |
+|--------|-------------------|-------------------|------------------------|
+| Sword | Swoosh + ring | Metallic, sharp | Silent (ninja), heavy thunk (cleaver) |
+| Bow | Twang + whoosh | Wooden, airy | Mechanical click (crossbow), silent (stealth) |
+| Gun | Explosion + crack | Punchy, mechanical | Suppressed thump, sci-fi pew, vintage pop |
+| Magic | Synth + sparkle | Synthetic, ethereal | Organic whoosh, silence, reversed sounds |
+| Fist | Thud + whoosh | Fleshy, impact | Exaggerated boom (anime), subtle tap (realism) |
+| Laser | Zap + beam | Bright, sustained | Low hum (industrial), crackling (unstable) |
 
 **Punch/Power Guidelines:**
 - Layer low frequency for weight

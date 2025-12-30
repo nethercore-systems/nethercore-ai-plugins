@@ -1,16 +1,19 @@
 ---
-name: Sonic Style Language (SSL)
-description: This skill should be used when the user asks about "sonic style", "audio style", "sound palette", "instrument palette", "mood palette", "audio direction", "sonic identity", "what should my game sound like", "audio aesthetic", "sound design direction", "SSL spec", "sonic tokens", "audio coherence", or wants to translate creative intent ("dark fantasy audio", "retro arcade sounds", "cinematic sci-fi") into structured audio specifications. Provides the Sonic Style Language for bridging creative audio descriptions and implementation.
-version: 1.0.0
+name: Audio Style Guide
+description: |
+  Use this skill when generating audio assets (music, SFX, instruments) and you need consistent style.
+
+  **Triggers:** "audio style", "how should it sound", "sound direction", "music style", "audio mood", "instrument palette", "dark fantasy audio", "retro sounds".
+
+  **Before generating:** Check `.studio/sonic-identity.local.md` for project audio direction. If none exists and user wants consistency, suggest `/establish-sonic-identity`.
+version: 3.0.0
 ---
 
-# Sonic Style Language (SSL)
+# Audio Style Guide
 
-SSL bridges creative audio intent and sound implementation. Instead of guessing synthesis parameters or instrument choices, describe your audio semantically and translate to concrete specifications.
+Reference for maintaining consistent audio style across procedurally generated sounds and music.
 
-## Core Concepts
-
-SSL has five pillars:
+## Core Elements
 
 1. **Sonic Styles** - Overall audio aesthetic (Orchestral, Chiptune, Industrial)
 2. **Mood Palettes** - Emotional character (Tense, Triumphant, Mysterious)

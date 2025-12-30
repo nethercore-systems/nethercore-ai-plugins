@@ -153,9 +153,9 @@ When generating assets, specify the target tier:
 "Upgrade these meshes to Hero quality"
 ```
 
-### SADL Tier Integration
+### Style Tier Integration
 
-Include tier specification in SADL recipes:
+Include tier specification in style recipes:
 
 ```yaml
 asset:
@@ -185,7 +185,7 @@ generation:
 
 ### Executing Upgrades
 
-1. Read current generation code/SADL spec
+1. Read current generation code/style spec
 2. Identify specific enhancement parameters
 3. Apply tier-appropriate techniques
 4. Regenerate asset
@@ -213,7 +213,7 @@ For detailed enhancement techniques per asset type:
 
 - **quality-enhancer** - Autonomous asset improvement
 - **quality-analyzer** - Quality assessment and scoring
-- **asset-critic** - SADL spec compliance checking
+- **asset-critic** - style spec compliance checking
 
 ### Related Commands
 

@@ -63,7 +63,7 @@ Ask: "What primary mood should this track convey?"
 
 Then: "Any secondary mood to layer in?"
 
-For each mood, load the mood-parameters from SSL skill reference.
+For each mood, load the mood-parameters from audio style skill reference.
 
 ## Phase 3: Establish Parameters
 

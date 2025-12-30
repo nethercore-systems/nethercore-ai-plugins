@@ -5,7 +5,7 @@ Procedural asset generation plugin for Nethercore ZX. Create beautiful textures,
 ## Features
 
 - **Knowledge Skills**: Comprehensive guidance for textures, meshes, animations, sounds, and more
-- **SADL (Semantic Asset Description Language)**: AI-first creative pipeline with style tokens, color palettes, materials, and quality heuristics
+- **visual style guide**: AI-first creative pipeline with style tokens, color palettes, materials, and quality heuristics
 - **Full ZX Render Mode Support**: Modes 0-3 (Lambert, Matcap, Metallic-Roughness, Specular-Shininess)
 - **Matcap Generation**: Shadow, highlight, and HSV matcaps with blend modes (Multiply, Add, HSV Modulate)
 - **Alpha/Dither Transparency**: Bayer 4x4 dithered transparency via alpha channel
@@ -195,7 +195,7 @@ Production-quality instrument synthesis for game music. Solves the "chiptuney" p
 
 **Trigger phrases**: "generate instrument", "synthesize piano", "Karplus-Strong", "FM electric piano", "realistic instrument", "not chiptuney", "high quality sample", "wavetable pad"
 
-### Semantic Asset Language (SADL)
+### Visual Style Guide
 
 AI-first creative asset pipeline that bridges creative intent and procedural generation:
 
@@ -207,11 +207,11 @@ AI-first creative asset pipeline that bridges creative intent and procedural gen
 
 **Workflow:**
 1. Describe assets naturally ("weathered medieval barrel", "sleek sci-fi console")
-2. SADL translates to concrete generation parameters
+2. Style guide translates to concrete generation parameters
 3. Generate assets with quality self-checks
 4. Iterate until quality targets are met
 
-**Trigger phrases**: "SADL", "style token", "semantic asset", "design asset", "creative pipeline", "quality heuristics"
+**Trigger phrases**: "style guide", "style token", "semantic asset", "design asset", "creative pipeline", "quality heuristics"
 
 ### Asset Quality Tiers
 
@@ -233,22 +233,22 @@ A four-tier quality system for progressive asset improvement:
 
 ## Agents
 
-### Creative Pipeline Agents (SADL)
+### Creative Pipeline Agents
 
 Four specialized agents that work together for end-to-end asset creation:
 
 #### Asset Designer
-Interprets creative descriptions into SADL specifications. Translates "weathered medieval barrel" into concrete style tokens, palettes, materials, and parameters.
+Interprets creative descriptions into style specifications. Translates "weathered medieval barrel" into concrete style tokens, palettes, materials, and parameters.
 
 **Trigger**: "design assets for", "I want a rusty barrel", "cyberpunk aesthetic"
 
 #### Asset Generator
-Produces working procedural generation code from SADL specifications. Outputs complete, runnable Rust/Python code with quality self-checks.
+Produces working procedural generation code from style specifications. Outputs complete, runnable Rust/Python code with quality self-checks.
 
 **Trigger**: "generate code for this spec", "create the mesh generator", "implement this recipe"
 
 #### Asset Critic
-Evaluates generated assets against quality heuristics and SADL specifications. Reports issues by severity (Critical/Error/Warning/Info) with actionable fixes.
+Evaluates generated assets against quality heuristics and style specifications. Reports issues by severity (Critical/Error/Warning/Info) with actionable fixes.
 
 **Modes**: Lenient (blockers only), Normal (default), Strict (all issues)
 

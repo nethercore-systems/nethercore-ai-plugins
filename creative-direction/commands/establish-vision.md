@@ -163,6 +163,6 @@ Remind user that directors will now use this direction for coherence checks.
 
 - If user is unsure about a question, provide examples
 - For style spectrums, explain what each end means
-- Reference SADL style tokens for ZX projects
+- Reference visual style tokens for ZX projects
 - Keep questions conversational, not overwhelming
 - Allow "skip" for optional sections

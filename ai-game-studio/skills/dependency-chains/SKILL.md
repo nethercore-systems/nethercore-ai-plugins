@@ -21,7 +21,7 @@ Each phase depends on the previous. Skipping phases causes problems.
 **Produces:**
 - Creative pillars (docs/design/creative-vision.md)
 - Art style guide (docs/design/art-style.md)
-- Sonic Style Language (docs/design/ssl.md)
+- audio style guide (docs/design/ssl.md)
 
 **Required for:**
 - Consistent asset generation
