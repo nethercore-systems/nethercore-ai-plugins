@@ -1,49 +1,19 @@
 ---
-name: Semantic Asset Description Language (SADL)
+name: Visual Style Guide
 description: |
-  Use this skill when the user asks about asset style (visual OR audio), aesthetics, or wants consistent asset generation.
+  Use this skill when generating visual assets (textures, meshes, sprites) and you need consistent style.
 
-  **Trigger phrases:** "SADL", "visual style", "art style", "audio style", "how should it look", "how should it sound", "what style", "look and feel", "asset style", "style guide", "make it look [X]", "make it sound [X]", "cyberpunk vibe", "dark fantasy audio", "rustic barrel", "style token", "color palette", "material", "sonic identity".
+  **Triggers:** "visual style", "art style", "how should it look", "look and feel", "make it look [X]", "color palette", "material", "PBR".
 
-  **Also triggers on:** "establish style", "define art direction", "define audio direction", "consistent assets", "asset cohesion".
-
-  **Before generating assets:** Check `.studio/project-style.local.md` for existing specs (visual + audio). If none exists, suggest `/establish-visual-style` or `/establish-sonic-identity`.
-
-  SADL bridges creative intent and procedural parameters for ALL asset types.
-version: 2.0.0
+  **Before generating:** Check `.studio/visual-style.local.md` for project style. If none exists and user wants consistency, suggest `/establish-visual-style`.
+version: 3.0.0
 ---
 
-# Semantic Asset Description Language (SADL)
+# Visual Style Guide
 
-SADL bridges creative intent and procedural generation for **all asset types** - visual and audio. Instead of manually guessing parameter values, describe assets semantically and let the system translate to concrete parameters.
+Reference for maintaining consistent visual style across procedurally generated assets.
 
-## Core Concepts
-
-SADL covers two domains:
-
-### Visual Assets (this file)
-1. **Visual Style Tokens** - Style descriptors (rustic, cyberpunk, organic)
-2. **Color Palettes** - Semantic color schemes (warm_earthy, neon, pastel)
-3. **Materials** - PBR parameter presets (metal.polished, wood.weathered)
-4. **Shape Vocabulary** - Base primitive descriptors (barrel, crystal, humanoid)
-
-### Audio Assets (see sound-design:sonic-style-language)
-1. **Audio Style Tokens** - Sonic styles (Orchestral, Chiptune, Industrial)
-2. **Mood Palettes** - Emotional character (Tense, Triumphant, Mysterious)
-3. **Instrument Palettes** - Sound sources (brass.fanfare, synth.pad)
-4. **Processing Signatures** - Effect character (reverb.cathedral, distortion.warm)
-
----
-
-These combine into **Generation Recipes** - constrained parameter bundles that produce consistent, quality results.
-
----
-
-## Visual Style Tokens
-
----
-
-## Style Tokens
+## Style Presets
 
 Style tokens modify base generation parameters to achieve a visual style. Each token defines offsets and multipliers for roughness, saturation, detail level, edge hardness, noise, and damage.
 
