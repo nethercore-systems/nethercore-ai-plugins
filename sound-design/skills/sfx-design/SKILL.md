@@ -13,6 +13,10 @@ version: 1.1.0
 
 Game SFX communicate information, provide feedback, and enhance immersion. Every sound must serve a purpose.
 
+> **Note:** Tables below show CONVENTIONAL patterns as starting points, not rules.
+> Your project's SSL (Sonic Style Language) or creative direction ALWAYS overrides these defaults.
+> Distinctive sound design often comes from intentionally breaking expectations.
+
 ## Design Philosophy
 
 1. **Functional first**: What information does this sound convey?
@@ -108,16 +112,18 @@ Collisions between objects.
 | Footstep | Short thud | Material body | Room tail | 200ms total |
 | Menu click | Crisp click | Minimal | None | 50ms total |
 
-**Material Signatures:**
+**Material Signatures (Conventional Defaults):**
 
-| Material | Frequency | Decay | Character |
-|----------|-----------|-------|-----------|
-| Metal | High mids, resonant | Long ring | Clangy, bright |
-| Wood | Low mids | Medium | Thuddy, warm |
-| Stone | Wide band | Short | Crunchy, solid |
-| Flesh | Low mids | Short | Thuddy, soft |
-| Glass | Very high | Medium | Shatter, tinkle |
-| Plastic | Upper mids | Short | Clicky, cheap |
+These reflect real-world acoustic expectations. Subverting them can define your game's unique sonic identity.
+
+| Material | Typical Frequency | Typical Decay | Conventional Feel | Subversion Ideas |
+|----------|-------------------|---------------|-------------------|------------------|
+| Metal | High mids, resonant | Long ring | Clangy, bright | Dull thud (rusted), silent (magical) |
+| Wood | Low mids | Medium | Thuddy, warm | Hollow ring (drums), sharp crack (dry) |
+| Stone | Wide band | Short | Crunchy, solid | Deep boom (caverns), crystalline (magic) |
+| Flesh | Low mids | Short | Thuddy, soft | Wet squelch (gore), silent (stylized) |
+| Glass | Very high | Medium | Shatter, tinkle | Deep crunch (thick), musical (chimes) |
+| Plastic | Upper mids | Short | Clicky, cheap | Solid thunk (heavy), squeaky (toys) |
 
 ---
 
@@ -273,16 +279,16 @@ Attacks, projectiles, and weapon feedback.
 | Impact | Hit feedback | 0.1-0.5s |
 | Tail | Aftermath | 0.2-2s |
 
-**Weapon Type Signatures:**
+**Weapon Type Signatures (Common Patterns):**
 
-| Weapon | Fire Sound | Character |
-|--------|------------|-----------|
-| Sword | Swoosh + ring | Metallic, sharp |
-| Bow | Twang + whoosh | Wooden, airy |
-| Gun | Explosion + crack | Punchy, mechanical |
-| Magic | Synth + sparkle | Synthetic, ethereal |
-| Fist | Thud + whoosh | Fleshy, impact |
-| Laser | Zap + beam | Bright, sustained |
+| Weapon | Conventional Sound | Typical Character | Alternative Approaches |
+|--------|-------------------|-------------------|------------------------|
+| Sword | Swoosh + ring | Metallic, sharp | Silent (ninja), heavy thunk (cleaver) |
+| Bow | Twang + whoosh | Wooden, airy | Mechanical click (crossbow), silent (stealth) |
+| Gun | Explosion + crack | Punchy, mechanical | Suppressed thump, sci-fi pew, vintage pop |
+| Magic | Synth + sparkle | Synthetic, ethereal | Organic whoosh, silence, reversed sounds |
+| Fist | Thud + whoosh | Fleshy, impact | Exaggerated boom (anime), subtle tap (realism) |
+| Laser | Zap + beam | Bright, sustained | Low hum (industrial), crackling (unstable) |
 
 **Punch/Power Guidelines:**
 - Layer low frequency for weight
