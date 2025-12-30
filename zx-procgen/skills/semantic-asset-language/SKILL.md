@@ -1,32 +1,45 @@
 ---
 name: Semantic Asset Description Language (SADL)
 description: |
-  Use this skill when the user asks about visual style, asset aesthetics, or wants consistent asset generation.
+  Use this skill when the user asks about asset style (visual OR audio), aesthetics, or wants consistent asset generation.
 
-  **Trigger phrases:** "SADL", "visual style", "art style", "how should it look", "what style", "look and feel", "asset style", "style guide", "make it look [X]", "cyberpunk vibe", "weathered medieval", "rustic barrel", "style token", "color palette", "material", "PBR parameters".
+  **Trigger phrases:** "SADL", "visual style", "art style", "audio style", "how should it look", "how should it sound", "what style", "look and feel", "asset style", "style guide", "make it look [X]", "make it sound [X]", "cyberpunk vibe", "dark fantasy audio", "rustic barrel", "style token", "color palette", "material", "sonic identity".
 
-  **Also triggers on:** "establish visual style", "define art direction", "consistent assets", "asset cohesion".
+  **Also triggers on:** "establish style", "define art direction", "define audio direction", "consistent assets", "asset cohesion".
 
-  **Before generating assets:** Check `.studio/visual-style.local.md` for existing style specs. If none exists and user wants consistent style, suggest `/establish-visual-style` first.
+  **Before generating assets:** Check `.studio/project-style.local.md` for existing specs (visual + audio). If none exists, suggest `/establish-visual-style` or `/establish-sonic-identity`.
 
-  SADL bridges creative intent ("make it rustic") and procedural parameters (roughness=0.8, damage=0.4).
-version: 1.1.0
+  SADL bridges creative intent and procedural parameters for ALL asset types.
+version: 2.0.0
 ---
 
 # Semantic Asset Description Language (SADL)
 
-SADL bridges creative intent and procedural generation. Instead of manually guessing parameter values, describe assets semantically and let the system translate to concrete parameters.
+SADL bridges creative intent and procedural generation for **all asset types** - visual and audio. Instead of manually guessing parameter values, describe assets semantically and let the system translate to concrete parameters.
 
 ## Core Concepts
 
-SADL has four pillars:
+SADL covers two domains:
 
-1. **Style Tokens** - Visual style descriptors (rustic, cyberpunk, organic)
+### Visual Assets (this file)
+1. **Visual Style Tokens** - Style descriptors (rustic, cyberpunk, organic)
 2. **Color Palettes** - Semantic color schemes (warm_earthy, neon, pastel)
 3. **Materials** - PBR parameter presets (metal.polished, wood.weathered)
 4. **Shape Vocabulary** - Base primitive descriptors (barrel, crystal, humanoid)
 
+### Audio Assets (see sound-design:sonic-style-language)
+1. **Audio Style Tokens** - Sonic styles (Orchestral, Chiptune, Industrial)
+2. **Mood Palettes** - Emotional character (Tense, Triumphant, Mysterious)
+3. **Instrument Palettes** - Sound sources (brass.fanfare, synth.pad)
+4. **Processing Signatures** - Effect character (reverb.cathedral, distortion.warm)
+
+---
+
 These combine into **Generation Recipes** - constrained parameter bundles that produce consistent, quality results.
+
+---
+
+## Visual Style Tokens
 
 ---
 
