@@ -3,11 +3,13 @@ name: Procedural 2D Sprites & Pixel Art
 description: |
   Use this skill to GENERATE 2D assets for ZX games. Trigger phrases: "pixel art", "sprite sheet", "tileset", "autotile", "9-slice", "UI sprite", "health bar", "dithering", "indexed palette".
 
+  **Before generating:** Check `.studio/visual-style.local.md` for project style specs (color palette, pixel density, dithering style). Apply those constraints for consistent sprites. If no style exists, ask about visual style.
+
   Covers palette quantization, dithering algorithms, tilesets, UI elements, character sheets.
 
   For 3D TEXTURES (render modes, MRE/SSE): use procedural-textures.
   For NOISE ALGORITHMS (base patterns for sprites): see procedural-textures noise reference.
-version: 1.1.0
+version: 1.2.0
 ---
 
 # Procedural 2D Sprites & Pixel Art

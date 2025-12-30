@@ -1,7 +1,16 @@
 ---
 name: Semantic Asset Description Language (SADL)
-description: This skill should be used when the user asks about "SADL", "semantic asset", "style token", "design asset", "creative asset", "asset description", "material semantic", "shape vocabulary", "color palette semantic", "style guide", "asset recipe", "constrained generation", "quality heuristics", "asset quality metrics", "creative workflow", "asset pipeline design", or wants to translate creative intent ("make it look rustic", "cyberpunk vibe", "weathered medieval") into procedural generation parameters. Provides the Semantic Asset Description Language specification for bridging creative descriptions and procedural code.
-version: 1.0.0
+description: |
+  Use this skill when the user asks about visual style, asset aesthetics, or wants consistent asset generation.
+
+  **Trigger phrases:** "SADL", "visual style", "art style", "how should it look", "what style", "look and feel", "asset style", "style guide", "make it look [X]", "cyberpunk vibe", "weathered medieval", "rustic barrel", "style token", "color palette", "material", "PBR parameters".
+
+  **Also triggers on:** "establish visual style", "define art direction", "consistent assets", "asset cohesion".
+
+  **Before generating assets:** Check `.studio/visual-style.local.md` for existing style specs. If none exists and user wants consistent style, suggest `/establish-visual-style` first.
+
+  SADL bridges creative intent ("make it rustic") and procedural parameters (roughness=0.8, damage=0.4).
+version: 1.1.0
 ---
 
 # Semantic Asset Description Language (SADL)
