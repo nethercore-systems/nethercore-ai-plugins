@@ -114,53 +114,23 @@ Questions to ask (if not obvious):
 
 ## Agent Registry
 
-You can dispatch to ANY agent across ALL plugins. Key agents by domain:
+You can dispatch to ANY agent across ALL plugins. **For the complete registry, load the `agent-registry` skill.**
 
-### Analysis Agents
-| Agent | subagent_type | Use For |
-|-------|---------------|---------|
-| Project Health Monitor | `ai-game-studio:project-health-monitor` | Overall project assessment |
-| GDD Implementation Tracker | `zx-game-design:gdd-implementation-tracker` | Feature gap analysis |
-| Quality Analyzer | `zx-procgen:quality-analyzer` | Asset quality assessment |
-| Completion Auditor | `ai-game-studio:completion-auditor` | Verify work is actually done |
+Key agents for dispatching:
 
-### Implementation Agents
-| Agent | subagent_type | Use For |
-|-------|---------------|---------|
-| Feature Implementer | `zx-dev:feature-implementer` | Complete feature implementation |
-| Code Scaffolder | `zx-dev:code-scaffolder` | Boilerplate code generation |
-| Integration Assistant | `zx-dev:integration-assistant` | Asset-to-code connection |
-
-### Asset Agents
-| Agent | subagent_type | Use For |
-|-------|---------------|---------|
-| Asset Designer | `zx-procgen:asset-designer` | style spec creation |
-| Asset Generator | `zx-procgen:asset-generator` | Procedural generation code |
-| Character Generator | `zx-procgen:character-generator` | Full character pipeline |
-| Creative Orchestrator | `zx-procgen:creative-orchestrator` | Full asset pipeline |
-
-### Audio Agents
-| Agent | subagent_type | Use For |
-|-------|---------------|---------|
-| SFX Architect | `sound-design:sfx-architect` | Sound effect synthesis |
-| Music Architect | `sound-design:music-architect` | Music composition |
-| Sonic Designer | `sound-design:sonic-designer` | Audio style creation |
-
-### Review Agents
-| Agent | subagent_type | Use For |
-|-------|---------------|---------|
-| Art Director | `creative-direction:art-director` | Visual coherence |
-| Sound Director | `creative-direction:sound-director` | Audio coherence |
-| Tech Director | `creative-direction:tech-director` | Code quality |
-| Creative Director | `creative-direction:creative-director` | Overall vision |
-| Design Reviewer | `game-design:design-reviewer` | GDD quality |
-
-### Testing Agents
-| Agent | subagent_type | Use For |
-|-------|---------------|---------|
-| Test Runner | `zx-test:test-runner` | Sync tests |
-| Rollback Reviewer | `zx-dev:rollback-reviewer` | Netcode safety |
-| Build Analyzer | `zx-optimize:build-analyzer` | Size analysis |
+| Domain | Agent | subagent_type |
+|--------|-------|---------------|
+| Analysis | Project Health Monitor | `ai-game-studio:project-health-monitor` |
+| Analysis | GDD Tracker | `zx-game-design:gdd-implementation-tracker` |
+| Analysis | Quality Analyzer | `zx-procgen:quality-analyzer` |
+| Analysis | Completion Auditor | `ai-game-studio:completion-auditor` |
+| Code | Feature Implementer | `zx-dev:feature-implementer` |
+| Code | Integration Assistant | `zx-dev:integration-assistant` |
+| Assets | Asset Generator | `zx-procgen:asset-generator` |
+| Assets | Character Generator | `zx-procgen:character-generator` |
+| Audio | SFX Architect | `sound-design:sfx-architect` |
+| Review | Art/Sound/Tech Director | `creative-direction:*-director` |
+| Testing | Test Runner | `zx-test:test-runner` |
 
 ## Dispatch Patterns
 

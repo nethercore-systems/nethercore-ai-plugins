@@ -116,6 +116,10 @@ Publishing workflow plugin.
 
 Meta-orchestration plugin coordinating multi-plugin workflows.
 
+**Skills (2):**
+- `agent-registry` - Complete Task tool subagent_type lookup (shared by all orchestrators)
+- `project-status` - Session continuity and progress tracking
+
 **Agents:**
 - `game-orchestrator` - Coordinates full development pipeline from GDD to published ROM
 - `parallel-coordinator` - Analyzes task dependencies and coordinates parallel agent execution
@@ -304,6 +308,40 @@ Licensed under either of:
 
 at your option.
 
+## Skill Architecture
+
+### Progressive Disclosure Pattern
+
+Skills follow a **lean core + detailed references** pattern for context efficiency:
+
+```
+skill/
+├── SKILL.md           # Lean overview (~150-250 lines)
+│   └── "Load references when:" directives
+└── references/
+    ├── topic-a.md     # Detailed implementation (~100-300 lines)
+    └── topic-b.md
+```
+
+Skill descriptions include loading hints:
+```yaml
+description: |
+  **Load references when:**
+  - Platformer physics → `references/platformer-mechanics.md`
+  - Combat/damage systems → `references/combat-mechanics.md`
+```
+
+### Agent Registry
+
+The `agent-registry` skill provides a single source of truth for all Task tool `subagent_type` values. Orchestrator agents reference this instead of duplicating lookup tables.
+
 ## Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
+
+### Skill Guidelines
+
+1. **Keep SKILL.md lean** - Target 150-250 lines
+2. **Use references/** - Extract detailed code/tables to reference files
+3. **Add loading hints** - Use "Load references when:" in descriptions
+4. **Reference shared skills** - Use `agent-registry` for agent lookups

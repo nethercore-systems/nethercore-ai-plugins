@@ -1,15 +1,19 @@
 ---
 name: Procedural Mesh Generation (Blender bpy)
 description: |
-  Use this skill to GENERATE 3D meshes for ZX games. Trigger phrases: "generate mesh", "3D model", "low-poly", "blender script", "hard surface", "organic mesh", "metaballs", "UV unwrap", "export glb".
+  Use this skill to GENERATE 3D meshes for ZX games.
 
-  **Before generating:** Check `.studio/visual-style.local.md` for project style specs (poly budgets, edge hardness, style token). Apply those constraints for consistent assets. If no style exists, ask about style or suggest `/establish-visual-style`.
+  **Triggers:** "generate mesh", "3D model", "low-poly", "blender script", "hard surface", "organic mesh", "metaballs", "UV unwrap", "export glb".
 
-  Covers hard surface, organic (metaballs, skin, SDF), modifiers, UV, export.
+  **Before generating:** Check `.studio/visual-style.local.md` for project style specs.
 
-  For TEXTURING MESHES: use procedural-textures + mesh-texturing-workflows.
-  For ANIMATING MESHES: use procedural-animations.
-  For FULL CHARACTERS (mesh + texture + rig + anim): use character-generator agent.
+  **Load references when:**
+  - Basic shapes, cubes, cylinders → `references/bpy-primitives.md`
+  - Modifiers (bevel, mirror, array) → `references/bpy-modifiers.md`
+  - Organic shapes, metaballs, skin → `references/bpy-organic-workflows.md`
+  - Cleanup, UV, normals, export → `references/bpy-post-processing.md`
+
+  For TEXTURING: use `mesh-texturing-workflows`. For ANIMATION: use `procedural-animations`.
 version: 1.2.0
 ---
 

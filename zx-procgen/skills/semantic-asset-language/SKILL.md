@@ -1,11 +1,19 @@
 ---
 name: Visual Style Guide
 description: |
-  Use this skill when generating visual assets (textures, meshes, sprites) and you need consistent style.
+  Use this skill for consistent visual style across assets.
 
-  **Triggers:** "visual style", "art style", "how should it look", "look and feel", "make it look [X]", "color palette", "material", "PBR".
+  **Triggers:** "visual style", "art style", "how should it look", "color palette", "material", "PBR".
 
-  **Before generating:** Check `.studio/visual-style.local.md` for project style. If none exists and user wants consistency, suggest `/establish-visual-style`.
+  **Before generating:** Check `.studio/visual-style.local.md` for project style.
+
+  **Load references when:**
+  - Style tokens (retro, gothic, etc.) → `references/style-tokens.md`
+  - Color palettes → `references/color-palettes.md`
+  - PBR material params → `references/material-database.md`
+  - Metal materials specifically → `references/materials-metals.md`
+  - Natural materials (wood, stone) → `references/materials-natural.md`
+  - Quality assessment → `references/quality-heuristics.md`
 version: 3.0.0
 ---
 
