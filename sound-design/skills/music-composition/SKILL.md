@@ -23,45 +23,50 @@ Game music differs from linear music: it must loop seamlessly, respond to gamepl
 
 ---
 
-## Music Theory Essentials
+## Music Theory Reference
+
+> **Note:** All tables below show CONVENTIONAL patterns, not rules.
+> Your project's SSL (Sonic Style Language) or creative direction ALWAYS overrides these defaults.
+> Breaking conventions intentionally often creates the most memorable music.
 
 ### Scales and Modes
 
-| Mode | Character | Use For |
-|------|-----------|---------|
-| **Ionian (Major)** | Happy, resolved | Victory, joy, adventure |
-| **Aeolian (Minor)** | Sad, serious | Drama, melancholy |
-| **Dorian** | Minor but hopeful | Medieval, mysterious |
-| **Phrygian** | Exotic, dark | Combat, tension, Spanish |
-| **Lydian** | Dreamy, magical | Wonder, fantasy |
-| **Mixolydian** | Bluesy, relaxed | Folk, adventure |
-| **Locrian** | Unstable, dark | Horror, unease |
+| Mode | Conventional Character | Common Uses | Notable Subversions |
+|------|------------------------|-------------|---------------------|
+| **Ionian (Major)** | Happy, resolved | Victory, joy, adventure | Major key horror (ironic dread) |
+| **Aeolian (Minor)** | Sad, serious | Drama, melancholy | Minor key celebration (bittersweet victory) |
+| **Dorian** | Minor but hopeful | Medieval, mysterious | Modern/futuristic (Daft Punk) |
+| **Phrygian** | Exotic, dark | Combat, tension, Spanish | Peaceful meditation (Eastern influence) |
+| **Lydian** | Dreamy, magical | Wonder, fantasy | Unsettling wrongness (The Simpsons theme) |
+| **Mixolydian** | Bluesy, relaxed | Folk, adventure | Aggressive rock (AC/DC) |
+| **Locrian** | Unstable, dark | Horror, unease | Avant-garde beauty (jazz)|
 
-### Key Selection by Genre
+### Key Selection by Genre (Conventional Defaults)
 
-| Genre | Common Keys | Rationale |
-|-------|-------------|-----------|
-| Fantasy/Adventure | D, G, C major; Am, Em | Bright, heroic |
-| Horror | Atonal, Cm, F#m | Uncomfortable, dark |
-| Sci-Fi | Modal, Dm, Bm | Mysterious, spacey |
-| Action | Em, Am, Cm | Driving, intense |
-| Puzzle | C, G, F major | Calm, clear |
-| Retro | C, G (easy to transpose) | Hardware limitations |
+| Genre | Common Keys | Why It Works | Breaking the Mold |
+|-------|-------------|--------------|-------------------|
+| Fantasy/Adventure | D, G, C major; Am, Em | Bright, heroic feel | Dark fantasy in Cm, F#m |
+| Horror | Atonal, Cm, F#m | Uncomfortable, dark | Happy keys = psychological horror |
+| Sci-Fi | Modal, Dm, Bm | Mysterious, spacey | Major keys = hopeful sci-fi |
+| Action | Em, Am, Cm | Driving, intense | Major key = superhero optimism |
+| Puzzle | C, G, F major | Calm, clear | Dissonance = mind-bending puzzles |
+| Retro | C, G | Hardware simplicity | Any key with chiptune timbres |
 
-### Tempo Guidelines
+### Tempo Guidelines (Starting Points)
 
-| Context | BPM Range | Feel |
-|---------|-----------|------|
-| Menu | 80-110 | Inviting, patient |
-| Exploration | 70-100 | Relaxed, unhurried |
-| Puzzle | 80-110 | Thoughtful |
-| Action | 120-150 | Energetic |
-| Combat | 140-180 | Intense |
-| Boss | 150-190 | Climactic |
-| Stealth | 60-90 | Tense, careful |
-| Cutscene | Variable | Emotional |
-| Victory | 100-140 | Triumphant |
-| Defeat | 60-80 | Somber |
+These are conventional ranges—your game's identity may demand different choices.
+
+| Context | Typical BPM | Conventional Feel | Subversion Ideas |
+|---------|-------------|-------------------|------------------|
+| Menu | 80-110 | Inviting, patient | Slow ambient (40-60) or energetic (130+) |
+| Exploration | 70-100 | Relaxed, unhurried | Uptempo exploration (120+) for momentum |
+| Puzzle | 80-110 | Thoughtful | Slow (60) for contemplation or fast (140) for pressure |
+| Action | 120-150 | Energetic | Slow-motion feel (80) with intense harmony |
+| Combat | 140-180 | Intense | Slow doom-metal (70) or breakneck (200+) |
+| Boss | 150-190 | Climactic | Slow dread (80) or silence with stingers |
+| Stealth | 60-90 | Tense, careful | Faster pulse (110) with sparse texture |
+| Victory | 100-140 | Triumphant | Slow relief (70) or explosive (160) |
+| Defeat | 60-80 | Somber | Silence, or ironic upbeat |
 
 ---
 
