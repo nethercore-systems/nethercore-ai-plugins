@@ -66,13 +66,11 @@ Game design workflow plugin.
 
 Procedural asset generation plugin.
 
-**Skills (12):**
+**Skills (9):**
 - `procedural-textures` - Texture generation (Albedo, MRE, SSE, Matcaps)
 - `procedural-meshes` - 3D mesh generation with UVs and vertex colors
 - `procedural-sounds` - Audio synthesis (FM, Karplus-Strong, subtractive) and SFX
-- `procedural-instruments` - Instrument sample synthesis for XM modules
-- `procedural-music` - XM tracker music composition and workflow
-- `xm-writer` - Programmatic XM file generation from Python
+- `procedural-instruments` - Instrument sample synthesis for tracker modules
 - `procedural-animations` - Walk cycles, attacks, skeletal rigging, BVH/mocap
 - `procedural-sprites` - 2D sprites, pixel art, tilesets, UI elements
 - `semantic-asset-language` - Style guide for AI-first creative workflows
@@ -236,6 +234,22 @@ Platform-agnostic game audio design with audio style guide - the audio equivalen
 - `music-architect` - Designs tracks with harmony, structure, and adaptivity
 - `audio-coherence-reviewer` - Validates audio consistency with sonic identity
 
+### tracker-music
+
+Platform-agnostic tracker music generation for all Nethercore consoles. Covers XM (FastTracker 2) and IT (Impulse Tracker) formats with programmatic generation.
+
+**Skills (4):**
+- `tracker-fundamentals` - Philosophy, polish techniques, when/why to use effects (the "secret sauce")
+- `pattern-design` - Song structure, genre templates, loop techniques, channel allocation
+- `xm-format` - XM file generation, effects, Python writer library
+- `it-format` - IT file generation, NNA, pitch envelopes, filters, Python writer library
+
+**Commands:**
+- `tracker-music:generate-song` - Interactive song generation wizard from mood/style description
+
+**Agents:**
+- `song-generator` - End-to-end song generation from mood description to polished .xm/.it file
+
 ### ai-game-studio
 
 Intelligent game development studio providing request routing, quality analysis, and completion verification across all plugins.
@@ -294,6 +308,7 @@ Add to your `.claude/settings.local.json`:
     "game-design@nethercore-ai-plugins": true,
     "creative-direction@nethercore-ai-plugins": true,
     "sound-design@nethercore-ai-plugins": true,
+    "tracker-music@nethercore-ai-plugins": true,
     "ai-game-studio@nethercore-ai-plugins": true
   }
 }

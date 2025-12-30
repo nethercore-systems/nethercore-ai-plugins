@@ -1,0 +1,33 @@
+{
+  "name": "tracker-music",
+  "version": "0.0.1",
+  "description": "Platform-agnostic tracker music generation for Nethercore consoles. Covers XM (FastTracker 2) and IT (Impulse Tracker) formats with programmatic generation via Python, polish techniques, pattern design, and end-to-end song generation from mood descriptions.",
+  "author": {
+    "name": "Nethercore Systems",
+    "email": "nethercore.systems@gmail.com"
+  },
+  "repository": "https://github.com/nethercore-systems/nethercore-ai-plugins",
+  "keywords": [
+    "tracker",
+    "music",
+    "xm",
+    "it",
+    "fasttracker",
+    "impulse-tracker",
+    "mod",
+    "procedural-music",
+    "chiptune",
+    "game-music",
+    "composition",
+    "pattern",
+    "effects",
+    "arpeggio",
+    "portamento",
+    "vibrato",
+    "samples",
+    "instruments",
+    "envelopes",
+    "nna",
+    "nethercore"
+  ]
+}
