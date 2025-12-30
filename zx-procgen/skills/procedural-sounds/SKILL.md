@@ -1,7 +1,14 @@
 ---
 name: Procedural Sound Generation with NumPy/SciPy
-description: This skill should be used when the user asks to "generate sound", "create sound effect", "procedural audio", "synth sound", "synthesize sound", "numpy synthesis", "scipy audio", "make SFX", "game audio", "WAV generation", "audio synthesis", "sound design", "FM synthesis", "subtractive synthesis", "additive synthesis", or mentions sound effects, audio generation, procedural audio, or sound design for game assets. Provides comprehensive guidance for creating procedural sounds using numpy, scipy.signal, and soundfile.
-version: 3.0.0
+description: |
+  Use this skill when the user wants to GENERATE or CODE sound effects for ZX games. Trigger phrases: "generate sound", "create SFX", "write audio code", "synthesize WAV", "numpy audio", "scipy sound", "procedural SFX", "make laser sound", "explosion sound code", "footstep generator", "FM synthesis", "Karplus-Strong".
+
+  **Before generating:** Check `.studio/sonic-identity.local.md` for project audio specs (reverb, character, processing). Apply those constraints for consistent audio. If no spec exists, ask about style or suggest `/establish-sonic-identity`.
+
+  This skill provides IMPLEMENTATION CODE using numpy/scipy to produce WAV files at build time for ZX ROM assets.
+
+  For DESIGN PATTERNS (layering, sound categories, what makes a good impact): use sound-design:sfx-design.
+version: 3.3.0
 ---
 
 # Procedural Sound Generation with NumPy/SciPy
@@ -78,6 +85,49 @@ See `references/numpy-scipy-workflow.md` for complete workflow patterns.
 | **FM** | Metallic, bells, digital | `np.sin` with modulation |
 | **Additive** | Organs, complex tones | Multiple `np.sin` summed |
 | **Karplus-Strong** | Plucked strings | Delay line averaging |
+| **Granular** | Textures, time-stretch | Grain windowing |
+
+### FM Parameter Reference
+
+| Sound | Ratio | Index | Envelope |
+|-------|-------|-------|----------|
+| Bell | 1:1.4 | 3-8 | Slow decay |
+| Electric Piano | 1:1 | 2-4 | Fast decay |
+| Bass | 1:1 | 1-3 | Pluck envelope |
+| Brass | 1:1 | 4-8 | Slow attack |
+| Metallic | 1:1.41 | 5+ | Any |
+
+```python
+def fm_synth(freq, duration, ratio=1.0, index=2.0, decay=5.0):
+    """FM synthesis: carrier modulated by modulator."""
+    t = np.linspace(0, duration, int(SAMPLE_RATE * duration))
+    mod_freq = freq * ratio
+    modulator = np.sin(2 * np.pi * mod_freq * t)
+    carrier = np.sin(2 * np.pi * freq * t + index * modulator)
+    env = np.exp(-t * decay)
+    return carrier * env
+```
+
+### Karplus-Strong (Plucked Strings)
+
+```python
+def karplus_strong(freq, duration, damping=0.996):
+    """Physically-modeled plucked string sound."""
+    samples = int(SAMPLE_RATE * duration)
+    delay_len = int(SAMPLE_RATE / freq)
+
+    # Initialize with noise burst (the "pluck")
+    buffer = np.random.rand(delay_len) * 2 - 1
+    output = np.zeros(samples)
+
+    for i in range(samples):
+        output[i] = buffer[i % delay_len]
+        # Average adjacent samples (low-pass = string damping)
+        avg = (buffer[i % delay_len] + buffer[(i + 1) % delay_len]) * 0.5
+        buffer[i % delay_len] = avg * damping
+
+    return output
+```
 
 See `references/numpy-scipy-building-blocks.md` for complete function reference.
 

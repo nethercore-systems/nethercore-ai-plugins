@@ -30,14 +30,14 @@ Complete reference for orchestrating all nethercore plugins.
 ### Commands
 | Command | Description |
 |---------|-------------|
-| `/establish-sonic-identity` | Create Sonic Style Language (SSL) for project audio direction |
+| `/establish-sonic-identity` | Create audio style guide for project audio direction |
 | `/design-soundtrack` | Interactive music track composition planning |
 | `/design-sfx` | Interactive sound effect design wizard |
 
 ### Agents
 | Agent | When to Use |
 |-------|-------------|
-| sonic-designer | Translate creative vision to SSL specifications |
+| sonic-designer | Translate creative vision to audio style specifications |
 | music-architect | Compose music tracks, chord progressions, melodies |
 | sfx-architect | Design and synthesize sound effects |
 
@@ -123,14 +123,14 @@ Complete reference for orchestrating all nethercore plugins.
 | procedural-meshes | "generate mesh", "3D model", "low-poly" |
 | procedural-sounds | "generate sound", "SFX", "audio synthesis" |
 | procedural-animations | "walk cycle", "attack animation" |
-| semantic-asset-language | "SADL", "style token", "creative workflow" |
+| semantic-asset-language | "style guide", "style token", "creative workflow" |
 
 ### Agents
 | Agent | When to Use |
 |-------|-------------|
-| asset-designer | Translate creative vision to SADL specs |
+| asset-designer | Translate creative vision to style specs |
 | asset-generator | Produce procedural code from specs |
-| asset-critic | Validate assets against SADL specs |
+| asset-critic | Validate assets against style specs |
 | asset-quality-reviewer | Validate assets against ZX budget constraints |
 | creative-orchestrator | End-to-end asset creation pipeline |
 | character-generator | Complete animated character creation |
@@ -251,7 +251,7 @@ Complete reference for orchestrating all nethercore plugins.
 ```
 Phase 0: CREATIVE FOUNDATION
 ├── /establish-vision → Core creative pillars
-├── /establish-sonic-identity → Audio direction (SSL)
+├── /establish-sonic-identity → Audio direction (audio style)
 └── creative-director → Validate vision coherence
 
 Phase 1: DESIGN
@@ -264,7 +264,7 @@ Phase 1: DESIGN
 └── design-reviewer → Review GDD quality
 
 Phase 2: VISUAL ASSETS
-├── asset-designer → SADL specs from vision
+├── asset-designer → style specs from vision
 ├── asset-generator → Procedural generation code
 ├── character-generator → Animated characters
 ├── asset-critic → Validate against specs
@@ -318,7 +318,7 @@ Phase 6: PUBLISH
 ### Asset-Only Workflow
 
 ```
-1. asset-designer → SADL specs
+1. asset-designer → style specs
 2. asset-generator → Procedural code
 3. asset-critic → Spec compliance
 4. asset-quality-reviewer → ZX budget check
@@ -329,7 +329,7 @@ Phase 6: PUBLISH
 ### Audio-Only Workflow
 
 ```
-1. /establish-sonic-identity → SSL specification
+1. /establish-sonic-identity → audio style specification
 2. /design-soundtrack → Plan music
 3. /design-sfx → Plan effects
 4. music-architect → Compose

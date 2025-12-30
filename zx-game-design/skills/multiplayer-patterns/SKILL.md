@@ -1,7 +1,12 @@
 ---
-name: Multiplayer Patterns
-description: This skill should be used when the user asks about "multiplayer", "netcode", "rollback", "GGRS", "determinism", "split screen", "local multiplayer", "online play", "netplay", "player_count", "local_player_mask", "viewport", "couch co-op", "versus mode", "2-player", "4-player", "desync", "input prediction", or discusses multiplayer game mechanics, rendering, or viewport management for Nethercore ZX.
-version: 2.0.0
+name: Multiplayer Patterns for ZX
+description: |
+  Use this skill for ZX-SPECIFIC multiplayer implementation - netcode, determinism, and viewport management. Trigger phrases: "GGRS", "rollback netcode", "determinism rules", "desync", "split screen rendering", "viewport FFI", "player_count()", "local_player_mask()", "sync test".
+
+  This skill provides ZX IMPLEMENTATION - GGRS integration, determinism requirements, viewport rendering, state serialization.
+
+  For GAME DESIGN (co-op patterns, competitive balance, mode ideas): use game-design:multiplayer-design instead.
+version: 2.0.1
 ---
 
 # Multiplayer Patterns for Nethercore ZX

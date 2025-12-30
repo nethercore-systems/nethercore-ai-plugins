@@ -1,7 +1,15 @@
 ---
-name: Procedural Music Composition
-description: This skill should be used when the user asks to "create music", "XM tracker", "compose", "soundtrack", "tracker module", "game music", "make a song", "music for my game", "create an XM file", "FastTracker", "MilkyTracker module", or mentions music composition, tracker patterns, XM effects, or game soundtrack creation. Provides comprehensive guidance for creating tracker-based music using XM modules for Nethercore ZX games.
-version: 1.0.0
+name: XM Tracker Music for ZX
+description: |
+  Use this skill when the user wants to CREATE or IMPLEMENT music for ZX games using XM tracker format. Trigger phrases: "create XM file", "MilkyTracker", "OpenMPT", "tracker module", "XM patterns", "add music to ZX game", "music_play function", "tracker workflow", "XM effects", "pattern data".
+
+  **Before composing:** Check `.studio/sonic-identity.local.md` for project audio specs (style, mood palette, tempo ranges, key tendencies). Apply those constraints for consistent music. If no spec exists, ask about style or suggest `/establish-sonic-identity`.
+
+  This skill provides ZX-SPECIFIC IMPLEMENTATION - XM file format, sample integration with ROM, MilkyTracker/OpenMPT workflow, ZX audio constraints, nether.toml integration.
+
+  For MUSIC THEORY (chord progressions, scales, structure): use sound-design:music-composition instead.
+  For GENERATING INSTRUMENT SAMPLES: use zx-procgen:procedural-instruments instead.
+version: 1.1.0
 ---
 
 # Procedural Music Composition

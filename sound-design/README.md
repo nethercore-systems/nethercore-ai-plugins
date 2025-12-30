@@ -1,10 +1,10 @@
 # Sound Design Plugin
 
-Platform-agnostic game audio design plugin for Claude Code. The audio equivalent of what visual SADL does for assets - translates creative intent into concrete specifications.
+Platform-agnostic game audio design plugin for Claude Code. The audio equivalent of what the visual style guide does for assets - translates creative intent into concrete specifications.
 
 ## Overview
 
-This plugin provides the **Sonic Style Language (SSL)** framework for game audio design, covering:
+This plugin provides the **audio style guide** framework for game audio design, covering:
 
 - **Sonic Styles** - Overall audio aesthetic (Orchestral, Chiptune, Industrial, etc.)
 - **Mood Palettes** - Emotional character (Tense, Triumphant, Mysterious, etc.)
@@ -19,7 +19,7 @@ This plugin provides the **Sonic Style Language (SSL)** framework for game audio
 
 | Skill | Description |
 |-------|-------------|
-| `sonic-style-language` | SSL specification - styles, moods, instruments, processing signatures |
+| `sonic-style-language` | audio style specification - styles, moods, instruments, processing signatures |
 | `synthesis-techniques` | FM, wavetable, granular, physical modeling, Karplus-Strong |
 | `music-composition` | Theory, chord progressions, structure, adaptive music, leitmotifs |
 | `sfx-design` | Layering, archetypes, impact design, UI audio, variation |
@@ -29,7 +29,7 @@ This plugin provides the **Sonic Style Language (SSL)** framework for game audio
 
 | Command | Description |
 |---------|-------------|
-| `/establish-sonic-identity` | Interactive wizard to create SSL specification for a game |
+| `/establish-sonic-identity` | Interactive wizard to create audio style specification for a game |
 | `/design-soundtrack` | Design music tracks with structure and chord progressions |
 | `/design-sfx` | Design sound effects with layering and synthesis specs |
 
@@ -37,7 +37,7 @@ This plugin provides the **Sonic Style Language (SSL)** framework for game audio
 
 | Agent | Trigger | Description |
 |-------|---------|-------------|
-| `sonic-designer` | Creative audio intent | Translates descriptions to SSL specs |
+| `sonic-designer` | Creative audio intent | Translates descriptions to audio style specs |
 | `sfx-architect` | SFX creation | Designs effects with layers and synthesis code |
 | `music-architect` | Music composition | Designs tracks with harmony and structure |
 | `audio-coherence-reviewer` | Audio review | Validates consistency with sonic identity |
@@ -98,11 +98,11 @@ Ask: "Review my audio for consistency"
 → Triggers audio-coherence-reviewer agent
 ```
 
-## Sonic Style Language (SSL)
+## audio style guide
 
-SSL provides semantic descriptors for audio, similar to how SADL works for visual assets.
+The audio style guide provides semantic descriptors for audio, similar to how the visual style guide works for visual assets.
 
-### Example SSL Specification
+### Example Audio Style Specification
 
 ```yaml
 game: "Dark Fantasy RPG"
@@ -166,7 +166,7 @@ mix_priorities:
 - Align music moods with gameplay contexts
 
 ### With zx-procgen
-- SSL specs feed into `procedural-sounds` skill
+- audio style specs feed into `procedural-sounds` skill
 - Music specs guide `procedural-music` skill
 
 ### With creative-direction plugin

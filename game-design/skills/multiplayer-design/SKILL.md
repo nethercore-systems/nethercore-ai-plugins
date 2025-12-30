@@ -1,7 +1,12 @@
 ---
-name: Multiplayer Design
-description: This skill should be used when the user asks about "multiplayer design", "co-op design", "cooperative", "competitive design", "local multiplayer", "couch co-op", "controller sharing", "asymmetric multiplayer", "PvP", "versus mode", "split screen", "shared screen", or needs to design multiplayer gameplay for 1-4 players.
-version: 1.0.0
+name: Multiplayer Design (Conceptual)
+description: |
+  Use this skill for CONCEPTUAL multiplayer design - game modes, cooperation patterns, and player dynamics. Trigger phrases: "co-op design", "asymmetric multiplayer", "competitive balance", "how to design multiplayer", "controller sharing ideas", "versus mode design".
+
+  This skill provides GAME DESIGN THEORY - what makes good multiplayer, mode types, player interaction patterns.
+
+  For ZX IMPLEMENTATION (GGRS, determinism rules, viewport FFI): use zx-game-design:multiplayer-patterns instead.
+version: 1.0.1
 ---
 
 # Multiplayer Design
