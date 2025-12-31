@@ -162,6 +162,7 @@ These provide universal game design knowledge not tied to ZX:
 |--------|-------|----------|
 | `game-design` | Design frameworks, psychology, balance | Designing gameplay, story, world |
 | `sound-design` | Audio theory, composition, audio style | Designing audio direction |
+| `tracker-music` | XM/IT tracker generation, pattern design | Creating tracker module music |
 | `creative-direction` | Vision alignment, style guides | Establishing creative pillars |
 | `ai-game-studio` | Workflow orchestration, routing | Meta-coordination |
 
@@ -210,6 +211,7 @@ These provide ZX-specific implementation details:
 | `music-architect` | sound-design | Music track design |
 | `code-scaffolder` | zx-dev | Boilerplate game systems |
 | `feature-implementer` | zx-dev | Complete feature implementation |
+| `song-generator` | tracker-music | End-to-end tracker module generation |
 
 ### Validation Agents (Check Correctness)
 | Agent | Plugin | Purpose |
@@ -254,6 +256,7 @@ These provide ZX-specific implementation details:
 | `sound-design:establish-sonic-identity` | Create audio style specification |
 | `sound-design:design-soundtrack` | Design music tracks |
 | `sound-design:design-sfx` | Design sound effects |
+| `tracker-music:generate-song` | Generate XM/IT tracker modules |
 
 ### Publishing
 | Command | Purpose |
@@ -316,6 +319,7 @@ Add to `~/.claude/settings.json` (macOS/Linux) or `%USERPROFILE%\.claude\setting
     "game-design@nethercore-ai-plugins": true,
     "creative-direction@nethercore-ai-plugins": true,
     "sound-design@nethercore-ai-plugins": true,
+    "tracker-music@nethercore-ai-plugins": true,
     "ai-game-studio@nethercore-ai-plugins": true
   }
 }
@@ -347,6 +351,7 @@ For contributors with the nethercore workspace, add to `.claude/settings.local.j
     "game-design@nethercore-ai-plugins": true,
     "creative-direction@nethercore-ai-plugins": true,
     "sound-design@nethercore-ai-plugins": true,
+    "tracker-music@nethercore-ai-plugins": true,
     "ai-game-studio@nethercore-ai-plugins": true
   }
 }
@@ -467,6 +472,16 @@ Audio design with audio style guide.
 **Commands:** `establish-sonic-identity`, `design-soundtrack`, `design-sfx`
 
 **Agents:** `sonic-designer`, `sfx-architect`, `music-architect`, `audio-coherence-reviewer`
+
+### tracker-music
+
+Tracker module music generation (XM/IT formats).
+
+**Skills (4):** Tracker fundamentals, pattern design, XM format, IT format
+
+**Commands:** `generate-song`
+
+**Agents:** `song-generator`
 
 ### ai-game-studio
 
