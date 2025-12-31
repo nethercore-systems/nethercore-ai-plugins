@@ -2,6 +2,31 @@
 
 Platform-agnostic game audio design plugin for Claude Code. The audio equivalent of what the visual style guide does for assets - translates creative intent into concrete specifications.
 
+## Where This Plugin Fits
+
+This plugin handles **audio design** - the "what" and "why" of game audio. It produces specifications that guide synthesis and composition.
+
+```
+┌─────────────┐    ┌─────────────┐    ┌─────────────┐
+│ sound-design│ → │  zx-procgen │ → │tracker-music│
+│   DESIGN    │    │  SYNTHESIS  │    │ COMPOSITION │
+│  ← YOU ARE  │    │             │    │             │
+│     HERE    │    │             │    │             │
+└─────────────┘    └─────────────┘    └─────────────┘
+```
+
+**Use this plugin to:**
+- Establish your game's audio style (`/establish-sonic-identity`)
+- Design sound effect specifications (`/design-sfx`, `sfx-architect`)
+- Design music track specifications (`/design-soundtrack`, `music-architect`)
+
+**Then use other plugins to:**
+- Generate actual .wav files → `zx-procgen:/generate-sfx`
+- Generate instrument samples → `zx-procgen:/generate-instrument`
+- Create tracker music files → `tracker-music:/generate-song`
+
+See [Audio Pipeline Guide](../docs/audio-pipeline.md) for complete workflows.
+
 ## Overview
 
 This plugin provides the **audio style guide** framework for game audio design, covering:

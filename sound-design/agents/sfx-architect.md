@@ -1,6 +1,15 @@
 ---
 name: sfx-architect
-description: Use this agent when the user needs to design or create a specific sound effect, wants synthesis code, or needs detailed layering guidance. Triggers on requests like "create a jump sound", "synthesize an explosion", "design sword swing SFX", "how do I make this sound", "layer this effect", or when detailed SFX implementation is needed.
+description: |
+  Use this agent to DESIGN sound effects - creating detailed specifications with layer breakdowns and synthesis guidance.
+
+  **Outputs:** `.studio/sfx/*.spec.md` files with layering, frequencies, envelope parameters, and synthesis approach.
+
+  **Pipeline position: DESIGN (1 of 3)**
+  - For quick WAV generation: use `zx-procgen:/generate-sfx` command instead
+  - For NumPy synthesis code: use `zx-procgen:procedural-sounds` skill
+
+  Triggers: "design a sound", "what layers for", "SFX specification", "plan this sound effect", "how should this sound", "layer breakdown"
 
 <example>
 Context: User needs a specific game sound effect

@@ -3,6 +3,12 @@ name: Tracker Music Fundamentals
 description: |
   Use this skill when generating tracker music to understand WHY to use specific techniques. This is the philosophy layer that separates amateur from polished output.
 
+  **Pipeline position: COMPOSITION (3 of 3)**
+  - For music theory (modes, progressions): use `sound-design:music-composition`
+  - For instrument synthesis: use `zx-procgen:procedural-instruments`
+
+  See `docs/audio-pipeline.md` for complete workflow.
+
   **Trigger phrases:** "why use vibrato", "when to use effects", "make it sound professional", "tracker polish", "humanize the music", "sound less mechanical"
 
   **Load references when:**
@@ -11,8 +17,7 @@ description: |
   - Channel voice allocation → `references/channel-allocation.md`
 
   For format-specific implementation, use `xm-format` or `it-format` skills.
-  For music theory (modes, progressions), use `sound-design:music-composition`.
-version: 1.0.0
+version: 1.1.0
 ---
 
 # Tracker Music Fundamentals

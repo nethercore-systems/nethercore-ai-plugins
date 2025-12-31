@@ -114,6 +114,63 @@ my-game/
 └── .gitignore
 ```
 
+### Python Generator Structure (For Audio/Music)
+
+For audio synthesis, use a modular Python structure with shared lib/:
+
+```
+my-game/
+├── generator/
+│   ├── lib/                # Shared synthesis library (scaffold once)
+│   │   ├── __init__.py
+│   │   ├── synthesis.py    # ADSR, FM, Karplus-Strong
+│   │   ├── waveforms.py    # Oscillators, noise
+│   │   ├── drums.py        # Kick, snare, hat
+│   │   ├── effects.py      # Reverb, filters
+│   │   └── xm_writer.py    # XM file generation
+│   ├── instruments/        # One .py per instrument (~50 lines each)
+│   │   ├── rhodes.py
+│   │   └── guitar.py
+│   ├── songs/              # One .py per song (~80 lines each)
+│   │   ├── boss_theme.py
+│   │   └── menu_music.py
+│   └── generate_all.py     # Runs all generators
+├── assets/audio/           # Generated output
+└── nether.toml
+```
+
+### generate_all.py Pattern
+
+Run all audio generators with a single script:
+
+```python
+#!/usr/bin/env python3
+"""Generate all audio assets."""
+import subprocess
+from pathlib import Path
+
+generator_dir = Path(__file__).parent
+
+# Generate instruments
+for script in sorted((generator_dir / "instruments").glob("*.py")):
+    print(f"Running {script.name}...")
+    subprocess.run(["python", str(script)], check=True)
+
+# Generate songs
+for script in sorted((generator_dir / "songs").glob("*.py")):
+    print(f"Running {script.name}...")
+    subprocess.run(["python", str(script)], check=True)
+
+print("Audio generation complete!")
+```
+
+Update nether.toml to run Python generators:
+
+```toml
+[build]
+script = "python generator/generate_all.py && cargo build -p game --target wasm32-unknown-unknown --release"
+```
+
 ---
 
 ## Loading Assets in Game (WASM)

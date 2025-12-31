@@ -5,8 +5,12 @@ description: |
 
   This skill provides DESIGN PATTERNS - layering approaches, material signatures, frequency allocation, category templates.
 
-  For IMPLEMENTATION CODE (numpy/scipy): use zx-procgen:procedural-sounds instead.
-version: 1.1.0
+  **Pipeline position: DESIGN (1 of 3)**
+  - For IMPLEMENTATION CODE (numpy/scipy): use `zx-procgen:procedural-sounds`
+  - For quick SFX generation: use `zx-procgen:/generate-sfx`
+
+  See `docs/audio-pipeline.md` for complete workflow.
+version: 1.2.0
 ---
 
 # Sound Effects Design

@@ -2,6 +2,32 @@
 
 Procedural asset generation plugin for Nethercore ZX. Create beautiful textures, meshes, animations, and sounds using any language or tool. Fully supports all ZX rendering features including render modes 0-3, matcaps, dither transparency, and vertex colors.
 
+## Audio Synthesis Role
+
+For audio assets, this plugin handles **synthesis** - converting design specs into actual audio files.
+
+```
+┌─────────────┐    ┌─────────────┐    ┌─────────────┐
+│ sound-design│ → │  zx-procgen │ → │tracker-music│
+│   DESIGN    │    │  SYNTHESIS  │    │ COMPOSITION │
+│             │    │  ← AUDIO    │    │             │
+│             │    │     HERE    │    │             │
+└─────────────┘    └─────────────┘    └─────────────┘
+```
+
+**Audio commands:**
+- `/generate-sfx` - Quick SFX generation from type
+- `/generate-instrument` - Instrument sample synthesis
+
+**Audio agents:**
+- `instrument-architect` - Designs and implements instrument synthesis
+
+**Audio skills:**
+- `procedural-sounds` - NumPy/SciPy SFX synthesis
+- `procedural-instruments` - FM, Karplus-Strong, wavetable synthesis
+
+See [Audio Pipeline Guide](../docs/audio-pipeline.md) for complete workflows.
+
 ## Features
 
 - **Knowledge Skills**: Comprehensive guidance for textures, meshes, animations, sounds, and more
