@@ -35,8 +35,23 @@ Parse the argument to determine what action to take:
    - Look for `nether.toml` (project manifest)
 
 2. **Based on argument and state, invoke game-orchestrator agent:**
-   - Use Task tool to launch game-orchestrator with appropriate context
-   - Pass the action and current state to the agent
+
+   Use Task tool with these parameters:
+   ```
+   subagent_type: "zx-orchestrator:game-orchestrator"
+   description: "[Action]: [brief description]"
+   prompt: |
+     Action: [action from arguments]
+     Current State:
+     - GDD exists: [yes/no]
+     - Project manifest: [yes/no]
+     - Current phase: [phase name or "none"]
+     - Last checkpoint: [date/time or "none"]
+
+     [Include any relevant context from project-status.md]
+
+     Please [action-specific instruction].
+   ```
 
 3. **For `status` action:**
    - Read `.studio/project-status.md` if exists

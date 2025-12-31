@@ -6,6 +6,7 @@ allowed-tools:
   - Write
   - Glob
   - AskUserQuestion
+  - Task
 ---
 
 # Establish Sonic Identity
@@ -90,16 +91,34 @@ Ask: "Let me suggest instrument families for your [Style] approach. Please confi
 **Present recommendations based on style:**
 
 For Orchestral:
-- Primary: orchestral.strings, orchestral.brass
-- Accent: orchestral.percussion, orchestral.woodwinds
-- Texture: synth.pad (subtle), orchestral.choir
+- Primary: Strings (violins, cellos), Brass (horns, trumpets)
+- Accent: Timpani, woodwinds (flute, oboe)
+- Texture: Subtle synth pads, choir
 
 For Electronic:
-- Primary: synth.lead, synth.bass
-- Accent: synth.fx, percussion.electronic
-- Texture: synth.pad, synth.arp
+- Primary: Synth leads, synth bass
+- Accent: Electronic percussion, glitch effects
+- Texture: Ambient pads, arpeggios
 
-(Continue for each style...)
+For Dark Ambient:
+- Primary: Drones, dark pads
+- Accent: Metallic textures, distant impacts
+- Texture: Processed field recordings, sub bass
+
+For Chiptune:
+- Primary: Square waves, pulse waves
+- Accent: Triangle wave bass, noise drums
+- Texture: Arpeggios, echo effects
+
+For Hybrid (Orchestral + Electronic):
+- Primary: Strings, synth bass
+- Accent: Electronic drums, brass stabs
+- Texture: Ambient pads, processed orchestra
+
+For Acoustic:
+- Primary: Piano, guitar
+- Accent: Percussion (shakers, congas)
+- Texture: Ambient room, subtle reverb tails
 
 Allow user to modify selections.
 

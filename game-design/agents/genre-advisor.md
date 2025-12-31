@@ -1,26 +1,29 @@
 ---
-description: Suggests genre-appropriate design patterns based on game concepts. Use this agent when discussing new game ideas, unsure about genre conventions, or early in the design phase.
+name: genre-advisor
+description: |
+  Suggests genre-appropriate design patterns based on game concepts. Use this agent when discussing new game ideas, unsure about genre conventions, or early in the design phase.
+
+  <example>
+  Context: User is developing a new game idea
+  user: "I want to make a game where you explore dungeons and each death is permanent but you unlock new stuff"
+  assistant: "[Invokes genre-advisor to classify as roguelite and suggest genre patterns]"
+  <commentary>
+  User is describing their concept. Agent will identify the genre and provide relevant design conventions.
+  </commentary>
+  </example>
+
+  <example>
+  Context: User wants to understand genre conventions
+  user: "Is this a roguelike or roguelite? What's the difference?"
+  assistant: "[Invokes genre-advisor to clarify genre distinctions and apply to user's game]"
+  <commentary>
+  User needs genre clarification. Agent explains conventions and helps classify their game.
+  </commentary>
+  </example>
+
 model: haiku
 color: green
-tools:
-  - Read
-  - Glob
-whenToUse: |
-  Trigger this agent when the user:
-  - Describes a new game concept
-  - Asks what genre their game is
-  - Wants to know genre conventions
-  - Is starting a new project
-  - Asks "what kind of game is this?"
-  - Needs genre-specific design advice
-
-  <examples>
-  - "What genre is my game?"
-  - "I want to make a game where you..."
-  - "What are the conventions for this type of game?"
-  - "Is this a roguelike or roguelite?"
-  - "What should a platformer have?"
-  </examples>
+tools: ["Read", "Glob"]
 ---
 
 # Genre Advisor Agent

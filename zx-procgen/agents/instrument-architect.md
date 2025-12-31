@@ -1,13 +1,28 @@
 ---
-identifier: instrument-architect
-whenToUse: |
+name: instrument-architect
+description: |
   Use this agent when the user asks to "design an instrument", "create instrument sound", "synthesize piano", "make guitar sample", "procedural instrument", "instrument for music", "better sounding synth", "not chiptuney", "realistic instrument", "high quality sample", "FM synthesis for", "Karplus-Strong", "wavetable instrument", "what technique for", or describes an instrument they need and wants a complete synthesis specification and/or working Python code.
+
+  <example>
+  Context: User wants a custom instrument for their game's music
+  user: "Create a warm electric piano sound for my jazz-themed game"
+  assistant: "[Invokes instrument-architect to design FM synthesis parameters and generate Python code]"
+  <commentary>
+  User needs a specific instrument with musical character. The agent will design synthesis parameters and produce working code.
+  </commentary>
+  </example>
+
+  <example>
+  Context: User is making tracker music and needs better instruments
+  user: "My synth sounds too chiptuney, I need something more realistic"
+  assistant: "[Invokes instrument-architect to analyze needs and create higher-quality synthesis]"
+  <commentary>
+  User wants to improve instrument quality beyond basic chip sounds.
+  </commentary>
+  </example>
+
 model: sonnet
-allowedTools:
-  - Read
-  - Write
-  - Glob
-  - Grep
+tools: ["Read", "Write", "Glob", "Grep"]
 color: purple
 ---
 

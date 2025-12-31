@@ -4,6 +4,7 @@ argument-hint: "[scope]"
 allowed-tools:
   - Read
   - Write
+  - Glob
   - AskUserQuestion
 ---
 

@@ -1,7 +1,12 @@
 ---
 description: Interactive GDD builder wizard for Nethercore ZX games
-argument-hint: [perspective]
-allowed-tools: Read, Write, AskUserQuestion, Glob
+argument-hint: "[perspective]"
+allowed-tools:
+  - Read
+  - Write
+  - AskUserQuestion
+  - Glob
+  - Task
 ---
 
 # Game Design Document Wizard

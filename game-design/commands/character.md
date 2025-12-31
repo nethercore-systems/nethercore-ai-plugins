@@ -4,6 +4,7 @@ argument-hint: "[type]"
 allowed-tools:
   - Read
   - Write
+  - Glob
   - AskUserQuestion
 ---
 

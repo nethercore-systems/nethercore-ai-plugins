@@ -5,6 +5,7 @@ allowed-tools:
   - Write
   - AskUserQuestion
   - Glob
+  - Task
 argument-hint: "[--art-only|--sound-only|--tech-only|--full]"
 ---
 
@@ -43,12 +44,12 @@ Ask user about:
 Ask user about:
 - **Art Style**: "Describe the visual style (e.g., dark fantasy painterly)"
 - **Style Spectrums**: For each spectrum, ask position 1-9:
-  - Fidelity (stylized ↔ realistic)
-  - Detail (simple ↔ complex)
-  - Saturation (muted ↔ vibrant)
-  - Contrast (low-key ↔ high-key)
-  - Form (geometric ↔ organic)
-  - Line (hard-edge ↔ soft)
+  - Fidelity: 1=highly stylized → 9=photorealistic
+  - Detail: 1=minimal/simple → 9=intricate/complex
+  - Saturation: 1=muted/desaturated → 9=vibrant/saturated
+  - Contrast: 1=low-key/flat → 9=high-key/dramatic
+  - Form: 1=geometric/angular → 9=organic/flowing
+  - Line: 1=hard-edge/crisp → 9=soft/blended
 - **Color Palette**: "What's the dominant color mood?"
 - **Visual Pillars**: "What 3 visual principles must be followed?"
 

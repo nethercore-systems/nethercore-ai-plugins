@@ -1,26 +1,29 @@
 ---
-description: Reviews game designs for coherence, missing elements, and scope issues. Use this agent after creating a GDD, when reviewing game concepts, or when design documents are written.
+name: design-reviewer
+description: |
+  Reviews game designs for coherence, missing elements, and scope issues. Use this agent after creating a GDD, when reviewing game concepts, or when design documents are written.
+
+  <example>
+  Context: User just finished writing their game design document
+  user: "Review my game design"
+  assistant: "[Invokes design-reviewer to analyze GDD for coherence, completeness, and scope]"
+  <commentary>
+  User wants feedback on their design. The agent checks for missing elements, contradictions, and scope issues.
+  </commentary>
+  </example>
+
+  <example>
+  Context: User is unsure if their design is complete
+  user: "Is this GDD complete? What am I missing?"
+  assistant: "[Invokes design-reviewer to check completeness and identify gaps]"
+  <commentary>
+  Completeness check - the agent will identify missing core elements and prioritize what needs attention.
+  </commentary>
+  </example>
+
 model: haiku
 color: blue
-tools:
-  - Read
-  - Glob
-  - Grep
-whenToUse: |
-  Trigger this agent when the user:
-  - Creates or updates a Game Design Document
-  - Asks to review their game concept
-  - Completes a design document
-  - Asks "is my design complete?"
-  - Wants feedback on game scope or feasibility
-
-  <examples>
-  - "Review my game design"
-  - "Is this GDD complete?"
-  - "Check my design for problems"
-  - "What am I missing in my design?"
-  - After /worldbuild or /design-loop completion
-  </examples>
+tools: ["Read", "Glob", "Grep"]
 ---
 
 # Design Reviewer Agent
