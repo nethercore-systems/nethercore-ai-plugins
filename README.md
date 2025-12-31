@@ -129,7 +129,8 @@ What do you need?
 2. sound-design:design-soundtrack          # Plan tracks
 3. music-architect agent → Design individual tracks
 4. zx-procgen:generate-instrument          # Create instrument samples
-5. Use MilkyTracker/OpenMPT to compose XM
+5a. tracker-music:generate-song            # Programmatic XM/IT generation
+5b. OR: Use MilkyTracker/OpenMPT to compose manually
 6. integration-assistant → Add to nether.toml
 ```
 
