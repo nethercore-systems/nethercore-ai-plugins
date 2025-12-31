@@ -3,6 +3,7 @@ description: Core loop analysis and design tool for mapping gameplay cycles
 allowed-tools:
   - Read
   - Write
+  - Glob
   - AskUserQuestion
 ---
 

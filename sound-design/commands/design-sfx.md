@@ -6,6 +6,7 @@ allowed-tools:
   - Write
   - Glob
   - AskUserQuestion
+  - Task
 ---
 
 # Design SFX
@@ -289,9 +290,11 @@ Create the SFX specification.
 ### Layering
 | Layer | Volume | Pan | Notes |
 |-------|--------|-----|-------|
-| 1 | [dB] | [C/L/R] | [Notes] |
-| 2 | [dB] | [C/L/R] | [Notes] |
-| 3 | [dB] | [C/L/R] | [Notes] |
+| 1 | 0 dB | C | Primary transient |
+| 2 | -3 dB | C | Body layer |
+| 3 | -6 dB | C | Tail/ambience |
+
+(Fill in actual values based on the designed layers)
 
 ### Master Processing
 - Compression: [Settings if any]
@@ -303,9 +306,10 @@ Create the SFX specification.
 ### Random Parameters
 | Parameter | Range | Notes |
 |-----------|-------|-------|
-| Pitch | ±[X] semitones | [Notes] |
-| Volume | ±[X] dB | [Notes] |
-| [Other] | [Range] | [Notes] |
+| Pitch | ±2 semitones | Natural variation |
+| Volume | ±1 dB | Subtle dynamics |
+
+(Adjust ranges based on user preferences from Phase 6)
 
 ### Pre-made Variations (if applicable)
 - Variation A: [Description]
@@ -352,4 +356,11 @@ After creating, summarize:
 2. Use `sfx-architect` agent for synthesis code
 3. Test in-game and iterate
 
-Would you like to design another sound effect?"
+Would you like me to:
+- Generate the synthesis code now? (spawns sfx-architect agent)
+- Design another sound effect?
+- Refine this specification?"
+
+**If user wants synthesis code:**
+Use Task tool with subagent_type: "sound-design:sfx-architect"
+Pass the spec file path and key parameters from the specification.

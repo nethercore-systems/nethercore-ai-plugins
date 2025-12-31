@@ -6,6 +6,7 @@ allowed-tools:
   - Write
   - Glob
   - AskUserQuestion
+  - Task
 ---
 
 # Design Soundtrack
@@ -205,13 +206,15 @@ Create the composition specification.
 
 ### Section A (Main)
 ```
-| [Chord] | [Chord] | [Chord] | [Chord] |
+| Am | F | C | G |
 ```
+(Fill in actual chords based on the key and mood selected)
 
 ### Section B (Variation)
 ```
-| [Chord] | [Chord] | [Chord] | [Chord] |
+| Dm | Am | E | Am |
 ```
+(Variation typically introduces new harmonic movement)
 
 ## Instrumentation
 
@@ -305,4 +308,11 @@ After creating, summarize and offer next steps:
 2. Run `music-architect` agent for deeper composition help
 3. After creation, `audio-coherence-reviewer` can validate against sonic identity
 
-Would you like to design another track, or proceed to SFX?"
+Would you like me to:
+- Get detailed composition help? (spawns music-architect agent)
+- Design another track?
+- Design sound effects instead?"
+
+**If user wants composition help:**
+Use Task tool with subagent_type: "sound-design:music-architect"
+Pass the spec file path and key parameters from the specification.

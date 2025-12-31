@@ -1,7 +1,12 @@
 ---
 description: Generate asset specifications from GDD for procgen pipeline
-argument-hint: [gdd-path]
-allowed-tools: Read, Write, Glob
+argument-hint: "[gdd-path]"
+allowed-tools:
+  - Read
+  - Write
+  - Glob
+  - AskUserQuestion
+  - Task
 ---
 
 # Asset Planning
