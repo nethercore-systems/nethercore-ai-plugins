@@ -139,6 +139,17 @@
       },
       "source": "./ai-game-studio",
       "category": "development"
+    },
+    {
+      "name": "tracker-music",
+      "description": "Platform-agnostic tracker music generation for Nethercore consoles. Covers XM (FastTracker 2) and IT (Impulse Tracker) formats with programmatic generation via Python, polish techniques, pattern design, and end-to-end song generation from mood descriptions.",
+      "version": "0.0.1",
+      "author": {
+        "name": "Nethercore Systems",
+        "email": "nethercore.systems@gmail.com"
+      },
+      "source": "./tracker-music",
+      "category": "design"
     }
   ]
 }
