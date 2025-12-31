@@ -5,7 +5,7 @@ description: |
 
   Contains reference tables: modes by character, keys by genre, tempos by context, chord progressions by emotion.
 
-  NOT for XM creation (use procedural-music) or sound synthesis (use procedural-sounds).
+  NOT for tracker file creation (use tracker-music plugin) or sound synthesis (use procedural-sounds).
 version: 1.1.0
 ---
 
