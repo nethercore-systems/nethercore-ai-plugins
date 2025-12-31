@@ -5,6 +5,12 @@ description: |
 
   **Before generating:** Check `.studio/visual-style.local.md` for project style specs (palette, materials, damage level). Apply those constraints for consistent assets. If no style exists, ask about style or suggest `/establish-visual-style`.
 
+  **Load references when:**
+  - Project structure, multiple textures → `generator-patterns` skill
+  - TextureBuffer class → `references/texture-api.md`
+  - Noise algorithms → `references/noise-algorithms.md`
+  - Material recipes → `references/material-recipes.md`
+
   Covers ZX render modes 0-3, noise algorithms, material layers, atlas packing.
 
   For UV-AWARE TEXTURING (projecting onto meshes): use mesh-texturing-workflows.
@@ -265,28 +271,52 @@ See `references/seamless-textures.md` for tileable texture techniques.
 
 ## File Organization
 
+**One texture per file.** Each texture material should have its own Python script:
+
 ```
 generator/
-├── main.py              # Entry point
-├── texture_buffer.py    # TextureBuffer class
-├── noise_utils.py       # FastNoiseLite helpers
+├── lib/
+│   └── texture_buffer.py     # TextureBuffer class (from generator-patterns)
 ├── textures/
-│   ├── albedo.py        # Albedo generators
-│   ├── mre.py           # MRE map generators
-│   ├── sse.py           # SSE map generators
-│   ├── matcap.py        # Matcap generators
-│   └── atlas.py         # Atlas packing
-├── materials/
-│   ├── metal.py         # Metal recipes
-│   ├── wood.py          # Wood recipes
-│   └── stone.py         # Stone recipes
-└── constants.py         # Palettes, presets
+│   ├── wood_plank.py         # One file per texture
+│   ├── metal_brushed.py
+│   ├── stone_cobble.py
+│   ├── brick_wall.py
+│   └── rust_patches.py
+└── generate_all.py           # Batch runner
+```
+
+Each texture file generates all required maps (albedo, MRE/SSE, etc.):
+
+```python
+#!/usr/bin/env python3
+"""Generate wood plank texture set."""
+from lib.texture_buffer import TextureBuffer
+
+OUTPUT_DIR = "../assets/textures"
+
+def generate():
+    # Generate albedo
+    albedo = TextureBuffer(256, 256)
+    albedo.fill((139, 90, 43, 255))
+    albedo.add_perlin_noise(scale=0.05, intensity=30)
+    albedo.save(f"{OUTPUT_DIR}/wood_plank_albedo.png")
+
+    # Generate MRE
+    mre = TextureBuffer(256, 256)
+    mre.fill((0, 128, 0, 255))  # Non-metal, medium rough
+    mre.save(f"{OUTPUT_DIR}/wood_plank_mre.png")
+
+if __name__ == "__main__":
+    generate()
 ```
 
 **File Size Limits:**
 
 | Limit | Lines | Action |
 |-------|-------|--------|
-| Target | ≤300 | Ideal |
-| Soft | 400 | Consider splitting |
-| Hard | 500 | MUST split |
+| Target | ≤150 | Ideal for single texture |
+| Soft | 200 | Consider splitting |
+| Hard | 300 | Extract helpers to lib/ |
+
+For complete setup, see the `generator-patterns` skill.

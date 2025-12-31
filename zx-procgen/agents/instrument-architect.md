@@ -1,7 +1,15 @@
 ---
 name: instrument-architect
 description: |
-  Use this agent when the user asks to "design an instrument", "create instrument sound", "synthesize piano", "make guitar sample", "procedural instrument", "instrument for music", "better sounding synth", "not chiptuney", "realistic instrument", "high quality sample", "FM synthesis for", "Karplus-Strong", "wavetable instrument", "what technique for", or describes an instrument they need and wants a complete synthesis specification and/or working Python code.
+  Use this agent to SYNTHESIZE instrument samples - creating production-quality audio files using advanced synthesis techniques.
+
+  **Outputs:** Python synthesis scripts and generated `.wav` files.
+
+  **Pipeline position: SYNTHESIS (2 of 3)**
+  - For instrument selection guidance: use `sound-design:sonic-style-language`
+  - For tracker music using these instruments: use `tracker-music:/generate-song`
+
+  Triggers: "generate instrument", "synthesize piano", "make guitar sample", "not chiptuney", "realistic instrument", "high quality sample", "FM synthesis for", "Karplus-Strong", "wavetable instrument"
 
   <example>
   Context: User wants a custom instrument for their game's music

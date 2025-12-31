@@ -5,8 +5,12 @@ description: |
 
   Contains reference tables: modes by character, keys by genre, tempos by context, chord progressions by emotion.
 
-  NOT for tracker file creation (use tracker-music plugin) or sound synthesis (use procedural-sounds).
-version: 1.1.0
+  **Pipeline position: DESIGN (1 of 3)**
+  - For tracker file creation: use `tracker-music` plugin
+  - For instrument synthesis: use `zx-procgen:procedural-instruments`
+
+  See `docs/audio-pipeline.md` for complete workflow.
+version: 1.2.0
 ---
 
 # Music Composition for Games

@@ -2,6 +2,31 @@
 
 Platform-agnostic tracker music generation for Nethercore fantasy consoles. Generate polished XM and IT tracker modules programmatically from mood/style descriptions.
 
+## Where This Plugin Fits
+
+This plugin handles **music composition** - creating complete tracker files from design specs or descriptions.
+
+```
+┌─────────────┐    ┌─────────────┐    ┌─────────────┐
+│ sound-design│ → │  zx-procgen │ → │tracker-music│
+│   DESIGN    │    │  SYNTHESIS  │    │ COMPOSITION │
+│             │    │             │    │  ← YOU ARE  │
+│             │    │             │    │     HERE    │
+└─────────────┘    └─────────────┘    └─────────────┘
+```
+
+**Use this plugin to:**
+- Generate complete .xm/.it tracker files (`/generate-song`, `song-generator`)
+- Understand tracker polish techniques (`tracker-fundamentals` skill)
+- Learn XM/IT format specifics (`xm-format`, `it-format` skills)
+
+**Prerequisites (optional but recommended):**
+- Audio style from `sound-design:/establish-sonic-identity`
+- Music spec from `sound-design:/design-soundtrack`
+- Instrument samples from `zx-procgen:/generate-instrument`
+
+See [Audio Pipeline Guide](../docs/audio-pipeline.md) for complete workflows.
+
 ## Overview
 
 This plugin enables Claude to generate complete, polished tracker music autonomously. Given a description like "dark mysterious boss theme", Claude can produce a professional-quality XM or IT file with proper effects, structure, and polish.

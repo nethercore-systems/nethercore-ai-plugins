@@ -8,6 +8,7 @@ description: |
   **Before generating:** Check `.studio/visual-style.local.md` for project style specs.
 
   **Load references when:**
+  - Project structure, multiple assets → `generator-patterns` skill
   - Basic shapes, cubes, cylinders → `references/bpy-primitives.md`
   - Modifiers (bevel, mirror, array) → `references/bpy-modifiers.md`
   - Organic shapes, metaballs, skin → `references/bpy-organic-workflows.md`
@@ -55,6 +56,35 @@ blender --background --python generator.py
 - **Primary:** `.glb` (GLTF binary) with embedded UVs and normals
 - **Alternative:** `.gltf`, `.obj`, `.fbx` when specified
 - **Target aesthetic:** Low-poly/N64/PS1/PS2 era (500-2000 tris typical)
+
+---
+
+## File Organization
+
+**One mesh per file.** Each mesh should have its own Python script. This improves:
+- LLM context efficiency (load only what you need)
+- Maintainability (changes don't affect other meshes)
+- Testing (run individual scripts)
+- Batch generation (simple `generate_all.py`)
+
+```
+generator/
+├── lib/
+│   └── bpy_utils.py          # Shared helpers (from generator-patterns skill)
+├── meshes/
+│   ├── barrel.py             # One file per mesh
+│   ├── crate.py
+│   ├── chair.py
+│   └── table.py
+└── generate_all.py           # Runs all mesh generators
+```
+
+**File size limit:** ≤150 lines per mesh file. If exceeding, extract helpers to `lib/bpy_utils.py`.
+
+For complete setup, see the `generator-patterns` skill which provides:
+- Library templates (`lib/bpy_utils.py`)
+- Batch runner (`generate_all.py`)
+- Full project structure
 
 ---
 

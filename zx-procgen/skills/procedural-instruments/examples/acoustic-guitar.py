@@ -3,45 +3,24 @@
 Acoustic Guitar - Karplus-Strong with Body Resonance
 
 Generates realistic plucked acoustic guitar sounds using physical modeling.
+
+This example demonstrates the modular lib/ approach:
+- Imports Karplus-Strong from lib/synthesis
+- Only defines guitar-specific body resonance and styling
 """
-import numpy as np
-import soundfile as sf
-from scipy.signal import butter, lfilter
+import sys
 from pathlib import Path
 
+# Add lib/ to path for standalone execution
+sys.path.insert(0, str(Path(__file__).parent.parent / "lib"))
+
+import numpy as np
+import soundfile as sf
+
+from synthesis import karplus_strong
+from waveforms import normalize
+
 SAMPLE_RATE = 22050
-
-
-def karplus_strong(freq: float, duration: float,
-                   damping: float = 0.996,
-                   brightness: float = 0.7) -> np.ndarray:
-    """Core Karplus-Strong algorithm for plucked strings."""
-    num_samples = int(SAMPLE_RATE * duration)
-    delay_length = max(2, int(SAMPLE_RATE / freq))
-
-    # Initialize with filtered noise (the "pluck" excitation)
-    noise = np.random.randn(delay_length)
-
-    # Filter initial noise based on brightness (softer pluck = less highs)
-    if brightness < 1.0:
-        cutoff = 0.1 + brightness * 0.8
-        b, a = butter(2, cutoff, btype='low')
-        noise = lfilter(b, a, noise)
-
-    delay_line = noise.copy()
-    output = np.zeros(num_samples)
-    idx = 0
-
-    for i in range(num_samples):
-        output[i] = delay_line[idx]
-
-        # Low-pass averaging: the key to natural decay
-        next_idx = (idx + 1) % delay_length
-        averaged = 0.5 * (delay_line[idx] + delay_line[next_idx]) * damping
-        delay_line[idx] = averaged
-        idx = (idx + 1) % delay_length
-
-    return output
 
 
 def body_resonance(signal: np.ndarray, freq: float) -> np.ndarray:
@@ -50,18 +29,15 @@ def body_resonance(signal: np.ndarray, freq: float) -> np.ndarray:
 
     # Body resonance around 100-200 Hz
     body_freq = min(200, freq * 0.5)
-    body = np.sin(2 * np.pi * body_freq * t) * 0.08
-    body *= np.exp(-t * 4)
+    body = np.sin(2 * np.pi * body_freq * t) * 0.08 * np.exp(-t * 4)
 
     # Second harmonic emphasis from soundboard
-    harm2 = np.sin(2 * np.pi * freq * 2 * t) * 0.05
-    harm2 *= np.exp(-t * 3)
+    harm2 = np.sin(2 * np.pi * freq * 2 * t) * 0.05 * np.exp(-t * 3)
 
     return signal + body + harm2
 
 
-def generate_acoustic_guitar(freq: float, duration: float = 1.5,
-                             style: str = 'steel') -> np.ndarray:
+def acoustic_guitar(freq: float, duration: float = 1.5, style: str = 'steel') -> np.ndarray:
     """
     Generate complete acoustic guitar note.
 
@@ -70,33 +46,30 @@ def generate_acoustic_guitar(freq: float, duration: float = 1.5,
         duration: Note duration in seconds
         style: 'steel' (bright) or 'nylon' (warm)
     """
-    if style == 'steel':
-        damping = 0.996
-        brightness = 0.75
-    else:  # nylon
-        damping = 0.994
-        brightness = 0.45
+    presets = {
+        'steel': {'damping': 0.996, 'brightness': 0.75},
+        'nylon': {'damping': 0.994, 'brightness': 0.45},
+    }
+    params = presets.get(style, presets['steel'])
 
-    # Generate plucked string
-    string = karplus_strong(freq, duration, damping, brightness)
+    # Generate plucked string using lib/synthesis
+    string = karplus_strong(freq, duration, **params, sample_rate=SAMPLE_RATE)
 
     # Add body resonance
     output = body_resonance(string, freq)
 
-    # Slight chorusing for richness (two strings slightly detuned)
-    detune = 1.003
-    string2 = karplus_strong(freq * detune, duration, damping, brightness)
+    # Slight chorusing for richness
+    string2 = karplus_strong(freq * 1.003, duration, **params, sample_rate=SAMPLE_RATE)
     output += string2 * 0.15
 
-    # Normalize
-    return output / (np.max(np.abs(output)) + 1e-10)
+    return normalize(output)
 
 
 def main():
     output_dir = Path("assets/audio/instruments")
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    # Generate samples at different pitches
+    # Standard guitar notes
     notes = {
         'E2': 82.41,
         'A2': 110.0,
@@ -107,15 +80,15 @@ def main():
     }
 
     for name, freq in notes.items():
-        # Steel string version
-        audio = generate_acoustic_guitar(freq, 2.0, 'steel')
-        sf.write(output_dir / f"guitar_steel_{name.lower()}.wav",
-                 audio, SAMPLE_RATE, subtype='PCM_16')
+        note = name.lower()
 
-        # Nylon string version
-        audio = generate_acoustic_guitar(freq, 2.0, 'nylon')
-        sf.write(output_dir / f"guitar_nylon_{name.lower()}.wav",
-                 audio, SAMPLE_RATE, subtype='PCM_16')
+        # Steel string
+        audio = acoustic_guitar(freq, 2.0, 'steel')
+        sf.write(output_dir / f"guitar_steel_{note}.wav", audio, SAMPLE_RATE, subtype='PCM_16')
+
+        # Nylon string
+        audio = acoustic_guitar(freq, 2.0, 'nylon')
+        sf.write(output_dir / f"guitar_nylon_{note}.wav", audio, SAMPLE_RATE, subtype='PCM_16')
 
     print(f"Generated guitar samples in {output_dir}")
 

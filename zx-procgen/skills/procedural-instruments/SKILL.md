@@ -7,6 +7,9 @@ description: |
 
   **Before generating:** Check `.studio/sonic-identity.local.md` for audio specs.
 
+  **Modular lib/ architecture:** Use `lib/` for shared synthesis primitives.
+  Scaffold lib/ into projects, then import: `from lib.synthesis import karplus_strong`
+
   **Load references when:**
   - Plucked strings (guitar, bass) → `references/karplus-strong.md`
   - Electric piano, bells → `references/fm-synthesis.md`
@@ -15,12 +18,62 @@ description: |
   - Synth leads/bass → `references/subtractive-synthesis.md`
 
   Production-quality synthesis (not chiptuney) using FM, physical modeling, and wavetable.
-version: 2.0.0
+version: 3.0.0
 ---
 
 # Procedural Instrument Synthesis
 
 Generate production-quality instrument samples that sound realistic and musical—not chiptuney.
+
+## Modular lib/ Architecture
+
+**Use the shared lib/ for all synthesis.** This avoids code duplication and keeps files small.
+
+### Project Structure
+
+```
+my-game/
+├── generator/
+│   ├── lib/                      # Shared synthesis library (scaffold once)
+│   │   ├── __init__.py
+│   │   ├── synthesis.py          # ADSR, FM, Karplus-Strong
+│   │   ├── waveforms.py          # Sine, square, saw, triangle, noise
+│   │   ├── drums.py              # Kick, snare, hat synthesis
+│   │   ├── effects.py            # Reverb, distortion, filters
+│   │   ├── xm_writer.py          # XM (FastTracker 2) file generation
+│   │   └── it_writer.py          # IT (Impulse Tracker) file generation
+│   ├── instruments/              # One file per instrument (~50 lines each)
+│   │   ├── rhodes.py
+│   │   └── guitar.py
+│   └── songs/                    # One file per song (~80 lines each)
+│       └── boss_theme.py
+└── assets/audio/                 # Generated output
+```
+
+### Usage Pattern
+
+```python
+#!/usr/bin/env python3
+"""Electric Piano Generator"""
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).parent / "lib"))
+
+from synthesis import fm_operator, multi_envelope
+from waveforms import normalize
+from drums import kick_808, snare_layered  # For songs
+```
+
+### lib/ Contents
+
+| Module | Functions | Use For |
+|--------|-----------|---------|
+| `synthesis` | `karplus_strong`, `fm_operator`, `adsr_envelope`, `multi_envelope`, `attack_transient`, `apply_vibrato` | Core synthesis |
+| `waveforms` | `sine_wave`, `square_wave`, `saw_wave`, `triangle_wave`, `white_noise`, `pink_noise`, `normalize`, `to_8bit_pcm`, `to_16bit_pcm` | Oscillators |
+| `drums` | `kick_808`, `kick_acoustic`, `snare_layered`, `hihat_closed`, `hihat_open`, `tom`, `crash`, `clap` | Drum synthesis |
+| `effects` | `simple_reverb`, `lowpass_filter`, `highpass_filter`, `filter_sweep`, `apply_distortion` | Audio effects |
+| `xm_writer` | `XmModule`, `XmPattern`, `XmNote`, `XmInstrument`, `write_xm` | XM tracker output |
+| `it_writer` | `ItModule`, `ItPattern`, `ItNote`, `ItInstrument`, `write_it` | IT tracker output |
 
 ## Why Basic Synthesis Sounds Chiptuney
 

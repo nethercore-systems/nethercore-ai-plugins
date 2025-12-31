@@ -8,6 +8,7 @@ description: |
   **Before generating:** Check `.studio/visual-style.local.md` for project style specs.
 
   **Load references when:**
+  - Project structure, multiple sprites → `generator-patterns` skill
   - Palette quantization → `references/palette-algorithms.md`
   - Dithering patterns → `references/dithering-patterns.md`
   - UI elements (9-slice, buttons) → `references/ui-sprites.md`
@@ -99,22 +100,29 @@ draw_sprite_region(sprites, x, y, state * width, 0, width, height);
 
 ## File Organization
 
-Sprite generation code bloats quickly. Use modular structure:
+**One sprite per file.** Each sprite/sprite sheet should have its own Python script:
 
 ```
-generator/sprites/
-├── __init__.py      # Re-exports
-├── ui.py            # Buttons, panels (~150 lines)
-├── tiles.py         # Basic tiles (~100 lines)
-├── autotile.py      # Autotile logic (~150 lines)
-└── characters.py    # Sprite sheets (~150 lines)
-
-generator/data/
-├── autotile_47.py   # Neighbor map (DATA ONLY)
-├── palettes.py      # NES, PICO-8, etc.
+generator/
+├── lib/
+│   └── sprite_utils.py       # Palettes, dithering (from generator-patterns)
+├── sprites/
+│   ├── player_idle.py        # One file per sprite/sheet
+│   ├── player_walk.py
+│   ├── enemy_slime.py
+│   ├── ui_buttons.py
+│   └── tileset_grass.py
+├── data/
+│   ├── autotile_47.py        # Neighbor map (DATA ONLY)
+│   └── palettes.py           # Custom palettes
+└── generate_all.py           # Batch runner
 ```
+
+**File size limit:** ≤150 lines per sprite file. Extract reusable logic to `lib/sprite_utils.py`.
 
 **Critical:** Keep data tables (autotile maps, palettes) in separate `data/` modules.
+
+For complete setup, see the `generator-patterns` skill.
 
 ## References
 

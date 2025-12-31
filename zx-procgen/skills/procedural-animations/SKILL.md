@@ -8,6 +8,7 @@ description: |
   **Before animating:** Check `.studio/visual-style.local.md` for animation feel.
 
   **Load references when:**
+  - Project structure, multiple animations → `generator-patterns` skill
   - Rigid objects (spinning, bobbing) → `references/object-animation.md`
   - Character rigs → `references/armature-creation.md`
   - Bone weights → `references/skinning-weights.md`
@@ -120,6 +121,28 @@ bpy.ops.export_scene.gltf(
 ```
 
 See `references/gltf-export.md` for full export settings.
+
+## File Organization
+
+**One animation per file.** Each animation should have its own Python script:
+
+```
+generator/
+├── lib/
+│   ├── bpy_utils.py          # Mesh helpers (from generator-patterns)
+│   └── animation_utils.py    # Keyframe helpers (from generator-patterns)
+├── animations/
+│   ├── walk_cycle.py         # One file per animation
+│   ├── run_cycle.py
+│   ├── attack_slash.py
+│   ├── pickup_spin.py
+│   └── door_open.py
+└── generate_all.py           # Batch runner
+```
+
+**File size limit:** ≤150 lines per animation file. Extract reusable keyframe patterns to `lib/animation_utils.py`.
+
+For complete setup, see the `generator-patterns` skill.
 
 ## References
 
