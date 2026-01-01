@@ -225,6 +225,26 @@ Also test by:
 - Empty notes compress to 1 byte
 - 8-bit samples are half the size of 16-bit
 
+## Project Folder Structure
+
+When generating music, follow this structure:
+
+```
+project/
+├── generators/                    # Source code (committed)
+│   ├── lib/                       # Copy xm_writer.py here
+│   │   └── xm_writer.py           # From this skill's scripts/
+│   └── tracks/                    # Generator scripts
+│       └── song_name.py
+└── generated/                     # Output (gitignored)
+    └── tracks/
+        └── song_name.xm
+```
+
+**Canonical writer location:** `tracker-music/skills/xm-format/scripts/xm_writer.py`
+
+Copy to project's `generators/lib/` when scaffolding.
+
 ## Related Skills
 
 - **`it-format`** - IT format (more features, larger files)
@@ -233,7 +253,7 @@ Also test by:
 
 ## Reference Files
 
-- **`scripts/xm_writer.py`** - Python library
+- **`scripts/xm_writer.py`** - Python library (CANONICAL SOURCE)
 - **`references/xm-effects.md`** - Effect command reference
 - **`references/xm-format-spec.md`** - Binary format specification
 - **`examples/basic_xm.py`** - Drum loop example

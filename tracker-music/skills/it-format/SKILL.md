@@ -294,6 +294,26 @@ Test by:
 
 **Choose IT when:** Polyphonic instruments, pitch effects, filters, or >32 channels needed.
 
+## Project Folder Structure
+
+When generating music, follow this structure:
+
+```
+project/
+├── generators/                    # Source code (committed)
+│   ├── lib/                       # Copy it_writer.py here
+│   │   └── it_writer.py           # From this skill's scripts/
+│   └── tracks/                    # Generator scripts
+│       └── song_name.py
+└── generated/                     # Output (gitignored)
+    └── tracks/
+        └── song_name.it
+```
+
+**Canonical writer location:** `tracker-music/skills/it-format/scripts/it_writer.py`
+
+Copy to project's `generators/lib/` when scaffolding.
+
 ## Related Skills
 
 - **`xm-format`** - XM format (simpler, smaller)
@@ -302,7 +322,7 @@ Test by:
 
 ## Reference Files
 
-- **`scripts/it_writer.py`** - Python library
+- **`scripts/it_writer.py`** - Python library (CANONICAL SOURCE)
 - **`references/it-effects.md`** - Complete effect reference
 - **`references/workflow-guide.md`** - Envelopes, NNA examples
 - **`references/it-format-spec.md`** - Binary format specification

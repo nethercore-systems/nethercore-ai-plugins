@@ -1,17 +1,22 @@
 """
 Core Synthesis Primitives
 
-Provides fundamental building blocks for audio synthesis:
+Low-level building blocks for audio synthesis. These are PRIMITIVES,
+not complete instruments. The LLM should compose these to create actual instruments.
+
+Provides:
 - ADSR and multi-stage envelopes
-- FM (Frequency Modulation) synthesis
+- FM (Frequency Modulation) operators
 - Karplus-Strong physical modeling
 - Vibrato and pitch modulation
 - Attack transients
+
+For example implementations, see: examples/*.py
 """
 
 import numpy as np
 from scipy.signal import butter, lfilter
-from typing import List, Tuple, Literal
+from typing import List, Tuple
 
 SAMPLE_RATE = 22050
 
@@ -163,90 +168,6 @@ def fm_operator(
     return np.sin(phase)
 
 
-def fm_bell(
-    freq: float,
-    duration: float = 1.0,
-    sample_rate: int = SAMPLE_RATE
-) -> np.ndarray:
-    """
-    FM bell/chime synthesis.
-
-    Uses inharmonic ratio for metallic bell timbre.
-
-    Args:
-        freq: Base frequency in Hz
-        duration: Duration in seconds
-        sample_rate: Sample rate
-
-    Returns:
-        Bell audio signal
-    """
-    t = np.linspace(0, duration, int(sample_rate * duration))
-
-    # Inharmonic modulator (1:1.4 ratio for bell-like timbre)
-    mod_freq = freq * 1.4
-    modulator = np.sin(2 * np.pi * mod_freq * t)
-
-    # Decaying modulation index
-    index = 6.0 * np.exp(-t * 3)
-
-    # Carrier
-    carrier = fm_operator(freq, t, index, modulator)
-
-    # Amplitude envelope
-    amp_env = np.exp(-t * 2)
-
-    return carrier * amp_env
-
-
-def fm_electric_piano(
-    freq: float,
-    duration: float = 1.5,
-    velocity: float = 0.8,
-    sample_rate: int = SAMPLE_RATE
-) -> np.ndarray:
-    """
-    DX7-style Rhodes electric piano.
-
-    Uses 1:1 FM ratio with rapidly decaying modulation index.
-
-    Args:
-        freq: Note frequency in Hz
-        duration: Duration in seconds
-        velocity: Velocity (0-1), affects brightness
-        sample_rate: Sample rate
-
-    Returns:
-        Electric piano audio signal
-    """
-    t = np.linspace(0, duration, int(sample_rate * duration))
-
-    # Velocity affects modulation index (brightness)
-    base_index = 3.0 + velocity * 3.0
-
-    # FM modulation index envelope: fast decay for bell attack
-    index_env = base_index * np.exp(-t * 8)
-
-    # Tine peak for characteristic Rhodes attack
-    tine_peak = 2.0 * np.exp(-((t - 0.02) ** 2) / 0.001)
-    index_env = index_env + tine_peak * velocity
-
-    # 1:1 ratio FM
-    mod = np.sin(2 * np.pi * freq * t)
-    carrier = np.sin(2 * np.pi * freq * t + index_env * mod)
-
-    # Second harmonic for body
-    harm2 = np.sin(2 * np.pi * freq * 2 * t) * 0.15 * np.exp(-t * 4)
-
-    # Amplitude envelope
-    attack = 1 - np.exp(-t * 200)
-    decay = np.exp(-t * (1.0 + (1 - velocity) * 2))
-    amp_env = attack * decay
-
-    output = (carrier + harm2) * amp_env
-    return output / (np.max(np.abs(output)) + 1e-10)
-
-
 # =============================================================================
 # KARPLUS-STRONG (Physical Modeling)
 # =============================================================================
@@ -309,43 +230,6 @@ def karplus_strong(
         idx = (idx + 1) % delay_length
 
     return output
-
-
-def plucked_string(
-    freq: float,
-    duration: float = 1.5,
-    style: Literal['steel', 'nylon', 'bass'] = 'steel',
-    sample_rate: int = SAMPLE_RATE
-) -> np.ndarray:
-    """
-    High-level plucked string generator with style presets.
-
-    Args:
-        freq: Note frequency in Hz
-        duration: Duration in seconds
-        style: 'steel' (bright), 'nylon' (warm), 'bass' (deep)
-        sample_rate: Sample rate
-
-    Returns:
-        Plucked string audio signal with body resonance
-    """
-    presets = {
-        'steel': {'damping': 0.996, 'brightness': 0.75},
-        'nylon': {'damping': 0.994, 'brightness': 0.45},
-        'bass': {'damping': 0.998, 'brightness': 0.6},
-    }
-
-    params = presets.get(style, presets['steel'])
-    string = karplus_strong(freq, duration, **params, sample_rate=sample_rate)
-
-    # Add body resonance
-    t = np.linspace(0, duration, len(string))
-    body_freq = min(200, freq * 0.5)
-    body = np.sin(2 * np.pi * body_freq * t) * 0.08 * np.exp(-t * 4)
-    harm2 = np.sin(2 * np.pi * freq * 2 * t) * 0.05 * np.exp(-t * 3)
-
-    output = string + body + harm2
-    return output / (np.max(np.abs(output)) + 1e-10)
 
 
 # =============================================================================

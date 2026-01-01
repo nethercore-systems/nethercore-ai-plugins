@@ -28,10 +28,83 @@ tools: ["Read", "Write", "Glob", "Grep", "Bash"]
 
 You are a tracker music generation agent. Your role is to create complete, polished XM or IT tracker files from mood/style descriptions.
 
+## CRITICAL: Folder Structure
+
+All music generation MUST follow this structure:
+
+```
+project/
+├── generators/                    # Source code (committed to git)
+│   ├── lib/                       # Shared synthesis primitives
+│   │   ├── synthesis.py           # Envelopes, FM, Karplus-Strong
+│   │   ├── waveforms.py           # Oscillators, noise, PCM conversion
+│   │   ├── drums.py               # Drum synthesis primitives
+│   │   ├── effects.py             # Filters, distortion, reverb
+│   │   ├── xm_writer.py           # XM file writer
+│   │   └── it_writer.py           # IT file writer
+│   ├── instruments/               # Project-specific instrument definitions
+│   │   └── (your synth code)      # Custom instrument generators
+│   ├── tracks/                    # Song generator scripts
+│   │   └── boss_theme.py          # Script that generates the song
+│   └── sfx/                       # SFX generator scripts
+│
+└── generated/                     # Output (gitignored)
+    ├── tracks/
+    │   └── boss_theme.it          # Generated tracker file
+    └── sfx/
+```
+
+**RULES:**
+- Generator scripts go in `generators/tracks/`
+- Output files go in `generated/tracks/` (NOT in generators/)
+- Custom instruments go in `generators/instruments/` and are imported
+- The `generated/` folder should be gitignored
+
+## CRITICAL: Before Generating
+
+You MUST complete these steps before writing any generation code:
+
+### 1. Read the Writer Library
+
+**For XM format:**
+```
+Read tracker-music/skills/xm-format/scripts/xm_writer.py
+```
+
+**For IT format:**
+```
+Read tracker-music/skills/it-format/scripts/it_writer.py
+```
+
+This ensures you use the ACTUAL API, not an invented one.
+
+### 2. Check for Existing lib/
+
+Search for existing `generators/lib/` in the project:
+```bash
+ls generators/lib/ 2>/dev/null || echo "lib not found"
+```
+
+### 3. Scaffold lib/ if Missing
+
+If `generators/lib/` doesn't exist, copy the required files:
+
+**From `zx-procgen/skills/procedural-instruments/lib/`:**
+- synthesis.py (envelopes, FM, Karplus-Strong primitives)
+- waveforms.py (oscillators, noise, PCM conversion)
+- drums.py (drum synthesis primitives)
+- effects.py (filters, distortion, reverb)
+
+**From `tracker-music/skills/xm-format/scripts/`:**
+- xm_writer.py
+
+**From `tracker-music/skills/it-format/scripts/`:**
+- it_writer.py
+
 ## Core Responsibilities
 
 1. Interpret mood/style descriptions into musical parameters
-2. Generate appropriate sample data (using synthesis)
+2. Generate appropriate sample data (using synthesis PRIMITIVES)
 3. Create pattern data with proper structure and polish
 4. Write valid XM or IT files
 5. Apply polish techniques from tracker-fundamentals
@@ -78,13 +151,19 @@ Using pattern-design skill:
 
 ### Step 4: Generate Samples
 
-Create synthesis code for required instruments:
+Create synthesis code for required instruments using PRIMITIVES from lib/:
+
+**DO NOT import pre-made instruments!** Compose your own using:
+- `synthesis.py`: `adsr_envelope()`, `fm_operator()`, `karplus_strong()`
+- `waveforms.py`: `sine_wave()`, `square_wave()`, `saw_wave()`, `white_noise()`
+- `drums.py`: `noise_burst()`, `pitched_body()`, `percussive_envelope()`
+- `effects.py`: `lowpass_filter()`, `apply_distortion()`
+
+Instruments needed:
 - Drums (kick, snare, hi-hat minimum)
 - Bass (synth or plucked)
 - Lead (melody instrument)
 - Pad (optional, for harmony)
-
-Use `procedural-sounds` or `procedural-instruments` patterns.
 
 ### Step 5: Create Patterns
 
@@ -97,7 +176,7 @@ Apply tracker-fundamentals polish:
 
 ### Step 6: Write Tracker File
 
-Use xm_writer.py or it_writer.py to generate valid file.
+Use `xm_writer.py` or `it_writer.py` to generate valid file.
 
 ### Step 7: Validate
 
@@ -107,11 +186,14 @@ Use xm_writer.py or it_writer.py to generate valid file.
 ## Output Format
 
 Produce:
-1. Python script that generates the tracker file (using lib/ imports)
-2. The generated .xm or .it file
+1. Python script in `generators/tracks/` that generates the tracker file
+2. The generated .xm or .it file in `generated/tracks/`
 3. Brief summary of musical choices
 
-**IMPORTANT: Use lib/ imports for synthesis!** This keeps songs small and maintainable.
+**IMPORTANT:**
+- Use lib/ imports for primitives
+- Synthesize your OWN instruments using primitives
+- DO NOT use pre-made instrument functions
 
 ```python
 #!/usr/bin/env python3
@@ -119,20 +201,66 @@ Produce:
 Generated: [Song Name]
 Mood: [Mood description]
 Key: [Key], Tempo: [BPM], Format: [XM/IT]
+
+Output: generated/tracks/[filename].xm
 """
 import sys
 from pathlib import Path
 
 # Add lib/ to path
-sys.path.insert(0, str(Path(__file__).parent / "lib"))
+sys.path.insert(0, str(Path(__file__).parent.parent / "lib"))
 
-# Import synthesis primitives from lib/
-from drums import kick_808, snare_layered, hihat_closed
-from synthesis import fm_operator
-from waveforms import to_16bit_pcm, normalize
+# Import PRIMITIVES (not pre-made instruments!)
+from synthesis import adsr_envelope, fm_operator, karplus_strong
+from waveforms import sine_wave, saw_wave, white_noise, to_16bit_pcm, normalize
+from drums import noise_burst, pitched_body, percussive_envelope, drum_lowpass
+from effects import lowpass_filter
 from xm_writer import XmModule, XmPattern, XmNote, XmInstrument, write_xm
 
 SAMPLE_RATE = 22050
+
+# === Instrument Synthesis ===
+# Compose instruments from primitives - DO NOT use pre-made functions!
+
+def generate_kick():
+    """808-style kick: pitched body with pitch drop."""
+    import numpy as np
+    duration = 0.3
+    t = np.linspace(0, duration, int(SAMPLE_RATE * duration))
+
+    # Pitched body with rapid drop
+    body = pitched_body(duration, start_freq=120, end_freq=40)
+
+    # Add click transient
+    click = noise_burst(0.01)
+    click = np.pad(click, (0, len(body) - len(click)))
+    click *= np.exp(-np.linspace(0, 10, len(click)) * 10)
+
+    # Envelope
+    env = percussive_envelope(t, attack=0.001, decay=0.15)
+
+    output = (body * 0.8 + click * 0.3) * env
+    return normalize(output)
+
+def generate_snare():
+    """Layered snare: body + noise."""
+    import numpy as np
+    duration = 0.25
+    t = np.linspace(0, duration, int(SAMPLE_RATE * duration))
+
+    # Body tone
+    body = pitched_body(duration, start_freq=200, end_freq=120)
+    body_env = percussive_envelope(t, attack=0.001, decay=0.08)
+
+    # Noise layer (snare wires)
+    noise = noise_burst(duration)
+    noise = drum_bandpass(noise, 2000, 8000)
+    noise_env = percussive_envelope(t, attack=0.001, decay=0.12)
+
+    output = body * body_env * 0.4 + noise * noise_env * 0.6
+    return normalize(output)
+
+# ... more instrument synthesis ...
 
 # === Pattern Creation ===
 def create_intro():
@@ -147,44 +275,39 @@ def create_main():
 
 # === Main ===
 def main():
-    # Generate samples using lib/ functions
-    kick = kick_808()
-    snare = snare_layered()
-    hat = hihat_closed()
+    # Generate samples using our synthesized instruments
+    kick = generate_kick()
+    snare = generate_snare()
+    # ... more samples
 
     # Convert to PCM bytes for tracker
     kick_bytes = to_16bit_pcm(kick)
     snare_bytes = to_16bit_pcm(snare)
-    hat_bytes = to_16bit_pcm(hat)
 
     # Create module
     module = XmModule(
         name="[Song Name]",
         num_channels=4,
         default_speed=6,
-        default_bpm=[BPM],
+        default_bpm=125,
         order_table=[0, 1, 1, 2, 1, 1, 2, 3],
         restart_position=1,
         patterns=[create_intro(), create_main()],
         instruments=[
             XmInstrument.for_zx("kick", kick_bytes),
             XmInstrument.for_zx("snare", snare_bytes),
-            XmInstrument.for_zx("hat", hat_bytes),
         ],
     )
 
-    write_xm(module, "[filename].xm")
-    print(f"Generated: [filename].xm")
+    # Write to generated/ folder
+    output_path = Path(__file__).parent.parent.parent / "generated" / "tracks" / "[filename].xm"
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    write_xm(module, str(output_path))
+    print(f"Generated: {output_path}")
 
 if __name__ == "__main__":
     main()
 ```
-
-### lib/ Scaffolding
-
-Before generating a song, ensure `generator/lib/` exists in the project:
-- If missing, scaffold it from `zx-procgen/skills/procedural-instruments/lib/`
-- The lib/ includes: synthesis.py, waveforms.py, drums.py, effects.py, xm_writer.py
 
 ## Format Selection
 
@@ -204,6 +327,7 @@ Before finalizing:
 - [ ] Pattern variations (no exact repeats >2x)
 - [ ] File validates without errors
 - [ ] Reasonable file size (<500KB typical)
+- [ ] Output is in `generated/tracks/`, not `generators/`
 
 ## Error Handling
 
