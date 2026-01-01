@@ -45,7 +45,7 @@ Use AskUserQuestion to ask:
 - Header: "Language"
 - Options:
   - **Rust + proc-gen (Recommended)** - Direct integration with Nethercore proc-gen library, runs as native binary
-  - **Python** - NumPy, PIL, audio libraries, great for rapid iteration
+  - **Python** - NumPy, Pillow, audio libraries, great for rapid iteration
   - **Processing/p5.js** - Creative coding, generative art focus
   - **Any tool** - Just create the project structure, you'll add generation code
 - multiSelect: false

@@ -107,7 +107,7 @@ blender --background --python generator.py
 
 Default to **Python** for textures/audio generation, **Blender bpy** for meshes.
 
-**IMPORTANT:** Asset generation runs on the developer machine and should use Python with numpy, scipy, PIL, pyfastnoiselite. Game code (WASM) uses Rust to LOAD the generated assets.
+**IMPORTANT:** Asset generation runs on the developer machine and should use Python with numpy, scipy, Pillow, pyfastnoiselite. Game code (WASM) uses Rust to LOAD the generated assets.
 
 ---
 
@@ -190,7 +190,7 @@ pub extern "C" fn render() {
 Every generated project MUST include:
 
 1. **generator/generate.py** - Python asset generation entry point
-2. **generator/requirements.txt** - Dependencies (numpy, scipy, PIL, pyfastnoiselite, soundfile, bpy)
+2. **generator/requirements.txt** - Dependencies (numpy, scipy, Pillow, pyfastnoiselite, soundfile, bpy)
 3. **game/nether.toml** - With build.script chaining and [[assets.*]] declarations
 4. **game/src/zx.rs** - FFI module fetched from GitHub (NEVER inline declarations)
 5. **game/src/lib.rs** - WASM code loading via rom_*() functions IN INIT ONLY

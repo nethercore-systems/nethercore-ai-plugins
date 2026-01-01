@@ -51,7 +51,7 @@ Use AskUserQuestion to ask:
 
 ## Step 3: Generate Code
 
-Based on the type and description, generate appropriate Python code using numpy, PIL, scipy, and bpy.
+Based on the type and description, generate appropriate Python code using numpy, Pillow (imported as PIL), scipy, and bpy.
 
 ### For Textures
 

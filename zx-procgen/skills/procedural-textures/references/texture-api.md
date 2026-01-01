@@ -1,6 +1,6 @@
 # TextureBuffer API Reference
 
-A Python class wrapping PIL and NumPy for procedural texture generation.
+A Python class wrapping Pillow (PIL) and NumPy for procedural texture generation.
 
 ## Dependencies
 
