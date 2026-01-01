@@ -1,0 +1,66 @@
+# Action-Based Test Setup Example
+# Demonstrates using debug actions to skip menus and set up test scenarios
+# Replace action names/params with those registered in your game
+
+console = "zx"
+seed = 42
+players = 1
+
+# === SETUP PHASE ===
+# Use debug actions to quickly reach the test scenario
+
+# Skip the main menu (if registered)
+[[frames]]
+f = 0
+action = "Skip Menu"
+
+# Load level 3 directly (if registered)
+[[frames]]
+f = 1
+action = "Load Level"
+action_params = { level = 3 }
+
+# Position player near the wall for collision testing (if registered)
+[[frames]]
+f = 2
+action = "Set Position"
+action_params = { x = 180.0, y = 50.0 }
+
+# === TEST PHASE ===
+# Now run the actual test - player should be near wall
+
+# Capture initial state after setup
+[[frames]]
+f = 3
+p1 = "idle"
+snap = true
+
+# Move right toward wall
+[[frames]]
+f = 4
+p1 = "right"
+snap = true
+
+# Continue moving - should approach wall
+[[frames]]
+f = 10
+p1 = "right"
+snap = true
+
+# Should be blocked by wall - position shouldn't change much
+[[frames]]
+f = 20
+p1 = "right"
+snap = true
+
+# Still pushing into wall
+[[frames]]
+f = 30
+p1 = "right"
+snap = true
+
+# Release and verify final state
+[[frames]]
+f = 35
+p1 = "idle"
+snap = true

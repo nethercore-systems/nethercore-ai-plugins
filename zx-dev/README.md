@@ -11,6 +11,7 @@ A Claude Code plugin providing comprehensive game development guidance for the N
 - **Working Examples** - Complete hello-world and game-with-assets examples
 - **Project Scaffolding** - `/new-game` command creates complete starter projects
 - **Rollback Safety Review** - Agent analyzes code for netcode/determinism issues
+- **Replay Debugging** - Generate NCRS scripts to reproduce bugs, run tests, and analyze results
 
 ## Installation
 
@@ -94,6 +95,58 @@ The plugin includes an agent that analyzes your game code for determinism issues
 - State mutations in `render()` instead of `update()`
 - Floating point precision hazards
 - Uninitialized memory
+
+### Replay Debugging Commands
+
+Debug games using scriptable replay tests:
+
+#### `/replay-test` - Generate Test Script
+
+Create a minimal NCRS script from a bug description:
+
+```
+/replay-test jump not working     # Generate test for jump issues
+/replay-test player clips through walls
+/replay-test                       # Interactive - asks for description
+```
+
+#### `/replay-analyze` - Analyze Test Report
+
+Parse a replay report to identify root causes:
+
+```
+/replay-analyze report.json       # Analyze specific report
+/replay-analyze                   # Find and analyze most recent report
+```
+
+#### `/replay-template` - Generate Template
+
+Create starter templates for common test scenarios:
+
+```
+/replay-template jump             # Jump mechanics template
+/replay-template collision        # Collision detection template
+/replay-template movement         # Movement template
+/replay-template physics          # Frame-by-frame physics
+/replay-template input            # Input handling template
+```
+
+### Replay Debugger Agent
+
+Autonomous replay-based debugging. Generates scripts, runs tests, analyzes results, and suggests fixes:
+
+**Triggers on:**
+- "Debug why my player clips through platforms"
+- "Investigate the double-jump bug"
+- "Verify the jump fix is working"
+
+**Workflow:**
+1. Understands bug from description
+2. Discovers available debug variables
+3. Generates minimal test script
+4. Runs `nether replay run` headlessly
+5. Analyzes report to identify root cause
+6. Suggests fix with code references
 
 ### Auto-Triggering Skill
 
