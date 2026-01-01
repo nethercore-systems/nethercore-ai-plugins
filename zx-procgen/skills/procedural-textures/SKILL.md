@@ -20,7 +20,7 @@ version: 2.2.0
 
 # Procedural Texture Generation
 
-Generate game-ready textures procedurally using Python with PIL, NumPy, and FastNoiseLite.
+Generate game-ready textures procedurally using Python with Pillow (PIL), NumPy, and FastNoiseLite.
 
 ## Technology Stack
 
