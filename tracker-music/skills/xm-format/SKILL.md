@@ -241,9 +241,9 @@ project/
         └── song_name.xm
 ```
 
-**Canonical writer location:** `tracker-music/skills/xm-format/scripts/xm_writer.py`
+**Canonical location:** `tracker-music/skills/xm-format/scripts/`
 
-Copy to project's `generators/lib/` when scaffolding.
+Copy both `xm_types.py` and `xm_writer.py` to project's `generators/lib/` when scaffolding.
 
 ## Related Skills
 
@@ -253,7 +253,8 @@ Copy to project's `generators/lib/` when scaffolding.
 
 ## Reference Files
 
-- **`scripts/xm_writer.py`** - Python library (CANONICAL SOURCE)
+- **`scripts/xm_types.py`** - API surface: dataclasses, constants (READ THIS ~250 lines)
+- **`scripts/xm_writer.py`** - Binary implementation (just import, don't read)
 - **`references/xm-effects.md`** - Effect command reference
 - **`references/xm-format-spec.md`** - Binary format specification
 - **`examples/basic_xm.py`** - Drum loop example

@@ -310,9 +310,9 @@ project/
         └── song_name.it
 ```
 
-**Canonical writer location:** `tracker-music/skills/it-format/scripts/it_writer.py`
+**Canonical location:** `tracker-music/skills/it-format/scripts/`
 
-Copy to project's `generators/lib/` when scaffolding.
+Copy both `it_types.py` and `it_writer.py` to project's `generators/lib/` when scaffolding.
 
 ## Related Skills
 
@@ -322,7 +322,8 @@ Copy to project's `generators/lib/` when scaffolding.
 
 ## Reference Files
 
-- **`scripts/it_writer.py`** - Python library (CANONICAL SOURCE)
+- **`scripts/it_types.py`** - API surface: dataclasses, constants, NNA docs (READ THIS ~280 lines)
+- **`scripts/it_writer.py`** - Binary implementation (just import, don't read)
 - **`references/it-effects.md`** - Complete effect reference
 - **`references/workflow-guide.md`** - Envelopes, NNA examples
 - **`references/it-format-spec.md`** - Binary format specification

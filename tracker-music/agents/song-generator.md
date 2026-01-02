@@ -64,19 +64,24 @@ project/
 
 You MUST complete these steps before writing any generation code:
 
-### 1. Read the Writer Library
+### 1. Read the Types File (NOT the writer!)
 
 **For XM format:**
 ```
-Read tracker-music/skills/xm-format/scripts/xm_writer.py
+Read tracker-music/skills/xm-format/scripts/xm_types.py
 ```
 
 **For IT format:**
 ```
-Read tracker-music/skills/it-format/scripts/it_writer.py
+Read tracker-music/skills/it-format/scripts/it_types.py
 ```
 
-This ensures you use the ACTUAL API, not an invented one.
+The types file (~250 lines) contains the API you need:
+- Dataclasses: `XmModule`, `XmPattern`, `XmNote`, `XmInstrument`
+- Constants: `NOTE_OFF`, effect numbers
+- Helper functions: `note_from_name()`
+
+**DO NOT read the writer file** - it's just binary packing implementation (~300 lines) you don't need.
 
 ### 2. Check for Existing lib/
 
