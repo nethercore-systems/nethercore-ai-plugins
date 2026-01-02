@@ -116,47 +116,13 @@ Based on sonic identity style, or ask:
 
 Break down into component layers.
 
-Present layer template based on category:
+**Consult** `sfx-design:references/layering-recipes.md` for category-specific layer templates (impacts, movement, UI, weapons, creatures, ambient).
 
-**For Impact sounds:**
-```
-Layer 1: Transient (attack)
-  - Duration: 10-50ms
-  - Character: [click/thump/crack]
-  - Provides: Timing, definition
-
-Layer 2: Body (material)
-  - Duration: 50-200ms
-  - Character: [material sound]
-  - Provides: Identity, weight
-
-Layer 3: Tail (space)
-  - Duration: 200ms+
-  - Character: [reverb/ring/debris]
-  - Provides: Context, size
-
-Layer 4: Sweetener (optional)
-  - Duration: Variable
-  - Character: [extra detail]
-  - Provides: Polish, uniqueness
-```
-
-**For Movement sounds:**
-```
-Layer 1: Core whoosh
-  - Duration: Based on action speed
-  - Character: [filtered noise]
-  - Provides: Motion sense
-
-Layer 2: Material (if applicable)
-  - Duration: Matching
-  - Character: [cloth, metal, etc.]
-  - Provides: Physical detail
-
-Layer 3: Pitch movement
-  - Curve: Rising/falling/arc
-  - Provides: Directionality
-```
+Present layer template based on sound category. Standard approach uses 3-4 layers:
+- **Transient**: Timing, definition (10-50ms)
+- **Body**: Character, identity (50-200ms)
+- **Tail**: Space, context (200ms+)
+- **Sweetener**: Polish (optional)
 
 Ask user to confirm or modify layer approach.
 
@@ -169,36 +135,9 @@ For each layer, define creation method:
 - Sample (recorded source)
 - Hybrid (synth + sample)
 
-For synthesis layers, specify:
-- Waveform (sine, saw, square, noise)
-- Envelope (attack, decay, sustain, release)
-- Filter (type, cutoff, resonance)
-- Effects (distortion, pitch shift, modulation)
+**Consult** `sfx-design:references/material-signatures.md` for material-specific frequency/envelope parameters.
 
-**Example for "sword swing":**
-
-```
-Layer 1: Transient
-  Method: Synthesis
-  Waveform: Square wave burst
-  Envelope: 2ms attack, 10ms decay
-  Filter: High-pass at 2kHz
-  Purpose: Sharp definition
-
-Layer 2: Whoosh body
-  Method: Synthesis
-  Waveform: Filtered white noise
-  Envelope: 20ms attack, 100ms decay
-  Filter: Band-pass 500-3000Hz
-  Pitch: Slight downward sweep
-  Purpose: Motion sense
-
-Layer 3: Ring
-  Method: Synthesis (optional)
-  Waveform: Metallic FM
-  Envelope: 0ms attack, 200ms decay
-  Purpose: Metal character
-```
+For synthesis layers, specify: Waveform, Envelope (ADSR), Filter (type/cutoff/Q), Effects.
 
 ## Phase 6: Set Variations
 
@@ -206,34 +145,9 @@ Define randomization for repeated sounds:
 
 Ask: "This sound may play [frequency]. Should it have variations?"
 
-**Variation types:**
+**Consult** `sfx-design:references/variation-strategies.md` for variation types (pre-made, pitch, volume, layer, parameter) with implementation patterns.
 
-1. **Pre-made variations**
-   - Create 3-5 distinct versions
-   - Random selection at runtime
-   - Most varied, most memory
-
-2. **Pitch randomization**
-   - Range: ±[X] semitones (typically ±2)
-   - Instant variety, subtle
-   - Low memory cost
-
-3. **Volume randomization**
-   - Range: ±[X] dB (typically ±2)
-   - Natural variation
-   - No memory cost
-
-4. **Layerandom ization**
-   - Random layer combinations
-   - Each play slightly different
-   - Medium memory cost
-
-5. **Parameter randomization**
-   - Random filter, envelope, etc.
-   - Maximum variety
-   - Runtime CPU cost
-
-For frequent sounds (footsteps, hits), recommend at least pitch + volume randomization.
+For frequent sounds (footsteps, hits), recommend at least pitch + volume randomization (±2 semitones, ±2 dB).
 
 ## Phase 7: Output Specification
 

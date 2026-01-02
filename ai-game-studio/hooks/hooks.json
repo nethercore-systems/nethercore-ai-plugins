@@ -6,7 +6,7 @@
         "hooks": [
           {
             "type": "prompt",
-            "prompt": "FEATURE IMPLEMENTATION COMPLETED - SEMANTIC VERIFICATION REQUIRED\n\nThe feature-implementer just finished. Before moving on, verify the feature ACTUALLY WORKS:\n\n1. VISUAL CHECK: Does the feature render?\n   - grep for draw_* calls in the feature code\n   - Verify texture_bind before draw_mesh if textured\n   - Check render order in main render()\n\n2. INTEGRATION CHECK:\n   - Is module in lib.rs?\n   - Is state initialized in init()?\n   - Is update() called in main update()?\n   - Is render() called in main render()?\n\n3. ASSET CHECK: Are required assets connected?\n   - Assets in nether.toml?\n   - Handles in src/assets.rs?\n   - Handles used in feature code?\n\n4. PLAYER NOTICE TEST:\n   - Would a player see/hear/experience this feature?\n   - If no, the feature is NOT complete.\n\nRECOMMENDED: Run completion-auditor (ai-game-studio:completion-auditor) for thorough verification.\n\nDo NOT move to next task until verification passes."
+            "prompt": "FEATURE COMPLETE? Verify before moving on:\n1. Module in lib.rs? init/update/render hooked?\n2. Assets integrated (nether.toml, handles, used)?\n3. Player would notice? No TODO markers?\n\nRun completion-auditor if uncertain."
           }
         ]
       },
@@ -15,7 +15,7 @@
         "hooks": [
           {
             "type": "prompt",
-            "prompt": "CODE SCAFFOLDING COMPLETED - IMPLEMENTATION PENDING\n\nThe code-scaffolder created boilerplate code, but this is NOT a complete feature.\n\nNEXT STEPS REQUIRED:\n1. Review scaffolded code for TODO markers\n2. Implement actual game logic (scaffolding is structure only)\n3. Connect to game loop (init/update/render)\n4. Add required assets\n5. Test the feature\n\nScaffolded code alone does not make a playable feature."
+            "prompt": "SCAFFOLDING DONE - NOT COMPLETE. Next: implement actual game logic, connect to game loop, add assets, test."
           }
         ]
       },
@@ -24,7 +24,7 @@
         "hooks": [
           {
             "type": "prompt",
-            "prompt": "WORK COMPLETED - SUGGEST NEXT STEPS\n\nAn agent just finished work. Help maintain development momentum:\n\n1. Briefly summarize what was accomplished\n2. Check .studio/dispatch-queue.md for pending tasks\n3. Based on what just completed, suggest 2-3 logical next actions:\n   - After asset generation → verify integration or generate related assets\n   - After feature implementation → test, polish, or add sounds\n   - After scaffolding → implement actual game logic\n   - After optimization → test or prepare for publish\n   - After design work → begin implementation\n   - After testing → fix issues or move to next feature\n\nEnd with: 'Would you like me to continue with [most recommended action]?'\n\nKeep suggestions specific and actionable. Reference the specific agent/skill to use."
+            "prompt": "Work completed. Suggest 2-3 next actions based on what just finished. Check dispatch-queue for pending. End with: 'Continue with [action]?'"
           }
         ]
       }
@@ -35,7 +35,7 @@
         "hooks": [
           {
             "type": "prompt",
-            "prompt": "AI GAME STUDIO SESSION START\n\nBefore starting work, consider running a project health check:\n\n1. Check for .studio/project-status.md to see previous session state\n2. Check for .studio/dispatch-queue.md for pending tasks\n3. Run project-health-monitor for comprehensive status\n\nThis ensures you don't miss incomplete work from previous sessions.\n\nQuick status check:\n- ls .studio/project-status.md 2>/dev/null && echo 'Status file exists'\n- ls docs/design/game-design.md 2>/dev/null && echo 'GDD exists'\n- nether build 2>&1 | tail -1"
+            "prompt": "SESSION START: Check .studio/project-status.md and dispatch-queue.md for pending work from previous sessions."
           }
         ]
       }
@@ -46,7 +46,7 @@
         "hooks": [
           {
             "type": "prompt",
-            "prompt": "AI GAME STUDIO SESSION END - CHECKPOINT\n\nBefore stopping, verify:\n\n1. Are there incomplete tasks that should be tracked?\n   - Update .studio/dispatch-queue.md with pending work\n\n2. Was significant progress made?\n   - Update .studio/project-status.md\n\n3. Are there generated assets not integrated?\n   - Check output/, assets/ for unintegrated files\n   - Flag for next session if incomplete\n\n4. Any features partially implemented?\n   - Note in status file for continuation\n\nApprove stopping only if state is documented for resumption."
+            "prompt": "SESSION END: Update dispatch-queue.md with pending tasks. Update project-status.md with progress. Flag any unintegrated assets."
           }
         ]
       }

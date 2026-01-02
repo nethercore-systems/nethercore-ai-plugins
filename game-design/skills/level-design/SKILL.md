@@ -231,3 +231,7 @@ SECRETS: _____ total
 - **`world-building`** — Context for levels
 - **`game-balance`** — Encounter balancing
 - **`core-loop-design`** — How levels fit the loop
+
+### ZX Implementation
+
+For tile maps, procedural generation code, and ROM storage: use **`zx-game-design:level-design`**.
