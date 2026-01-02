@@ -72,7 +72,9 @@ When scaffolding lib/, copy from these canonical sources:
 | waveforms.py | `zx-procgen/skills/procedural-instruments/lib/waveforms.py` |
 | drums.py | `zx-procgen/skills/procedural-instruments/lib/drums.py` |
 | effects.py | `zx-procgen/skills/procedural-instruments/lib/effects.py` |
+| xm_types.py | `tracker-music/skills/xm-format/scripts/xm_types.py` |
 | xm_writer.py | `tracker-music/skills/xm-format/scripts/xm_writer.py` |
+| it_types.py | `tracker-music/skills/it-format/scripts/it_types.py` |
 | it_writer.py | `tracker-music/skills/it-format/scripts/it_writer.py` |
 
 ### Usage Pattern
