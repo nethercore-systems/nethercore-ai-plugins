@@ -1,521 +1,271 @@
 """
-Drum Synthesis
+Drum Synthesis Primitives
 
-Provides synthesis functions for common drum sounds:
-- Kicks (808, acoustic, punchy)
-- Snares (808, acoustic, layered)
-- Hi-hats (closed, open)
-- Toms, cymbals, percussion
+Low-level building blocks for synthesizing drum sounds. These are PRIMITIVES,
+not complete instruments. The LLM should compose these to create actual drums.
+
+For example implementations, see: references/drum-examples.py
 """
 
 import numpy as np
 from scipy.signal import butter, lfilter
-from typing import Literal
+from typing import Tuple
 
 SAMPLE_RATE = 22050
 
 
 # =============================================================================
-# KICK DRUMS
+# EXCITATION SOURCES
 # =============================================================================
 
-def kick_808(
-    duration: float = 0.5,
-    pitch: float = 60.0,
-    pitch_drop: float = 50.0,
-    decay: float = 0.3,
-    click: float = 0.3,
+def noise_burst(
+    duration: float,
     sample_rate: int = SAMPLE_RATE
 ) -> np.ndarray:
     """
-    TR-808 style kick drum.
-
-    Sine wave with pitch envelope drop and optional click.
+    Generate a burst of white noise for drum transients.
 
     Args:
         duration: Duration in seconds
-        pitch: Starting pitch in Hz
-        pitch_drop: Amount to drop pitch (Hz)
-        decay: Amplitude decay rate
-        click: Click transient amount (0-1)
         sample_rate: Sample rate
 
     Returns:
-        Kick drum audio signal
+        Noise burst signal
+    """
+    num_samples = int(sample_rate * duration)
+    return np.random.randn(num_samples)
+
+
+def pitched_body(
+    duration: float,
+    start_freq: float,
+    end_freq: float,
+    sample_rate: int = SAMPLE_RATE
+) -> np.ndarray:
+    """
+    Generate a pitched sine body with frequency envelope (pitch drop).
+
+    Common in kicks, toms, and some snares.
+
+    Args:
+        duration: Duration in seconds
+        start_freq: Starting frequency in Hz
+        end_freq: Ending frequency in Hz
+        sample_rate: Sample rate
+
+    Returns:
+        Pitched body signal
     """
     num_samples = int(sample_rate * duration)
     t = np.linspace(0, duration, num_samples)
 
-    # Pitch envelope: rapid drop from pitch to (pitch - pitch_drop)
-    freq = pitch - pitch_drop * (1 - np.exp(-t * 30))
+    # Exponential frequency envelope
+    freq = end_freq + (start_freq - end_freq) * np.exp(-t * 30)
 
     # Integrate frequency to get phase
     phase = np.cumsum(2 * np.pi * freq / sample_rate)
-    body = np.sin(phase)
-
-    # Amplitude envelope
-    amp_env = np.exp(-t / decay)
-
-    # Click transient
-    click_env = np.exp(-t * 100)
-    click_sig = np.sin(phase * 2) * click_env * click
-
-    output = (body + click_sig) * amp_env
-    return output / (np.max(np.abs(output)) + 1e-10)
+    return np.sin(phase)
 
 
-def kick_acoustic(
-    duration: float = 0.4,
-    pitch: float = 80.0,
+def metallic_partials(
+    duration: float,
+    base_freq: float,
+    num_partials: int = 6,
+    inharmonicity: float = 1.414,
     sample_rate: int = SAMPLE_RATE
 ) -> np.ndarray:
     """
-    Acoustic-style kick drum.
-
-    More attack transient, less sustained sub.
+    Generate inharmonic partials for metallic sounds (cymbals, bells).
 
     Args:
         duration: Duration in seconds
-        pitch: Fundamental pitch in Hz
+        base_freq: Base frequency in Hz
+        num_partials: Number of partials to generate
+        inharmonicity: Ratio between partials (1.414 = sqrt(2) for cymbals)
         sample_rate: Sample rate
 
     Returns:
-        Kick drum audio signal
+        Metallic partials signal
     """
     num_samples = int(sample_rate * duration)
     t = np.linspace(0, duration, num_samples)
-
-    # Body: pitch drop
-    freq = pitch * np.exp(-t * 20) + 40
-    phase = np.cumsum(2 * np.pi * freq / sample_rate)
-    body = np.sin(phase)
-
-    # Beater transient (noise burst)
-    beater = np.random.randn(num_samples) * 0.5
-    beater_env = np.exp(-t * 80)
-    beater *= beater_env
-
-    # Lowpass the beater
-    b, a = butter(2, 2000 / (sample_rate / 2), btype='low')
-    beater = lfilter(b, a, beater)
-
-    # Combine
-    amp_env = np.exp(-t * 8)
-    output = (body * 0.8 + beater * 0.4) * amp_env
-
-    return output / (np.max(np.abs(output)) + 1e-10)
-
-
-def kick_punchy(
-    duration: float = 0.3,
-    sample_rate: int = SAMPLE_RATE
-) -> np.ndarray:
-    """
-    Punchy electronic kick for dance/EDM.
-
-    Short, tight, with emphasized attack.
-
-    Args:
-        duration: Duration in seconds
-        sample_rate: Sample rate
-
-    Returns:
-        Kick drum audio signal
-    """
-    return kick_808(
-        duration=duration,
-        pitch=70,
-        pitch_drop=55,
-        decay=0.15,
-        click=0.5,
-        sample_rate=sample_rate
-    )
-
-
-# =============================================================================
-# SNARE DRUMS
-# =============================================================================
-
-def snare_808(
-    duration: float = 0.3,
-    tone_pitch: float = 180.0,
-    noise_mix: float = 0.6,
-    sample_rate: int = SAMPLE_RATE
-) -> np.ndarray:
-    """
-    TR-808 style snare drum.
-
-    Pitched body with noise layer.
-
-    Args:
-        duration: Duration in seconds
-        tone_pitch: Body tone pitch in Hz
-        noise_mix: Noise layer mix (0-1)
-        sample_rate: Sample rate
-
-    Returns:
-        Snare drum audio signal
-    """
-    num_samples = int(sample_rate * duration)
-    t = np.linspace(0, duration, num_samples)
-
-    # Body tone with pitch drop
-    freq = tone_pitch * np.exp(-t * 15)
-    phase = np.cumsum(2 * np.pi * freq / sample_rate)
-    body = np.sin(phase)
-
-    # Noise layer (snares)
-    noise = np.random.randn(num_samples)
-    # Bandpass the noise
-    b, a = butter(2, [1000 / (sample_rate / 2), 8000 / (sample_rate / 2)], btype='band')
-    noise = lfilter(b, a, noise)
-
-    # Envelopes
-    body_env = np.exp(-t * 20)
-    noise_env = np.exp(-t * 15)
-
-    output = body * body_env * (1 - noise_mix) + noise * noise_env * noise_mix
-    return output / (np.max(np.abs(output)) + 1e-10)
-
-
-def snare_acoustic(
-    duration: float = 0.35,
-    sample_rate: int = SAMPLE_RATE
-) -> np.ndarray:
-    """
-    Acoustic-style snare drum.
-
-    Multi-layer: body tone, head transient, snare wires.
-
-    Args:
-        duration: Duration in seconds
-        sample_rate: Sample rate
-
-    Returns:
-        Snare drum audio signal
-    """
-    num_samples = int(sample_rate * duration)
-    t = np.linspace(0, duration, num_samples)
-
-    # Body tone (two modes)
-    freq1 = 200 * np.exp(-t * 10)
-    freq2 = 340 * np.exp(-t * 12)
-    body1 = np.sin(np.cumsum(2 * np.pi * freq1 / sample_rate))
-    body2 = np.sin(np.cumsum(2 * np.pi * freq2 / sample_rate))
-
-    # Snare wires (filtered noise)
-    wires = np.random.randn(num_samples)
-    b, a = butter(2, [2000 / (sample_rate / 2), 9000 / (sample_rate / 2)], btype='band')
-    wires = lfilter(b, a, wires)
-
-    # Stick attack (short noise burst)
-    stick = np.random.randn(num_samples) * np.exp(-t * 150)
-
-    # Envelopes
-    body_env = np.exp(-t * 15)
-    wire_env = np.exp(-t * 12)
-
-    output = (
-        body1 * body_env * 0.4 +
-        body2 * body_env * 0.3 +
-        wires * wire_env * 0.4 +
-        stick * 0.2
-    )
-
-    return output / (np.max(np.abs(output)) + 1e-10)
-
-
-def snare_layered(
-    duration: float = 0.3,
-    sample_rate: int = SAMPLE_RATE
-) -> np.ndarray:
-    """
-    Layered snare combining 808 and acoustic elements.
-
-    Good general-purpose snare.
-
-    Args:
-        duration: Duration in seconds
-        sample_rate: Sample rate
-
-    Returns:
-        Snare drum audio signal
-    """
-    s808 = snare_808(duration, sample_rate=sample_rate)
-    acoustic = snare_acoustic(duration, sample_rate=sample_rate)
-
-    # Trim to same length
-    min_len = min(len(s808), len(acoustic))
-    output = s808[:min_len] * 0.5 + acoustic[:min_len] * 0.5
-
-    return output / (np.max(np.abs(output)) + 1e-10)
-
-
-# =============================================================================
-# HI-HATS
-# =============================================================================
-
-def hihat_closed(
-    duration: float = 0.08,
-    brightness: float = 0.7,
-    sample_rate: int = SAMPLE_RATE
-) -> np.ndarray:
-    """
-    Closed hi-hat.
-
-    Filtered noise with fast decay.
-
-    Args:
-        duration: Duration in seconds
-        brightness: High frequency content (0-1)
-        sample_rate: Sample rate
-
-    Returns:
-        Hi-hat audio signal
-    """
-    num_samples = int(sample_rate * duration)
-    t = np.linspace(0, duration, num_samples)
-
-    # Noise source
-    noise = np.random.randn(num_samples)
-
-    # Highpass filter based on brightness
-    cutoff = 4000 + brightness * 6000
-    b, a = butter(2, min(cutoff / (sample_rate / 2), 0.99), btype='high')
-    filtered = lfilter(b, a, noise)
-
-    # Fast decay envelope
-    env = np.exp(-t * 60)
-
-    output = filtered * env
-    return output / (np.max(np.abs(output)) + 1e-10)
-
-
-def hihat_open(
-    duration: float = 0.4,
-    brightness: float = 0.7,
-    sample_rate: int = SAMPLE_RATE
-) -> np.ndarray:
-    """
-    Open hi-hat.
-
-    Longer decay than closed.
-
-    Args:
-        duration: Duration in seconds
-        brightness: High frequency content (0-1)
-        sample_rate: Sample rate
-
-    Returns:
-        Hi-hat audio signal
-    """
-    num_samples = int(sample_rate * duration)
-    t = np.linspace(0, duration, num_samples)
-
-    # Noise source
-    noise = np.random.randn(num_samples)
-
-    # Highpass filter
-    cutoff = 3500 + brightness * 5000
-    b, a = butter(2, min(cutoff / (sample_rate / 2), 0.99), btype='high')
-    filtered = lfilter(b, a, noise)
-
-    # Add some metallic resonance
-    resonance = np.sin(2 * np.pi * 6000 * t) * 0.1
-    resonance += np.sin(2 * np.pi * 8500 * t) * 0.08
-
-    # Slower decay envelope
-    env = np.exp(-t * 8)
-
-    output = (filtered + resonance) * env
-    return output / (np.max(np.abs(output)) + 1e-10)
-
-
-# =============================================================================
-# TOMS AND PERCUSSION
-# =============================================================================
-
-def tom(
-    duration: float = 0.4,
-    pitch: float = 120.0,
-    sample_rate: int = SAMPLE_RATE
-) -> np.ndarray:
-    """
-    Tom drum.
-
-    Pitched body with attack transient.
-
-    Args:
-        duration: Duration in seconds
-        pitch: Fundamental pitch in Hz (low tom ~80, mid ~120, high ~180)
-        sample_rate: Sample rate
-
-    Returns:
-        Tom drum audio signal
-    """
-    num_samples = int(sample_rate * duration)
-    t = np.linspace(0, duration, num_samples)
-
-    # Body with pitch drop
-    freq = pitch * (1 + 0.3 * np.exp(-t * 20))
-    phase = np.cumsum(2 * np.pi * freq / sample_rate)
-    body = np.sin(phase)
-
-    # Attack transient
-    attack = np.random.randn(num_samples) * np.exp(-t * 100)
-    b, a = butter(2, 1000 / (sample_rate / 2), btype='low')
-    attack = lfilter(b, a, attack)
-
-    # Envelope
-    env = np.exp(-t * 6)
-
-    output = (body * 0.8 + attack * 0.3) * env
-    return output / (np.max(np.abs(output)) + 1e-10)
-
-
-def crash(
-    duration: float = 1.5,
-    sample_rate: int = SAMPLE_RATE
-) -> np.ndarray:
-    """
-    Crash cymbal.
-
-    Noise-based with metallic resonances.
-
-    Args:
-        duration: Duration in seconds
-        sample_rate: Sample rate
-
-    Returns:
-        Crash cymbal audio signal
-    """
-    num_samples = int(sample_rate * duration)
-    t = np.linspace(0, duration, num_samples)
-
-    # Noise base
-    noise = np.random.randn(num_samples)
-    b, a = butter(2, 3000 / (sample_rate / 2), btype='high')
-    filtered = lfilter(b, a, noise)
-
-    # Metallic resonances
-    res = np.zeros(num_samples)
-    for freq in [4200, 5800, 7300, 9100]:
-        res += np.sin(2 * np.pi * freq * t) * 0.1
-
-    # Envelope: fast attack, slow decay
-    env = np.exp(-t * 3)
-    attack = 1 - np.exp(-t * 100)
-
-    output = (filtered * 0.7 + res * 0.3) * env * attack
-    return output / (np.max(np.abs(output)) + 1e-10)
-
-
-def ride(
-    duration: float = 1.0,
-    bell: bool = False,
-    sample_rate: int = SAMPLE_RATE
-) -> np.ndarray:
-    """
-    Ride cymbal.
-
-    Args:
-        duration: Duration in seconds
-        bell: If True, emphasize bell sound
-        sample_rate: Sample rate
-
-    Returns:
-        Ride cymbal audio signal
-    """
-    num_samples = int(sample_rate * duration)
-    t = np.linspace(0, duration, num_samples)
-
-    # Noise component
-    noise = np.random.randn(num_samples)
-    b, a = butter(2, 4000 / (sample_rate / 2), btype='high')
-    filtered = lfilter(b, a, noise)
-
-    # Bell resonances (more prominent if bell=True)
-    bell_mix = 0.4 if bell else 0.15
-    res = np.zeros(num_samples)
-    for freq in [3500, 5200, 7800]:
-        res += np.sin(2 * np.pi * freq * t)
-
-    # Envelope
-    env = np.exp(-t * 4)
-    attack = 1 - np.exp(-t * 200)
-
-    output = (filtered * (1 - bell_mix) + res * bell_mix / 3) * env * attack
-    return output / (np.max(np.abs(output)) + 1e-10)
-
-
-def clap(
-    duration: float = 0.25,
-    sample_rate: int = SAMPLE_RATE
-) -> np.ndarray:
-    """
-    Hand clap.
-
-    Multiple noise bursts with reverb-like tail.
-
-    Args:
-        duration: Duration in seconds
-        sample_rate: Sample rate
-
-    Returns:
-        Clap audio signal
-    """
-    num_samples = int(sample_rate * duration)
-    t = np.linspace(0, duration, num_samples)
-
-    # Multiple short noise bursts (simulating multiple hands)
     output = np.zeros(num_samples)
-    for delay in [0.0, 0.01, 0.02, 0.025]:
-        burst = np.random.randn(num_samples)
-        t_shifted = np.maximum(0, t - delay)
-        env = np.exp(-t_shifted * 40) * (t >= delay)
-        output += burst * env
 
-    # Bandpass filter
-    b, a = butter(2, [800 / (sample_rate / 2), 6000 / (sample_rate / 2)], btype='band')
-    output = lfilter(b, a, output)
+    for i in range(num_partials):
+        freq = base_freq * (inharmonicity ** i)
+        if freq < sample_rate / 2:  # Nyquist check
+            amp = 1.0 / (i + 1)  # Decreasing amplitude
+            output += np.sin(2 * np.pi * freq * t) * amp
 
-    # Overall envelope
-    env = np.exp(-t * 10)
-    output *= env
-
-    return output / (np.max(np.abs(output)) + 1e-10)
+    return output
 
 
-def rimshot(
-    duration: float = 0.1,
+# =============================================================================
+# ENVELOPES
+# =============================================================================
+
+def percussive_envelope(
+    t: np.ndarray,
+    attack: float = 0.001,
+    decay: float = 0.1
+) -> np.ndarray:
+    """
+    Generate a percussive envelope (fast attack, exponential decay).
+
+    Args:
+        t: Time array in seconds
+        attack: Attack time in seconds
+        decay: Decay time constant in seconds
+
+    Returns:
+        Envelope array (0-1)
+    """
+    attack_env = 1 - np.exp(-t / attack)
+    decay_env = np.exp(-t / decay)
+    return attack_env * decay_env
+
+
+def two_stage_decay(
+    t: np.ndarray,
+    fast_decay: float = 0.05,
+    slow_decay: float = 0.3,
+    crossover: float = 0.5
+) -> np.ndarray:
+    """
+    Two-stage decay envelope (fast initial, slow tail).
+
+    Useful for snares, toms with sustain.
+
+    Args:
+        t: Time array in seconds
+        fast_decay: Initial fast decay constant
+        slow_decay: Secondary slow decay constant
+        crossover: Mix point between stages (0-1)
+
+    Returns:
+        Envelope array
+    """
+    fast = np.exp(-t / fast_decay)
+    slow = np.exp(-t / slow_decay)
+    return fast * crossover + slow * (1 - crossover)
+
+
+# =============================================================================
+# FILTERS (drum-specific)
+# =============================================================================
+
+def drum_lowpass(
+    signal: np.ndarray,
+    cutoff: float,
     sample_rate: int = SAMPLE_RATE
 ) -> np.ndarray:
     """
-    Rimshot/sidestick.
-
-    Short, bright click.
+    Apply lowpass filter optimized for drum sounds.
 
     Args:
-        duration: Duration in seconds
+        signal: Input signal
+        cutoff: Cutoff frequency in Hz
         sample_rate: Sample rate
 
     Returns:
-        Rimshot audio signal
+        Filtered signal
     """
-    num_samples = int(sample_rate * duration)
-    t = np.linspace(0, duration, num_samples)
+    nyquist = sample_rate / 2
+    normalized = min(cutoff / nyquist, 0.99)
+    b, a = butter(2, normalized, btype='low')
+    return lfilter(b, a, signal)
 
-    # High-pitched click
-    freq = 800 * np.exp(-t * 30)
-    tone = np.sin(np.cumsum(2 * np.pi * freq / sample_rate))
 
-    # Noise transient
-    noise = np.random.randn(num_samples)
-    b, a = butter(2, [1000 / (sample_rate / 2), 8000 / (sample_rate / 2)], btype='band')
-    noise = lfilter(b, a, noise)
+def drum_bandpass(
+    signal: np.ndarray,
+    low_cutoff: float,
+    high_cutoff: float,
+    sample_rate: int = SAMPLE_RATE
+) -> np.ndarray:
+    """
+    Apply bandpass filter for isolating drum frequency ranges.
 
-    # Very fast envelope
-    env = np.exp(-t * 60)
+    Args:
+        signal: Input signal
+        low_cutoff: Low cutoff frequency in Hz
+        high_cutoff: High cutoff frequency in Hz
+        sample_rate: Sample rate
 
-    output = (tone * 0.5 + noise * 0.5) * env
-    return output / (np.max(np.abs(output)) + 1e-10)
+    Returns:
+        Filtered signal
+    """
+    nyquist = sample_rate / 2
+    low = max(0.01, min(low_cutoff / nyquist, 0.99))
+    high = max(0.01, min(high_cutoff / nyquist, 0.99))
+    if low >= high:
+        return signal
+    b, a = butter(2, [low, high], btype='band')
+    return lfilter(b, a, signal)
+
+
+def drum_highpass(
+    signal: np.ndarray,
+    cutoff: float,
+    sample_rate: int = SAMPLE_RATE
+) -> np.ndarray:
+    """
+    Apply highpass filter for bright drum transients.
+
+    Args:
+        signal: Input signal
+        cutoff: Cutoff frequency in Hz
+        sample_rate: Sample rate
+
+    Returns:
+        Filtered signal
+    """
+    nyquist = sample_rate / 2
+    normalized = max(0.01, min(cutoff / nyquist, 0.99))
+    b, a = butter(2, normalized, btype='high')
+    return lfilter(b, a, signal)
+
+
+# =============================================================================
+# UTILITIES
+# =============================================================================
+
+def normalize_drum(signal: np.ndarray, peak: float = 0.9) -> np.ndarray:
+    """
+    Normalize drum signal to specified peak.
+
+    Args:
+        signal: Input signal
+        peak: Target peak level (0-1)
+
+    Returns:
+        Normalized signal
+    """
+    max_val = np.max(np.abs(signal))
+    if max_val > 0:
+        return signal / max_val * peak
+    return signal
+
+
+def layer_sounds(*signals: np.ndarray, normalize_output: bool = True) -> np.ndarray:
+    """
+    Layer multiple drum components together.
+
+    Args:
+        *signals: Variable number of signals to layer
+        normalize_output: Whether to normalize the result
+
+    Returns:
+        Layered signal
+    """
+    if not signals:
+        return np.array([])
+
+    # Pad to same length
+    max_len = max(len(s) for s in signals)
+    padded = [np.pad(s, (0, max_len - len(s))) for s in signals]
+
+    output = sum(padded)
+
+    if normalize_output:
+        return normalize_drum(output)
+    return output
