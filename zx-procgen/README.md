@@ -42,7 +42,7 @@ See [Audio Pipeline Guide](../docs/audio-pipeline.md) for complete workflows.
 - **Procedural Instruments**: High-quality instrument samples via Karplus-Strong, FM, wavetable, additive synthesis
 - **5 Commands**: `/new-asset-project`, `/generate-asset`, `/generate-sfx`, `/generate-instrument`, `/improve-assets`
 - **8 Agents**: Creative pipeline + unified quality review + enhancement + instrument design
-- **Language Agnostic**: Use Rust, Python, Processing, Blender, or any tool that outputs standard formats
+- **Python-Based Generators**: Use Python with PIL, Blender bpy, numpy/scipy, or any tool that outputs standard formats
 
 ## Installation
 
@@ -95,7 +95,7 @@ Add to `.claude/settings.local.json`:
 ```
 
 This scaffolds a complete project with:
-- Asset generator (Rust, Python, or Processing)
+- Python asset generators (PIL for textures, Blender bpy for meshes, numpy/scipy for audio)
 - ZX viewer for previewing assets in-engine
 - Proper directory structure for the asset pipeline
 
@@ -333,7 +333,6 @@ path = "assets/textures/my-texture.png"
 ## Related
 
 - **zx-dev**: Game development fundamentals
-- **proc-gen library**: `nethercore/tools/proc-gen/`
 - **Showcase workflow**: `SHOWCASE_TEMPLATE.md`
 
 ## License
