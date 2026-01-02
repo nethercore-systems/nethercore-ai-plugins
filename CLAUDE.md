@@ -252,21 +252,23 @@ Platform-agnostic tracker music generation for all Nethercore consoles. Covers X
 
 ### ai-game-studio
 
-Intelligent game development studio providing request routing, quality analysis, and completion verification across all plugins.
+Intelligent game development studio providing request routing, quality analysis, and completion verification across all plugins. Optimized for context efficiency with lean skills and progressive disclosure.
 
-**Skills (3):**
-- `request-patterns` - Patterns for classifying and routing game development requests to appropriate expert agents
-- `dependency-chains` - What must be completed before other tasks can begin; blocking dependencies and parallelizable work
-- `verification-checklists` - Checklists for verifying assets, features, and systems are truly complete
+**Skills (4):**
+- `request-patterns` - Request classification and agent routing (lean core + references/)
+- `dependency-chains` - Task dependencies and blocking relationships (lean core + references/)
+- `dispatch-queue` - Session continuity and pending task tracking
+- `verification-checklists` - Completion checklists for assets/features/systems (lean core + references/)
 
 **Commands:**
 - `ai-game-studio:setup-project` - Complete project setup wizard orchestrating GDD, creative vision, and sonic identity in one flow
 - `ai-game-studio:continue` - Resume development from where you left off
 
 **Agents:**
-- `request-dispatcher` - Intelligent routing for any development request; parses intent, routes to appropriate experts, ensures completion
-- `completion-auditor` - Semantic verification that work is actually complete; catches "generated but not integrated" and "coded but not rendered" issues
-- `project-health-monitor` - Comprehensive project health assessment; coordinates all analysis agents, produces unified health dashboard with prioritized tasks
+- `request-dispatcher` - Intelligent routing for any development request; parses intent, routes to experts, ensures completion
+- `completion-auditor` - Semantic verification that work is complete; catches "generated but not integrated" issues
+- `project-health-monitor` - Comprehensive project health assessment; coordinates analysis agents, produces health dashboard
+- `next-step-suggester` - Fast, focused next-action recommendations (uses haiku for speed)
 
 **Hooks:**
 - SubagentStop verification prompts (ensures follow-up actions aren't forgotten)

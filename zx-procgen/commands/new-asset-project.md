@@ -44,8 +44,7 @@ Use AskUserQuestion to ask:
 - Question: "Which language/tool do you want to use for asset generation?"
 - Header: "Language"
 - Options:
-  - **Rust + proc-gen (Recommended)** - Direct integration with Nethercore proc-gen library, runs as native binary
-  - **Python** - NumPy, Pillow, audio libraries, great for rapid iteration
+  - **Python (Recommended)** - PIL/NumPy for textures, Blender bpy for meshes, scipy for audio
   - **Processing/p5.js** - Creative coding, generative art focus
   - **Any tool** - Just create the project structure, you'll add generation code
 - multiSelect: false
@@ -77,201 +76,7 @@ If directory exists, inform the user and ask them to choose a different name.
 
 Based on language choice, create the appropriate structure.
 
-### For Rust Projects
-
-Create this structure:
-
-```
-[project-name]/
-├── Cargo.toml              # Workspace manifest
-├── generator/
-━E  ├── Cargo.toml          # Native binary crate (NOT WASM)
-━E  └── src/
-━E      └── main.rs         # Generation CLI
-├── game/
-━E  ├── Cargo.toml          # WASM game crate
-━E  ├── nether.toml         # Game manifest with build.script
-━E  └── src/
-━E      └── lib.rs          # Game code (viewer or actual game)
-├── assets/                 # Generated assets (gitignored)
-━E  ├── meshes/
-━E  ├── textures/
-━E  └── audio/
-├── .gitignore
-└── README.md
-```
-
-**Cargo.toml (workspace):**
-```toml
-[workspace]
-members = ["generator", "game"]
-resolver = "2"
-```
-
-**generator/Cargo.toml:**
-```toml
-[package]
-name = "generator"
-version = "0.1.0"
-edition = "2021"
-
-# This is a NATIVE binary, not WASM
-[[bin]]
-name = "generator"
-path = "src/main.rs"
-
-[dependencies]
-proc-gen = { path = "../../nethercore/tools/proc-gen", features = ["wav-export"] }
-glam = "0.27"
-```
-
-**generator/src/main.rs:**
-Create a basic Rust generator that outputs to `../assets/`:
-
-```rust
-//! Native asset generator - runs on dev machine, NOT WASM
-use proc_gen::prelude::*;
-use std::fs;
-use std::path::Path;
-
-fn main() {
-    let assets_dir = Path::new("../assets");
-    fs::create_dir_all(assets_dir.join("textures")).unwrap();
-    fs::create_dir_all(assets_dir.join("meshes")).unwrap();
-    fs::create_dir_all(assets_dir.join("audio")).unwrap();
-
-    println!("Generating assets...");
-
-    // Generate textures
-    generate_textures(assets_dir);
-
-    // Generate meshes
-    generate_meshes(assets_dir);
-
-    // Generate sounds
-    generate_sounds(assets_dir);
-
-    println!("Assets generated successfully!");
-}
-
-fn generate_textures(assets_dir: &Path) {
-    // Brown base with Perlin noise variation
-    let tex = TextureBuilder::new(256, 256)
-        .fill([139, 69, 19, 255])  // Saddle brown base
-        .noise(NoiseType::Perlin, 0.03, |base, n| {
-            let variation = ((n + 1.0) * 0.5 * 64.0) as u8;
-            [
-                base[0].saturating_add(variation),
-                base[1].saturating_add(variation / 2),
-                base[2].saturating_add(variation / 4),
-                255,
-            ]
-        })
-        .build();
-
-    tex.save_png(assets_dir.join("textures/example.png")).unwrap();
-    println!("  Generated: textures/example.png");
-}
-
-fn generate_meshes(assets_dir: &Path) {
-    // Simple cube with UVs
-    let mesh = MeshBuilder::cube(2.0)
-        .with_uvs()
-        .build();
-
-    mesh.save_obj(assets_dir.join("meshes/cube.obj")).unwrap();
-    println!("  Generated: meshes/cube.obj");
-}
-
-fn generate_sounds(assets_dir: &Path) {
-    // Coin pickup: ascending arpeggio C5-E5-G5
-    let freqs = [523.0, 659.0, 784.0];
-    let sample_rate = 22050;
-
-    let audio = AudioBuilder::new(sample_rate)
-        .arpeggio(&freqs, 0.08, |t, note_start| {
-            // Exponential decay envelope
-            (-20.0 * (t - note_start)).exp()
-        })
-        .normalize(0.9)
-        .build();
-
-    audio.save_wav(assets_dir.join("audio/coin.wav")).unwrap();
-    println!("  Generated: audio/coin.wav");
-}
-```
-
-**Note:** If `proc-gen` is not available, you can use standard Rust crates:
-- `image` for textures
-- `noise` for Perlin noise
-- `hound` for WAV export
-- Manual OBJ writing for meshes
-
-**game/nether.toml (with build.script chaining):**
-```toml
-[game]
-id = "[project-name]"
-title = "[Project Name]"
-author = "Developer"
-version = "0.1.0"
-
-# Build pipeline: generate assets THEN compile WASM
-[build]
-script = "cargo run -p generator --release && cargo build -p game --target wasm32-unknown-unknown --release"
-wasm = "target/wasm32-unknown-unknown/release/game.wasm"
-
-# Declare generated assets (paths relative to game/ directory)
-[[assets.textures]]
-id = "example"
-path = "../assets/textures/example.png"
-
-[[assets.meshes]]
-id = "cube"
-path = "../assets/meshes/cube.obj"
-
-[[assets.sounds]]
-id = "coin"
-path = "../assets/audio/coin.wav"
-```
-
-**game/Cargo.toml:**
-```toml
-[package]
-name = "game"
-version = "0.1.0"
-edition = "2021"
-
-[lib]
-crate-type = ["cdylib"]
-
-[dependencies]
-# No proc-gen dependency - this is WASM code
-```
-
-**game/src/lib.rs:**
-Create a simple viewer or game that loads assets via ROM functions:
-
-```rust
-#[no_mangle]
-pub extern "C" fn init() {
-    // Load generated assets from ROM (bundled by nether pack)
-    let tex = rom_texture(b"example".as_ptr(), 7);
-    let mesh = rom_mesh(b"cube".as_ptr(), 4);
-    let sound = rom_sound(b"coin".as_ptr(), 4);
-
-    // Store handles for use in render()
-}
-
-#[no_mangle]
-pub extern "C" fn update() {}
-
-#[no_mangle]
-pub extern "C" fn render() {
-    // Draw using loaded assets
-}
-```
-
-### For Python Projects
+### For Python Projects (Recommended)
 
 Create this structure:
 
@@ -301,9 +106,10 @@ Create this structure:
 ```
 numpy
 Pillow
+pyfastnoiselite  # for Perlin/Simplex noise
 scipy  # for audio
-noise  # for Perlin noise
-trimesh  # for mesh generation (if selected)
+soundfile  # for WAV export
+# For mesh generation, use Blender bpy (system install, not pip)
 ```
 
 **generate.py:**
@@ -513,10 +319,10 @@ Procedural asset generation project for Nethercore ZX.
 
 ## Architecture
 
-This project uses **native binaries** to generate assets at build time:
+This project uses **Python scripts** to generate assets at build time:
 
 ```
-generator/     ↁENative binary (Rust/Python/etc)
+generator/     ↁE Python scripts (PIL, Blender bpy, numpy/scipy)
     ↁEruns before WASM compilation
 assets/        ↁEGenerated files (PNG, OBJ, WAV)
     ↁEreferenced in nether.toml
@@ -550,7 +356,7 @@ nether run
 
 ### Modify Generation Code
 
-1. Edit `generator/src/main.rs` (or Python/etc)
+1. Edit Python scripts in `generator/` (textures.py, meshes.py, sounds.py)
 2. Run `nether build` in `game/` - regenerates everything
 
 ### Modify Game Code
@@ -595,21 +401,15 @@ After creating all files, report to the user:
 Show:
 - Directory location
 - List of files created
-- The key insight: generators are native binaries
+- The key insight: generators are Python scripts that run natively
 
-**For Rust:**
-```bash
-cd [project-name]/game
-nether build        # Runs generator + compiles WASM + packs ROM
-nether run          # Build and launch
-```
-
-**For Python:**
+**For Python (Recommended):**
 ```bash
 cd [project-name]
 pip install -r requirements.txt   # One-time setup
 cd game
 nether build        # Runs generate.py + compiles WASM + packs ROM
+nether run          # Build and launch
 ```
 
 **For Processing:**

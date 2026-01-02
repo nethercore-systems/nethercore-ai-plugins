@@ -41,8 +41,8 @@ See [Audio Pipeline Guide](../docs/audio-pipeline.md) for complete workflows.
 - **Quality Tier System**: Placeholder → Temp → Final → Hero progression for assets
 - **Procedural Instruments**: High-quality instrument samples via Karplus-Strong, FM, wavetable, additive synthesis
 - **5 Commands**: `/new-asset-project`, `/generate-asset`, `/generate-sfx`, `/generate-instrument`, `/improve-assets`
-- **10 Agents**: Creative pipeline + quality analysis + quality enhancement + instrument design
-- **Language Agnostic**: Use Rust, Python, Processing, Blender, or any tool that outputs standard formats
+- **8 Agents**: Creative pipeline + unified quality review + enhancement + instrument design
+- **Python-Based Generators**: Use Python with PIL, Blender bpy, numpy/scipy, or any tool that outputs standard formats
 
 ## Installation
 
@@ -95,7 +95,7 @@ Add to `.claude/settings.local.json`:
 ```
 
 This scaffolds a complete project with:
-- Asset generator (Rust, Python, or Processing)
+- Python asset generators (PIL for textures, Blender bpy for meshes, numpy/scipy for audio)
 - ZX viewer for previewing assets in-engine
 - Proper directory structure for the asset pipeline
 
@@ -261,86 +261,28 @@ A four-tier quality system for progressive asset improvement:
 
 ### Creative Pipeline Agents
 
-Four specialized agents that work together for end-to-end asset creation:
+Four specialized agents for end-to-end asset creation:
 
-#### Asset Designer
-Interprets creative descriptions into style specifications. Translates "weathered medieval barrel" into concrete style tokens, palettes, materials, and parameters.
+| Agent | Purpose | Triggers |
+|-------|---------|----------|
+| **asset-designer** | Translates creative descriptions to style specs | "design asset", "I want X style" |
+| **asset-generator** | Produces procedural generation code | "generate code for spec", "create mesh generator" |
+| **creative-orchestrator** | Coordinates full pipeline (design→generate→validate→refine) | "create assets for my game", "full asset pipeline" |
+| **character-generator** | End-to-end animated character creation | "generate character", "create player", "animated NPC" |
 
-**Trigger**: "design assets for", "I want a rusty barrel", "cyberpunk aesthetic"
+### Quality Agents
 
-#### Asset Generator
-Produces working procedural generation code from style specifications. Outputs complete, runnable Rust/Python code with quality self-checks.
+| Agent | Purpose | Triggers |
+|-------|---------|----------|
+| **asset-quality-reviewer** | Unified quality assessment (technical + creative + holistic) | "check quality", "review assets", "ZX limits", "match spec" |
+| **quality-enhancer** | Upgrades assets through tier system | "improve assets", "quality up pass", "upgrade to final" |
+| **procgen-optimizer** | Reduces asset sizes and improves performance | "optimize generation", "reduce poly count", "ROM too big" |
 
-**Trigger**: "generate code for this spec", "create the mesh generator", "implement this recipe"
+### Specialty Agents
 
-#### Asset Critic
-Evaluates generated assets against quality heuristics and style specifications. Reports issues by severity (Critical/Error/Warning/Info) with actionable fixes.
-
-**Modes**: Lenient (blockers only), Normal (default), Strict (all issues)
-
-**Trigger**: "review this asset", "check quality", "critique my mesh"
-
-#### Creative Orchestrator
-Coordinates the full pipeline from creative vision to validated, production-ready assets. Manages iterative refinement until quality targets are met.
-
-**Modes**: Interactive (with approval steps) or Autonomous (hands-off)
-
-**Trigger**: "create assets for my game", "build a complete asset set", "orchestrate asset creation"
-
-### Asset Quality Reviewer
-
-Analyzes generated assets for ZX compliance:
-- Texture dimensions and file sizes
-- Mesh polygon counts
-- Audio sample rates and durations
-
-**Trigger**: "review my assets", "check asset quality"
-
-### Procgen Optimizer
-
-Suggests optimizations for smaller/faster assets:
-- Lower subdivision levels
-- Simpler noise parameters
-- Audio compression
-
-**Trigger**: "optimize my assets", "reduce file size"
-
-### Quality Enhancer
-
-Autonomous asset quality improvement through the tier system. Takes existing assets and upgrades them to higher quality tiers.
-
-**Capabilities:**
-- Assess current tier of all project assets
-- Apply enhancement strategies per asset type
-- Upgrade meshes (bevels, silhouettes, edge loops)
-- Upgrade textures (contrast, layers, material channels)
-- Upgrade audio (envelopes, layers, variation)
-
-**Trigger**: "improve my assets", "quality up pass", "make assets better", "upgrade to final", "hero quality"
-
-### Quality Analyzer
-
-Holistic asset quality assessment with scoring, issue identification, and auto-dispatch support for fixes.
-
-**Trigger**: "analyze asset quality", "quality report", "are these production-ready"
-
-### Character Generator
-
-End-to-end animated character creation pipeline, producing mesh, skeleton, skinning, and animations.
-
-**Trigger**: "generate character", "create player character", "make animated NPC"
-
-### Instrument Architect
-
-Designs and implements high-quality instrument samples using advanced synthesis techniques. Takes creative descriptions ("warm electric piano for jazz") and produces complete Python synthesis code.
-
-**Capabilities:**
-- Select optimal synthesis technique for each instrument
-- Design parameter specifications (ratios, envelopes, modulation)
-- Generate production-ready NumPy/SciPy code
-- Apply quality standards (no aliasing, proper envelopes, timbral evolution)
-
-**Trigger**: "design instrument", "create instrument sample", "synthesize piano", "make guitar sound", "not chiptuney"
+| Agent | Purpose | Triggers |
+|-------|---------|----------|
+| **instrument-architect** | Synthesizes high-quality instrument samples | "generate instrument", "synthesize piano", "not chiptuney" |
 
 ## Commands
 
@@ -391,7 +333,6 @@ path = "assets/textures/my-texture.png"
 ## Related
 
 - **zx-dev**: Game development fundamentals
-- **proc-gen library**: `nethercore/tools/proc-gen/`
 - **Showcase workflow**: `SHOWCASE_TEMPLATE.md`
 
 ## License

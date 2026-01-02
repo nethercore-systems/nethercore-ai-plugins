@@ -1,7 +1,7 @@
 {
   "name": "zx-orchestrator",
   "version": "0.0.1",
-  "description": "Game development orchestrator for Nethercore ZX. Coordinates the full 7-phase development pipeline across all 10 nethercore plugins - from creative vision through design, assets, implementation, testing, to published game.",
+  "description": "Game development orchestrator for Nethercore ZX. Coordinates the full 7-phase development pipeline across all 13 nethercore plugins - from creative vision through design, assets, implementation, testing, to published game.",
   "author": {
     "name": "Nethercore Systems",
     "email": "nethercore.systems@gmail.com"

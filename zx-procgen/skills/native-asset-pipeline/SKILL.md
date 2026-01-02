@@ -71,7 +71,7 @@ version = "1.0.0"
 
 # Build pipeline: generate assets THEN compile WASM
 [build]
-script = "cargo run -p generator --release && cargo build -p game --target wasm32-unknown-unknown --release"
+script = "python generator/generate_all.py && cargo build -p game --target wasm32-unknown-unknown --release"
 wasm = "target/wasm32-unknown-unknown/release/game.wasm"
 
 # Declare generated assets
@@ -92,21 +92,35 @@ path = "../assets/audio/jump.wav"
 
 ## Project Structure
 
-### Rust Workspace (Recommended)
+### Python Generator Structure (Recommended)
+
+Use a modular Python structure with shared lib/ for all asset types:
 
 ```
 my-game/
-├── Cargo.toml              # Workspace manifest
 ├── generator/
-│   ├── Cargo.toml          # Native binary (NOT WASM target)
-│   └── src/
-│       └── main.rs         # Generates assets to ../assets/
+│   ├── lib/                # Shared libraries (scaffold once)
+│   │   ├── __init__.py
+│   │   ├── texture_buffer.py  # Texture generation helpers
+│   │   ├── bpy_utils.py       # Blender mesh utilities
+│   │   ├── synthesis.py       # Audio: ADSR, FM, Karplus-Strong
+│   │   └── xm_writer.py       # XM file generation
+│   ├── textures/           # One .py per texture (~100 lines each)
+│   │   ├── wood_plank.py
+│   │   └── metal_rust.py
+│   ├── meshes/             # One .py per mesh (~100 lines each)
+│   │   ├── barrel.py
+│   │   └── crate.py
+│   ├── sounds/             # One .py per sound (~50 lines each)
+│   │   ├── laser.py
+│   │   └── coin.py
+│   └── generate_all.py     # Runs all generators
 ├── game/
 │   ├── Cargo.toml          # WASM library (cdylib)
-│   ├── nether.toml         # Build config with script chaining
+│   ├── nether.toml         # Build config
 │   └── src/
-│       ├── lib.rs          # Game code - minimal entry points
-│       └── zx.rs           # FFI module - fetched from GitHub
+│       ├── lib.rs          # Game code (compiles to WASM)
+│       └── zx.rs           # FFI module (fetch from GitHub)
 ├── assets/                 # Generated output (gitignored)
 │   ├── textures/
 │   ├── meshes/
@@ -114,57 +128,45 @@ my-game/
 └── .gitignore
 ```
 
-### Python Generator Structure (For Audio/Music)
-
-For audio synthesis, use a modular Python structure with shared lib/:
-
-```
-my-game/
-├── generator/
-│   ├── lib/                # Shared synthesis library (scaffold once)
-│   │   ├── __init__.py
-│   │   ├── synthesis.py    # ADSR, FM, Karplus-Strong
-│   │   ├── waveforms.py    # Oscillators, noise
-│   │   ├── drums.py        # Kick, snare, hat
-│   │   ├── effects.py      # Reverb, filters
-│   │   └── xm_writer.py    # XM file generation
-│   ├── instruments/        # One .py per instrument (~50 lines each)
-│   │   ├── rhodes.py
-│   │   └── guitar.py
-│   ├── songs/              # One .py per song (~80 lines each)
-│   │   ├── boss_theme.py
-│   │   └── menu_music.py
-│   └── generate_all.py     # Runs all generators
-├── assets/audio/           # Generated output
-└── nether.toml
-```
-
 ### generate_all.py Pattern
 
-Run all audio generators with a single script:
+Run all asset generators with a single script:
 
 ```python
 #!/usr/bin/env python3
-"""Generate all audio assets."""
+"""Generate all assets for the project."""
 import subprocess
 from pathlib import Path
 
 generator_dir = Path(__file__).parent
 
-# Generate instruments
-for script in sorted((generator_dir / "instruments").glob("*.py")):
-    print(f"Running {script.name}...")
-    subprocess.run(["python", str(script)], check=True)
+# Ensure output directories exist
+(generator_dir.parent / "assets/textures").mkdir(parents=True, exist_ok=True)
+(generator_dir.parent / "assets/meshes").mkdir(parents=True, exist_ok=True)
+(generator_dir.parent / "assets/audio").mkdir(parents=True, exist_ok=True)
 
-# Generate songs
-for script in sorted((generator_dir / "songs").glob("*.py")):
-    print(f"Running {script.name}...")
-    subprocess.run(["python", str(script)], check=True)
+# Generate textures (PIL/numpy)
+for script in sorted((generator_dir / "textures").glob("*.py")):
+    if script.name != "__init__.py":
+        print(f"Generating texture: {script.stem}...")
+        subprocess.run(["python", str(script)], check=True)
 
-print("Audio generation complete!")
+# Generate meshes (Blender bpy)
+for script in sorted((generator_dir / "meshes").glob("*.py")):
+    if script.name != "__init__.py":
+        print(f"Generating mesh: {script.stem}...")
+        subprocess.run(["blender", "--background", "--python", str(script)], check=True)
+
+# Generate sounds (numpy/scipy)
+for script in sorted((generator_dir / "sounds").glob("*.py")):
+    if script.name != "__init__.py":
+        print(f"Generating sound: {script.stem}...")
+        subprocess.run(["python", str(script)], check=True)
+
+print("All assets generated!")
 ```
 
-Update nether.toml to run Python generators:
+nether.toml runs Python generators before WASM compilation:
 
 ```toml
 [build]
@@ -233,8 +235,8 @@ nether build --no-compile
 cargo build -p game --target wasm32-unknown-unknown --release
 nether pack
 
-# Run generator only (debug)
-cargo run -p generator
+# Run generators only (debug)
+python generator/generate_all.py
 
 # Regenerate after git clone
 cd game && nether build
@@ -244,7 +246,7 @@ cd game && nether build
 
 ## Key Principles
 
-1. **Generators are native binaries** - they compile for your host OS, not WASM
+1. **Generators are Python scripts** - they run natively on your development machine
 2. **Build.script chains commands** - run generator THEN WASM compilation
 3. **Assets go to disk** - standard formats (PNG, OBJ, WAV) in `assets/` directory
 4. **nether.toml declares assets** - `[[assets.*]]` entries reference generated files

@@ -306,6 +306,9 @@ fn update_streaming(streamer: &mut WorldStreamer, player_x: f32, player_y: f32) 
 
 ### Related Skills
 
-- **`perspective-patterns`** — Camera and control schemes per game type
 - **`gameplay-mechanics`** — Player movement and interaction patterns
 - **`physics-collision`** — Collision detection for level geometry
+
+### Conceptual Design
+
+For flow, pacing, and challenge curves (without code): use **`game-design:level-design`**.
