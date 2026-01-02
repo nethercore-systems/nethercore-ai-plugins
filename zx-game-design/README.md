@@ -54,15 +54,45 @@ Guidance for creating modular GDDs at three depth levels:
 - **Standard** (3-5 pages): Mechanics, levels, render mode, memory budget
 - **Comprehensive** (full doc): All sections including narrative, multiplayer, milestones
 
-### multiplayer-design
+### multiplayer-patterns
 Auto-triggers on: "multiplayer design", "online play", "netcode", "rollback", "determinism"
 
 GGRS rollback netcode patterns, determinism requirements, and multiplayer testing strategies.
 
-### perspective-patterns
-Auto-triggers on: "side-scroller", "top-down", "third-person", "first-person", "camera style"
+### physics-collision
+Auto-triggers on: "collision", "physics", "AABB", "spatial partitioning"
 
-Camera/perspective-based design templates with render mode recommendations, memory budgets, and control schemes.
+Collision detection patterns, physics systems, and rollback-safe implementations.
+
+### gameplay-mechanics
+Auto-triggers on: "movement", "combat", "inventory", "dialogue system"
+
+Movement patterns, combat systems, inventory management, and dialogue trees.
+
+### ui-patterns
+Auto-triggers on: "UI", "menus", "HUD", "user interface"
+
+UI/UX design patterns for ZX games including menus, HUDs, and input handling.
+
+### game-feel
+Auto-triggers on: "juice", "polish", "game feel", "feedback"
+
+Screen shake, hit pause, particles, and other polish techniques.
+
+### ai-patterns
+Auto-triggers on: "AI", "enemy behavior", "pathfinding", "state machine"
+
+FSM, behavior trees, pathfinding algorithms, and enemy AI patterns.
+
+### level-design
+Auto-triggers on: "level design", "procedural generation", "tile maps"
+
+Level design patterns, procedural generation, and spatial design.
+
+### save-systems
+Auto-triggers on: "save", "load", "serialization", "persistence"
+
+Save/load patterns and state serialization for ZX games.
 
 ## Commands
 
@@ -95,6 +125,18 @@ Extract asset requirements from GDD and generate specs for the procgen plugin.
 
 ### constraint-analyzer
 Proactively validates game concepts against ZX limits when constraint issues are detected in conversation.
+
+### gdd-generator
+Autonomously generates complete Game Design Documents from brief concepts.
+
+### mechanic-designer
+Designs detailed game mechanics with physics, timing, and feel parameters.
+
+### scope-advisor
+Assesses project scope, identifies overambition, and helps define MVPs.
+
+### gdd-implementation-tracker
+Compares GDD to actual implementation and identifies feature gaps.
 
 > **Note:** For full workflow orchestration across all ZX plugins, use the `zx-orchestrator` plugin.
 
@@ -188,17 +230,24 @@ zx-game-design/
 ├── skills/
 │   ├── console-constraints/     # ZX hardware specs
 │   ├── game-design-documents/   # GDD templates
-│   ├── multiplayer-design/      # Netcode patterns
-│   ├── perspective-patterns/    # Camera/view patterns
+│   ├── multiplayer-patterns/    # Netcode patterns
 │   ├── physics-collision/       # Physics & collision patterns
 │   ├── gameplay-mechanics/      # Combat, platformer, dialogue
-│   └── multiplayer-rendering/   # Split-screen & viewports
+│   ├── ui-patterns/             # UI/UX design
+│   ├── game-feel/               # Juice and polish
+│   ├── ai-patterns/             # AI and behavior
+│   ├── level-design/            # Level design patterns
+│   └── save-systems/            # Serialization patterns
 ├── commands/
 │   ├── design-game.md           # /design-game
 │   ├── validate-design.md       # /validate-design
 │   └── plan-assets.md           # /plan-assets
 └── agents/
-    └── constraint-analyzer.md   # Validates constraints
+    ├── constraint-analyzer.md   # Validates constraints
+    ├── gdd-generator.md         # Generates GDDs
+    ├── mechanic-designer.md     # Designs mechanics
+    ├── scope-advisor.md         # Scope assessment
+    └── gdd-implementation-tracker.md  # Tracks implementation
 ```
 
 ## License
