@@ -1,457 +1,174 @@
 ---
 name: AI & Behavior Patterns
-description: This skill should be used when the user asks about "enemy AI", "state machine", "FSM", "patrol", "pathfinding", "NPC behavior", "chase", "flee", "wander", "AI behavior", "steering behaviors", "line of sight", "aggression", "attack patterns", "behavior tree", "waypoint", "grid pathfinding", "A*", or implements AI systems for Nethercore ZX games.
-version: 1.0.0
+description: |
+  Use this skill for game AI: "enemy AI", "state machine", "FSM", "patrol", "pathfinding", "NPC behavior", "chase", "flee", "behavior tree", "A*", "steering".
+
+  **Load references when:**
+  - Hierarchical FSM, behavior trees → `references/advanced-fsm.md`
+  - A*, waypoint graphs, nav mesh → `references/pathfinding-algorithms.md`
+version: 1.1.0
 ---
 
 # AI & Behavior Patterns for Nethercore ZX
 
-Enemy AI and NPC behaviors for ZX games. All patterns are deterministic for rollback netcode compatibility.
+Deterministic AI patterns for rollback netcode compatibility.
 
-## Rollback Safety Requirements
+## Rollback Safety
 
-AI logic MUST be deterministic:
-
-| Rule | Correct | Incorrect |
-|------|---------|-----------|
-| Time | `delta_time()`, `tick_count()` | System clock |
-| Random | `random()`, `random_range()` | `rand()`, external RNG |
-| Iteration | Arrays, `Vec` | HashMap (non-deterministic order) |
-| Decisions | Frame-based timers | Real-time delays |
-
-Use `random()` from the FFI for any AI randomness (target selection, patrol delays).
+| Correct | Incorrect |
+|---------|-----------|
+| `tick_count()` | System clock |
+| `random()`, `random_range()` | `rand()` unseeded |
+| Arrays, Vec | HashMap (non-deterministic) |
+| Frame-based timers | Real-time delays |
 
 ---
 
 ## Finite State Machines
 
-The foundation of game AI. Each entity has a current state with defined transitions.
+Foundation of game AI. Each entity has current state with defined transitions.
 
-### Basic FSM Pattern
+### Basic Pattern
 
 ```rust
 #[derive(Clone, Copy, PartialEq)]
-enum EnemyState {
-    Idle,
-    Patrol,
-    Chase,
-    Attack,
-    Flee,
-}
+enum EnemyState { Idle, Patrol, Chase, Attack, Flee }
 
 struct Enemy {
     state: EnemyState,
     x: f32, y: f32,
-    health: i16,
-    target_x: f32, target_y: f32,
     state_timer: u32,
 }
 
-impl Enemy {
-    fn update(&mut self, player_x: f32, player_y: f32) {
-        match self.state {
-            EnemyState::Idle => self.update_idle(player_x, player_y),
-            EnemyState::Patrol => self.update_patrol(player_x, player_y),
-            EnemyState::Chase => self.update_chase(player_x, player_y),
-            EnemyState::Attack => self.update_attack(),
-            EnemyState::Flee => self.update_flee(player_x, player_y),
-        }
-        if self.state_timer > 0 {
-            self.state_timer -= 1;
-        }
+fn update(e: &mut Enemy, player: (f32,f32)) {
+    match e.state {
+        EnemyState::Idle => update_idle(e, player),
+        EnemyState::Chase => update_chase(e, player),
+        // ...
     }
-
-    fn transition(&mut self, new_state: EnemyState) {
-        self.state = new_state;
-        self.state_timer = 0;  // Reset timer on transition
-    }
+    if e.state_timer > 0 { e.state_timer -= 1; }
 }
 ```
 
-### State Transitions
+### Transition Rules
 
-Define clear conditions for state changes:
-
-```rust
-const SIGHT_RANGE: f32 = 200.0;
-const ATTACK_RANGE: f32 = 30.0;
-const FLEE_HEALTH: i16 = 20;
-
-impl Enemy {
-    fn update_idle(&mut self, player_x: f32, player_y: f32) {
-        let dist = self.distance_to(player_x, player_y);
-
-        if self.health < FLEE_HEALTH {
-            self.transition(EnemyState::Flee);
-        } else if dist < SIGHT_RANGE && self.can_see_player(player_x, player_y) {
-            self.transition(EnemyState::Chase);
-        } else if self.state_timer == 0 {
-            // Start patrol after idle delay
-            self.transition(EnemyState::Patrol);
-        }
-    }
-
-    fn update_chase(&mut self, player_x: f32, player_y: f32) {
-        let dist = self.distance_to(player_x, player_y);
-
-        if self.health < FLEE_HEALTH {
-            self.transition(EnemyState::Flee);
-        } else if dist < ATTACK_RANGE {
-            self.transition(EnemyState::Attack);
-        } else if dist > SIGHT_RANGE * 1.5 {
-            // Lost sight of player
-            self.transition(EnemyState::Idle);
-        } else {
-            self.move_toward(player_x, player_y);
-        }
-    }
-
-    fn distance_to(&self, x: f32, y: f32) -> f32 {
-        let dx = x - self.x;
-        let dy = y - self.y;
-        (dx * dx + dy * dy).sqrt()
-    }
-}
-```
+Define clear conditions:
+- `Idle → Chase`: Player in sight range AND line of sight clear
+- `Chase → Attack`: Player in attack range
+- `Any → Flee`: Health below threshold
+- `Chase → Idle`: Lost sight for N frames
 
 ---
 
 ## Movement Behaviors
 
-Common AI movement patterns.
-
-### Patrol (Waypoint Following)
-
-```rust
-struct Patrol {
-    waypoints: [(f32, f32); 4],
-    current: usize,
-    wait_timer: u32,
-}
-
-const PATROL_SPEED: f32 = 1.5;
-const WAYPOINT_THRESHOLD: f32 = 5.0;
-const WAIT_FRAMES: u32 = 60;
-
-impl Enemy {
-    fn update_patrol(&mut self, player_x: f32, player_y: f32) {
-        // Check for player detection first
-        if self.distance_to(player_x, player_y) < SIGHT_RANGE {
-            if self.can_see_player(player_x, player_y) {
-                self.transition(EnemyState::Chase);
-                return;
-            }
-        }
-
-        // Handle waiting at waypoint
-        if self.patrol.wait_timer > 0 {
-            self.patrol.wait_timer -= 1;
-            return;
-        }
-
-        // Move toward current waypoint
-        let (wx, wy) = self.patrol.waypoints[self.patrol.current];
-        let dist = self.distance_to(wx, wy);
-
-        if dist < WAYPOINT_THRESHOLD {
-            // Reached waypoint, advance to next
-            self.patrol.current = (self.patrol.current + 1) % self.patrol.waypoints.len();
-            self.patrol.wait_timer = WAIT_FRAMES;
-        } else {
-            self.move_toward(wx, wy);
-        }
-    }
-}
-```
-
 ### Chase (Follow Target)
 
 ```rust
-const CHASE_SPEED: f32 = 2.5;
-
-impl Enemy {
-    fn move_toward(&mut self, target_x: f32, target_y: f32) {
-        let dx = target_x - self.x;
-        let dy = target_y - self.y;
-        let dist = (dx * dx + dy * dy).sqrt();
-
-        if dist > 0.1 {
-            self.x += (dx / dist) * CHASE_SPEED;
-            self.y += (dy / dist) * CHASE_SPEED;
-        }
-    }
+fn move_toward(e: &mut Enemy, tx: f32, ty: f32, speed: f32) {
+    let dx = tx - e.x; let dy = ty - e.y;
+    let dist = (dx*dx + dy*dy).sqrt();
+    if dist > 0.1 { e.x += dx/dist * speed; e.y += dy/dist * speed; }
 }
 ```
 
 ### Flee (Run Away)
 
-```rust
-const FLEE_SPEED: f32 = 3.0;
-const SAFE_DISTANCE: f32 = 300.0;
+Move in opposite direction from threat. Check safe distance to transition out.
 
-impl Enemy {
-    fn update_flee(&mut self, player_x: f32, player_y: f32) {
-        let dist = self.distance_to(player_x, player_y);
+### Patrol (Waypoints)
 
-        if dist > SAFE_DISTANCE {
-            self.transition(EnemyState::Idle);
-            return;
-        }
+Cycle through waypoint array. Wait at each point (use timer). Check for player detection during patrol.
 
-        // Move away from player
-        let dx = self.x - player_x;
-        let dy = self.y - player_y;
-        let len = (dx * dx + dy * dy).sqrt();
+### Wander (Random)
 
-        if len > 0.1 {
-            self.x += (dx / len) * FLEE_SPEED;
-            self.y += (dy / len) * FLEE_SPEED;
-        }
-    }
-}
-```
-
-### Wander (Random Movement)
-
-```rust
-const WANDER_SPEED: f32 = 1.0;
-const DIRECTION_CHANGE_FRAMES: u32 = 90;
-
-impl Enemy {
-    fn update_wander(&mut self) {
-        if self.state_timer == 0 {
-            // Pick new random direction
-            let angle = random() * core::f32::consts::TAU;
-            self.target_x = self.x + angle.cos() * 50.0;
-            self.target_y = self.y + angle.sin() * 50.0;
-            self.state_timer = DIRECTION_CHANGE_FRAMES;
-        }
-
-        self.move_toward_speed(self.target_x, self.target_y, WANDER_SPEED);
-    }
-
-    fn move_toward_speed(&mut self, target_x: f32, target_y: f32, speed: f32) {
-        let dx = target_x - self.x;
-        let dy = target_y - self.y;
-        let dist = (dx * dx + dy * dy).sqrt();
-
-        if dist > speed {
-            self.x += (dx / dist) * speed;
-            self.y += (dy / dist) * speed;
-        }
-    }
-}
-```
+Pick random direction every N frames using `random()`. Move toward that point.
 
 ---
 
 ## Sensing
 
-### Line-of-Sight Detection
+### Line of Sight
 
-Use raycasting from the physics skill for visibility checks:
+Raycast from enemy to player. Check for wall intersections. See `physics-collision` for raycast implementation.
 
-```rust
-impl Enemy {
-    fn can_see_player(&self, player_x: f32, player_y: f32) -> bool {
-        let dx = player_x - self.x;
-        let dy = player_y - self.y;
-        let dist = (dx * dx + dy * dy).sqrt();
+### Proximity (Hearing)
 
-        if dist > SIGHT_RANGE {
-            return false;
-        }
+Simple distance check. Optionally increase range if player is running.
 
-        // Raycast to check for obstacles
-        let ray = Ray {
-            origin: [self.x, self.y, 0.0],
-            direction: [dx / dist, dy / dist, 0.0],
-        };
+### Memory
 
-        // Check against world geometry
-        for wall in &WORLD_WALLS {
-            if let Some(t) = ray.intersect_aabb(wall) {
-                if t < dist {
-                    return false;  // Wall blocks view
-                }
-            }
-        }
-        true
-    }
-}
-```
-
-### Proximity Detection (Hearing)
-
-Simple distance-based awareness:
+Track last known player position. Decay memory over time (timer countdown). Move to last known position when player not visible.
 
 ```rust
-const HEARING_RANGE: f32 = 100.0;
-
-impl Enemy {
-    fn can_hear_player(&self, player_x: f32, player_y: f32, player_running: bool) -> bool {
-        let range = if player_running { HEARING_RANGE * 1.5 } else { HEARING_RANGE };
-        self.distance_to(player_x, player_y) < range
-    }
-}
-```
-
-### Memory (Last Known Position)
-
-Track where the player was last seen:
-
-```rust
-struct Enemy {
-    last_known_x: f32,
-    last_known_y: f32,
-    memory_timer: u32,
-    // ...
-}
-
-const MEMORY_DURATION: u32 = 180;  // 3 seconds at 60fps
-
-impl Enemy {
-    fn update_memory(&mut self, player_x: f32, player_y: f32) {
-        if self.can_see_player(player_x, player_y) {
-            self.last_known_x = player_x;
-            self.last_known_y = player_y;
-            self.memory_timer = MEMORY_DURATION;
-        } else if self.memory_timer > 0 {
-            self.memory_timer -= 1;
-        }
-    }
-
-    fn has_memory(&self) -> bool {
-        self.memory_timer > 0
-    }
-}
+struct Memory { last_x: f32, last_y: f32, timer: u32 }
+// Update when player visible, countdown when not
 ```
 
 ---
 
 ## Steering Behaviors
 
-Simple physics-based movement for smooth AI.
+### Seek
 
-### Seek and Arrive
+Move directly toward target at max speed.
+
+### Arrive
+
+Seek but slow down when approaching target (within arrival radius).
 
 ```rust
-const MAX_SPEED: f32 = 3.0;
-const ARRIVE_RADIUS: f32 = 50.0;
-
-fn seek(current: [f32; 2], target: [f32; 2]) -> [f32; 2] {
-    let dx = target[0] - current[0];
-    let dy = target[1] - current[1];
-    let dist = (dx * dx + dy * dy).sqrt();
-
-    if dist > 0.1 {
-        [dx / dist * MAX_SPEED, dy / dist * MAX_SPEED]
-    } else {
-        [0.0, 0.0]
-    }
-}
-
-fn arrive(current: [f32; 2], target: [f32; 2]) -> [f32; 2] {
-    let dx = target[0] - current[0];
-    let dy = target[1] - current[1];
-    let dist = (dx * dx + dy * dy).sqrt();
-
-    if dist < 0.1 {
-        return [0.0, 0.0];
-    }
-
-    // Slow down when approaching target
-    let speed = if dist < ARRIVE_RADIUS {
-        MAX_SPEED * (dist / ARRIVE_RADIUS)
-    } else {
-        MAX_SPEED
-    };
-
-    [dx / dist * speed, dy / dist * speed]
+fn arrive(current: [f32;2], target: [f32;2], radius: f32) -> [f32;2] {
+    let d = distance(current, target);
+    let speed = if d < radius { MAX_SPEED * d/radius } else { MAX_SPEED };
+    // Return normalized direction * speed
 }
 ```
+
+### Evade
+
+Predict target's future position, flee from that point.
 
 ---
 
 ## Combat AI
 
-### Attack Pattern with Cooldown
+### Attack Pattern
 
 ```rust
-const ATTACK_COOLDOWN: u32 = 45;
-const ATTACK_WINDUP: u32 = 15;
-const ATTACK_ACTIVE: u32 = 10;
-
-struct Enemy {
-    attack_cooldown: u32,
-    attack_frame: u32,
-    // ...
-}
-
-impl Enemy {
-    fn update_attack(&mut self) {
-        if self.attack_frame == 0 && self.attack_cooldown == 0 {
-            // Start attack windup
-            self.attack_frame = ATTACK_WINDUP + ATTACK_ACTIVE;
-        }
-
-        if self.attack_frame > 0 {
-            self.attack_frame -= 1;
-
-            // Attack is active during specific frames
-            if self.attack_frame < ATTACK_ACTIVE && self.attack_frame > 0 {
-                // Check hitbox collision with player
-            }
-
-            if self.attack_frame == 0 {
-                self.attack_cooldown = ATTACK_COOLDOWN;
-                self.transition(EnemyState::Chase);
-            }
-        }
-
-        if self.attack_cooldown > 0 {
-            self.attack_cooldown -= 1;
-        }
-    }
-
-    fn can_attack(&self) -> bool {
-        self.attack_cooldown == 0 && self.attack_frame == 0
-    }
-}
+struct AttackState { cooldown: u32, windup: u32, active: u32 }
+// Phases: Cooldown → Windup (telegraph) → Active (hitbox) → Cooldown
 ```
 
 ### Aggression Levels
 
-```rust
-#[derive(Clone, Copy)]
-enum Aggression {
-    Passive,    // Won't attack unless attacked
-    Defensive,  // Attacks if player gets too close
-    Aggressive, // Actively hunts player
-}
-
-impl Enemy {
-    fn should_chase(&self, player_dist: f32) -> bool {
-        match self.aggression {
-            Aggression::Passive => self.was_damaged,
-            Aggression::Defensive => player_dist < SIGHT_RANGE * 0.5,
-            Aggression::Aggressive => player_dist < SIGHT_RANGE,
-        }
-    }
-}
-```
+| Level | Behavior |
+|-------|----------|
+| Passive | Only attacks if damaged |
+| Defensive | Attacks if player close |
+| Aggressive | Actively hunts player |
 
 ---
 
-## Additional Resources
+## Pathfinding Overview
 
-### Reference Files
+### Grid-Based A*
 
-- **`references/advanced-fsm.md`** — Hierarchical state machines, behavior tree basics
-- **`references/pathfinding-algorithms.md`** — Grid A*, waypoint graphs, navigation meshes
+1. Create grid from level geometry
+2. Use priority queue (open list)
+3. Track came_from for path reconstruction
+4. Heuristic: Manhattan or Euclidean distance
 
-### Related Skills
+### Waypoint Graph
 
-- **`physics-collision`** — Raycasting for line-of-sight detection
-- **`gameplay-mechanics`** — Combat systems, hitboxes for AI attacks
-- **`multiplayer-design`** — Determinism requirements for AI state
+Pre-placed waypoints with connections. Use A* on graph. Cheaper than grid for large levels.
+
+See **`references/pathfinding-algorithms.md`** for implementations.
+
+---
+
+## Related Skills
+
+- **`physics-collision`** — Raycasting for line of sight
+- **`gameplay-mechanics`** — Combat hitboxes
+- **`multiplayer-patterns`** — Determinism requirements

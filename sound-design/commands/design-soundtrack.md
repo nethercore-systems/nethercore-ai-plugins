@@ -70,31 +70,13 @@ For each mood, load the mood-parameters from audio style skill reference.
 
 Based on mood, suggest parameters:
 
+**Consult** `sonic-style-language:references/mood-parameters.md` for mood→tempo/key/dynamics mappings.
+
 Ask: "Here are suggested parameters based on [Mood]. Adjust as needed:"
-
-**Tempo:**
-"I suggest [X-Y] BPM for [mood]. What feels right?"
-- Present slider or specific value
-
-**Key:**
-"For [mood], I suggest [key options]. Preference?"
-- Major keys for positive
-- Minor keys for negative/tense
-- Modal for mysterious/exotic
-
-**Time Signature:**
-"Standard 4/4, or something different?"
-- 4/4 - Standard, comfortable
-- 3/4 - Waltz, elegant
-- 6/8 - Flowing, compound
-- 5/4 or 7/8 - Unsettling, complex
-
-**Duration:**
-"How long should the loop be?"
-- Short: 30-60 seconds
-- Medium: 60-120 seconds
-- Long: 120-180 seconds
-- Linear: Full length (for cutscenes)
+- **Tempo**: Suggest BPM range from mood reference
+- **Key**: Major (positive), Minor (tense), Modal (mysterious)
+- **Time Signature**: 4/4, 3/4, 6/8, 5/4, 7/8
+- **Duration**: Short (30-60s), Medium (60-120s), Long (120-180s), Linear (cutscenes)
 
 ## Phase 4: Select Instruments
 
@@ -126,55 +108,18 @@ Allow multiple selections per category.
 
 Based on track purpose, suggest structure:
 
-**For Looping Gameplay:**
-```
-[Intro (optional)] → [A] → [B] → [A'] → [Loop]
-4 bars             8 bars  8 bars  8 bars
-```
+**Consult** `music-composition:references/genre-templates.md` for purpose-specific structures (gameplay, menu, combat, boss).
 
-**For Menu/Title:**
-```
-[Fanfare/Intro] → [Main Theme] → [Development] → [Theme Return] → [Loop]
-4 bars            16 bars         8 bars          8 bars
-```
-
-**For Combat:**
-```
-[Tension Build] → [Main] → [Intensity] → [Main] → [Loop]
-4 bars           8 bars    8 bars        8 bars
-```
-
-**For Boss:**
-```
-[Ominous Intro] → [Phase 1] → [Build] → [Phase 2] → [Desperation] → [Loop]
-4 bars           16 bars      4 bars    16 bars      8 bars
-```
-
-Ask: "Does this structure work, or would you like to modify it?"
+Present appropriate template with section names and bar counts. Ask: "Does this structure work, or would you like to modify it?"
 
 ## Phase 6: Configure Adaptivity (Optional)
 
 Ask: "Should this track respond to gameplay?"
 
-If yes, configure:
-
-**Vertical Layering:**
-"What layers should be controllable?"
-- Percussion layer (add/remove)
-- Intensity layer (add for action)
-- Melodic layer (add for calm)
-- Tension layer (add for danger)
-
-**Horizontal Resequencing:**
-"Should the track switch between sections based on game state?"
-- Define section pool
-- Define transition rules
-
-**Parameters:**
-"What gameplay values should affect the music?"
-- Health → filter, intensity
-- Combat → layers
-- Speed → tempo (if flexible)
+If yes, **consult** `music-composition:references/adaptive-patterns.md` for:
+- **Vertical layering**: Controllable layer configurations
+- **Horizontal resequencing**: Section pool and transition rules
+- **Parameter mapping**: Gameplay values → music parameters
 
 ## Phase 7: Output Specification
 

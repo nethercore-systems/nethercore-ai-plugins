@@ -255,7 +255,7 @@ After providing the code, offer:
 - Suggest appropriate parameters based on ZX budget (256x256 textures, 200-500 tri meshes)
 - Include comments explaining the generation technique
 - Provide both simple and layered examples when relevant
-- Reference the proc-gen source for advanced patterns
+- Reference the procedural skills for advanced patterns
 
 ## Gitignore Requirement
 

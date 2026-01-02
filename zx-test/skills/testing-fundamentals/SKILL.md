@@ -1,79 +1,60 @@
 ---
 name: Testing Fundamentals
-description: This skill provides guidance on testing Nethercore ZX games for determinism and correctness. Use when the user asks about "sync testing", "replay testing", "determinism", "desync", "checksums", "test my game", or "verify determinism".
+description: |
+  This skill covers testing ZX games for determinism and correctness. Use when the user asks about "sync testing", "replay testing", "determinism", "desync", "checksums", "test my game", or "verify determinism".
+
+  **Load references when:**
+  - Determinism patterns → `references/determinism-rules.md`
 version: 1.0.0
 ---
 
 # Testing Fundamentals for Nethercore ZX
 
-Test ZX games for determinism and correctness using sync tests, replay regression, and proper test organization.
-
 ## Sync Testing
 
-Sync testing runs two identical game instances and compares checksums each frame to detect non-deterministic behavior.
+Runs two identical instances, compares checksums each frame.
 
-Run sync tests:
 ```bash
 nether run --sync-test
+nether run --sync-test --frames 3000  # Specific duration
 ```
 
-**Pass criteria**: Identical checksums for 1000+ frames of gameplay.
-
-**Common desync causes**:
-- Using `rand::thread_rng()` instead of `zx::random()`
-- Using `HashMap` (non-deterministic iteration order) instead of `BTreeMap`
-- Floating-point accumulation errors in game logic
-- Reading system time or wall clock
-- Uninitialized memory reads
+**Pass criteria:** Identical checksums for 1000+ frames.
 
 ## Replay Testing
 
-Record inputs for deterministic playback and regression testing across builds.
+Record and replay for regression testing:
 
-Record gameplay:
 ```bash
-nether run --record replay.bin
+nether run --record replay.bin  # Record
+nether run --replay replay.bin  # Playback
 ```
 
-Replay recording:
-```bash
-nether run --replay replay.bin
-```
-
-**Regression workflow**:
-1. Record reference gameplay on known-good build
+**Workflow:**
+1. Record on known-good build
 2. Replay on new build
-3. Compare final game state or outcomes
-4. Mismatches indicate breaking changes
+3. Compare outcomes
 
 ## Determinism Rules
-
-ZX uses GGRS rollback netcode requiring 100% deterministic game logic.
 
 | Do | Don't |
 |---|---|
 | `zx::random()` | `rand::thread_rng()` |
 | `BTreeMap`, `BTreeSet` | `HashMap`, `HashSet` |
-| Fixed-point or integer math | Floats for game logic |
-| Frame counter for timing | System time / `Instant::now()` |
-| Explicit initialization | Uninitialized reads |
+| Frame counter | `Instant::now()` |
+| Fixed-point math | Floating-point accumulation |
 
 ## Test Organization
 
-Structure tests by scope:
+| Type | Tool | Purpose |
+|------|------|---------|
+| Unit | `cargo test` | Pure logic |
+| Sync | `nether run --sync-test` | Runtime determinism |
+| Replay | `--record`/`--replay` | Cross-build validation |
 
-| Test Type | Tool | Purpose |
-|-----------|------|---------|
-| Unit tests | `cargo test` | Pure logic functions |
-| Sync tests | `nether run --sync-test` | Full runtime determinism |
-| Replay regression | `--record` / `--replay` | Cross-build validation |
+## Common Desync Causes
 
-Run unit tests:
-```bash
-cargo test
-```
-
-Run sync test for specific duration:
-```bash
-nether run --sync-test --frames 3000
-```
+- Non-deterministic RNG
+- HashMap iteration order
+- System time reads
+- Uninitialized memory

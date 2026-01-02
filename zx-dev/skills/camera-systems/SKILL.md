@@ -1,415 +1,160 @@
 ---
 name: Camera Systems
-description: This skill should be used when the user asks about "camera follow", "orbit camera", "third person camera", "first person camera", "camera collision", "screen shake", "camera lerp", "camera implementation", "smooth camera", "camera dead zone", "look-ahead camera", "fixed camera", "rail camera", "camera zoom", "camera FOV", "side-scroller design", "top-down game", "perspective choice", "camera style", "2D game design", "3D game design", or mentions implementing camera systems, camera movement, camera effects, perspective design, or 3D camera control for Nethercore ZX games.
-version: 2.0.0
+description: |
+  This skill covers camera implementation for ZX games. Triggers on "camera follow", "orbit camera", "third person", "first person", "screen shake", "camera lerp", "dead zone", "camera FOV", "side-scroller camera", "top-down camera".
+
+  **Load references when:**
+  - Full implementations → `examples/camera-examples.md`
+  - Matrix math, lerp/slerp → `references/camera-math.md`
+  - 2D patterns, parallax → `references/side-scroller-patterns.md`
+  - Coordinate conventions → `zx-game-development/references/coordinate-conventions.md`
+version: 2.1.0
 ---
 
 # Camera Systems for Nethercore ZX
 
-Implement camera systems using the ZX FFI camera functions. All camera state should be stored in static variables for rollback safety. Includes perspective-based design patterns for optimal camera choices.
+Implement cameras using ZX FFI. All camera state in static variables for rollback safety.
 
-**Coordinate Convention:** Nethercore uses Y-up, right-handed coordinates where **-Z is forward**.
-For full details, see `zx-game-development/references/coordinate-conventions.md`.
+**Coordinate Convention:** Y-up, right-handed, -Z forward. When yaw=0, camera looks toward -Z.
 
-## Camera FFI Functions
-
-Reference `nethercore/include/zx.rs` lines 173-201 for complete signatures:
+## Camera FFI
 
 | Function | Purpose |
 |----------|---------|
-| `camera_set(x, y, z, tx, ty, tz)` | Position camera, look at target |
-| `camera_fov(degrees)` | Set field of view (default 60) |
+| `camera_set(x,y,z, tx,ty,tz)` | Position + look-at |
+| `camera_fov(degrees)` | Field of view (default 60) |
 | `push_view_matrix(m0..m15)` | Custom 4x4 view matrix |
-| `push_projection_matrix(m0..m15)` | Custom projection matrix |
 
----
+## Camera Types
 
-## Part 1: Camera Type Selection
+| Type | Best For | Complexity |
+|------|----------|------------|
+| Follow | Platformers, racing | Simple |
+| Orbit | Action-adventure, RPGs | Medium |
+| First-Person | FPS, exploration | Medium |
+| Fixed | Puzzle, cinematic | Simple |
 
-| Camera Type | Best For | Complexity | Perspective |
-|-------------|----------|------------|-------------|
-| Follow | Platformers, racing | Simple | Side-scroll, 3rd person |
-| Orbit | Action-adventure, RPGs | Medium | Third-person |
-| First-Person | FPS, exploration | Medium | First-person |
-| Fixed | Puzzle, cinematic | Simple | Any |
-| Rail | Cutscenes, on-rails shooters | Medium | Any |
-| 2D Side-Scroll | Platformer, fighter | Simple | 2D/2.5D |
-| Top-Down | Racing, strategy | Simple | 2D/2.5D |
-
----
-
-## Part 2: 3D Camera Implementations
-
-### Follow Camera
-
-Tracks a target with smooth interpolation and optional offset:
+## Follow Camera (Core Pattern)
 
 ```rust
 static mut CAM_X: f32 = 0.0;
 static mut CAM_Y: f32 = 5.0;
 static mut CAM_Z: f32 = 10.0;
 
-fn update_follow_camera(target_x: f32, target_y: f32, target_z: f32) {
-    const OFFSET_Y: f32 = 5.0;   // Height above target
-    const OFFSET_Z: f32 = 10.0;  // Distance behind target
-    const SMOOTH: f32 = 5.0;     // Smoothing factor
-
-    let dt = unsafe { delta_time() };
-    let t = (SMOOTH * dt).min(1.0);
-
+fn update_follow_camera(tx: f32, ty: f32, tz: f32) {
+    let dt = delta_time();
+    let t = (5.0 * dt).min(1.0);  // Smoothing
     unsafe {
-        CAM_X = lerp(CAM_X, target_x, t);
-        CAM_Y = lerp(CAM_Y, target_y + OFFSET_Y, t);
-        CAM_Z = lerp(CAM_Z, target_z + OFFSET_Z, t);
+        CAM_X += (tx - CAM_X) * t;
+        CAM_Y += (ty + 5.0 - CAM_Y) * t;  // Offset above
+        CAM_Z += (tz + 10.0 - CAM_Z) * t; // Offset behind
     }
 }
 
-fn lerp(a: f32, b: f32, t: f32) -> f32 {
-    a + (b - a) * t
-}
-```
-
-In `render()`:
-```rust
+// In render():
 camera_set(CAM_X, CAM_Y, CAM_Z, target_x, target_y, target_z);
 ```
 
-### Dead Zone
-
-Prevent camera jitter by only moving when target exceeds threshold:
+## Orbit Camera (Core Pattern)
 
 ```rust
-fn update_with_dead_zone(target_x: f32, target_z: f32) {
-    const DEAD_ZONE: f32 = 2.0;
+static mut CAM_YAW: f32 = 0.0;
+static mut CAM_PITCH: f32 = 20.0;
+static mut CAM_DIST: f32 = 8.0;
 
+fn update_orbit(player: u32) {
+    let dt = delta_time();
     unsafe {
-        let dx = target_x - CAM_X;
-        let dz = target_z - (CAM_Z - OFFSET_Z);
-        let dist = (dx*dx + dz*dz).sqrt();
+        CAM_YAW += right_stick_x(player) * 120.0 * dt;
+        CAM_PITCH = (CAM_PITCH - right_stick_y(player) * 120.0 * dt)
+            .clamp(-30.0, 60.0);
+    }
+}
 
-        if dist > DEAD_ZONE {
-            let excess = dist - DEAD_ZONE;
-            let t = (excess / dist) * 0.1;
-            CAM_X = lerp(CAM_X, target_x, t);
-            CAM_Z = lerp(CAM_Z, target_z + OFFSET_Z, t);
-        }
+fn get_orbit_pos(tx: f32, ty: f32, tz: f32) -> (f32, f32, f32) {
+    unsafe {
+        let yaw = CAM_YAW.to_radians();
+        let pitch = CAM_PITCH.to_radians();
+        (
+            tx - CAM_DIST * yaw.sin() * pitch.cos(),
+            ty + CAM_DIST * pitch.sin(),
+            tz + CAM_DIST * yaw.cos() * pitch.cos(),
+        )
     }
 }
 ```
 
-### Orbit Camera
-
-Third-person camera controlled by right stick. Camera orbits behind the target.
-
-**Coordinate convention:** When yaw=0, camera is at +Z looking towards -Z (behind a character facing forward).
+## First-Person Camera (Core Pattern)
 
 ```rust
-static mut CAM_YAW: f32 = 0.0;    // Horizontal rotation (0 = behind target facing -Z)
-static mut CAM_PITCH: f32 = 20.0; // Vertical tilt (degrees, positive = above)
-static mut CAM_DIST: f32 = 8.0;   // Distance from target
-
-fn update_orbit_camera(player: u32) {
-    const SENSITIVITY: f32 = 120.0;
-    const PITCH_MIN: f32 = -30.0;
-    const PITCH_MAX: f32 = 60.0;
-
-    let dt = unsafe { delta_time() };
-    let rx = unsafe { right_stick_x(player) };
-    let ry = unsafe { right_stick_y(player) };
-
-    unsafe {
-        CAM_YAW += rx * SENSITIVITY * dt;
-        CAM_PITCH -= ry * SENSITIVITY * dt;  // Invert for intuitive up/down
-        CAM_PITCH = CAM_PITCH.clamp(PITCH_MIN, PITCH_MAX);
-    }
-}
-
-fn get_orbit_position(target_x: f32, target_y: f32, target_z: f32) -> (f32, f32, f32) {
-    unsafe {
-        let yaw_rad = CAM_YAW.to_radians();
-        let pitch_rad = CAM_PITCH.to_radians();
-
-        // Camera behind target: -sin for X, +cos for Z
-        // When yaw=0: camera at (0, d*sin(pitch), d*cos(pitch)) = behind target
-        let x = target_x - CAM_DIST * yaw_rad.sin() * pitch_rad.cos();
-        let y = target_y + CAM_DIST * pitch_rad.sin();
-        let z = target_z + CAM_DIST * yaw_rad.cos() * pitch_rad.cos();
-
-        (x, y, z)
-    }
-}
-```
-
-### First-Person Camera
-
-Camera at player position, looking in player direction.
-
-**Coordinate convention:** When yaw=0, looking towards -Z (forward). See `references/coordinate-conventions.md`.
-
-```rust
-static mut LOOK_YAW: f32 = 0.0;   // 0 = looking towards -Z
-static mut LOOK_PITCH: f32 = 0.0; // 0 = horizontal, positive = up
+static mut LOOK_YAW: f32 = 0.0;
+static mut LOOK_PITCH: f32 = 0.0;
 
 fn update_first_person(player: u32) {
-    const SENSITIVITY: f32 = 90.0;
-    const PITCH_LIMIT: f32 = 85.0;
-
-    let dt = unsafe { delta_time() };
-    let rx = unsafe { right_stick_x(player) };
-    let ry = unsafe { right_stick_y(player) };
-
+    let dt = delta_time();
     unsafe {
-        LOOK_YAW += rx * SENSITIVITY * dt;
-        LOOK_PITCH -= ry * SENSITIVITY * dt;  // Invert for intuitive up/down
-        LOOK_PITCH = LOOK_PITCH.clamp(-PITCH_LIMIT, PITCH_LIMIT);
+        LOOK_YAW += right_stick_x(player) * 90.0 * dt;
+        LOOK_PITCH = (LOOK_PITCH - right_stick_y(player) * 90.0 * dt)
+            .clamp(-85.0, 85.0);
     }
 }
 
-fn get_look_direction() -> (f32, f32, f32) {
+fn get_look_dir() -> (f32, f32, f32) {
     unsafe {
         let yaw = LOOK_YAW.to_radians();
         let pitch = LOOK_PITCH.to_radians();
-
-        // Forward is -Z when yaw=0, so negate sin and cos
-        let x = -yaw.sin() * pitch.cos();
-        let y = pitch.sin();
-        let z = -yaw.cos() * pitch.cos();
-
-        (x, y, z)
+        (-yaw.sin() * pitch.cos(), pitch.sin(), -yaw.cos() * pitch.cos())
     }
 }
+
+// In render():
+let (dx, dy, dz) = get_look_dir();
+camera_set(player_x, player_y + 1.6, player_z,
+           player_x + dx, player_y + 1.6 + dy, player_z + dz);
 ```
 
-In `render()`:
-```rust
-let (dx, dy, dz) = get_look_direction();
-camera_set(
-    player_x, player_y + EYE_HEIGHT, player_z,
-    player_x + dx, player_y + EYE_HEIGHT + dy, player_z + dz
-);
-```
-
----
-
-## Part 3: Camera Effects
-
-### Screen Shake
-
-Add trauma-based shake effect:
+## Screen Shake
 
 ```rust
 static mut SHAKE_TRAUMA: f32 = 0.0;
 
-fn add_shake(amount: f32) {
-    unsafe {
-        SHAKE_TRAUMA = (SHAKE_TRAUMA + amount).min(1.0);
-    }
-}
-
-fn update_shake() {
-    let dt = unsafe { delta_time() };
-    unsafe {
-        SHAKE_TRAUMA = (SHAKE_TRAUMA - dt * 2.0).max(0.0);
-    }
-}
+fn add_shake(amount: f32) { unsafe { SHAKE_TRAUMA = (SHAKE_TRAUMA + amount).min(1.0); } }
+fn update_shake() { unsafe { SHAKE_TRAUMA = (SHAKE_TRAUMA - delta_time() * 2.0).max(0.0); } }
 
 fn get_shake_offset() -> (f32, f32) {
     unsafe {
-        let shake = SHAKE_TRAUMA * SHAKE_TRAUMA;
-        let max_offset = 10.0 * shake;
-
-        let rx = (random_f32() - 0.5) * 2.0 * max_offset;
-        let ry = (random_f32() - 0.5) * 2.0 * max_offset;
-
-        (rx, ry)
+        let shake = SHAKE_TRAUMA * SHAKE_TRAUMA * 10.0;
+        ((random_f32() - 0.5) * shake, (random_f32() - 0.5) * shake)
     }
 }
 ```
 
-### Zoom Transitions
+## Dead Zone
 
-Smooth FOV changes:
+Prevents jitter when target is near camera center:
 
 ```rust
-static mut CURRENT_FOV: f32 = 60.0;
-static mut TARGET_FOV: f32 = 60.0;
-
-fn set_zoom(fov: f32) {
-    unsafe { TARGET_FOV = fov; }
-}
-
-fn update_zoom() {
-    let dt = unsafe { delta_time() };
-    unsafe {
-        CURRENT_FOV = lerp(CURRENT_FOV, TARGET_FOV, 5.0 * dt);
+fn update_with_dead_zone(tx: f32, tz: f32) {
+    let dx = tx - CAM_X;
+    let dz = tz - (CAM_Z - OFFSET_Z);
+    let dist = (dx*dx + dz*dz).sqrt();
+    if dist > 2.0 {  // DEAD_ZONE
+        let t = ((dist - 2.0) / dist) * 0.1;
+        CAM_X += dx * t;
+        CAM_Z += dz * t;
     }
 }
 ```
 
-In `render()`:
-```rust
-camera_fov(CURRENT_FOV);
-```
+## Perspective Selection
 
----
-
-## Part 4: Perspective-Based Design
-
-### Perspective Overview
-
-| Perspective | Dimensions | Render Modes | Common Genres |
-|-------------|------------|--------------|---------------|
-| Side-Scroller | 2D/2.5D | 0, 1, 3 | Platformer, Fighter, Puzzle |
-| Top-Down | 2D/2.5D | 0, 1, 2 | Racing, Shooter, Strategy |
-| Third-Person | Full 3D | 1, 2, 3 | Action, Adventure, Platformer |
-| First-Person | Full 3D | 2, 3 | Shooter, Exploration |
-
-### Side-Scroller Configuration
-
-| Setting | Value | Rationale |
-|---------|-------|-----------|
-| Render Mode | 0 (Lambert) or 3 (Blinn-Phong) | 0 for sprites, 3 for 2.5D |
-| Tick Rate | 60 fps | Smooth platforming |
-| Camera | Fixed on one axis | Usually horizontal scroll |
-
-**Camera Behavior:**
-- Follow player with slight lead
-- Lock during boss encounters
-- Vertical scroll for climbing sections
-
-### Top-Down Configuration
-
-| Setting | Value | Rationale |
-|---------|-------|-----------|
-| Render Mode | 0 or 2 | 0 for sprites, 2 for 3D top-down |
-| Tick Rate | 60 fps | Standard for action |
-| Camera | Overhead, possibly dynamic zoom |
-
-**View Distance:**
-- Fixed zoom (consistent scale)
-- Dynamic zoom (show more during speed)
-- Minimap for navigation
-
-### Third-Person Configuration
-
-| Setting | Value | Rationale |
-|---------|-------|-----------|
-| Render Mode | 2 or 3 | 2 for modern, 3 for retro |
-| Tick Rate | 60 fps | Smooth 3D movement |
-| Camera | Follow/orbit behind player |
-
-**Camera Systems:**
-- Follow cam (offset behind player)
-- Orbit cam (player rotates, camera follows)
-- Context-sensitive (tightens in combat)
-- Collision avoidance (push through walls)
-
-### First-Person Configuration
-
-| Setting | Value | Rationale |
-|---------|-------|-----------|
-| Render Mode | 2 or 3 | Lighting important for atmosphere |
-| Tick Rate | 60 or 120 fps | Smooth look essential |
-| Camera | Player head position |
-
-**View Considerations:**
-- Limited peripheral vision
-- Audio cues for off-screen threats
-- Minimap or compass for navigation
-- Look sensitivity is critical — allow configuration
-
-### Perspective Selection Guide
-
-```
-What's the core experience?
-
-├── Character-focused action/story
-│   ├── Need to see character? → Third-Person
-│   └── Immersive world? → First-Person
-│
-├── Precision platforming
-│   └── → Side-Scroller
-│
-├── Vehicle/overhead action
-│   └── → Top-Down
-│
-└── Tactical/strategic view
-    └── → Top-Down
-```
-
-### Perspective Tradeoffs
-
-| Aspect | Side-Scroll | Top-Down | Third-Person | First-Person |
-|--------|-------------|----------|--------------|--------------|
-| Asset complexity | Low | Low-Med | High | Medium |
-| Camera complexity | Low | Low | High | Low |
-| Control complexity | Low | Medium | High | Medium |
-| Immersion | Low | Low | Medium | High |
-| Spatial awareness | High | High | Medium | Low |
-| Motion sickness risk | None | None | Low | Medium |
-
----
-
-## Part 5: Camera Collision
-
-Prevent camera clipping through walls by pulling it forward:
-
-```rust
-fn apply_camera_collision(
-    target: (f32, f32, f32),
-    cam_pos: (f32, f32, f32),
-) -> (f32, f32, f32) {
-    let dir = (
-        cam_pos.0 - target.0,
-        cam_pos.1 - target.1,
-        cam_pos.2 - target.2,
-    );
-    let dist = (dir.0*dir.0 + dir.1*dir.1 + dir.2*dir.2).sqrt();
-
-    // Your collision detection here - check against scene geometry
-    // Return adjusted position if collision found
-
-    cam_pos // No collision
-}
-```
-
-**Note:** ZX doesn't have built-in raycast. Use simple sphere checks against level geometry or implement spatial partitioning. See `references/camera-math.md` for collision approaches.
-
----
-
-## Part 6: Custom View Matrix
-
-For advanced control, construct view matrix manually:
-
-```rust
-fn look_at_matrix(
-    eye: (f32, f32, f32),
-    target: (f32, f32, f32),
-    up: (f32, f32, f32)
-) -> [f32; 16] {
-    // See references/camera-math.md for full implementation
-    // Returns column-major 4x4 matrix
-}
-```
-
-Use with `push_view_matrix()` for effects like camera roll.
-
----
+| Experience | Best Perspective |
+|------------|------------------|
+| Character action/story | Third-Person |
+| Immersive world | First-Person |
+| Precision platforming | Side-Scroller |
+| Vehicle/tactical | Top-Down |
 
 ## Rollback Safety
 
-All camera state must be in static variables (auto-snapshotted):
-- Use `delta_time()` for frame-rate independence
-- Use `random()` functions for shake, not external RNG
-- Camera state persists through rollback/replay
-
----
-
-## Additional Resources
-
-- **`examples/camera-examples.md`** - Complete working implementations
-- **`references/camera-math.md`** - Matrix math, lerp/slerp, collision detection
-- **`references/side-scroller-patterns.md`** - 2D camera, parallax, level design
-- **`nethercore/include/zx.rs`** - Camera FFI signatures (lines 173-201)
-- **`multiplayer-patterns`** skill - Per-viewport camera setup for split-screen
-- **`game-feel`** skill - Screen shake integration with juice effects
+All camera state uses static variables (auto-snapshotted). Use `delta_time()` for frame-rate independence, FFI `random()` for shake.

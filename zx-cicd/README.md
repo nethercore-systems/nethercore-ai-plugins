@@ -15,6 +15,8 @@ Provides GitHub Actions templates and workflow scaffolding for building, testing
 ### Agents
 
 - **ci-scaffolder** - Creates `.github/workflows/` with build and release pipelines
+- **pipeline-optimizer** - Optimizes CI/CD pipeline performance with caching and parallelization
+- **quality-gate-enforcer** - Adds and configures quality checks to prevent bad code from merging
 
 ## Usage
 

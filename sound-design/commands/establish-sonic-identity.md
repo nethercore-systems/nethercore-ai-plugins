@@ -45,18 +45,7 @@ If a GDD exists (check for `*.gdd.md` or `design/*.md`), offer to read it for co
 
 Based on game info, recommend a primary and secondary sonic style.
 
-**Mapping Guide:**
-
-| Genre + Setting | Recommended Primary | Secondary |
-|-----------------|---------------------|-----------|
-| Fantasy RPG | Orchestral | Ambient |
-| Sci-Fi Action | Electronic | Hybrid |
-| Horror | Dark Ambient | Industrial |
-| Retro Platformer | Chiptune | Acoustic |
-| Racing | Electronic | Synthwave |
-| Puzzle | Ambient | Lo-Fi |
-| Modern Action | Hybrid | Electronic |
-| Survival | Dark Ambient | Acoustic |
+**Consult** `sonic-style-language:references/sonic-styles.md` for genre→style mappings.
 
 Present recommendation with rationale, then ask:
 
@@ -68,19 +57,9 @@ Determine the emotional range needed.
 
 Ask: "What moods will your game need to express?"
 
-Present checklist of moods:
-- [ ] Triumphant (victory, success)
-- [ ] Tense (danger, uncertainty)
-- [ ] Mysterious (discovery, secrets)
-- [ ] Melancholic (sadness, loss)
-- [ ] Aggressive (combat, action)
-- [ ] Peaceful (rest, safety)
-- [ ] Playful (fun, lighthearted)
-- [ ] Epic (grand moments)
-- [ ] Eerie (horror, unease)
-- [ ] Heroic (courage, determination)
+**Consult** `sonic-style-language:references/mood-parameters.md` for mood options with tempo/key/dynamics mappings.
 
-For each selected mood, note the primary game context (e.g., "Tense - during stealth sections").
+Present mood checklist from reference. For each selected mood, note the primary game context (e.g., "Tense - during stealth sections").
 
 ## Phase 4: Select Instrument Palettes
 
@@ -88,63 +67,17 @@ Based on sonic style, recommend instrument families.
 
 Ask: "Let me suggest instrument families for your [Style] approach. Please confirm or adjust:"
 
-**Present recommendations based on style:**
+**Consult** `sonic-style-language:references/instrument-palettes.md` for style-specific instrument recommendations.
 
-For Orchestral:
-- Primary: Strings (violins, cellos), Brass (horns, trumpets)
-- Accent: Timpani, woodwinds (flute, oboe)
-- Texture: Subtle synth pads, choir
-
-For Electronic:
-- Primary: Synth leads, synth bass
-- Accent: Electronic percussion, glitch effects
-- Texture: Ambient pads, arpeggios
-
-For Dark Ambient:
-- Primary: Drones, dark pads
-- Accent: Metallic textures, distant impacts
-- Texture: Processed field recordings, sub bass
-
-For Chiptune:
-- Primary: Square waves, pulse waves
-- Accent: Triangle wave bass, noise drums
-- Texture: Arpeggios, echo effects
-
-For Hybrid (Orchestral + Electronic):
-- Primary: Strings, synth bass
-- Accent: Electronic drums, brass stabs
-- Texture: Ambient pads, processed orchestra
-
-For Acoustic:
-- Primary: Piano, guitar
-- Accent: Percussion (shakers, congas)
-- Texture: Ambient room, subtle reverb tails
-
-Allow user to modify selections.
+Present Primary/Accent/Texture instruments based on selected style. Allow user to modify selections.
 
 ## Phase 5: Configure Processing
 
 Establish the effect character.
 
-Ask about space/environment:
+**Consult** `sonic-style-language:references/processing-signatures.md` for reverb types and character options.
 
-"What kind of acoustic space fits your game?"
-- Intimate/Close (minimal reverb)
-- Room (small natural space)
-- Hall (large concert space)
-- Cathedral (massive, ethereal)
-- Outdoor (open, minimal)
-- Stylized (otherworldly)
-
-"What overall audio character do you want?"
-- Clean and crisp
-- Warm and analog
-- Dark and heavy
-- Bright and airy
-- Lo-fi and degraded
-- Modern and polished
-
-Map answers to processing signatures.
+Ask about space/environment and overall audio character. Map answers to processing signatures from the reference.
 
 ## Phase 6: Set Mix Priorities
 
