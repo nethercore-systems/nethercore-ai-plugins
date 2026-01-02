@@ -3,16 +3,17 @@ name: Generator Patterns
 description: |
   Use this skill when setting up procedural asset generation projects.
 
-  **Triggers:** "project structure", "file organization", "generator setup", "multiple assets", "batch generation", "lib utilities".
+  **Triggers:** "project structure", "file organization", "generator setup", "multiple assets", "batch generation", "lib utilities", "ZX constraints", "asset budgets".
 
   **Load references when:**
+  - ZX asset limits (poly budgets, texture sizes, audio specs) → `references/zx-constraints.md`
   - Setting up project structure → `references/file-organization.md`
   - Mesh generation utilities → `references/lib/bpy_utils.py`
   - Texture generation utilities → `references/lib/texture_buffer.py`
   - Sprite generation utilities → `references/lib/sprite_utils.py`
   - Animation utilities → `references/lib/animation_utils.py`
   - Batch runner → `references/generate_all.py`
-version: 1.0.0
+version: 1.1.0
 ---
 
 # Generator Patterns
