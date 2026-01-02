@@ -62,8 +62,8 @@ Generate a production-quality instrument sample for use in XM tracker music.
 ## Output
 
 The command will:
-1. Create a Python generator script in `generator/instruments/`
-2. Run the script to generate WAV samples in `assets/audio/instruments/`
+1. Create a Python generator script in `generation/instruments/`
+2. Run the script to generate WAV samples in `generated/audio/instruments/`
 3. Show how to add to `nether.toml`
 4. Explain how to use in XM tracker
 

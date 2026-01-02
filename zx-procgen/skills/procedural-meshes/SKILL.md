@@ -68,7 +68,7 @@ blender --background --python generator.py
 - Batch generation (simple `generate_all.py`)
 
 ```
-generator/
+generation/
 ├── lib/
 │   └── bpy_utils.py          # Shared helpers (from generator-patterns skill)
 ├── meshes/
@@ -364,7 +364,7 @@ script = "blender --background --python generator.py && cargo build -p game --ta
 
 [[assets.meshes]]
 id = "barrel"
-path = "../assets/meshes/barrel.glb"
+path = "../generated/meshes/barrel.glb"
 ```
 
 ---

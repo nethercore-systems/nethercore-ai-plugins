@@ -27,7 +27,7 @@ This causes problems:
 Instead, each asset gets its own file:
 
 ```
-generator/meshes/
+generation/meshes/
 ├── barrel.py       # 80 lines
 ├── crate.py        # 65 lines
 ├── chair.py        # 120 lines
@@ -45,7 +45,7 @@ Benefits:
 
 ```
 my-game/
-├── generator/
+├── generation/
 │   ├── lib/                      # Shared utilities
 │   │   ├── __init__.py           # Re-exports
 │   │   ├── bpy_utils.py          # Mesh: clear_scene, export_glb
@@ -78,7 +78,7 @@ my-game/
 │   │
 │   └── generate_all.py           # Batch runner
 │
-├── assets/                       # Generated output
+├── generated/                    # Generated output
 │   ├── meshes/
 │   │   ├── barrel.glb
 │   │   └── crate.glb
@@ -101,7 +101,7 @@ Each asset file should follow this structure:
 #!/usr/bin/env python3
 """Generate [asset description].
 
-Output: ../assets/[type]/[name].[ext]
+Output: ../generated/[type]/[name].[ext]
 """
 import sys
 from pathlib import Path
@@ -112,7 +112,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent / "lib"))
 from [relevant_lib] import [helpers]
 
 # Configuration
-OUTPUT_DIR = Path(__file__).parent.parent.parent / "assets" / "[type]"
+OUTPUT_DIR = Path(__file__).parent.parent.parent / "generated" / "[type]"
 OUTPUT_NAME = "[asset_name]"
 
 def generate():
@@ -136,7 +136,7 @@ if __name__ == "__main__":
 #!/usr/bin/env python3
 """Generate wooden barrel mesh.
 
-Output: ../assets/meshes/barrel.glb
+Output: ../generated/meshes/barrel.glb
 """
 import sys
 from pathlib import Path
@@ -146,7 +146,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent / "lib"))
 from bpy_utils import clear_scene, export_glb, apply_modifiers
 import bpy
 
-OUTPUT_DIR = Path(__file__).parent.parent.parent / "assets" / "meshes"
+OUTPUT_DIR = Path(__file__).parent.parent.parent / "generated" / "meshes"
 OUTPUT_NAME = "barrel"
 
 def generate():
@@ -183,7 +183,7 @@ if __name__ == "__main__":
 #!/usr/bin/env python3
 """Generate wood plank texture.
 
-Output: ../assets/textures/wood_plank_albedo.png
+Output: ../generated/textures/wood_plank_albedo.png
 """
 import sys
 from pathlib import Path
@@ -192,7 +192,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent / "lib"))
 
 from texture_buffer import TextureBuffer
 
-OUTPUT_DIR = Path(__file__).parent.parent.parent / "assets" / "textures"
+OUTPUT_DIR = Path(__file__).parent.parent.parent / "generated" / "textures"
 OUTPUT_NAME = "wood_plank"
 
 def generate():
@@ -295,13 +295,13 @@ Add generators to your build pipeline:
 ```toml
 [build]
 pre_build = [
-    "python generator/generate_all.py"
+    "python generation/generate_all.py"
 ]
 
 # Or run specific types
 [build.assets]
-meshes = "python generator/generate_all.py meshes"
-textures = "python generator/generate_all.py textures"
+meshes = "python generation/generate_all.py meshes"
+textures = "python generation/generate_all.py textures"
 ```
 
 ## File Size Guidelines

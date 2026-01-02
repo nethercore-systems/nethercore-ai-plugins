@@ -131,7 +131,7 @@ grep -r "^pub enum\|^enum" src/*.rs
 
 ```bash
 # Check for described assets
-ls assets/meshes/*.obj assets/textures/*.png assets/audio/*.wav 2>/dev/null
+ls generated/meshes/*.obj generated/textures/*.png generated/audio/*.wav 2>/dev/null
 
 # Check nether.toml declarations
 grep -A 2 "\[\[assets" nether.toml
@@ -263,9 +263,9 @@ If dependencies missing, shop system is BLOCKED.
 
 | Asset (from GDD) | Status | File | Notes |
 |------------------|--------|------|-------|
-| Player sprite/mesh | ✅ Exists | assets/meshes/player.obj | |
+| Player sprite/mesh | ✅ Exists | generated/meshes/player.obj | |
 | Enemy sprite/mesh | ❌ Missing | - | Need to generate |
-| Grass texture | ✅ Exists | assets/textures/grass.png | |
+| Grass texture | ✅ Exists | generated/textures/grass.png | |
 | Jump sound | ❌ Missing | - | Need to generate |
 
 ---

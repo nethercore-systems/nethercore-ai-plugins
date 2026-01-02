@@ -55,7 +55,7 @@ Before starting a task, verify dependencies:
 
 ```bash
 # Before feature using assets:
-ls assets/meshes/feature*.obj
+ls generated/meshes/feature*.obj
 grep "feature" nether.toml
 grep "FEATURE" src/assets.rs
 

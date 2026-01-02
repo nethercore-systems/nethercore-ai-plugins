@@ -320,12 +320,12 @@ The asset pipeline accepts standard formats:
 
 Generated assets integrate with the standard workflow:
 
-1. Generate assets to `assets/` directory
+1. Generate assets to `generated/` directory
 2. Reference in `nether.toml`:
 ```toml
 [[assets.textures]]
 id = "my-texture"
-path = "assets/textures/my-texture.png"
+path = "generated/textures/my-texture.png"
 ```
 3. Run `nether pack` to bundle into ROM
 4. Load in game with `rom_texture_str("my-texture")`

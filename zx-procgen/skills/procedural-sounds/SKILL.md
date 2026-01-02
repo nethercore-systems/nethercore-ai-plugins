@@ -27,11 +27,11 @@ Sound generators are **Python scripts** that run at build time via `nether.toml`
 
 ```toml
 [build]
-script = "python generator/sfx.py && cargo build -p game --target wasm32-unknown-unknown --release"
+script = "python generation/sfx.py && cargo build -p game --target wasm32-unknown-unknown --release"
 
 [[assets.sounds]]
 id = "laser"
-path = "assets/audio/laser.wav"
+path = "generated/audio/laser.wav"
 ```
 
 See the **Native Asset Pipeline** skill for full architecture details.
@@ -221,16 +221,16 @@ See `references/sfx-recipes/README.md` for quick reference and quality compariso
 
 ## Output Integration
 
-Generated WAVs go to `assets/audio/` and are referenced in `nether.toml`:
+Generated WAVs go to `generated/audio/` and are referenced in `nether.toml`:
 
 ```toml
 [[assets.sounds]]
 id = "laser"
-path = "assets/audio/laser.wav"
+path = "generated/audio/laser.wav"
 
 [[assets.sounds]]
 id = "explosion"
-path = "assets/audio/explosion.wav"
+path = "generated/audio/explosion.wav"
 ```
 
 Play in game code:
@@ -242,7 +242,7 @@ play_sound(laser);
 ## File Organization
 
 ```
-generator/
+generation/
 ├── sfx.py              # Main generator script
 ├── sounds/
 │   ├── combat.py       # Laser, explosion, hit

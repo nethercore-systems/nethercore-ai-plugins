@@ -274,7 +274,7 @@ See `references/seamless-textures.md` for tileable texture techniques.
 **One texture per file.** Each texture material should have its own Python script:
 
 ```
-generator/
+generation/
 ├── lib/
 │   └── texture_buffer.py     # TextureBuffer class (from generator-patterns)
 ├── textures/
@@ -293,7 +293,7 @@ Each texture file generates all required maps (albedo, MRE/SSE, etc.):
 """Generate wood plank texture set."""
 from lib.texture_buffer import TextureBuffer
 
-OUTPUT_DIR = "../assets/textures"
+OUTPUT_DIR = "../generated/textures"
 
 def generate():
     # Generate albedo

@@ -127,7 +127,7 @@ See `references/gltf-export.md` for full export settings.
 **One animation per file.** Each animation should have its own Python script:
 
 ```
-generator/
+generation/
 ├── lib/
 │   ├── bpy_utils.py          # Mesh helpers (from generator-patterns)
 │   └── animation_utils.py    # Keyframe helpers (from generator-patterns)

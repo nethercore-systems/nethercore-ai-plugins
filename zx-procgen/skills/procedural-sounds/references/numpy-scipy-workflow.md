@@ -141,7 +141,7 @@ def build_laser(
 For efficient multi-sound generation:
 
 ```python
-def render_batch(sounds: dict, output_dir: str = "assets/audio"):
+def render_batch(sounds: dict, output_dir: str = "generated/audio"):
     """
     Render multiple sounds to WAV files.
 
@@ -325,7 +325,7 @@ import sys
 # =============================================================================
 
 SAMPLE_RATE = 22050
-OUTPUT_DIR = "assets/audio"
+OUTPUT_DIR = "generated/audio"
 
 # =============================================================================
 # CORE UTILITIES
