@@ -3,7 +3,7 @@ name: Music Composition Reference
 description: |
   Use this skill when DESIGNING music content - choosing keys, chord progressions, tempos for specific contexts.
 
-  **Triggers:** "chord progression", "what key for", "tempo for", "music theory", "leitmotif", "adaptive music", "loop design".
+  **Triggers:** "chord progression", "what key for", "tempo for", "music theory", "leitmotif", "adaptive music", "loop design", "listener fatigue", "hours of play", "background music", "supportive music", "music mix space".
 
   **Pipeline position: DESIGN (1 of 3)**
   - For tracker file creation: use `tracker-music` plugin
@@ -13,7 +13,7 @@ description: |
   - Chord progressions by emotion → `references/chord-progressions.md`
   - Adaptive music patterns → `references/adaptive-patterns.md`
   - Genre-specific templates → `references/genre-templates.md`
-version: 1.3.0
+version: 1.4.0
 ---
 
 # Music Composition for Games
@@ -27,6 +27,26 @@ Game music must loop seamlessly, respond to gameplay, and support rather than do
 3. **Adaptive** - Responds to game state
 4. **Memorable** - Themes should be recognizable
 5. **Efficient** - Work within platform constraints
+
+---
+
+## Extended Duration Design
+
+Players hear tracks for **hours**. Favor texture/rhythm over hooks. Leave 30-40% frequency space for SFX/dialogue. Avoid harsh 2-4kHz, constant highs, unvarying dynamics.
+
+**Invisible music principle:** Best game music is felt, not noticed—you don't hum it, but you don't tire of it.
+
+---
+
+## Supportive Music Philosophy
+
+Music serves **player's emotional state**, not composer's vision. If player notices music mid-combat, you may have distracted them.
+
+| Context | Music's Job | NOT the Job |
+|---------|-------------|-------------|
+| Combat | Amplify adrenaline | Be the star |
+| Exploration | Create atmosphere | Demand attention |
+| Story/dialogue | Underscore, stay low | Compete for attention |
 
 ---
 
