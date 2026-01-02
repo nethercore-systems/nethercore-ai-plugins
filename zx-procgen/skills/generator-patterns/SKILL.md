@@ -34,7 +34,7 @@ Every procedural asset (mesh, texture, sprite, animation) should have its own de
 ## Standard Project Structure
 
 ```
-generator/
+generation/
 ├── lib/                          # Shared utilities (copy from references/)
 │   ├── bpy_utils.py              # Mesh generation helpers
 │   ├── texture_buffer.py         # Texture buffer class
@@ -68,7 +68,7 @@ Each asset file follows this pattern:
 from lib.[relevant_lib] import [helpers]
 
 # Asset-specific configuration
-OUTPUT_PATH = "../assets/meshes/barrel.glb"
+OUTPUT_PATH = "../generated/meshes/barrel.glb"
 
 def generate():
     """Generate the asset."""

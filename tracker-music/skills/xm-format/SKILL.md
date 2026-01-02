@@ -164,10 +164,10 @@ music_play(music, 0.8, 1);
 
 ```
 project/
-├── generators/lib/
+├── generation/lib/
 │   ├── xm_writer.py     # Copy from tracker-music/skills/xm-format/scripts/
 │   └── xm_types.py      # Copy from tracker-music/skills/xm-format/scripts/
-├── generators/tracks/
+├── generation/tracks/
 │   └── song_name.py     # Your generator script
 └── generated/tracks/
     └── song_name.xm     # Output (gitignored)

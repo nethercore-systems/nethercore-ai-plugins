@@ -84,7 +84,7 @@ End-to-end audio workflow spanning three plugins, each handling a distinct phase
 
 3. **Generate Code** (synthesis layer)
    ```
-   /generate-sfx hit assets/audio/sword_hit.py
+   /generate-sfx hit generated/audio/sword_hit.py
    → Creates Python script using spec guidance
    → Run script to produce sword_hit.wav
    ```
@@ -144,7 +144,7 @@ For rapid iteration, skip the design phase:
    Python synthesis scripts    Python instrument scripts
               │                           │
               ▼                           ▼
-      assets/audio/*.wav         assets/audio/*.wav
+      generated/audio/*.wav         generated/audio/*.wav
                                           │
                                           ▼
                                .xm/.it tracker files

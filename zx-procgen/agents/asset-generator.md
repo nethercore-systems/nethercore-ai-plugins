@@ -52,7 +52,7 @@ You are an asset generator for Nethercore ZX games. You produce working procedur
 ## Output Structure
 
 ```
-generator/              # Python asset generation
+generation/             # Python asset generation
 ├── generate.py         # Entry point
 ├── textures/           # numpy/PIL generators
 ├── meshes/             # bpy scripts
@@ -65,7 +65,7 @@ game/
     ├── lib.rs          # Loads via rom_*() IN INIT ONLY
     └── zx.rs           # FFI module (fetched, never edit)
 
-assets/                 # Output (gitignored)
+generated/              # Output (gitignored)
 ```
 
 ## File Size Limits
@@ -84,7 +84,7 @@ assets/                 # Output (gitignored)
 - [ ] Uses zx.rs module (not inline FFI)
 - [ ] Init-only resource loading
 - [ ] Split into focused modules
-- [ ] .gitignore updated for assets/
+- [ ] .gitignore updated for generated/
 
 ## Next Steps Prompt
 

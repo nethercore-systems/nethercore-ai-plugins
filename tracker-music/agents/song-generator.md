@@ -34,7 +34,7 @@ All output MUST follow this structure:
 
 ```
 project/
-├── generators/
+├── generation/
 │   ├── lib/           # Writer libraries (xm_writer.py, it_writer.py, synthesis primitives)
 │   └── tracks/        # Generator scripts (committed)
 └── generated/tracks/  # Output files (gitignored)
@@ -52,7 +52,7 @@ DO NOT read the writer files - just import them.
 ### 2. Check/Scaffold lib/
 
 ```bash
-ls generators/lib/ 2>/dev/null || echo "lib not found"
+ls generation/lib/ 2>/dev/null || echo "lib not found"
 ```
 
 If missing, copy from:
@@ -145,7 +145,7 @@ Before finalizing, verify:
 - Sustained notes have vibrato
 - Loop boundaries have fades/fills
 - File validates without errors
-- Output in `generated/tracks/`, NOT `generators/`
+- Output in `generated/tracks/`, NOT `generation/`
 
 ## Error Handling
 

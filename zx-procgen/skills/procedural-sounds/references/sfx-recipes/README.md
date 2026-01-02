@@ -182,7 +182,7 @@ Output WAVs to your assets directory and reference in `nether.toml`:
 ```toml
 [[assets.sounds]]
 id = "laser"
-path = "assets/audio/laser.wav"
+path = "generated/audio/laser.wav"
 ```
 
 ## Adding New Recipes

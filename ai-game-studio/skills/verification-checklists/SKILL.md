@@ -24,7 +24,7 @@ If no - it's not complete.
 
 ```bash
 # Assets exist
-ls assets/meshes/*.obj assets/textures/*.png assets/audio/*.wav
+ls generated/meshes/*.obj generated/textures/*.png generated/audio/*.wav
 
 # Assets declared
 grep "\[\[assets" nether.toml

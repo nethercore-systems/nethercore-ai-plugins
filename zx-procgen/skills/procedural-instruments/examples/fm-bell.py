@@ -201,7 +201,7 @@ def wind_chime(base_freq: float, duration: float = 3.0,
 
 
 def main():
-    output_dir = Path("assets/audio/instruments")
+    output_dir = Path("generated/audio/instruments")
     output_dir.mkdir(parents=True, exist_ok=True)
 
     # Bell notes (pitched bells usually in upper register)

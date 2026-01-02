@@ -13,8 +13,8 @@ Interactive workflow to upgrade asset quality through the tier system (Placehold
 Scan the project for procedural assets:
 
 ```bash
-# Find all asset files
-find assets/ output/ generated/ -type f \( -name "*.obj" -o -name "*.gltf" -o -name "*.png" -o -name "*.wav" \) 2>/dev/null
+# Find all generated asset files
+find generated/ -type f \( -name "*.obj" -o -name "*.gltf" -o -name "*.png" -o -name "*.wav" \) 2>/dev/null
 ```
 
 Also check for generation code:
@@ -56,8 +56,8 @@ grep -c "^vn " mesh.obj 2>/dev/null  # Normals
 Check PNG files:
 ```bash
 # Get file sizes and dimensions
-ls -la assets/textures/*.png 2>/dev/null
-file assets/textures/*.png 2>/dev/null
+ls -la generated/textures/*.png 2>/dev/null
+file generated/textures/*.png 2>/dev/null
 ```
 
 **Tier indicators:**
@@ -72,8 +72,8 @@ file assets/textures/*.png 2>/dev/null
 Check WAV files:
 ```bash
 # Get audio info
-file assets/audio/*.wav 2>/dev/null
-ls -la assets/audio/*.wav 2>/dev/null
+file generated/audio/*.wav 2>/dev/null
+ls -la generated/audio/*.wav 2>/dev/null
 ```
 
 **Tier indicators:**
@@ -222,9 +222,9 @@ After enhancements complete, present:
 | explosion.wav | Placeholder (35%) | Temp (62%) | +27% | Success |
 
 ### Files Modified
-1. `src/generators/barrel.rs` - Added bevel pass
-2. `src/generators/barrel_tex.rs` - Added contrast boost, detail layers
-3. `src/generators/sfx.rs` - Added envelope shaping
+1. `generation/barrel.py` - Added bevel pass
+2. `generation/barrel_tex.py` - Added contrast boost, detail layers
+3. `generation/sfx.py` - Added envelope shaping
 
 ### Next Steps
 - Run `/improve-assets hero` to upgrade key assets to Hero quality

@@ -168,10 +168,10 @@ validate_it("output.it")
 
 ```
 project/
-├── generators/lib/
+├── generation/lib/
 │   ├── it_writer.py     # Copy from tracker-music/skills/it-format/scripts/
 │   └── it_types.py      # Copy from tracker-music/skills/it-format/scripts/
-├── generators/tracks/
+├── generation/tracks/
 │   └── song_name.py
 └── generated/tracks/
     └── song_name.it     # Output (gitignored)

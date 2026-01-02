@@ -2,7 +2,7 @@
 
 ## Mesh Asset
 
-- [ ] File exists: `assets/meshes/[name].obj` or `.gltf`
+- [ ] File exists: `generated/meshes/[name].obj` or `.gltf`
 - [ ] Format correct: Y-up, triangulated, UVs present
 - [ ] Within poly budget (prop: 100-500, character: 1000-2000)
 - [ ] Declared in nether.toml: `[[assets.meshes]]`
@@ -12,7 +12,7 @@
 
 ## Texture Asset
 
-- [ ] File exists: `assets/textures/[name].png`
+- [ ] File exists: `generated/textures/[name].png`
 - [ ] Format correct: PNG, power-of-2 (64/128/256/512), max 512x512
 - [ ] Appropriate channels (RGBA for transparency, RGB for opaque)
 - [ ] Declared in nether.toml: `[[assets.textures]]`
@@ -21,7 +21,7 @@
 
 ## Sound Asset
 
-- [ ] File exists: `assets/audio/[name].wav`
+- [ ] File exists: `generated/audio/[name].wav`
 - [ ] Format correct: WAV, 22050 Hz, 16-bit, mono
 - [ ] Declared in nether.toml: `[[assets.sounds]]`
 - [ ] Handle exists: `pub const SND_[NAME]: SoundHandle = asset_handle!(...);`

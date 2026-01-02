@@ -220,7 +220,7 @@ def pipe_organ(freq: float, duration: float = 2.0,
 
 
 def main():
-    output_dir = Path("assets/audio/instruments")
+    output_dir = Path("generated/audio/instruments")
     output_dir.mkdir(parents=True, exist_ok=True)
 
     notes = {

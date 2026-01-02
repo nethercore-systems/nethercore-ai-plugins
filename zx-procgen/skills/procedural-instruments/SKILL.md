@@ -40,7 +40,7 @@ For example implementations, see `references/drum-examples.py`.
 
 ```
 project/
-├── generators/                    # Source code (committed to git)
+├── generation/                    # Source code (committed to git)
 │   ├── lib/                       # Synthesis PRIMITIVES (scaffold once)
 │   │   ├── __init__.py
 │   │   ├── synthesis.py           # ADSR, FM operators, Karplus-Strong

@@ -92,8 +92,8 @@ def main():
                 ]
 
     img = Image.fromarray(tex, 'RGBA')
-    img.save("assets/textures/mossy_stone.png")
-    print("Generated: assets/textures/mossy_stone.png")
+    img.save("generated/textures/mossy_stone.png")
+    print("Generated: generated/textures/mossy_stone.png")
 
 if __name__ == "__main__":
     main()
@@ -127,10 +127,10 @@ def main():
 
     # Export as OBJ
     bpy.ops.export_scene.obj(
-        filepath="assets/meshes/rounded_cube.obj",
+        filepath="generated/meshes/rounded_cube.obj",
         use_selection=True
     )
-    print("Generated: assets/meshes/rounded_cube.obj")
+    print("Generated: generated/meshes/rounded_cube.obj")
 
 if __name__ == "__main__":
     main()
@@ -166,8 +166,8 @@ def main():
 
     # Normalize and export
     samples = samples / np.max(np.abs(samples)) * 0.9
-    sf.write("assets/audio/laser.wav", samples, SAMPLE_RATE, subtype='PCM_16')
-    print("Generated: assets/audio/laser.wav")
+    sf.write("generated/audio/laser.wav", samples, SAMPLE_RATE, subtype='PCM_16')
+    print("Generated: generated/audio/laser.wav")
 
 if __name__ == "__main__":
     main()
@@ -197,7 +197,7 @@ blender --background --python gen_asset.py
 # In nether.toml
 [[assets.textures]]  # or meshes/sounds
 id = "asset-name"
-path = "assets/[type]/asset-name.[ext]"
+path = "generated/[type]/asset-name.[ext]"
 ```
 
 ## Generation Guidelines
@@ -264,12 +264,11 @@ After providing the code, offer:
 After generating any asset, ensure the project's `.gitignore` includes:
 ```
 # Generated assets (can be regenerated from procedural code)
-assets/meshes/*.obj
-assets/meshes/*.gltf
-assets/textures/*.png
-assets/audio/*.wav
+generated/meshes/*.obj
+generated/meshes/*.gltf
+generated/textures/*.png
+generated/audio/*.wav
 output/**
-generated/**
 ```
 
 If `.gitignore` doesn't exist or is missing these patterns, create/update it.

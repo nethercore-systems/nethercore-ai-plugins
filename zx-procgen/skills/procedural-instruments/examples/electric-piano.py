@@ -93,7 +93,7 @@ def wurlitzer(freq: float, duration: float = 1.5, velocity: float = 0.8) -> np.n
 
 
 def main():
-    output_dir = Path("assets/audio/instruments")
+    output_dir = Path("generated/audio/instruments")
     output_dir.mkdir(parents=True, exist_ok=True)
 
     # Generate demo samples

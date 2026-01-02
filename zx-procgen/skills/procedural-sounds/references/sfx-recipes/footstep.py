@@ -240,4 +240,4 @@ if __name__ == "__main__":
     render()
 
     # Or render all surfaces:
-    # render_all_surfaces("assets/audio/footsteps")
+    # render_all_surfaces("generated/audio/footsteps")

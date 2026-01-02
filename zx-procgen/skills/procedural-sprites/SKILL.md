@@ -86,7 +86,7 @@ def apply_bayer_dither(img, palette):
 # nether.toml
 [[assets.textures]]
 id = "ui-sprites"
-path = "assets/sprites/ui_elements.png"
+path = "generated/sprites/ui_elements.png"
 filter = "nearest"  # Critical for pixel art
 ```
 
@@ -103,7 +103,7 @@ draw_sprite_region(sprites, x, y, state * width, 0, width, height);
 **One sprite per file.** Each sprite/sprite sheet should have its own Python script:
 
 ```
-generator/
+generation/
 ├── lib/
 │   └── sprite_utils.py       # Palettes, dithering (from generator-patterns)
 ├── sprites/

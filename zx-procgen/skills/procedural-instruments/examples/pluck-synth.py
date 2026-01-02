@@ -223,7 +223,7 @@ def kalimba(freq: float, duration: float = 1.5) -> np.ndarray:
 
 
 def main():
-    output_dir = Path("assets/audio/instruments")
+    output_dir = Path("generated/audio/instruments")
     output_dir.mkdir(parents=True, exist_ok=True)
 
     notes = {

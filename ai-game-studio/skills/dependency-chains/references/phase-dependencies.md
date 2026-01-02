@@ -63,8 +63,8 @@
 ### Visual Feature
 ```
 Feature renders correctly requires:
-├── Mesh exists (assets/meshes/)
-├── Texture exists (assets/textures/)
+├── Mesh exists (generated/meshes/)
+├── Texture exists (generated/textures/)
 ├── nether.toml declares assets
 ├── Asset handles exist (src/assets.rs)
 ├── Code uses handles
@@ -74,7 +74,7 @@ Feature renders correctly requires:
 ### Audio Feature
 ```
 Sound plays correctly requires:
-├── Audio file exists (assets/audio/, WAV 22050Hz mono 16-bit)
+├── Audio file exists (generated/audio/, WAV 22050Hz mono 16-bit)
 ├── nether.toml declares sound
 ├── Sound handle exists
 ├── Code calls sound_play()

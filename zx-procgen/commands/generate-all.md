@@ -21,7 +21,7 @@ The user may provide:
 ## Workflow
 
 1. **Detect Project Structure**
-   - Look for `generator/` directory in project root
+   - Look for `generation/` directory in project root
    - Check for existing `generate_all.py` script
    - Identify which asset types have generators
 
@@ -69,7 +69,7 @@ The command expects this structure:
 
 ```
 project/
-├── generator/
+├── generation/
 │   ├── lib/                # Shared utilities
 │   │   ├── bpy_utils.py
 │   │   ├── texture_buffer.py
@@ -85,7 +85,7 @@ project/
 │   ├── animations/         # One .py per animation
 │   │   └── walk_cycle.py
 │   └── generate_all.py     # Batch runner (optional)
-└── assets/                 # Generated output
+└── generated/              # Generated output
 ```
 
 ## Prerequisites

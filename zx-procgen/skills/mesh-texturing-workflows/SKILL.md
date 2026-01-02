@@ -128,20 +128,20 @@ See `references/atlas-packing.md` for packing algorithms.
 # Character with coordinated textures
 [[assets.meshes]]
 id = "player"
-path = "assets/meshes/player.gltf"
+path = "generated/meshes/player.gltf"
 
 [[assets.textures]]
 id = "player_albedo"
-path = "assets/textures/player_albedo.png"
+path = "generated/textures/player_albedo.png"
 
 # Atlased props (single texture for multiple meshes)
 [[assets.textures]]
 id = "props_atlas"
-path = "assets/textures/props_atlas.png"
+path = "generated/textures/props_atlas.png"
 
 [[assets.meshes]]
 id = "crate"
-path = "assets/meshes/crate.gltf"  # UVs remapped to atlas
+path = "generated/meshes/crate.gltf"  # UVs remapped to atlas
 ```
 
 ## References

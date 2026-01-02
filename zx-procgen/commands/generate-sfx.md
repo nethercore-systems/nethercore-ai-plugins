@@ -16,7 +16,7 @@ Generate a Python script for a game sound effect using NumPy/SciPy synthesis.
 
 The user may provide:
 1. **type** (required): The type of sound effect (laser, explosion, coin, jump, hit, powerup, footstep, click)
-2. **output-path** (optional): Where to save the script (defaults to `generator/sfx/<type>.py`)
+2. **output-path** (optional): Where to save the script (defaults to `generation/sfx/<type>.py`)
 
 ## Workflow
 
@@ -30,7 +30,7 @@ The user may provide:
 
 3. **Customize for Project**
    - Check if project has existing sound generator structure
-   - Look for `generator/` directory or similar
+   - Look for `generation/` directory or similar
    - Adapt output path and imports if needed
 
 4. **Generate Script**
@@ -60,8 +60,8 @@ The user may provide:
 
 ```
 /generate-sfx laser
-/generate-sfx explosion assets/audio/big_boom.py
-/generate-sfx footstep generator/sounds/footstep_grass.py
+/generate-sfx explosion generation/audio/big_boom.py
+/generate-sfx footstep generation/sounds/footstep_grass.py
 ```
 
 ## Output Structure

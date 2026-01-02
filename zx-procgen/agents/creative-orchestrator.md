@@ -126,8 +126,8 @@ WAVE 4: Refine (if needed)
 
 After writing assets, ensure:
 ```
-assets/meshes/*.obj
-assets/meshes/*.glb
-assets/textures/*.png
-assets/audio/*.wav
+generated/meshes/*.obj
+generated/meshes/*.glb
+generated/textures/*.png
+generated/audio/*.wav
 ```
