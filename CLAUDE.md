@@ -66,7 +66,7 @@ Game design workflow plugin.
 
 Procedural asset generation plugin.
 
-**Skills (12):**
+**Skills (13):**
 - `procedural-textures` - Texture generation (Albedo, MRE, SSE, Matcaps)
 - `procedural-meshes` - 3D mesh generation with UVs and vertex colors
 - `procedural-sounds` - Audio synthesis (FM, Karplus-Strong, subtractive) and SFX
@@ -74,6 +74,7 @@ Procedural asset generation plugin.
 - `procedural-animations` - Walk cycles, attacks, skeletal rigging, BVH/mocap
 - `procedural-sprites` - 2D sprites, pixel art, tilesets, UI elements
 - `procedural-characters` - Character mesh generation with rigs (YAML specs + Blender bpy)
+- `procedural-normal-maps` - Normal map generation (height-to-normal, BC5 format, tangent export)
 - `semantic-asset-language` - Style guide for AI-first creative workflows
 - `mesh-texturing-workflows` - UV projection techniques
 - `asset-quality-tiers` - Tier system (Placeholder→Temp→Final→Hero)
@@ -97,6 +98,7 @@ Procedural asset generation plugin.
 - `creative-orchestrator` - Coordinates full asset pipeline
 - `character-designer` - Gathers requirements and produces character YAML specs
 - `character-generator` - Builds character meshes from specs using Blender bpy
+- `normal-map-generator` - Generates procedural normal maps from patterns or height maps
 - `quality-enhancer` - Autonomous asset quality improvement, upgrades assets to higher tiers
 - `instrument-architect` - Designs and implements instrument synthesis
 
