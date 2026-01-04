@@ -119,9 +119,15 @@ The skills auto-trigger when you ask:
 
 ## Skills (13)
 
+All skills follow the **progressive disclosure pattern** for LLM context efficiency:
+- SKILL.md files are lean (100-170 lines) with decision tables and quick references
+- Detailed code and examples are in `references/` directories
+- Frontmatter includes "Load references when:" directives for on-demand loading
+- Large reference files (1000+ lines) have index files for routing
+
 ### Procedural Textures
 
-Full ZX material system support:
+Full ZX material system support (render mode configured in `nether.toml`):
 - **Mode 0 (Lambert)**: Albedo with optional alpha for dither transparency
 - **Mode 1 (Matcap)**: Albedo + up to 3 matcap textures with blend modes
 - **Mode 2 (MRE)**: Albedo + Metallic/Roughness/Emissive packed texture

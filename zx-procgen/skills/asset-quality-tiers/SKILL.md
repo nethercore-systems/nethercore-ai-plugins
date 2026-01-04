@@ -208,12 +208,14 @@ When upgrading multiple assets:
 
 ### Reference Files
 
-For detailed enhancement techniques per asset type:
+For enhancement techniques, use the **index files first** (lean routing), then load full references as needed:
 
-- **`references/mesh-enhancements.md`** - Detailed mesh upgrade techniques
-- **`references/texture-enhancements.md`** - Texture quality improvement strategies
-- **`references/audio-enhancements.md`** - Audio/SFX enhancement techniques
-- **`references/animation-enhancements.md`** - Animation polish techniques
+| Asset Type | Index (load first) | Full Reference (load for code) |
+|------------|-------------------|-------------------------------|
+| Textures | `texture-enhancement-index.md` | `texture-enhancements.md` (1290 lines) |
+| Meshes | `mesh-enhancement-index.md` | `mesh-enhancements.md` (1142 lines) |
+| Audio | - | `audio-enhancements.md` |
+| Animation | - | `animation-enhancements.md` |
 
 ### Related Agents
 

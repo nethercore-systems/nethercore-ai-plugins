@@ -1,363 +1,103 @@
 ---
 name: Procedural Mesh Generation (Blender bpy)
 description: |
-  Use this skill to GENERATE 3D meshes for ZX games.
+  Generate 3D meshes for ZX games using Blender bpy in headless mode.
 
   **Triggers:** "generate mesh", "3D model", "low-poly", "blender script", "hard surface", "organic mesh", "metaballs", "UV unwrap", "export glb".
 
   **Before generating:** Check `.studio/visual-style.md` for project style specs.
 
   **Load references when:**
-  - Project structure, multiple assets → `generator-patterns` skill
-  - Basic shapes, cubes, cylinders → `references/bpy-primitives.md`
+  - Script templates, boilerplate → `references/mesh-script-template.md`
+  - Basic shapes, primitives → `references/bpy-primitives.md`
   - Modifiers (bevel, mirror, array) → `references/bpy-modifiers.md`
   - Organic shapes, metaballs, skin → `references/bpy-organic-workflows.md`
-  - Cleanup, UV, normals, export → `references/bpy-post-processing.md`
+  - UV, normals, cleanup, export → `references/bpy-post-processing.md`
   - Tangent export for normal maps → `references/bpy-tangent-export.md`
+  - Project structure, multiple assets → `generator-patterns` skill
 
-  For NORMAL MAPS: use `procedural-normal-maps` skill (requires tangent export).
-  For CHARACTERS: use `procedural-characters` skill (extrude+scale paradigm).
-  For TEXTURING: use `mesh-texturing-workflows`. For ANIMATION: use `procedural-animations`.
-version: 1.3.0
+  **Related skills:**
+  - NORMAL MAPS: `procedural-normal-maps` (requires tangent export)
+  - CHARACTERS: `procedural-characters` (extrude+scale paradigm)
+  - TEXTURING: `mesh-texturing-workflows`
+  - ANIMATION: `procedural-animations`
+version: 1.4.0
 ---
 
-# Procedural Mesh Generation with Blender bpy
+# Procedural Mesh Generation
 
-Generate game-ready 3D meshes procedurally using Blender in headless mode. All output includes proper UVs and normals for Nethercore ZX.
+Generate game-ready 3D meshes with proper UVs and normals for Nethercore ZX.
 
-## Prerequisites: System Blender
+## Prerequisites
 
-This skill requires Blender installed and accessible via the system PATH.
+Blender 3.0+ must be installed and in PATH:
 
-**Check if Blender is available:**
 ```bash
 blender --version
 ```
 
-**If Blender is not installed:**
+Run scripts via: `blender --background --python generator.py`
 
-| Platform | Installation |
-|----------|--------------|
-| Windows | Download from [blender.org](https://www.blender.org/download/), install, add to PATH |
-| macOS | `brew install --cask blender` or download from blender.org |
-| Linux | `sudo apt install blender` or `sudo dnf install blender` or download from blender.org |
+## Workflow Selection
 
-**Required version:** Blender 3.0+ (for modern bpy API and glTF 2.0 export)
+| Mesh Type | Workflow | Reference |
+|-----------|----------|-----------|
+| Props, weapons, vehicles, architecture | Polygon modeling (primitives + modifiers) | `bpy-primitives.md`, `bpy-modifiers.md` |
+| Blobby shapes (slimes, eggs) | Metaballs | `bpy-organic-workflows.md#metaballs` |
+| Creatures from skeleton | Skin modifier | `bpy-organic-workflows.md#skin-modifier` |
+| Complex smooth blends | SDF pipeline | `bpy-organic-workflows.md#sdf-pipeline` |
 
-**Why system Blender?** Headless scripting with `blender --background --python script.py` is the most reliable way to generate production-quality meshes with proper UVs and normals. Python's bpy module is only available within Blender's embedded Python environment.
+## Hard Surface Quick Reference
 
-## Runtime
+**Core Primitives:**
+- `bpy.ops.mesh.primitive_cube_add()` - Crates, boxes
+- `bpy.ops.mesh.primitive_cylinder_add()` - Barrels, pillars
+- `bpy.ops.mesh.primitive_uv_sphere_add()` - Spheres, domes
+- `bpy.ops.mesh.primitive_cone_add()` - Spikes, cones
+- `bpy.ops.mesh.primitive_torus_add()` - Rings, wheels
 
-Execute scripts via headless Blender:
+**Key Modifiers:** MIRROR, BEVEL, SOLIDIFY, ARRAY, BOOLEAN, DECIMATE
 
-```bash
-blender --background --python generator.py
-```
+See `references/bpy-modifiers.md` for detailed modifier patterns.
 
-## Output Format
+## Console Constraints
 
-- **Primary:** `.glb` (GLTF binary) with embedded UVs and normals
-- **Alternative:** `.gltf`, `.obj`, `.fbx` when specified
-- **Target aesthetic:** Low-poly/N64/PS1/PS2 era (500-2000 tris typical)
+| Use Case | Triangle Budget | Bones (if animated) |
+|----------|-----------------|---------------------|
+| Swarm entities | 50-150 | - |
+| Props | 50-300 | - |
+| Characters | 200-500 | 16-24 |
+| Vehicles | 300-800 | - |
+| Hero/close-up | 500-2000 | 32-48 |
 
----
+**Texture resolution:** Power-of-2 only (64, 128, 256, 512)
+
+## Required Post-Processing
+
+Every mesh MUST have before export:
+1. **UV unwrap** - `smart_project` or `cube_project`
+2. **Normals** - `shade_smooth` + `use_auto_smooth`
+3. **Cleanup** - `remove_doubles`, `delete_loose`
+4. **Triangulate** - `quads_convert_to_tris`
+5. **Export** - GLB with `export_normals=True`
+
+See `references/bpy-post-processing.md` for implementation.
 
 ## File Organization
 
-**One mesh per file.** Each mesh should have its own Python script. This improves:
-- LLM context efficiency (load only what you need)
-- Maintainability (changes don't affect other meshes)
-- Testing (run individual scripts)
-- Batch generation (simple `generate_all.py`)
+One mesh per file. Target ≤150 lines per generator.
 
 ```
 generation/
-├── lib/
-│   └── bpy_utils.py          # Shared helpers (from generator-patterns skill)
+├── lib/bpy_utils.py         # Shared helpers
 ├── meshes/
-│   ├── barrel.py             # One file per mesh
+│   ├── barrel.py            # One file per mesh
 │   ├── crate.py
-│   ├── chair.py
-│   └── table.py
-└── generate_all.py           # Runs all mesh generators
+│   └── chair.py
+└── generate_all.py          # Batch runner
 ```
 
-**File size limit:** ≤150 lines per mesh file. If exceeding, extract helpers to `lib/bpy_utils.py`.
-
-For complete setup, see the `generator-patterns` skill which provides:
-- Library templates (`lib/bpy_utils.py`)
-- Batch runner (`generate_all.py`)
-- Full project structure
-
----
-
-## Workflow Decision Tree
-
-Choose the appropriate workflow based on what is being modeled:
-
-```
-┌─ What type of mesh?
-│
-├─► HARD SURFACE (weapons, vehicles, architecture, props, mechanical)
-│   └─► Use: Polygon Modeling with bpy primitives + modifiers
-│       See: Hard Surface Workflow section below
-│
-└─► ORGANIC (characters, creatures, rocks, foliage, blobby shapes)
-    │
-    ├─► Simple blobby shapes (slimes, eggs, bulbous forms)
-    │   └─► Use: Metaballs → convert to mesh
-    │       See: references/bpy-organic-workflows.md#metaballs
-    │
-    ├─► Creatures from stick-figure skeleton
-    │   └─► Use: Skin Modifier workflow
-    │       See: references/bpy-organic-workflows.md#skin-modifier
-    │
-    └─► Complex smooth blends (terrain, abstract shapes)
-        └─► Use: SDF Pipeline (fogleman/sdf → Blender cleanup)
-            See: references/bpy-organic-workflows.md#sdf-pipeline
-```
-
----
-
-## Hard Surface Workflow (Polygon Modeling)
-
-Build mechanical objects from bpy primitives combined with modifiers.
-
-### Core Primitives
-
-| Primitive | bpy Function | Common Use |
-|-----------|--------------|------------|
-| Cube | `bpy.ops.mesh.primitive_cube_add()` | Crates, buildings, boxes |
-| Cylinder | `bpy.ops.mesh.primitive_cylinder_add()` | Barrels, pillars, tubes |
-| UV Sphere | `bpy.ops.mesh.primitive_uv_sphere_add()` | Spheres, domes, orbs |
-| Cone | `bpy.ops.mesh.primitive_cone_add()` | Spikes, roofs, cones |
-| Torus | `bpy.ops.mesh.primitive_torus_add()` | Rings, donuts, wheels |
-| Plane | `bpy.ops.mesh.primitive_plane_add()` | Floors, walls, panels |
-
-### Essential Modifiers
-
-| Modifier | Type Constant | Purpose |
-|----------|---------------|---------|
-| MIRROR | `'MIRROR'` | Symmetric objects (characters, vehicles) |
-| BEVEL | `'BEVEL'` | Chamfered edges, rounded corners |
-| SOLIDIFY | `'SOLIDIFY'` | Add thickness to flat surfaces |
-| ARRAY | `'ARRAY'` | Repeated elements (stairs, chains) |
-| BOOLEAN | `'BOOLEAN'` | Combine/subtract shapes (carving) |
-| SUBSURF | `'SUBSURF'` | Smoothing (use sparingly for low-poly) |
-| DECIMATE | `'DECIMATE'` | Reduce poly count |
-| REMESH | `'REMESH'` | Clean up topology |
-
-See `references/bpy-modifiers.md` for detailed modifier usage and parameters.
-
----
-
-## Organic Workflows
-
-Three approaches for organic shapes, each with specific strengths:
-
-### Metaballs
-
-For blobby, smooth-blending shapes. Fully supported in bpy scripting.
-
-**Element types:** `BALL`, `CAPSULE`, `PLANE`, `ELLIPSOID`, `CUBE`
-
-```python
-# Create metaball
-mball = bpy.data.metaballs.new("OrganicShape")
-mball.resolution = 0.1
-mball.render_resolution = 0.05
-
-# Add elements
-elem = mball.elements.new()
-elem.type = 'BALL'
-elem.radius = 1.0
-
-# Convert to mesh when done
-bpy.ops.object.convert(target='MESH')
-```
-
-### Skin Modifier
-
-Create creatures from vertex skeleton. Ideal for characters defined as stick figures.
-
-```python
-# Create armature-like vertex chain
-bpy.ops.mesh.primitive_vert_add()
-# Extrude to create skeleton shape
-bpy.ops.mesh.extrude_region_move(...)
-
-# Apply skin modifier
-bpy.ops.object.modifier_add(type='SKIN')
-# Adjust skin radii per vertex
-```
-
-### SDF Pipeline
-
-For complex smooth blends using `fogleman/sdf` library. Only external dependency.
-
-1. Generate STL with `fogleman/sdf`
-2. Import into Blender
-3. Clean up with REMESH modifier
-4. UV unwrap and export
-
-See `references/bpy-organic-workflows.md` for complete workflow details.
-
----
-
-## Post-Processing (Required for All Meshes)
-
-Every mesh MUST have these applied before export:
-
-### 1. UV Unwrap
-
-```python
-bpy.ops.object.mode_set(mode='EDIT')
-bpy.ops.mesh.select_all(action='SELECT')
-
-# Choose unwrap method:
-bpy.ops.uv.smart_project(angle_limit=66.0)  # General purpose
-# OR
-bpy.ops.uv.cube_project(cube_size=1.0)      # Box-like objects
-# OR
-bpy.ops.uv.unwrap(method='ANGLE_BASED')     # Manual seams
-```
-
-### 2. Normals
-
-```python
-bpy.ops.object.mode_set(mode='OBJECT')
-bpy.ops.object.shade_smooth()
-
-# Enable auto-smooth for hard edges
-obj.data.use_auto_smooth = True
-obj.data.auto_smooth_angle = math.radians(30)
-
-# Fix any inverted normals
-bpy.ops.mesh.normals_make_consistent(inside=False)
-```
-
-### 3. Cleanup
-
-```python
-bpy.ops.object.mode_set(mode='EDIT')
-bpy.ops.mesh.select_all(action='SELECT')
-
-# Remove doubles
-bpy.ops.mesh.remove_doubles(threshold=0.0001)
-
-# Delete loose geometry
-bpy.ops.mesh.delete_loose()
-
-# Triangulate for game export
-bpy.ops.mesh.quads_convert_to_tris()
-```
-
-### 4. Export
-
-```python
-bpy.ops.export_scene.gltf(
-    filepath="output.glb",
-    export_format='GLB',
-    export_apply_modifiers=True,
-    export_normals=True,
-    export_tangents=False,
-    export_colors=True
-)
-```
-
-See `references/bpy-post-processing.md` for complete post-processing patterns.
-
----
-
-## Console Constraints (Nethercore ZX)
-
-### Triangle Budgets
-
-| Use Case | Triangle Budget |
-|----------|-----------------|
-| Swarm entities | 50-150 |
-| Props | 50-300 |
-| Characters | 200-500 |
-| Vehicles | 300-800 |
-| Hero/close-up | 500-2000 |
-
-### Bone Limits (Animated Meshes)
-
-| Tier | Max Bones |
-|------|-----------|
-| Simple | 8-12 |
-| Standard | 16-24 |
-| Complex | 32-48 |
-
-### Texture Resolution
-
-Power-of-2 only: 64, 128, 256, 512
-
----
-
-## Script Template
-
-```python
-#!/usr/bin/env python3
-"""
-Procedural mesh generator for Nethercore ZX.
-Run: blender --background --python generator.py
-"""
-
-import bpy
-import math
-import sys
-
-def clear_scene():
-    """Remove default objects."""
-    bpy.ops.object.select_all(action='SELECT')
-    bpy.ops.object.delete()
-
-def generate_mesh():
-    """Generate the mesh - customize this."""
-    # Add primitives, apply modifiers
-    pass
-
-def post_process(obj):
-    """Apply required post-processing."""
-    bpy.context.view_layer.objects.active = obj
-
-    # UV unwrap
-    bpy.ops.object.mode_set(mode='EDIT')
-    bpy.ops.mesh.select_all(action='SELECT')
-    bpy.ops.uv.smart_project(angle_limit=66.0)
-
-    # Cleanup
-    bpy.ops.mesh.remove_doubles(threshold=0.0001)
-    bpy.ops.mesh.delete_loose()
-    bpy.ops.mesh.quads_convert_to_tris()
-
-    # Normals
-    bpy.ops.object.mode_set(mode='OBJECT')
-    bpy.ops.object.shade_smooth()
-    obj.data.use_auto_smooth = True
-    obj.data.auto_smooth_angle = math.radians(30)
-
-def export(filepath):
-    """Export to GLB."""
-    bpy.ops.export_scene.gltf(
-        filepath=filepath,
-        export_format='GLB',
-        export_apply_modifiers=True,
-        export_normals=True
-    )
-
-def main():
-    clear_scene()
-    obj = generate_mesh()
-    post_process(obj)
-    export("output.glb")
-
-if __name__ == "__main__":
-    main()
-```
-
----
+See `references/mesh-script-template.md` for templates and `generator-patterns` skill for full project setup.
 
 ## nether.toml Integration
 
@@ -370,57 +110,27 @@ id = "barrel"
 path = "../generated/meshes/barrel.glb"
 ```
 
----
+## Tangent Export (for Normal Maps)
 
-## Reference Files
-
-### Detailed Patterns
-
-- **`references/bpy-primitives.md`** — All bpy primitives with parameters and examples
-- **`references/bpy-modifiers.md`** — Complete modifier reference with stacking patterns
-- **`references/bpy-organic-workflows.md`** — Metaballs, Skin modifier, SDF pipeline
-- **`references/bpy-post-processing.md`** — UV unwrapping, normals, cleanup, export
-
-### Complete Examples
-
-Reference files contain full working scripts for common asset types.
-
----
-
-## Tangent Export for Normal Maps
-
-If the mesh will use normal maps, enable tangent export:
+If using normal maps, enable tangents:
 
 ```python
-# Calculate tangents before export (requires UVs)
-mesh.calc_tangents()
-
-# Export with tangents
+mesh.calc_tangents()  # Requires UVs
 bpy.ops.export_scene.gltf(
     filepath="output.glb",
-    export_format='GLB',
-    export_tangents=True,  # Enable for normal maps
-    export_normals=True
+    export_tangents=True
 )
 ```
 
-**Requirements:**
-- Mesh must have UVs (tangents are calculated per UV layer)
-- Mesh must have normals (tangents depend on normals)
-
-See `references/bpy-tangent-export.md` for complete tangent workflow.
-
----
+See `references/bpy-tangent-export.md` for complete workflow.
 
 ## Quality Checklist
 
-Before exporting any mesh:
-
-- [ ] Triangle count within budget for use case
-- [ ] UV unwrapped (no overlapping for textured surfaces)
+- [ ] Triangle count within budget
+- [ ] UVs unwrapped (no overlapping)
 - [ ] Normals consistent (no inverted faces)
-- [ ] No loose vertices or edges
-- [ ] Triangulated (no quads/ngons)
-- [ ] Correct scale (1 unit = 1 meter typical)
-- [ ] Origin at logical point (center, base, etc.)
-- [ ] Tangents calculated (if using normal maps)
+- [ ] No loose geometry
+- [ ] Triangulated
+- [ ] Correct scale (1 unit = 1 meter)
+- [ ] Origin at logical point
+- [ ] Tangents if using normal maps
