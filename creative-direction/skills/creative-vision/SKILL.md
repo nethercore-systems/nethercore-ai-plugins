@@ -91,7 +91,7 @@ Ask: Does this reinforce the experience promise? Evoke intended emotions? Suit t
 | Performance issue | Tech |
 | Milestone review | Creative + All |
 
-Store vision in `.studio/creative-direction.local.md`.
+Store vision in `.studio/creative-direction.md`.
 
 ## References
 

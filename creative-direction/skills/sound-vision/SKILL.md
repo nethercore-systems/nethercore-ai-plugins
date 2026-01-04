@@ -75,7 +75,7 @@ PRIORITY 4 (Most flexible):
 - Balance file size vs quality
 - Plan for channel stealing
 
-Store in `.studio/sound-direction.md` or `.studio/creative-direction.local.md`.
+Store in `.studio/sound-direction.md` or `.studio/creative-direction.md`.
 
 ## References
 

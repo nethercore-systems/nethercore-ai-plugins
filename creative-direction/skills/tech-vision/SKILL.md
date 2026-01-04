@@ -72,7 +72,7 @@ When approaching limits: identify subsections → extract → create interfaces 
 
 **FFI:** Minimize and batch calls.
 
-Store in `.studio/architecture/` and `.studio/creative-direction.local.md`.
+Store in `.studio/architecture/` and `.studio/creative-direction.md`.
 
 ## References
 

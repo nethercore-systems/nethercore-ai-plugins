@@ -3,26 +3,78 @@ name: Procedural Instrument Synthesis
 description: |
   Use this skill to GENERATE instrument samples for ZX game music.
 
-  **Triggers:** "generate instrument", "synthesize piano", "make guitar sound", "instrument sample", "FM synthesis", "Karplus-Strong", "physical modeling", "wavetable"
-
-  **Before generating:** Check `.studio/sonic-identity.local.md` for audio specs.
-
-  **Modular lib/ architecture:** lib/ contains PRIMITIVES only, not pre-made instruments.
-  You must COMPOSE your own instruments using these building blocks.
+  **Spec-Driven Workflow (RECOMMENDED):**
+  1. Create `.spec.py` file in `.studio/instruments/`
+  2. Run `python sound_parser.py instrument spec.py output.wav`
+  3. Spec persists for iteration; parser handles synthesis
 
   **Load references when:**
-  - Plucked strings (guitar, bass) → `references/karplus-strong.md`
-  - Electric piano, bells → `references/fm-synthesis.md`
-  - Pads, evolving sounds → `references/wavetable-synthesis.md`
-  - Organs → `references/additive-synthesis.md`
-  - Synth leads/bass → `references/subtractive-synthesis.md`
-  - Example drum implementations → `references/drum-examples.py`
+  - Creating instrument specs → `procedural-sounds/references/sound-spec-format.md`
+  - Running parser → `procedural-sounds/references/sound_parser.py`
+  - Example specs → `examples/bass.spec.py`, `examples/lead.spec.py`
+  - Manual synthesis (advanced) → `references/karplus-strong.md`, `references/fm-synthesis.md`
 
-  Production-quality synthesis (not chiptuney) using FM, physical modeling, and wavetable.
-version: 4.0.0
+  **Before generating:** Check `.studio/sonic-identity.md` for audio specs.
+version: 5.0.0
 ---
 
 # Procedural Instrument Synthesis
+
+Generate production-quality instrument samples using a **spec-driven workflow**. Create declarative specs, run the parser, iterate on parameters without regenerating code.
+
+## Spec-Driven Workflow (Primary)
+
+**Architecture:**
+```
+LLM creates spec (.spec.py)  →  sound_parser.py  →  WAV file
+         ↓
+  .studio/instruments/
+```
+
+**Step 1: Create Spec**
+```python
+# .studio/instruments/bass.spec.py
+INSTRUMENT = {
+    "instrument": {
+        "name": "bass",
+        "base_note": "C2",
+        "synthesis": {
+            "type": "karplus_strong",
+            "damping": 0.994,
+            "brightness": 0.5
+        },
+        "envelope": {"attack": 0.01, "decay": 0.4, "sustain": 0.3, "release": 0.3},
+        "output": {"duration": 1.5, "bit_depth": 16, "loop": True}
+    }
+}
+```
+
+**Step 2: Run Parser**
+```bash
+python sound_parser.py instrument .studio/instruments/bass.spec.py generated/samples/bass.wav
+```
+
+**Step 3: Iterate**
+Edit spec parameters, re-run parser. Same spec = same output (deterministic).
+
+**See:** `procedural-sounds/references/sound-spec-format.md` for complete format.
+
+## Example Specs
+
+| Instrument | Spec File | Synthesis Type |
+|------------|-----------|----------------|
+| Bass | `examples/bass.spec.py` | Karplus-Strong |
+| Lead | `examples/lead.spec.py` | Subtractive (detuned saws) |
+| Pad | `examples/pad.spec.py` | Additive |
+| Kick | `examples/kick.spec.py` | FM + pitch drop |
+
+## Manual Synthesis (Advanced)
+
+For cases where specs don't cover your needs, use the lib/ primitives directly. The rest of this document covers manual synthesis techniques.
+
+---
+
+## lib/ Architecture (for Manual Synthesis)
 
 Generate production-quality instrument samples that sound realistic and musical—not chiptuney.
 

@@ -1,6 +1,6 @@
 # Blender bpy Implementation
 
-Complete Python implementation for generating characters from YAML specs.
+Complete Python implementation for generating characters from `.spec.py` files.
 
 ## Prerequisites
 
@@ -23,7 +23,6 @@ import bmesh
 import mathutils
 from mathutils import Vector, Matrix
 import math
-import yaml
 
 
 def clear_scene():
@@ -273,6 +272,7 @@ def build_body_part(spec, armature):
 
 def parse_step_string(step_str):
     """Parse step string like 'extrude: 0.05, scale: 1.15' to dict."""
+    import ast
     result = {}
     parts = step_str.split(',')
     for part in parts:
@@ -282,7 +282,7 @@ def parse_step_string(step_str):
         # Try to parse as number or list
         try:
             if value.startswith('['):
-                result[key] = yaml.safe_load(value)
+                result[key] = ast.literal_eval(value)
             else:
                 result[key] = float(value)
         except:
@@ -608,9 +608,11 @@ def export_character(armature, merged, filepath):
 # --- Main Entry Point ---
 
 def main(spec_path, output_path):
-    """Generate character from YAML spec file."""
+    """Generate character from .spec.py file."""
+    # Load Python spec file - defines SPEC dict
     with open(spec_path, 'r') as f:
-        spec = yaml.safe_load(f)
+        exec(f.read(), globals())
+    spec = SPEC  # SPEC defined by exec'd file
 
     clear_scene()
     armature, merged = generate_character(spec)
@@ -623,18 +625,18 @@ def main(spec_path, output_path):
 if __name__ == "__main__":
     import sys
     if len(sys.argv) >= 4:
-        # blender --background --python script.py -- spec.yaml output.glb
+        # blender --background --python script.py -- spec.py output.glb
         args = sys.argv[sys.argv.index("--") + 1:]
         main(args[0], args[1])
     else:
-        print("Usage: blender --background --python generate_character.py -- spec.yaml output.glb")
+        print("Usage: blender --background --python generate_character.py -- character.spec.py output.glb")
 ```
 
 ---
 
 ## Minimal Generator Template
 
-For quick single-character generation without YAML file:
+For quick single-character generation with inline spec:
 
 ```python
 #!/usr/bin/env python3
@@ -651,26 +653,26 @@ import math
 # Paste functions above, then:
 
 SPEC = {
-    'character': {
-        'name': 'my_character',
-        'tri_budget': 400,
-        'skeleton': [
-            {'bone': 'pelvis', 'parent': None, 'head': [0, 0, 0.9], 'tail': [0, 0, 1.0]},
-            {'bone': 'spine', 'parent': 'pelvis', 'head': [0, 0, 1.0], 'tail': [0, 0, 1.3]},
+    "character": {
+        "name": "my_character",
+        "tri_budget": 400,
+        "skeleton": [
+            {"bone": "pelvis", "parent": None, "head": [0, 0, 0.9], "tail": [0, 0, 1.0]},
+            {"bone": "spine", "parent": "pelvis", "head": [0, 0, 1.0], "tail": [0, 0, 1.3]},
             # ... more bones
         ],
-        'parts': {
-            'torso': {
-                'bone': 'spine',
-                'base': 'hexagon(6)',
-                'base_radius': 0.12,
-                'steps': [
-                    {'extrude': 0.1, 'scale': 1.1},
-                    {'extrude': 0.15, 'scale': 1.0},
-                    {'extrude': 0.05, 'scale': 0.9},
+        "parts": {
+            "torso": {
+                "bone": "spine",
+                "base": "hexagon(6)",
+                "base_radius": 0.12,
+                "steps": [
+                    {"extrude": 0.1, "scale": 1.1},
+                    {"extrude": 0.15, "scale": 1.0},
+                    {"extrude": 0.05, "scale": 0.9},
                 ],
-                'cap_start': True,
-                'cap_end': False,
+                "cap_start": True,
+                "cap_end": False,
             },
             # ... more parts
         }

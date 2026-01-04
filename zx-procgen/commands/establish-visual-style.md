@@ -121,7 +121,7 @@ Ask: "Any specific ZX constraints to note?" (ROM budget concerns, render mode pr
 
 Create the style specification document.
 
-**Output location:** `.studio/visual-style.local.md`
+**Output location:** `.studio/visual-style.md`
 
 **Template:**
 
@@ -200,7 +200,7 @@ Natural language → style translation for this project:
 
 After creating the file, summarize:
 
-"I've created your Visual Style specification at `.studio/visual-style.local.md`. This establishes:
+"I've created your Visual Style specification at `.studio/visual-style.md`. This establishes:
 
 - **Style:** [Token]
 - **Palette:** [Palette]

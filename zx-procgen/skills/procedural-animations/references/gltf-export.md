@@ -444,3 +444,46 @@ def verify_glb(filepath):
 # Usage
 verify_glb("character.glb")
 ```
+
+---
+
+## Importing to Nethercore ZX
+
+After exporting your GLB with multiple animations, import them to your game:
+
+### Bulk Import (Recommended)
+
+Import all animations from a single GLB with one nether.toml entry:
+
+```toml
+# Mesh
+[[assets.meshes]]
+id = "character"
+path = "assets/character.glb"
+
+# Skeleton
+[[assets.skeletons]]
+id = "character_skeleton"
+path = "assets/character.glb"
+skin_name = "Armature"
+
+# ALL animations (wildcard import)
+[[assets.animations]]
+path = "assets/character.glb"
+skin_name = "Armature"
+id_prefix = "char_"  # Optional: creates char_Walk, char_Run, etc.
+```
+
+The wildcard import automatically:
+- Finds all animation clips in the GLB
+- Uses original Blender Action names as asset IDs
+- Applies optional `id_prefix` to prevent collisions
+
+### Runtime Access
+
+```rust
+// Animation IDs are: prefix + Blender action name
+let walk = rom_keyframes(b"char_Walk", 9);
+let run = rom_keyframes(b"char_Run", 8);
+let idle = rom_keyframes(b"char_Idle", 9);
+```

@@ -1,6 +1,6 @@
 # Style Presets
 
-Visual style guides for different character aesthetics.
+Visual style guides for different character aesthetics. Copy patterns into your `.spec.py` files.
 
 ---
 
@@ -13,19 +13,19 @@ Sharp edges, blocky forms, abrupt transitions.
 - **Bases:** `square(4)` or `octagon(8)` for angular silhouettes
 - **Scale transitions:** Abrupt (1.0 → 1.4 → 0.6)
 - **Steps:** Fewer, larger extrusions
-- **Caps:** All parts capped (`cap_end: true`) for solid look
+- **Caps:** All parts capped (`"cap_end": True`) for solid look
 
 ### Example Scale Patterns
 
-```yaml
+```python
 # Sharp plate edge
-- extrude: 0.01, scale: 1.4    # abrupt flare
-- extrude: 0.05, scale: 1.0    # plate body
-- extrude: 0.01, scale: 0.6    # abrupt return
+{"extrude": 0.01, "scale": 1.4},    # abrupt flare
+{"extrude": 0.05, "scale": 1.0},    # plate body
+{"extrude": 0.01, "scale": 0.6},    # abrupt return
 
 # Angular joint
-- extrude: 0.08, scale: 1.0    # limb segment
-- extrude: 0.02, scale: 0.5    # sharp taper
+{"extrude": 0.08, "scale": 1.0},    # limb segment
+{"extrude": 0.02, "scale": 0.5},    # sharp taper
 ```
 
 ### Visual Result
@@ -55,20 +55,20 @@ Smooth curves, gradual transitions, muscle-like forms.
 
 ### Example Patterns
 
-```yaml
+```python
 # Calf muscle (back bulge)
-- extrude: 0.08, scale: 1.15, bulge: -0.018
-- extrude: 0.08, scale: 0.95, bulge: -0.01
-- extrude: 0.08, scale: 0.85, bulge: -0.005
+{"extrude": 0.08, "scale": 1.15, "bulge": -0.018},
+{"extrude": 0.08, "scale": 0.95, "bulge": -0.01},
+{"extrude": 0.08, "scale": 0.85, "bulge": -0.005},
 
 # Chest (front bulge)
-- extrude: 0.05, scale: [1.0, 1.1], bulge: 0.015
-- extrude: 0.04, scale: [1.1, 1.05], bulge: 0.01
+{"extrude": 0.05, "scale": [1.0, 1.1], "bulge": 0.015},
+{"extrude": 0.04, "scale": [1.1, 1.05], "bulge": 0.01},
 
 # Smooth torso curve
-- extrude: 0.04, scale: [1.1, 1.15], bulge: -0.02   # pelvis
-- extrude: 0.05, scale: [0.8, 0.85]                  # waist
-- extrude: 0.05, scale: [1.0, 1.1], bulge: 0.015    # chest
+{"extrude": 0.04, "scale": [1.1, 1.15], "bulge": -0.02},   # pelvis
+{"extrude": 0.05, "scale": [0.8, 0.85]},                    # waist
+{"extrude": 0.05, "scale": [1.0, 1.1], "bulge": 0.015},    # chest
 ```
 
 ### Visual Result
@@ -97,37 +97,43 @@ Combination of base form with armor overlays.
 
 ### Example Armor Patterns
 
-```yaml
+```python
 # Pauldron (shoulder armor)
-arm_upper_L:
-  base: hexagon(6)
-  base_radius: 0.045
-  steps:
-    - extrude: 0.02, scale: 1.5    # FLARE out
-    - extrude: 0.04, scale: 1.0    # plate body
-    - extrude: 0.015, scale: 0.6   # sharp return
-    - extrude: 0.1, scale: 1.0     # arm beneath
+"arm_upper_L": {
+    "base": "hexagon(6)",
+    "base_radius": 0.045,
+    "steps": [
+        {"extrude": 0.02, "scale": 1.5},    # FLARE out
+        {"extrude": 0.04, "scale": 1.0},    # plate body
+        {"extrude": 0.015, "scale": 0.6},   # sharp return
+        {"extrude": 0.1, "scale": 1.0},     # arm beneath
+    ],
+}
 
 # Chest plate
-torso:
-  base: octagon(8)
-  base_radius: 0.12
-  steps:
-    - extrude: 0.05, scale: 1.0
-    - extrude: 0.02, scale: 1.25   # plate edge
-    - extrude: 0.08, scale: 1.0    # plate body
-    - extrude: 0.02, scale: 0.8    # back to body
-    - extrude: 0.1, scale: 0.9     # waist taper
+"torso": {
+    "base": "octagon(8)",
+    "base_radius": 0.12,
+    "steps": [
+        {"extrude": 0.05, "scale": 1.0},
+        {"extrude": 0.02, "scale": 1.25},   # plate edge
+        {"extrude": 0.08, "scale": 1.0},    # plate body
+        {"extrude": 0.02, "scale": 0.8},    # back to body
+        {"extrude": 0.1, "scale": 0.9},     # waist taper
+    ],
+}
 
 # Gauntlet
-arm_lower_L:
-  base: hexagon(6)
-  base_radius: 0.04
-  steps:
-    - extrude: 0.1, scale: 1.0
-    - extrude: 0.02, scale: 1.3    # cuff flare
-    - extrude: 0.03, scale: 1.0    # cuff body
-    - extrude: 0.015, scale: 0.7   # wrist return
+"arm_lower_L": {
+    "base": "hexagon(6)",
+    "base_radius": 0.04,
+    "steps": [
+        {"extrude": 0.1, "scale": 1.0},
+        {"extrude": 0.02, "scale": 1.3},    # cuff flare
+        {"extrude": 0.03, "scale": 1.0},    # cuff body
+        {"extrude": 0.015, "scale": 0.7},   # wrist return
+    ],
+}
 ```
 
 ### Visual Result
@@ -157,31 +163,34 @@ Extended torso that covers lower body.
 
 ### Example Robe Patterns
 
-```yaml
-torso_robed:
-  bone: spine
-  base: octagon(8)
-  base_radius: 0.11
-  steps:
-    # Normal upper torso
-    - extrude: 0.05, scale: 1.1
-    - extrude: 0.08, scale: 1.0
-    - extrude: 0.05, scale: 0.85   # waist
+```python
+"torso_robed": {
+    "bone": "spine",
+    "base": "octagon(8)",
+    "base_radius": 0.11,
+    "steps": [
+        # Normal upper torso
+        {"extrude": 0.05, "scale": 1.1},
+        {"extrude": 0.08, "scale": 1.0},
+        {"extrude": 0.05, "scale": 0.85},   # waist
 
-    # Robe extends down
-    - extrude: 0.03, scale: 1.2    # hip flare
-    - extrude: 0.1, scale: 1.3     # robe body
-    - extrude: 0.12, scale: 1.35   # continue expanding
-    - extrude: 0.1, scale: 1.4     # wide hem
-    - extrude: 0.02, scale: 1.0    # hem edge
-  cap_start: true
-  cap_end: true                    # closed at bottom
+        # Robe extends down
+        {"extrude": 0.03, "scale": 1.2},    # hip flare
+        {"extrude": 0.1, "scale": 1.3},     # robe body
+        {"extrude": 0.12, "scale": 1.35},   # continue expanding
+        {"extrude": 0.1, "scale": 1.4},     # wide hem
+        {"extrude": 0.02, "scale": 1.0},    # hem edge
+    ],
+    "cap_start": True,
+    "cap_end": True,                        # closed at bottom
+}
 
 # Optional visible feet
-foot_L:
-  bone: foot_L
-  # ... normal foot pattern
-  # Positioned to peek out from robe
+"foot_L": {
+    "bone": "foot_L",
+    # ... normal foot pattern
+    # Positioned to peek out from robe
+}
 ```
 
 ### Visual Result
@@ -212,41 +221,49 @@ Exaggerated proportions for cute characters.
 
 ### Proportion Adjustments
 
-```yaml
+```python
 # Head: larger radius, more spherical
-head:
-  base: octagon(8)
-  base_radius: 0.12     # 50% larger than normal
-  steps:
-    - extrude: 0.02, scale: 0.9
-    - extrude: 0.08, scale: 1.4    # expand to sphere
-    - extrude: 0.1, scale: 1.0     # maintain size
-    - extrude: 0.06, scale: 0.7    # round top
-    - extrude: 0.03, scale: 0.4
+"head": {
+    "base": "octagon(8)",
+    "base_radius": 0.12,     # 50% larger than normal
+    "steps": [
+        {"extrude": 0.02, "scale": 0.9},
+        {"extrude": 0.08, "scale": 1.4},    # expand to sphere
+        {"extrude": 0.1, "scale": 1.0},     # maintain size
+        {"extrude": 0.06, "scale": 0.7},    # round top
+        {"extrude": 0.03, "scale": 0.4},
+    ],
+}
 
 # Arms: shorter, stubbier
-arm_upper_L:
-  base: hexagon(6)
-  base_radius: 0.04
-  steps:
-    - extrude: 0.06, scale: 1.0    # short segment
-    - extrude: 0.02, scale: 0.85
+"arm_upper_L": {
+    "base": "hexagon(6)",
+    "base_radius": 0.04,
+    "steps": [
+        {"extrude": 0.06, "scale": 1.0},    # short segment
+        {"extrude": 0.02, "scale": 0.85},
+    ],
+}
 
-arm_lower_L:
-  base: hexagon(6)
-  base_radius: 0.034
-  steps:
-    - extrude: 0.05, scale: 1.0    # very short
-    - extrude: 0.02, scale: 0.8
+"arm_lower_L": {
+    "base": "hexagon(6)",
+    "base_radius": 0.034,
+    "steps": [
+        {"extrude": 0.05, "scale": 1.0},    # very short
+        {"extrude": 0.02, "scale": 0.8},
+    ],
+}
 
 # Torso: wider, rounder
-torso:
-  base: octagon(8)
-  base_radius: 0.13
-  steps:
-    - extrude: 0.04, scale: 1.1
-    - extrude: 0.06, scale: 1.0
-    - extrude: 0.03, scale: 0.95
+"torso": {
+    "base": "octagon(8)",
+    "base_radius": 0.13,
+    "steps": [
+        {"extrude": 0.04, "scale": 1.1},
+        {"extrude": 0.06, "scale": 1.0},
+        {"extrude": 0.03, "scale": 0.95},
+    ],
+}
 ```
 
 ---
@@ -257,28 +274,32 @@ Combine elements for unique looks:
 
 ### Mecha + Organic (Cyborg)
 
-```yaml
+```python
 # Organic torso with mechanical arm
-torso:
-  base: hexagon(6)         # organic
-  # ... smooth curves
+"torso": {
+    "base": "hexagon(6)",         # organic
+    # ... smooth curves
+}
 
-arm_upper_L:
-  base: square(4)          # mechanical
-  # ... sharp angles
+"arm_upper_L": {
+    "base": "square(4)",          # mechanical
+    # ... sharp angles
+}
 ```
 
 ### Armored + Robed (Battle Mage)
 
-```yaml
-torso:
-  # Upper: armor plates
-  # Lower: flowing robe extension
-  steps:
-    - extrude: 0.02, scale: 1.3    # chest plate
-    - extrude: 0.05, scale: 1.0
-    - extrude: 0.02, scale: 0.7
-    # ... then robe expansion
+```python
+"torso": {
+    # Upper: armor plates
+    # Lower: flowing robe extension
+    "steps": [
+        {"extrude": 0.02, "scale": 1.3},    # chest plate
+        {"extrude": 0.05, "scale": 1.0},
+        {"extrude": 0.02, "scale": 0.7},
+        # ... then robe expansion
+    ],
+}
 ```
 
 ---

@@ -20,18 +20,27 @@ Claude sessions are stateless. Without persistent documentation:
 ```
 project/
 ├── .studio/
-│   ├── creative-direction.local.md  # Vision (gitignored)
+│   ├── creative-direction.md        # Vision and pillars
+│   ├── art-direction.md             # Visual style
+│   ├── sound-direction.md           # Audio direction
+│   ├── tech-direction.md            # Technical constraints
+│   ├── visual-style.md              # Detailed visual specs
+│   ├── sonic-identity.md            # Audio style specs
 │   ├── project-status.md            # Work state
 │   ├── architecture/                # ADRs
 │   │   ├── decisions.md
 │   │   └── 001-*.md
-│   ├── art-direction.md
-│   └── sound-direction.md
-└── .gitignore                        # .studio/*.local.md
+│   ├── characters/                  # Character specs
+│   ├── mechanics/                   # Mechanic specs
+│   ├── assets/                      # Asset specs
+│   ├── animations/                  # Motion descriptions
+│   ├── music/                       # Music specs
+│   ├── sfx/                         # SFX specs
+│   └── analysis/                    # Analysis reports
+└── ...
 ```
 
-**Local files** (`.local.md`): Not committed, personal context
-**Shared files**: Committed, team context
+All `.studio/` files are committed and shared with the team.
 
 ## Creative Direction File Format
 
@@ -71,7 +80,7 @@ creative_pillars:
 
 | File | Target | Max |
 |------|--------|-----|
-| creative-direction.local.md | 200 | 500 |
+| creative-direction.md | 200 | 500 |
 | project-status.md | 50 | 100 |
 | Individual ADRs | 100 | 200 |
 

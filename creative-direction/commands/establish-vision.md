@@ -18,7 +18,7 @@ Guide the user through establishing creative direction for their project. Create
 ### 1. Check Existing Direction
 
 First, check if direction already exists:
-- Look for `.studio/creative-direction.local.md`
+- Look for `.studio/creative-direction.md`
 - If exists, ask if user wants to update or start fresh
 
 ### 2. Determine Scope
@@ -72,56 +72,173 @@ Ask user about:
 
 ### 7. Create Direction Files
 
-Based on responses, create:
+Based on responses, create **separate direction files** for each domain:
 
-**`.studio/creative-direction.local.md`** with YAML frontmatter:
+**`.studio/creative-direction.md`** (always created):
+```yaml
+---
+experience_promise: [user input]
+creative_pillars:
+  - [pillar 1]
+  - [pillar 2]
+  - [pillar 3]
+target_audience: [user input]
+avoid_patterns:
+  - [anti-pattern 1]
+references:
+  - [reference work 1]
+---
+
+# Creative Vision
+
+[Experience promise paragraph]
+
+## Creative Pillars
+
+1. **[Pillar 1]:** [Description of how it manifests]
+2. **[Pillar 2]:** [Description]
+3. **[Pillar 3]:** [Description]
+
+## Target Audience
+
+- **Primary:** [Who this is for]
+- **Secondary:** [Who else might enjoy]
+- **Not For:** [Who should avoid]
+
+## Anti-Patterns
+
+- [What to explicitly avoid]
+
+## Reference Works
+
+- [Game/Film/Art]: [What to draw from it]
+```
+
+**`.studio/art-direction.md`** (if --full or --art-only):
 ```yaml
 ---
 art_style: [user input]
 color_palette: [user input]
 style_spectrums:
   fidelity: [1-9]
+  detail: [1-9]
   saturation: [1-9]
-  # ... etc
-
-sonic_identity: [user input]
-mix_priority: [user input]
-
-architecture: [user input]
-determinism: [required|optional]
-file_size_limit: [number]
-
-creative_pillars:
+  contrast: [1-9]
+  form: [1-9]
+  line: [1-9]
+visual_pillars:
   - [pillar 1]
   - [pillar 2]
   - [pillar 3]
-
-target_audience: [user input]
-avoid_patterns:
-  - [anti-pattern 1]
 ---
 
-# Project Vision
+# Art Direction
 
-[Experience promise paragraph]
+## Style Description
 
-# Art Direction Notes
+[Art style description paragraph]
 
-Direction established on [date].
-- [Key art decisions noted]
+## Style Spectrums
 
-# Sound Direction Notes
+| Spectrum | Value | Description |
+|----------|-------|-------------|
+| Fidelity | [1-9] | [Stylized ← → Realistic] |
+| Detail | [1-9] | [Simple ← → Complex] |
+| Saturation | [1-9] | [Muted ← → Vibrant] |
+| Contrast | [1-9] | [Low-key ← → High-key] |
+| Form | [1-9] | [Geometric ← → Organic] |
+| Line | [1-9] | [Hard-edge ← → Soft] |
 
-Direction established on [date].
-- [Key sound decisions noted]
+## Color Palette
 
-# Tech Direction Notes
+- **Dominant:** [Color/mood]
+- **Secondary:** [Color/mood]
+- **Accent:** [Color/mood]
 
-Direction established on [date].
-- [Key tech decisions noted]
+## Visual Pillars
+
+1. **[Pillar 1]:** [How it manifests visually]
+2. **[Pillar 2]:** [How it manifests visually]
+3. **[Pillar 3]:** [How it manifests visually]
 ```
 
-**`.studio/project-status.md`**:
+**`.studio/sound-direction.md`** (if --full or --sound-only):
+```yaml
+---
+sonic_identity: [user input]
+music_style: [user input]
+sfx_character: [user input]
+mix_priority: [gameplay-clarity|atmosphere|balanced]
+audio_pillars:
+  - [pillar 1]
+  - [pillar 2]
+  - [pillar 3]
+---
+
+# Sound Direction
+
+## Sonic Identity
+
+[Overall sound description paragraph]
+
+## Music Style
+
+- **Genre:** [Genre]
+- **Instrumentation:** [Key instruments]
+- **Mood:** [Emotional character]
+
+## SFX Character
+
+[How effects should feel - punchy, subtle, organic, etc.]
+
+## Mix Priority
+
+1. [Highest priority - e.g., player feedback]
+2. [Second priority]
+3. [Third priority]
+
+## Audio Pillars
+
+1. **[Pillar 1]:** [How it manifests in audio]
+2. **[Pillar 2]:** [How it manifests in audio]
+3. **[Pillar 3]:** [How it manifests in audio]
+```
+
+**`.studio/tech-direction.md`** (if --full or --tech-only):
+```yaml
+---
+architecture: [user input]
+determinism: [required|optional]
+file_size_limit: [number]
+tech_pillars:
+  - [pillar 1]
+  - [pillar 2]
+  - [pillar 3]
+---
+
+# Technical Direction
+
+## Architecture Pattern
+
+[Architecture description - ECS, component-based, etc.]
+
+## Determinism
+
+[Required for rollback netcode / Optional]
+
+## File Size Limits
+
+- **Soft limit:** [X] lines (warning)
+- **Hard limit:** [Y] lines (must split)
+
+## Tech Pillars
+
+1. **[Pillar 1]:** [How it manifests in code]
+2. **[Pillar 2]:** [How it manifests in code]
+3. **[Pillar 3]:** [How it manifests in code]
+```
+
+**`.studio/project-status.md`** (always created):
 ```markdown
 # Project Status
 
@@ -146,11 +263,7 @@ Vision established via /establish-vision command.
 | 1 | Initial Architecture | Accepted | [date] |
 ```
 
-### 8. Add to .gitignore
-
-Add `.studio/*.local.md` to `.gitignore` if not already present.
-
-### 9. Summarize
+### 8. Summarize
 
 Display summary of established direction:
 - Creative pillars

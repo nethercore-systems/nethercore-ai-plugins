@@ -5,7 +5,7 @@ description: |
 
   **Triggers:** "character mesh", "create character", "humanoid mesh", "quadruped mesh", "character spec", "extrude scale", "low-poly character", "PS1 character", "PS2 character", "feminine character", "anatomical mesh"
 
-  **Before generating:** Check `.studio/visual-style.local.md` for project style.
+  **Before generating:** Check `.studio/visual-style.md` for project style.
 
   **Load references when:**
   - Python bpy code → `references/bpy-implementation.md`
@@ -15,21 +15,21 @@ description: |
   - Triangle budgets → `references/triangle-budget-guide.md`
 
   **Load examples when:**
-  - Need complete spec templates → `examples/knight.yaml`, `examples/mage.yaml`, `examples/spider.yaml`, `examples/feminine_warrior.yaml`
+  - Need complete spec templates → `examples/knight.spec.py`, `examples/mage.spec.py`, `examples/spider.spec.py`, `examples/feminine_warrior.spec.py`
 
   For NORMAL MAPS: use `procedural-normal-maps` skill (enable tangent export).
   For TEXTURING: use `mesh-texturing-workflows` skill.
   For ANIMATIONS: use `procedural-animations` skill (reference only).
-version: 1.2.0
+version: 1.3.0
 ---
 
 # Procedural Character Generation
 
-Generate low-poly characters (PS1/PS2 era, 300-700 triangles) using a YAML specification format and Blender bpy.
+Generate low-poly characters (PS1/PS2 era, 300-700 triangles) using Python specification files and Blender bpy.
 
 ## Core Concept: Extrude+Scale Paradigm
 
-Characters are defined as YAML specs with:
+Characters are defined as `.spec.py` files with:
 1. **Skeleton** - Bone hierarchy with world positions
 2. **Parts** - Body parts that extrude along bone directions
 3. **Steps** - Extrude+scale sequences that build each part
@@ -51,47 +51,49 @@ Each body part is a tube that extrudes along its bone's direction, with steps th
 
 ## Character Spec Format
 
-```yaml
-character:
-  name: "character_id"
-  tri_budget: 400
+Character specs are Python files (`.spec.py`) containing a `SPEC` dict:
 
-  # Optional: texturing config (handled by mesh-texturing-workflows)
-  texturing:
-    uv_mode: "smart_project"  # or "region_based"
+```python
+# Knight Enemy - Humanoid
+# Budget: 400 tris
 
-  # Skeleton defines bones AND determines part orientations
-  skeleton:
-    - bone: pelvis
-      parent: null
-      head: [0, 0, 0.9]       # world position
-      tail: [0, 0, 1.0]
+SPEC = {
+    "character": {
+        "name": "knight_enemy",
+        "tri_budget": 400,
 
-    - bone: spine
-      parent: pelvis
-      head: [0, 0, 1.0]
-      tail: [0, 0, 1.3]
+        # Optional: texturing config (handled by mesh-texturing-workflows)
+        "texturing": {
+            "uv_mode": "smart_project"  # or "region_based"
+        },
 
-    # Right side mirrors left
-    - bone: arm_upper_R
-      mirror: arm_upper_L
+        # Skeleton defines bones AND determines part orientations
+        "skeleton": [
+            {"bone": "pelvis", "parent": None, "head": [0, 0, 0.9], "tail": [0, 0, 1.0]},
+            {"bone": "spine", "parent": "pelvis", "head": [0, 0, 1.0], "tail": [0, 0, 1.3]},
+            # Right side mirrors left
+            {"bone": "arm_upper_R", "mirror": "arm_upper_L"},
+        ],
 
-  # Parts reference bones - mesh extrudes along bone direction
-  parts:
-    torso:
-      bone: spine
-      base: hexagon(6)        # cross-section shape
-      base_radius: 0.12
-      steps:
-        - extrude: 0.05, scale: 1.15
-        - extrude: 0.15, scale: 1.0
-        - extrude: 0.08, scale: 0.85
-      cap_start: true
-      cap_end: false          # open for neck
-
-    # Right side mirrors left
-    arm_upper_R:
-      mirror: arm_upper_L
+        # Parts reference bones - mesh extrudes along bone direction
+        "parts": {
+            "torso": {
+                "bone": "spine",
+                "base": "hexagon(6)",       # cross-section shape
+                "base_radius": 0.12,
+                "steps": [
+                    {"extrude": 0.05, "scale": 1.15},
+                    {"extrude": 0.15, "scale": 1.0},
+                    {"extrude": 0.08, "scale": 0.85},
+                ],
+                "cap_start": True,
+                "cap_end": False            # open for neck
+            },
+            # Right side mirrors left
+            "arm_upper_R": {"mirror": "arm_upper_L"}
+        }
+    }
+}
 ```
 
 ---
@@ -124,14 +126,16 @@ Each part requires:
 
 ### Step Operations
 
-```yaml
-step:
-  extrude: 0.1              # distance (required)
-  scale: 1.2 | [X, Y]       # uniform or asymmetric
-  bulge: -0.02 | [side, fb] # radial push: + front, - back
-  tilt: 5 | [x, y]          # perpendicular rotation (degrees)
-  translate: [x, y, z]      # offset (prefer bulge for anatomy)
-  rotate: 15                # around bone axis
+```python
+# Step dict with available operations:
+{
+    "extrude": 0.1,              # distance (required)
+    "scale": 1.2,                # uniform or [X, Y] asymmetric
+    "bulge": -0.02,              # radial push or [side, fb]: + front, - back
+    "tilt": 5,                   # perpendicular rotation (degrees) or [x, y]
+    "translate": [0, 0, 0],      # offset (prefer bulge for anatomy)
+    "rotate": 15                 # around bone axis
+}
 ```
 
 | Param | Effect |
@@ -146,21 +150,20 @@ step:
 
 **Critical:** Connected parts MUST share the same base vertex count.
 
-```yaml
+```python
 # CORRECT - both use hexagon(6)
-torso:
-  base: hexagon(6)
-  cap_end: false
-
-head:
-  base: hexagon(6)    # matches torso
-  cap_start: false
+"torso": {
+    "base": "hexagon(6)",
+    "cap_end": False
+},
+"head": {
+    "base": "hexagon(6)",    # matches torso
+    "cap_start": False
+}
 
 # INCORRECT - vertex mismatch = gaps
-torso:
-  base: octagon(8)    # 8 vertices
-head:
-  base: hexagon(6)    # 6 vertices - WON'T WELD
+"torso": {"base": "octagon(8)"},    # 8 vertices
+"head": {"base": "hexagon(6)"}      # 6 vertices - WON'T WELD
 ```
 
 Parts are welded with 2mm tolerance. Ensure:
@@ -206,16 +209,31 @@ cap_tris = base_verts - 2
 1. Determine character type (humanoid, quadruped, creature)
 2. Choose style preset (mecha, organic, armored, robed)
 3. Set triangle budget
-4. Generate character-spec.yaml
+4. Generate `.spec.py` file to `.studio/characters/`
 
-### 2. Generation Phase (character-generator agent)
+### 2. Generation Phase (character_parser.py)
 
-1. Load character-spec.yaml
-2. Create armature from skeleton
-3. Build each part via extrude+scale
-4. Merge and skin with automatic weights
-5. Apply UVs
-6. Export GLB
+The parser is a standalone script that runs without LLM involvement:
+
+```bash
+blender --background --python character_parser.py -- \\
+    .studio/characters/knight.spec.py \\
+    assets/characters/knight.glb
+```
+
+The parser:
+1. Loads and validates the `.spec.py` file
+2. Creates armature from skeleton definition
+3. Builds each part via extrude+scale sequences
+4. Merges parts and applies automatic weights
+5. Applies UVs (smart_project or region_based)
+6. Exports to GLB
+
+**Key benefits:**
+- Deterministic (same spec = same output)
+- No LLM required after spec generation
+- Specs persist in `.studio/` for version control
+- Easy iteration: edit spec, re-run parser
 
 ---
 
@@ -259,11 +277,14 @@ Characters can use normal maps for surface detail (skin pores, cloth weave, armo
 
 Add to character spec:
 
-```yaml
-character:
-  name: "hero_knight"
-  tri_budget: 500
-  use_normal_maps: true  # Enables tangent export
+```python
+SPEC = {
+    "character": {
+        "name": "hero_knight",
+        "tri_budget": 500,
+        "use_normal_maps": True  # Enables tangent export
+    }
+}
 ```
 
 This triggers:
@@ -285,7 +306,7 @@ Export as `{character}_normal.png` for auto-BC5 compression.
 
 ## Related
 
-- **character-designer agent** - Generates character-spec.yaml from description
+- **character-designer agent** - Generates `.spec.py` from description
 - **character-generator agent** - Builds mesh from spec
 - **mesh-texturing-workflows skill** - Texture generation
 - **procedural-animations skill** - Animation (separate workflow)

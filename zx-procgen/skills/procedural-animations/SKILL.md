@@ -5,14 +5,15 @@ description: |
 
   **Triggers:** "animate mesh", "walk cycle", "skeletal animation", "rig character", "bone weights", "keyframe animation", "spinning pickup"
 
-  **Before animating:** Check `.studio/visual-style.local.md` for animation feel.
+  **Before animating:** Check `.studio/visual-style.md` for animation feel.
 
-  **Two-Stage Workflow:**
-  1. `motion-describer` agent → Semantic motion description (YAML)
-  2. `animation-coder` agent → Blender bpy code with coordinate reasoning
+  **Workflow:**
+  - `motion-describer` agent → Produces `.motion.py` spec with poses
+  - `motion_parser.py` → Interprets spec in Blender (no LLM needed)
 
   **Load references when:**
-  - Motion description format → `references/motion-description-format.md`
+  - Motion spec format → `references/motion-description-format.md`
+  - Motion parser script → `references/motion_parser.py`
   - IK setup for locomotion → `references/ik-utilities.md`
   - Rigid objects (spinning, bobbing) → `references/object-animation.md`
   - Character rigs → `references/armature-creation.md`
@@ -25,41 +26,46 @@ description: |
   For MESH GENERATION: use `procedural-meshes` skill.
   For CHARACTER RIGS: see `procedural-characters → skeleton-presets.md`.
   For COMPLETE CHARACTERS: use `character-designer` + `character-generator` agents.
-version: 3.0.0
+version: 4.0.0
 ---
 
 # Procedural Animation Generation
 
 Create animated 3D objects using Blender's Python API (bpy) in headless mode.
 
-## Two-Stage Animation Pipeline
+## Animation Pipeline
 
-Complex animations use a two-stage approach to avoid coordinate confusion:
+Skeletal animations use a spec-based approach with a reusable parser:
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│  Stage 1: motion-describer agent                            │
-│  ─────────────────────────────────────────────────          │
-│  Input: "Create aggressive overhead sword slash"            │
-│  Output: Motion description YAML (semantic, no coordinates) │
-│                                                             │
-│  Uses: Animation principles, anatomy knowledge              │
-│  Does NOT: Write code or specify rotation values            │
-└──────────────────────────┬──────────────────────────────────┘
+│  motion-describer agent                                      │
+│  ───────────────────────────────────────────────             │
+│  Input: "Create idle animation for knight"                   │
+│  Output: .studio/animations/knight_idle.motion.py            │
+│                                                              │
+│  Produces structured poses with bone rotations (degrees)    │
+│  Uses: Animation principles, character personality          │
+└──────────────────────────┬───────────────────────────────────┘
                            │
                            ▼
 ┌─────────────────────────────────────────────────────────────┐
-│  Stage 2: animation-coder agent                             │
-│  ───────────────────────────────────────────────            │
-│  Input: Motion description YAML                             │
-│  Output: Blender bpy Python code                            │
-│                                                             │
-│  Uses: Coordinate reasoning protocol, IK utilities          │
-│  Produces: Working animation script with reasoning comments │
+│  motion_parser.py (reusable script)                          │
+│  ────────────────────────────────────                        │
+│  Input: .motion.py spec + armature .glb                      │
+│  Output: Animated .glb with keyframes                        │
+│                                                              │
+│  blender --background --python motion_parser.py -- \         │
+│      spec.motion.py armature.glb output.glb                  │
 └─────────────────────────────────────────────────────────────┘
 ```
 
-**Why two stages?** LLMs confuse coordinate spaces when translating motion intent directly to rotation values. Separating semantic description from coordinate math prevents errors.
+**Why this architecture?**
+
+1. **No PyYAML dependency** — Python literals work natively in Blender
+2. **No LLM in generation loop** — Parser is deterministic, reusable
+3. **Skeleton-agnostic** — Works with any armature if bone names match
+4. **Explicit rotations** — No coordinate confusion from natural language
 
 ## Prerequisites
 
@@ -108,7 +114,77 @@ Does animation involve ground contact or reaching targets?
 | Jumping | IK feet (land) + FK | Contact frames need precision |
 | Spinning pickups | Object animation | No deformation |
 
+## Motion Spec Format
+
+Motion specs are Python files (`.motion.py`) with structured pose data:
+
+```python
+# Idle Animation - Knight character
+# Duration: 120 frames @ 60fps
+
+MOTION = {
+    "animation": {
+        "name": "knight_idle",
+        "duration_frames": 120,
+        "fps": 60,
+        "loop": True,
+
+        "poses": {
+            "idle_base": {
+                "Hips": {"pitch": -3, "yaw": 0, "roll": 0},
+                "Spine": {"pitch": 2, "yaw": 0, "roll": 0},
+                "Head": {"pitch": -2, "yaw": 0, "roll": 0},
+                # ... more bones with pitch/yaw/roll in degrees
+            },
+            "breath_peak": {
+                "Chest": {"pitch": 3, "yaw": 0, "roll": 0},
+            },
+        },
+
+        "phases": [
+            {
+                "name": "neutral",
+                "frames": [0, 29],
+                "pose": "idle_base",
+                "timing_curve": "linear"
+            },
+            {
+                "name": "inhale",
+                "frames": [30, 59],
+                "pose": "breath_peak",
+                "timing_curve": "ease_in_out"
+            },
+        ],
+
+        "procedural_layers": [
+            {
+                "type": "breathing",
+                "target": "Chest",
+                "period_frames": 90,
+                "amplitude": 0.02,
+                "axis": "pitch"
+            },
+        ],
+
+        "ik_hints": {
+            "feet": None,
+            "hands": None
+        },
+
+        "style": {
+            "weight": "medium",
+            "energy": "calm",
+            "intent": "idle"
+        }
+    }
+}
+```
+
+See `references/motion-description-format.md` for complete spec.
+
 ## Basic Object Animation
+
+For rigid objects (no skeleton):
 
 ```python
 import bpy, math
@@ -131,23 +207,17 @@ for fc in obj.animation_data.action.fcurves:
 
 See `references/object-animation.md` for bobbing, doors, and more patterns.
 
-## Skeletal Animation with Coordinate Reasoning
+## Rotation Convention
 
-**CRITICAL:** Always reason through coordinates before writing rotation values:
+All rotations in motion specs use **degrees** with **pitch/yaw/roll**:
 
-```python
-# COORDINATE REASONING:
-# 1. INTENT: I want the upper arm to pull back behind the shoulder
-# 2. BONE: upper_arm.R controls the right shoulder joint
-# 3. CONVENTION: Blender armatures are Z-up, bones have Y along axis
-# 4. AXIS: For upper arm, local X rotation = forward/back pitch
-# 5. SIGN: Pulling BACK = negative X rotation
-# 6. VALUE: -45 degrees is a reasonable pull-back
+| Term | Axis | Humanoid Example |
+|------|------|------------------|
+| **pitch** | X | Nodding head, bending elbow |
+| **yaw** | Y | Twisting spine, turning head |
+| **roll** | Z | Tilting head, side-bending |
 
-upper_arm.rotation_euler.x = math.radians(-45)
-```
-
-Every rotation value must have this reasoning as a comment.
+The parser converts degrees to radians automatically.
 
 ## Locomotion with IK
 
@@ -161,46 +231,14 @@ setup_leg_ik(armature, 'L')
 setup_leg_ik(armature, 'R')
 
 # Keyframe foot POSITIONS (IK solver handles rotations)
-keyframe_ik_target(armature, "ik_foot.R", 0, (0.1, 0.3, 0))   # Right forward
-keyframe_ik_target(armature, "ik_foot.L", 0, (-0.1, -0.2, 0)) # Left back
-# ... more keyframes
+keyframe_ik_target(armature, "ik_foot.R", 0, (0.1, 0.3, 0))
+keyframe_ik_target(armature, "ik_foot.L", 0, (-0.1, -0.2, 0))
 
 # Bake to FK and remove IK (ZX only supports FK)
 bake_ik_to_fk(armature, 0, 24)
 ```
 
 See `references/ik-utilities.md` for complete setup functions.
-
-## Motion Description Format
-
-For the two-stage pipeline, motion is described semantically:
-
-```yaml
-animation:
-  name: overhead_sword_slash
-  duration_frames: 24
-  fps: 30
-  loop: false
-
-  style:
-    weight: heavy
-    energy: explosive
-
-  phases:
-    - name: anticipation
-      frames: [0, 8]
-      description: "Sword pulled back over right shoulder, elbow high"
-
-    - name: strike
-      frames: [8, 14]
-      description: "Explosive diagonal swing from high-right to low-left"
-
-  ik_hints:
-    feet: ground_contact
-    hands: null
-```
-
-See `references/motion-description-format.md` for complete spec.
 
 ## ZX Animation Constraints
 
@@ -230,26 +268,46 @@ See `references/gltf-export.md` for full export settings.
 
 ## File Organization
 
-**One animation per file.** Each animation should have its own Python script:
-
 ```
+.studio/
+└── animations/
+    ├── knight_idle.motion.py     # Motion specs
+    ├── knight_walk.motion.py
+    └── knight_attack.motion.py
+
 generation/
 ├── lib/
-│   ├── bpy_utils.py          # Mesh helpers (from generator-patterns)
-│   └── animation_utils.py    # Keyframe + IK helpers
-├── animations/
-│   ├── walk_cycle.py         # One file per animation
-│   ├── run_cycle.py
-│   ├── attack_slash.py
-│   └── pickup_spin.py
-└── generate_all.py           # Batch runner
+│   ├── bpy_utils.py              # Mesh helpers
+│   ├── animation_utils.py        # Keyframe + IK helpers
+│   └── motion_parser.py          # Motion spec parser
+└── animations/
+    └── object_spin.py            # Object animation scripts
+
+assets/
+└── animations/
+    ├── knight_idle.glb           # Generated animations
+    ├── knight_walk.glb
+    └── knight_attack.glb
 ```
 
-**File size limit:** ≤150 lines per animation file. Extract reusable patterns to `lib/animation_utils.py`.
+## Running the Parser
+
+```bash
+blender --background --python generation/lib/motion_parser.py -- \
+    .studio/animations/knight_idle.motion.py \
+    assets/characters/knight.glb \
+    assets/animations/knight_idle.glb
+```
+
+Or batch process:
+```bash
+python generation/generate_all_animations.py
+```
 
 ## References
 
-- `references/motion-description-format.md` - Semantic animation spec
+- `references/motion-description-format.md` - Motion spec format (`.motion.py`)
+- `references/motion_parser.py` - Reusable Blender parser script
 - `references/ik-utilities.md` - IK setup and baking functions
 - `references/object-animation.md` - Rigid transforms
 - `references/armature-creation.md` - Rig setup
@@ -261,15 +319,13 @@ generation/
 
 ## Examples
 
-- `examples/walk-cycle-ik.py` - IK-based walk cycle (recommended)
-- `examples/walk-cycle.py` - FK-only walk cycle (simpler)
+- `examples/idle.motion.py` - Idle animation motion spec
 - `examples/spinning-pickup.py` - Object animation
 - `examples/door-open-close.py` - Multi-action object
 - `examples/humanoid-rig.py` - Full humanoid skeleton
 
 ## Related
 
-- `motion-describer` agent - Stage 1: semantic motion descriptions
-- `animation-coder` agent - Stage 2: coordinate-aware code generation
+- `motion-describer` agent - Produces `.motion.py` specs from descriptions
 - `procedural-meshes` skill - Generate the mesh to animate
 - `character-generator` agent - Complete character pipeline

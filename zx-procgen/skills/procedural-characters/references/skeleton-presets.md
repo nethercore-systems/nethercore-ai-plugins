@@ -1,6 +1,6 @@
 # Skeleton Presets
 
-Standard skeleton hierarchies for different creature types. Copy and modify for your character.
+Standard skeleton hierarchies for different creature types. Copy and modify for your character's `.spec.py` file.
 
 ---
 
@@ -8,69 +8,31 @@ Standard skeleton hierarchies for different creature types. Copy and modify for 
 
 Standard bipedal humanoid. Suitable for players, NPCs, humanoid enemies.
 
-```yaml
-skeleton:
-  # CORE (6 bones)
-  - bone: pelvis
-    parent: null
-    head: [0, 0, 0.9]
-    tail: [0, 0, 1.0]
+```python
+"skeleton": [
+    # CORE (6 bones)
+    {"bone": "pelvis", "parent": None, "head": [0, 0, 0.9], "tail": [0, 0, 1.0]},
+    {"bone": "spine", "parent": "pelvis", "head": [0, 0, 1.0], "tail": [0, 0, 1.3]},
+    {"bone": "head", "parent": "spine", "head": [0, 0, 1.3], "tail": [0, 0, 1.55]},
 
-  - bone: spine
-    parent: pelvis
-    head: [0, 0, 1.0]
-    tail: [0, 0, 1.3]
+    # LEFT ARM (4 bones)
+    {"bone": "arm_upper_L", "parent": "spine", "head": [-0.15, 0, 1.25], "tail": [-0.35, 0, 1.15]},
+    {"bone": "arm_lower_L", "parent": "arm_upper_L", "head": [-0.35, 0, 1.15], "tail": [-0.55, 0, 1.05]},
+    {"bone": "hand_L", "parent": "arm_lower_L", "head": [-0.55, 0, 1.05], "tail": [-0.65, 0, 1.0]},
 
-  - bone: head
-    parent: spine
-    head: [0, 0, 1.3]
-    tail: [0, 0, 1.55]
+    # LEFT LEG (4 bones)
+    {"bone": "leg_upper_L", "parent": "pelvis", "head": [-0.08, 0, 0.9], "tail": [-0.08, 0, 0.5]},
+    {"bone": "leg_lower_L", "parent": "leg_upper_L", "head": [-0.08, 0, 0.5], "tail": [-0.08, 0, 0.1]},
+    {"bone": "foot_L", "parent": "leg_lower_L", "head": [-0.08, 0, 0.1], "tail": [-0.08, 0.1, 0.05]},
 
-  # LEFT ARM (4 bones)
-  - bone: arm_upper_L
-    parent: spine
-    head: [-0.15, 0, 1.25]
-    tail: [-0.35, 0, 1.15]
-
-  - bone: arm_lower_L
-    parent: arm_upper_L
-    head: [-0.35, 0, 1.15]
-    tail: [-0.55, 0, 1.05]
-
-  - bone: hand_L
-    parent: arm_lower_L
-    head: [-0.55, 0, 1.05]
-    tail: [-0.65, 0, 1.0]
-
-  # LEFT LEG (4 bones)
-  - bone: leg_upper_L
-    parent: pelvis
-    head: [-0.08, 0, 0.9]
-    tail: [-0.08, 0, 0.5]
-
-  - bone: leg_lower_L
-    parent: leg_upper_L
-    head: [-0.08, 0, 0.5]
-    tail: [-0.08, 0, 0.1]
-
-  - bone: foot_L
-    parent: leg_lower_L
-    head: [-0.08, 0, 0.1]
-    tail: [-0.08, 0.1, 0.05]
-
-  # RIGHT SIDE (mirrors)
-  - bone: arm_upper_R
-    mirror: arm_upper_L
-  - bone: arm_lower_R
-    mirror: arm_lower_L
-  - bone: hand_R
-    mirror: hand_L
-  - bone: leg_upper_R
-    mirror: leg_upper_L
-  - bone: leg_lower_R
-    mirror: leg_lower_L
-  - bone: foot_R
-    mirror: foot_L
+    # RIGHT SIDE (mirrors)
+    {"bone": "arm_upper_R", "mirror": "arm_upper_L"},
+    {"bone": "arm_lower_R", "mirror": "arm_lower_L"},
+    {"bone": "hand_R", "mirror": "hand_L"},
+    {"bone": "leg_upper_R", "mirror": "leg_upper_L"},
+    {"bone": "leg_lower_R", "mirror": "leg_lower_L"},
+    {"bone": "foot_R", "mirror": "foot_L"},
+]
 ```
 
 ### Humanoid Variations
@@ -102,70 +64,28 @@ skeleton:
 
 Four-legged creature with horizontal spine. For dogs, wolves, horses, etc.
 
-```yaml
-skeleton:
-  # CORE (6 bones)
-  - bone: pelvis
-    parent: null
-    head: [0, -0.4, 0.5]
-    tail: [0, -0.3, 0.5]
+```python
+"skeleton": [
+    # CORE (6 bones)
+    {"bone": "pelvis", "parent": None, "head": [0, -0.4, 0.5], "tail": [0, -0.3, 0.5]},
+    {"bone": "spine", "parent": "pelvis", "head": [0, -0.3, 0.5], "tail": [0, 0.1, 0.55]},
+    {"bone": "chest", "parent": "spine", "head": [0, 0.1, 0.55], "tail": [0, 0.4, 0.6]},
+    {"bone": "neck", "parent": "chest", "head": [0, 0.4, 0.6], "tail": [0, 0.5, 0.75]},
+    {"bone": "head", "parent": "neck", "head": [0, 0.5, 0.75], "tail": [0, 0.7, 0.8]},
+    {"bone": "tail", "parent": "pelvis", "head": [0, -0.4, 0.5], "tail": [0, -0.7, 0.4]},
 
-  - bone: spine
-    parent: pelvis
-    head: [0, -0.3, 0.5]
-    tail: [0, 0.1, 0.55]
+    # FRONT LEGS (4 bones)
+    {"bone": "front_leg_upper_L", "parent": "chest", "head": [-0.1, 0.35, 0.55], "tail": [-0.1, 0.35, 0.3]},
+    {"bone": "front_leg_lower_L", "parent": "front_leg_upper_L", "head": [-0.1, 0.35, 0.3], "tail": [-0.1, 0.35, 0.05]},
+    {"bone": "front_leg_upper_R", "mirror": "front_leg_upper_L"},
+    {"bone": "front_leg_lower_R", "mirror": "front_leg_lower_L"},
 
-  - bone: chest
-    parent: spine
-    head: [0, 0.1, 0.55]
-    tail: [0, 0.4, 0.6]
-
-  - bone: neck
-    parent: chest
-    head: [0, 0.4, 0.6]
-    tail: [0, 0.5, 0.75]
-
-  - bone: head
-    parent: neck
-    head: [0, 0.5, 0.75]
-    tail: [0, 0.7, 0.8]
-
-  - bone: tail
-    parent: pelvis
-    head: [0, -0.4, 0.5]
-    tail: [0, -0.7, 0.4]
-
-  # FRONT LEGS (4 bones)
-  - bone: front_leg_upper_L
-    parent: chest
-    head: [-0.1, 0.35, 0.55]
-    tail: [-0.1, 0.35, 0.3]
-
-  - bone: front_leg_lower_L
-    parent: front_leg_upper_L
-    head: [-0.1, 0.35, 0.3]
-    tail: [-0.1, 0.35, 0.05]
-
-  - bone: front_leg_upper_R
-    mirror: front_leg_upper_L
-  - bone: front_leg_lower_R
-    mirror: front_leg_lower_L
-
-  # BACK LEGS (4 bones)
-  - bone: back_leg_upper_L
-    parent: pelvis
-    head: [-0.1, -0.35, 0.5]
-    tail: [-0.1, -0.35, 0.25]
-
-  - bone: back_leg_lower_L
-    parent: back_leg_upper_L
-    head: [-0.1, -0.35, 0.25]
-    tail: [-0.1, -0.35, 0.05]
-
-  - bone: back_leg_upper_R
-    mirror: back_leg_upper_L
-  - bone: back_leg_lower_R
-    mirror: back_leg_lower_L
+    # BACK LEGS (4 bones)
+    {"bone": "back_leg_upper_L", "parent": "pelvis", "head": [-0.1, -0.35, 0.5], "tail": [-0.1, -0.35, 0.25]},
+    {"bone": "back_leg_lower_L", "parent": "back_leg_upper_L", "head": [-0.1, -0.35, 0.25], "tail": [-0.1, -0.35, 0.05]},
+    {"bone": "back_leg_upper_R", "mirror": "back_leg_upper_L"},
+    {"bone": "back_leg_lower_R", "mirror": "back_leg_lower_L"},
+]
 ```
 
 ### Quadruped Variations
@@ -190,42 +110,16 @@ skeleton:
 
 Snake-like creature with segmented body. Bone count depends on desired flexibility.
 
-```yaml
-skeleton:
-  - bone: head
-    parent: null
-    head: [0, 0, 0.1]
-    tail: [0, 0.15, 0.15]
-
-  - bone: segment_1
-    parent: head
-    head: [0, 0, 0.1]
-    tail: [0, -0.15, 0.1]
-
-  - bone: segment_2
-    parent: segment_1
-    head: [0, -0.15, 0.1]
-    tail: [0, -0.3, 0.1]
-
-  - bone: segment_3
-    parent: segment_2
-    head: [0, -0.3, 0.1]
-    tail: [0, -0.45, 0.1]
-
-  - bone: segment_4
-    parent: segment_3
-    head: [0, -0.45, 0.1]
-    tail: [0, -0.6, 0.1]
-
-  - bone: segment_5
-    parent: segment_4
-    head: [0, -0.6, 0.1]
-    tail: [0, -0.75, 0.08]
-
-  - bone: tail_tip
-    parent: segment_5
-    head: [0, -0.75, 0.08]
-    tail: [0, -0.9, 0.05]
+```python
+"skeleton": [
+    {"bone": "head", "parent": None, "head": [0, 0, 0.1], "tail": [0, 0.15, 0.15]},
+    {"bone": "segment_1", "parent": "head", "head": [0, 0, 0.1], "tail": [0, -0.15, 0.1]},
+    {"bone": "segment_2", "parent": "segment_1", "head": [0, -0.15, 0.1], "tail": [0, -0.3, 0.1]},
+    {"bone": "segment_3", "parent": "segment_2", "head": [0, -0.3, 0.1], "tail": [0, -0.45, 0.1]},
+    {"bone": "segment_4", "parent": "segment_3", "head": [0, -0.45, 0.1], "tail": [0, -0.6, 0.1]},
+    {"bone": "segment_5", "parent": "segment_4", "head": [0, -0.6, 0.1], "tail": [0, -0.75, 0.08]},
+    {"bone": "tail_tip", "parent": "segment_5", "head": [0, -0.75, 0.08], "tail": [0, -0.9, 0.05]},
+]
 ```
 
 ### Serpent Notes
@@ -241,49 +135,24 @@ skeleton:
 
 Arthropod with two body segments and 8 legs.
 
-```yaml
-skeleton:
-  # BODY (2 bones)
-  - bone: cephalothorax
-    parent: null
-    head: [0, 0, 0.15]
-    tail: [0, 0.15, 0.15]
+```python
+"skeleton": [
+    # BODY (2 bones)
+    {"bone": "cephalothorax", "parent": None, "head": [0, 0, 0.15], "tail": [0, 0.15, 0.15]},
+    {"bone": "abdomen", "parent": "cephalothorax", "head": [0, 0, 0.15], "tail": [0, -0.25, 0.12]},
 
-  - bone: abdomen
-    parent: cephalothorax
-    head: [0, 0, 0.15]
-    tail: [0, -0.25, 0.12]
+    # FRONT LEGS (4 bones - left side)
+    {"bone": "leg_front_L", "parent": "cephalothorax", "head": [-0.08, 0.08, 0.15], "tail": [-0.25, 0.2, 0.05]},
+    {"bone": "leg_mid_front_L", "parent": "cephalothorax", "head": [-0.08, 0.02, 0.15], "tail": [-0.28, 0.05, 0.05]},
+    {"bone": "leg_mid_back_L", "parent": "cephalothorax", "head": [-0.08, -0.04, 0.15], "tail": [-0.28, -0.1, 0.05]},
+    {"bone": "leg_back_L", "parent": "cephalothorax", "head": [-0.08, -0.1, 0.15], "tail": [-0.25, -0.25, 0.05]},
 
-  # FRONT LEGS (4 bones - left side)
-  - bone: leg_front_L
-    parent: cephalothorax
-    head: [-0.08, 0.08, 0.15]
-    tail: [-0.25, 0.2, 0.05]
-
-  - bone: leg_mid_front_L
-    parent: cephalothorax
-    head: [-0.08, 0.02, 0.15]
-    tail: [-0.28, 0.05, 0.05]
-
-  - bone: leg_mid_back_L
-    parent: cephalothorax
-    head: [-0.08, -0.04, 0.15]
-    tail: [-0.28, -0.1, 0.05]
-
-  - bone: leg_back_L
-    parent: cephalothorax
-    head: [-0.08, -0.1, 0.15]
-    tail: [-0.25, -0.25, 0.05]
-
-  # RIGHT LEGS (mirrors)
-  - bone: leg_front_R
-    mirror: leg_front_L
-  - bone: leg_mid_front_R
-    mirror: leg_mid_front_L
-  - bone: leg_mid_back_R
-    mirror: leg_mid_back_L
-  - bone: leg_back_R
-    mirror: leg_back_L
+    # RIGHT LEGS (mirrors)
+    {"bone": "leg_front_R", "mirror": "leg_front_L"},
+    {"bone": "leg_mid_front_R", "mirror": "leg_mid_front_L"},
+    {"bone": "leg_mid_back_R", "mirror": "leg_mid_back_L"},
+    {"bone": "leg_back_R", "mirror": "leg_back_L"},
+]
 ```
 
 ### Spider Variations
@@ -301,72 +170,29 @@ Add `leg_*_lower` bones for 2-segment legs (24 bones total)
 
 Bipedal with wings. For birds, dragons, winged creatures.
 
-```yaml
-skeleton:
-  # CORE (5 bones)
-  - bone: pelvis
-    parent: null
-    head: [0, 0, 0.3]
-    tail: [0, 0.05, 0.35]
+```python
+"skeleton": [
+    # CORE (5 bones)
+    {"bone": "pelvis", "parent": None, "head": [0, 0, 0.3], "tail": [0, 0.05, 0.35]},
+    {"bone": "spine", "parent": "pelvis", "head": [0, 0.05, 0.35], "tail": [0, 0.15, 0.4]},
+    {"bone": "neck", "parent": "spine", "head": [0, 0.15, 0.4], "tail": [0, 0.25, 0.55]},
+    {"bone": "head", "parent": "neck", "head": [0, 0.25, 0.55], "tail": [0, 0.35, 0.55]},
+    {"bone": "tail_feathers", "parent": "pelvis", "head": [0, 0, 0.3], "tail": [0, -0.2, 0.25]},
 
-  - bone: spine
-    parent: pelvis
-    head: [0, 0.05, 0.35]
-    tail: [0, 0.15, 0.4]
+    # WINGS (4 bones)
+    {"bone": "wing_upper_L", "parent": "spine", "head": [-0.1, 0.1, 0.38], "tail": [-0.3, 0.05, 0.35]},
+    {"bone": "wing_lower_L", "parent": "wing_upper_L", "head": [-0.3, 0.05, 0.35], "tail": [-0.55, 0, 0.3]},
+    {"bone": "wing_upper_R", "mirror": "wing_upper_L"},
+    {"bone": "wing_lower_R", "mirror": "wing_lower_L"},
 
-  - bone: neck
-    parent: spine
-    head: [0, 0.15, 0.4]
-    tail: [0, 0.25, 0.55]
-
-  - bone: head
-    parent: neck
-    head: [0, 0.25, 0.55]
-    tail: [0, 0.35, 0.55]
-
-  - bone: tail_feathers
-    parent: pelvis
-    head: [0, 0, 0.3]
-    tail: [0, -0.2, 0.25]
-
-  # WINGS (4 bones)
-  - bone: wing_upper_L
-    parent: spine
-    head: [-0.1, 0.1, 0.38]
-    tail: [-0.3, 0.05, 0.35]
-
-  - bone: wing_lower_L
-    parent: wing_upper_L
-    head: [-0.3, 0.05, 0.35]
-    tail: [-0.55, 0, 0.3]
-
-  - bone: wing_upper_R
-    mirror: wing_upper_L
-  - bone: wing_lower_R
-    mirror: wing_lower_L
-
-  # LEGS (6 bones)
-  - bone: leg_upper_L
-    parent: pelvis
-    head: [-0.05, -0.02, 0.3]
-    tail: [-0.05, -0.05, 0.15]
-
-  - bone: leg_lower_L
-    parent: leg_upper_L
-    head: [-0.05, -0.05, 0.15]
-    tail: [-0.05, 0, 0.05]
-
-  - bone: foot_L
-    parent: leg_lower_L
-    head: [-0.05, 0, 0.05]
-    tail: [-0.05, 0.08, 0.02]
-
-  - bone: leg_upper_R
-    mirror: leg_upper_L
-  - bone: leg_lower_R
-    mirror: leg_lower_L
-  - bone: foot_R
-    mirror: foot_L
+    # LEGS (6 bones)
+    {"bone": "leg_upper_L", "parent": "pelvis", "head": [-0.05, -0.02, 0.3], "tail": [-0.05, -0.05, 0.15]},
+    {"bone": "leg_lower_L", "parent": "leg_upper_L", "head": [-0.05, -0.05, 0.15], "tail": [-0.05, 0, 0.05]},
+    {"bone": "foot_L", "parent": "leg_lower_L", "head": [-0.05, 0, 0.05], "tail": [-0.05, 0.08, 0.02]},
+    {"bone": "leg_upper_R", "mirror": "leg_upper_L"},
+    {"bone": "leg_lower_R", "mirror": "leg_lower_L"},
+    {"bone": "foot_R", "mirror": "foot_L"},
+]
 ```
 
 ### Bird Variations

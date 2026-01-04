@@ -1,25 +1,74 @@
 ---
 name: Procedural Sound Generation with NumPy/SciPy
 description: |
-  Use this skill when the user wants to GENERATE or CODE sound effects for ZX games. Trigger phrases: "generate sound", "create SFX", "write audio code", "synthesize WAV", "numpy audio", "scipy sound", "procedural SFX", "make laser sound", "explosion sound code", "footstep generator", "FM synthesis", "Karplus-Strong".
+  Use this skill when the user wants to GENERATE or CODE sound effects for ZX games.
 
-  **Pipeline position: SYNTHESIS (2 of 3)**
-  - For DESIGN guidance (layers, materials, patterns): use `sound-design:sfx-design`
-  - For tracker music: use `tracker-music` plugin
+  **Spec-Driven Workflow (RECOMMENDED):**
+  1. Create `.spec.py` file in `.studio/sounds/`
+  2. Run `python sound_parser.py sfx spec.py output.wav`
+  3. Spec persists for iteration; parser handles synthesis
 
-  See `docs/audio-pipeline.md` for complete workflow.
+  **Load references when:**
+  - Creating SFX specs → `references/sound-spec-format.md`
+  - Running parser → `references/sound_parser.py`
+  - Example specs → `examples/laser.spec.py`, `examples/explosion.spec.py`
+  - Manual synthesis (rare) → `references/sfx-recipes/`
 
-  **CRITICAL WORKFLOW:** (1) Check `references/sfx-recipes/` FIRST for matching recipe, (2) Apply quality standards (default: Temp tier = 2+ layers + envelope + filter), (3) Verify checklist before rendering. See "Sound Generation Workflow" section.
-
-  **Before generating:** Check `.studio/sonic-identity.local.md` for project audio specs (reverb, character, processing). Apply those constraints for consistent audio. If no spec exists, ask about style or suggest `/establish-sonic-identity`.
-
-  This skill provides IMPLEMENTATION CODE using numpy/scipy to produce WAV files at build time for ZX ROM assets.
-version: 3.4.0
+  **Before generating:** Check `.studio/sonic-identity.md` for project audio specs.
+version: 4.0.0
 ---
 
 # Procedural Sound Generation with NumPy/SciPy
 
-Generate production-quality game sound effects using numpy for array operations, scipy.signal for filtering, and soundfile for WAV output. A lean, portable stack with no audio hardware requirements.
+Generate production-quality game sound effects using a **spec-driven workflow**. Create declarative specs, run the parser, iterate on parameters without regenerating code.
+
+## Spec-Driven Workflow (Primary)
+
+**Architecture:**
+```
+LLM creates spec (.spec.py)  →  sound_parser.py  →  WAV file
+         ↓
+  .studio/sounds/
+```
+
+**Step 1: Create Spec**
+```python
+# .studio/sounds/laser.spec.py
+SOUND = {
+    "sound": {
+        "name": "laser",
+        "duration": 0.25,
+        "layers": [
+            {"type": "fm_synth", "carrier_freq": 600, "mod_ratio": 1.5, "mod_index": 6.0},
+            {"type": "noise_burst", "duration": 0.02, "amplitude": 0.3}
+        ],
+        "envelope": {"attack": 0.002, "decay": 0.15, "sustain": 0, "release": 0.08}
+    }
+}
+```
+
+**Step 2: Run Parser**
+```bash
+python sound_parser.py sfx .studio/sounds/laser.spec.py generated/audio/laser.wav
+```
+
+**Step 3: Iterate**
+Edit spec parameters, re-run parser. Same spec = same output (deterministic).
+
+**See:** `references/sound-spec-format.md` for complete format, `examples/` for working specs.
+
+## Example Specs
+
+| Sound | Spec File | Description |
+|-------|-----------|-------------|
+| Laser | `examples/laser.spec.py` | FM + noise transient |
+| Explosion | `examples/explosion.spec.py` | 4-layer with rumble |
+| Coin | `examples/coin.spec.py` | Ascending harmonics |
+| Jump | `examples/jump.spec.py` | Pitch sweep |
+
+## Manual Synthesis (Advanced)
+
+For cases where specs don't cover your needs, use numpy/scipy directly. The rest of this document covers manual synthesis techniques.
 
 ## Build Integration
 

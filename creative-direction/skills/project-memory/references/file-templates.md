@@ -1,6 +1,6 @@
 # Project Memory File Templates
 
-## creative-direction.local.md
+## creative-direction.md
 
 ```markdown
 ---
@@ -340,7 +340,7 @@ This document captures the audio style decisions for the project.
 mkdir -p .studio/architecture
 
 # Create creative direction file
-cat > .studio/creative-direction.local.md << 'EOF'
+cat > .studio/creative-direction.md << 'EOF'
 ---
 # Creative Direction - Edit this file to configure project direction
 art_style: undefined
@@ -383,9 +383,6 @@ cat > .studio/architecture/decisions.md << 'EOF'
 | # | Title | Status | Date |
 |---|-------|--------|------|
 EOF
-
-# Update gitignore
-echo ".studio/*.local.md" >> .gitignore
 
 echo "Project memory initialized in .studio/"
 ```

@@ -1,0 +1,191 @@
+# Feminine Warrior - Anatomical humanoid with bulge demo
+# Budget: 500 tris
+# Demonstrates: bulge parameter for chest, glutes, calves
+
+SPEC = {
+    "character": {
+        "name": "feminine_warrior",
+        "tri_budget": 500,
+
+        "texturing": {
+            "uv_mode": "smart_project"
+        },
+
+        "skeleton": [
+            # Pelvis points DOWN for V-taper (head at top, tail at bottom)
+            {"bone": "pelvis", "parent": None, "head": [0, 0, 1.0], "tail": [0, 0, 0.85]},
+            {"bone": "spine", "parent": "pelvis", "head": [0, 0, 1.0], "tail": [0, 0, 1.25]},
+            {"bone": "chest", "parent": "spine", "head": [0, 0, 1.25], "tail": [0, 0, 1.48]},
+            {"bone": "neck", "parent": "chest", "head": [0, 0, 1.48], "tail": [0, 0, 1.55]},
+            {"bone": "head", "parent": "neck", "head": [0, 0, 1.55], "tail": [0, 0, 1.85]},
+
+            # Arms at shoulder height
+            {"bone": "arm_upper_L", "parent": "chest", "head": [0.18, 0, 1.45], "tail": [0.42, 0, 1.45]},
+            {"bone": "arm_lower_L", "parent": "arm_upper_L", "head": [0.42, 0, 1.45], "tail": [0.62, 0, 1.45]},
+            {"bone": "hand_L", "parent": "arm_lower_L", "head": [0.62, 0, 1.45], "tail": [0.72, 0, 1.45]},
+
+            # Legs attach at SIDES of pelvis
+            {"bone": "leg_upper_L", "parent": "pelvis", "head": [0.09, 0, 0.92], "tail": [0.09, 0, 0.52]},
+            {"bone": "leg_lower_L", "parent": "leg_upper_L", "head": [0.09, 0, 0.52], "tail": [0.09, 0, 0.08]},
+            {"bone": "foot_L", "parent": "leg_lower_L", "head": [0.09, 0, 0.08], "tail": [0.09, 0.12, 0.02]},
+
+            # Right side mirrors
+            {"bone": "arm_upper_R", "mirror": "arm_upper_L"},
+            {"bone": "arm_lower_R", "mirror": "arm_lower_L"},
+            {"bone": "hand_R", "mirror": "hand_L"},
+            {"bone": "leg_upper_R", "mirror": "leg_upper_L"},
+            {"bone": "leg_lower_R", "mirror": "leg_lower_L"},
+            {"bone": "foot_R", "mirror": "foot_L"},
+        ],
+
+        "parts": {
+            "head": {
+                "bone": "head",
+                "base": "hexagon(6)",
+                "base_radius": [0.10, 0.11],
+                "steps": [
+                    {"extrude": 0.08, "scale": 1.1},
+                    {"extrude": 0.12, "scale": 1.0},
+                    {"extrude": 0.08, "scale": 0.5},
+                ],
+                "cap_start": False,
+                "cap_end": True
+            },
+
+            "neck": {
+                "bone": "neck",
+                "base": "hexagon(6)",
+                "base_radius": 0.055,
+                "steps": [
+                    {"extrude": 0.5, "scale": 0.95},
+                    {"extrude": 0.5, "scale": 0.9},
+                ],
+                "cap_start": True,
+                "cap_end": True
+            },
+
+            "chest": {
+                "bone": "chest",
+                "base": "hexagon(6)",
+                "base_radius": [0.15, 0.10],
+                "steps": [
+                    {"extrude": 0.3, "scale": [1.0, 1.05], "bulge": 0.01},
+                    {"extrude": 0.4, "scale": [0.95, 1.1], "bulge": 0.025},
+                    {"extrude": 0.3, "scale": [0.85, 0.9]},
+                ],
+                "cap_start": True,
+                "cap_end": True
+            },
+
+            "spine": {
+                "bone": "spine",
+                "base": "hexagon(6)",
+                "base_radius": [0.12, 0.09],
+                "steps": [
+                    {"extrude": 0.5, "scale": [0.75, 0.85]},
+                    {"extrude": 0.5, "scale": [1.1, 1.0]},
+                ],
+                "cap_start": True,
+                "cap_end": True
+            },
+
+            "pelvis": {
+                "bone": "pelvis",
+                "base": "hexagon(6)",
+                "base_radius": [0.16, 0.12],
+                "steps": [
+                    {"extrude": 0.3, "scale": 1.0, "bulge": -0.02},
+                    {"extrude": 0.35, "scale": [0.7, 0.85], "bulge": -0.01},
+                    {"extrude": 0.45, "scale": [0.35, 0.5]},
+                ],
+                "cap_start": True,
+                "cap_end": True
+            },
+
+            "arm_upper_L": {
+                "bone": "arm_upper_L",
+                "base": "hexagon(6)",
+                "base_radius": 0.045,
+                "steps": [
+                    {"extrude": 0.35, "scale": 1.0},
+                    {"extrude": 0.35, "scale": 0.9},
+                    {"extrude": 0.35, "scale": 0.8},
+                ],
+                "cap_start": True,
+                "cap_end": True
+            },
+
+            "arm_lower_L": {
+                "bone": "arm_lower_L",
+                "base": "hexagon(6)",
+                "base_radius": 0.038,
+                "steps": [
+                    {"extrude": 0.4, "scale": 1.0},
+                    {"extrude": 0.35, "scale": 0.9},
+                    {"extrude": 0.3, "scale": 1.05},
+                ],
+                "cap_start": True,
+                "cap_end": True
+            },
+
+            "hand_L": {
+                "bone": "hand_L",
+                "base": "hexagon(6)",
+                "base_radius": [0.04, 0.025],
+                "steps": [
+                    {"extrude": 0.5, "scale": 1.0},
+                    {"extrude": 0.5, "scale": 0.5},
+                ],
+                "cap_start": True,
+                "cap_end": True
+            },
+
+            "arm_upper_R": {"mirror": "arm_upper_L"},
+            "arm_lower_R": {"mirror": "arm_lower_L"},
+            "hand_R": {"mirror": "hand_L"},
+
+            "leg_upper_L": {
+                "bone": "leg_upper_L",
+                "base": "hexagon(6)",
+                "base_radius": 0.075,
+                "steps": [
+                    {"extrude": 0.2, "scale": 1.0, "bulge": -0.012},
+                    {"extrude": 0.3, "scale": 0.9, "bulge": -0.006},
+                    {"extrude": 0.3, "scale": 0.82},
+                    {"extrude": 0.25, "scale": 0.75},
+                ],
+                "cap_start": True,
+                "cap_end": True
+            },
+
+            "leg_lower_L": {
+                "bone": "leg_lower_L",
+                "base": "hexagon(6)",
+                "base_radius": 0.06,
+                "steps": [
+                    {"extrude": 0.3, "scale": 1.1, "bulge": -0.015},
+                    {"extrude": 0.35, "scale": 0.85, "bulge": -0.008},
+                    {"extrude": 0.4, "scale": 0.85},
+                ],
+                "cap_start": True,
+                "cap_end": True
+            },
+
+            "foot_L": {
+                "bone": "foot_L",
+                "base": "hexagon(6)",
+                "base_radius": [0.045, 0.08],
+                "steps": [
+                    {"extrude": 0.5, "scale": [1.0, 0.9]},
+                    {"extrude": 0.5, "scale": [0.7, 0.6]},
+                ],
+                "cap_start": True,
+                "cap_end": True
+            },
+
+            "leg_upper_R": {"mirror": "leg_upper_L"},
+            "leg_lower_R": {"mirror": "leg_lower_L"},
+            "foot_R": {"mirror": "foot_L"},
+        }
+    }
+}

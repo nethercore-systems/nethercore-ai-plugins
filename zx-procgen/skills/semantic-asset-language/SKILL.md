@@ -5,7 +5,7 @@ description: |
 
   **Triggers:** "visual style", "art style", "how should it look", "color palette", "material", "PBR".
 
-  **Before generating:** Check `.studio/visual-style.local.md` for project style.
+  **Before generating:** Check `.studio/visual-style.md` for project style.
 
   **Load references when:**
   - Style tokens (retro, gothic, etc.) → `references/style-tokens.md`

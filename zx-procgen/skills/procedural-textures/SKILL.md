@@ -3,7 +3,7 @@ name: Procedural Texture Generation for ZX
 description: |
   Use this skill to GENERATE textures for ZX 3D meshes. Trigger phrases: "generate texture", "procedural texture", "noise pattern", "MRE texture", "albedo", "matcap", "seamless texture", "material recipe".
 
-  **Before generating:** Check `.studio/visual-style.local.md` for project style specs (palette, materials, damage level). Apply those constraints for consistent assets. If no style exists, ask about style or suggest `/establish-visual-style`.
+  **Before generating:** Check `.studio/visual-style.md` for project style specs (palette, materials, damage level). Apply those constraints for consistent assets. If no style exists, ask about style or suggest `/establish-visual-style`.
 
   **Load references when:**
   - Project structure, multiple textures → `generator-patterns` skill
@@ -207,6 +207,59 @@ Professional textures are built from multiple layers:
 ```
 
 See `references/layer-system.md` for the complete layer system.
+
+---
+
+## Spec-Based Workflow (Recommended)
+
+For deterministic, version-controlled texture generation, use the spec-based workflow:
+
+### 1. Create Texture Spec
+
+Write a `.texture.spec.py` file to `.studio/textures/`:
+
+```python
+TEXTURE = {
+    "texture": {
+        "name": "wood_plank",
+        "size": [256, 256],
+        "layers": [
+            {"type": "solid", "color": 0.5},
+            {"type": "wood_grain", "ring_count": 12, "distortion": 0.4, "blend": "multiply"},
+            {"type": "noise", "noise_type": "perlin", "scale": 0.15, "blend": "soft_light", "opacity": 0.3}
+        ],
+        "color_ramp": ["#4A3728", "#6B4423", "#8B4513", "#A0522D", "#B8732D"]
+    }
+}
+```
+
+### 2. Run Parser
+
+```bash
+python texture_parser.py .studio/textures/wood.texture.spec.py assets/textures/wood.png
+```
+
+**Parser location:** `references/texture_parser.py`
+
+### Layer Types
+
+| Type | Parameters | Description |
+|------|------------|-------------|
+| `solid` | color | Solid fill (0-1 or hex) |
+| `noise` | noise_type, scale, octaves | Perlin/simplex/voronoi |
+| `gradient` | direction, start, end | Linear/radial gradient |
+| `wood_grain` | ring_count, distortion | Concentric ring pattern |
+| `brick` | brick_width, brick_height, mortar_width | Brick pattern |
+| `checkerboard` | tile_size | Checker pattern |
+| `stripes` | direction, stripe_width | Stripe pattern |
+
+### Blend Modes
+
+`normal`, `multiply`, `add`, `screen`, `overlay`, `soft_light`
+
+### Examples
+
+See `examples/wood.texture.spec.py` and `examples/brick.texture.spec.py`.
 
 ---
 

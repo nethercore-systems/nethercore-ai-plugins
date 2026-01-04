@@ -299,6 +299,12 @@ struct [Mechanic]State {
 - **Edge-case complete:** All situations handled
 - **ZX-compatible:** Within platform limits
 
+## Output Location
+
+`.studio/mechanics/[mechanic-name].spec.md`
+
+Create directory if needed: `mkdir -p .studio/mechanics`
+
 ## Completion Requirements
 
 **CRITICAL: Zero tool use = failure. You MUST use tools before returning.**
@@ -306,7 +312,8 @@ struct [Mechanic]State {
 ### Minimum Actions
 - [ ] Read existing GDD/design for context if available
 - [ ] If mechanic is vague → ask about purpose, frequency, interactions
-- [ ] Write mechanic specification to docs/design/ or produce in output
+- [ ] Write mechanic specification to `.studio/mechanics/[name].spec.md`
+- [ ] Verify file was created with Glob
 
 ### Context Validation
 If mechanic request lacks detail → use AskUserQuestion for purpose, feel, constraints

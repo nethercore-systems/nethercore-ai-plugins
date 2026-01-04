@@ -93,7 +93,7 @@ Normal maps add surface detail. Use consistently with visual style:
 - [ ] Shape language consistent?
 - [ ] Integrates with intended environment?
 
-Store in `.studio/art-direction.md` or `.studio/creative-direction.local.md`.
+Store in `.studio/art-direction.md` or `.studio/creative-direction.md`.
 
 ## References
 

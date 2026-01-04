@@ -71,9 +71,9 @@ Procedural asset generation plugin.
 - `procedural-meshes` - 3D mesh generation with UVs and vertex colors
 - `procedural-sounds` - Audio synthesis (FM, Karplus-Strong, subtractive) and SFX
 - `procedural-instruments` - Instrument sample synthesis for tracker modules
-- `procedural-animations` - Walk cycles, attacks, skeletal rigging, IK utilities, two-stage pipeline (motion-describer → animation-coder)
+- `procedural-animations` - Walk cycles, attacks, skeletal rigging, IK utilities, motion specs (.motion.py) + parser
 - `procedural-sprites` - 2D sprites, pixel art, tilesets, UI elements
-- `procedural-characters` - Character mesh generation with rigs (YAML specs + Blender bpy)
+- `procedural-characters` - Character mesh generation with rigs (Python specs + Blender bpy)
 - `procedural-normal-maps` - Normal map generation (height-to-normal, BC5 format, tangent export)
 - `semantic-asset-language` - Style guide for AI-first creative workflows
 - `mesh-texturing-workflows` - UV projection techniques
@@ -89,6 +89,18 @@ Procedural asset generation plugin.
 - `zx-procgen:improve-assets` - Guided quality improvement workflow with tier upgrades
 - `zx-procgen:establish-visual-style` - Interactive visual style wizard
 - `zx-procgen:generate-all` - Run all procedural generators in project
+- `zx-procgen:setup-spec-workflow` - Add spec-driven parser infrastructure to project
+- `zx-procgen:migrate-to-specs` - Convert existing generators to spec format
+
+**Spec-Driven Parsers:**
+Reusable parsers that interpret `.spec.py` configuration files:
+- `texture_parser.py` - Layer-based texture generation
+- `sound_parser.py` - SFX and instrument synthesis
+- `character_parser.py` - Character mesh + rig
+- `motion_parser.py` - Skeletal animation
+- `normal_parser.py` - Normal map patterns
+
+See `zx-procgen/PARSER_ROADMAP.md` for planned enhancements.
 
 **Agents:**
 - `asset-designer` - Translates creative vision to style specs
@@ -96,10 +108,9 @@ Procedural asset generation plugin.
 - `asset-quality-reviewer` - Validates assets meet ZX budgets and match specs
 - `procgen-optimizer` - Optimizes generation code and output
 - `creative-orchestrator` - Coordinates full asset pipeline
-- `character-designer` - Gathers requirements and produces character YAML specs
+- `character-designer` - Gathers requirements and produces character specs (.spec.py)
 - `character-generator` - Builds character meshes from specs using Blender bpy
-- `motion-describer` - Stage 1 animation: translates requests to semantic motion descriptions (YAML)
-- `animation-coder` - Stage 2 animation: translates motion descriptions to bpy code with coordinate reasoning
+- `motion-describer` - Produces structured motion specs (.motion.py) with bone rotations
 - `normal-map-generator` - Generates procedural normal maps from patterns or height maps
 - `quality-enhancer` - Autonomous asset quality improvement, upgrades assets to higher tiers
 - `instrument-architect` - Designs and implements instrument synthesis
@@ -361,6 +372,56 @@ description: |
 ### Agent Registry
 
 The `agent-registry` skill provides a single source of truth for all Task tool `subagent_type` values. Orchestrator agents reference this instead of duplicating lookup tables.
+
+### `.studio/` Directory Structure
+
+All plugins write specifications and reports to the `.studio/` directory (committed to git):
+
+```
+.studio/
+├── # Direction Files (global, committed)
+├── creative-direction.md         # Creative vision, pillars, audience
+├── art-direction.md              # Visual style, spectrums, palette
+├── sound-direction.md            # Sonic identity, music style
+├── tech-direction.md             # Architecture, determinism, limits
+├── visual-style.md               # Detailed visual style guide
+├── sonic-identity.md             # Audio direction (SSL)
+│
+├── # Project State
+├── project-status.md             # Development progress tracking
+├── dispatch-queue.md             # Pending task queue
+│
+├── # Specifications
+├── characters/                   # Character specifications
+│   └── *.spec.py
+├── mechanics/                    # Game mechanic specifications
+│   └── *.spec.md
+├── assets/                       # Asset design specifications
+│   └── *.spec.md
+├── animations/                   # Animation motion specs
+│   └── *.motion.py
+├── music/                        # Music specifications
+│   └── *.spec.md
+└── sfx/                          # SFX specifications
+    └── *.spec.md
+│
+├── # Analysis Reports
+├── analysis/
+│   ├── scope-assessment.md       # Scope advisor reports
+│   ├── constraint-analysis.md    # ZX constraint analysis
+│   ├── balance-report.md         # Game balance analysis
+│   ├── gdd-coverage.md           # GDD implementation tracking
+│   └── completion-audit.md       # Completion verification
+│
+└── architecture/                 # Architecture Decision Records
+    └── decisions.md
+```
+
+**Spec-Driven Development:** All design and analysis agents write their output to persistent files. This ensures:
+- Specifications persist across sessions
+- Other agents can read and build upon previous work
+- Users can review and modify specs directly
+- No work is lost to conversation context limits
 
 ## Contributing
 

@@ -37,7 +37,7 @@ Gather from user or project context:
 
 ### 2. Check Project Style
 
-Read `.studio/visual-style.local.md` if it exists for:
+Read `.studio/visual-style.md` if it exists for:
 - Normal map intensity guidelines
 - Material-specific settings
 - Consistency requirements
@@ -147,7 +147,7 @@ Before completing:
 **CRITICAL: Zero tool use = failure. You MUST use tools before returning.**
 
 ### Minimum Actions
-- [ ] Check project style guide (.studio/visual-style.local.md) if exists
+- [ ] Check project style guide (.studio/visual-style.md) if exists
 - [ ] Write Python generation script to generation/textures/
 - [ ] Run script to generate normal map OR provide runnable code
 

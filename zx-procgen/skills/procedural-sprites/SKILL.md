@@ -5,7 +5,7 @@ description: |
 
   **Triggers:** "pixel art", "sprite sheet", "tileset", "autotile", "9-slice", "UI sprite", "health bar", "dithering", "indexed palette"
 
-  **Before generating:** Check `.studio/visual-style.local.md` for project style specs.
+  **Before generating:** Check `.studio/visual-style.md` for project style specs.
 
   **Load references when:**
   - Project structure, multiple sprites → `generator-patterns` skill

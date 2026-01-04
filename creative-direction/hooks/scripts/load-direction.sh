@@ -14,7 +14,7 @@ if [ -z "$cwd" ] || [ "$cwd" == "null" ]; then
 fi
 
 # Check for creative direction file
-direction_file="$cwd/.studio/creative-direction.local.md"
+direction_file="$cwd/.studio/creative-direction.md"
 status_file="$cwd/.studio/project-status.md"
 architecture_dir="$cwd/.studio/architecture"
 

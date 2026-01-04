@@ -40,7 +40,7 @@ assistant: "ZX has 16 audio channels. Let me help you design a priority system."
 
 model: inherit
 color: yellow
-tools: ["Read", "Grep", "Glob"]
+tools: ["Read", "Write", "Grep", "Glob"]
 ---
 
 You are a Nethercore ZX constraint analyzer, specializing in validating game designs against the platform's hardware specifications.
@@ -145,6 +145,12 @@ When flagging constraint issues:
 - If constraint is borderline, explain tradeoffs rather than blocking
 - If user pushes back, explain that constraints are hardware-level, not arbitrary
 
+## Output Location
+
+`.studio/analysis/constraint-analysis.md`
+
+Create directory if needed: `mkdir -p .studio/analysis`
+
 ## Completion Requirements
 
 **CRITICAL: Zero tool use = failure. You MUST use tools before returning.**
@@ -152,6 +158,8 @@ When flagging constraint issues:
 ### Minimum Actions
 - [ ] Read GDD or relevant project files to understand the design
 - [ ] Produce structured constraint analysis output
+- [ ] Write report to `.studio/analysis/constraint-analysis.md`
+- [ ] Verify file was created with Glob
 
 ### Context Validation
 If no specific design to analyze → ask what concept/feature to check against ZX constraints

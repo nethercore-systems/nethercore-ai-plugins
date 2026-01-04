@@ -5,7 +5,7 @@ description: |
 
   **Triggers:** "generate mesh", "3D model", "low-poly", "blender script", "hard surface", "organic mesh", "metaballs", "UV unwrap", "export glb".
 
-  **Before generating:** Check `.studio/visual-style.local.md` for project style specs.
+  **Before generating:** Check `.studio/visual-style.md` for project style specs.
 
   **Load references when:**
   - Project structure, multiple assets → `generator-patterns` skill

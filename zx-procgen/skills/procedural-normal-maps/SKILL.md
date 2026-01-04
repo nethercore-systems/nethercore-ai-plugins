@@ -3,7 +3,7 @@ name: Procedural Normal Map Generation for ZX
 description: |
   Use this skill to GENERATE normal maps for ZX 3D meshes. Trigger phrases: "generate normal map", "normal map", "bump map", "surface detail", "tangent space", "height to normal", "BC5 texture".
 
-  **Before generating:** Check `.studio/visual-style.local.md` for project style specs. Apply relief intensity and detail level constraints for consistent assets.
+  **Before generating:** Check `.studio/visual-style.md` for project style specs. Apply relief intensity and detail level constraints for consistent assets.
 
   **Load references when:**
   - Height-to-normal conversion → `references/normal-map-generation.md`
@@ -81,6 +81,72 @@ z = sqrt(1 - x² - y²)
 ```
 
 **Neutral Normal:** RGB(128, 128, 255) = pointing straight out (no deviation)
+
+---
+
+## Spec-Based Workflow (Recommended)
+
+For deterministic, version-controlled normal map generation, use the spec-based workflow:
+
+### 1. Create Normal Spec
+
+Write a `.normal.spec.py` file to `.studio/normals/`:
+
+```python
+NORMAL = {
+    "normal": {
+        "name": "brick_wall",
+        "size": [256, 256],
+        "method": "from_pattern",
+        "pattern": {
+            "type": "bricks",
+            "brick_size": [64, 32],
+            "mortar_width": 4,
+            "mortar_depth": 0.35
+        },
+        "processing": {
+            "blur": 0.5,
+            "strength": 1.2
+        }
+    }
+}
+```
+
+### 2. Run Parser
+
+```bash
+# From pattern spec
+python normal_parser.py pattern .studio/normals/bricks.normal.spec.py assets/textures/bricks_normal.png
+
+# From height image
+python normal_parser.py height height_map.png output_normal.png --strength 1.5
+```
+
+**Parser location:** `references/normal_parser.py`
+
+### Pattern Types
+
+| Type | Parameters | Description |
+|------|------------|-------------|
+| `bricks` | brick_size, mortar_width, mortar_depth | Brick wall pattern |
+| `tiles` | tile_size, gap_width, gap_depth | Square tile floor |
+| `hexagons` | hex_size, gap_width | Hexagonal tiles |
+| `noise` | scale, octaves, height_range | Perlin noise height |
+| `scratches` | density, length_range, depth | Random scratches |
+| `rivets` | spacing, radius, height | Raised circular bumps |
+| `weave` | thread_width, gap | Woven fabric pattern |
+
+### Processing Options
+
+| Option | Default | Description |
+|--------|---------|-------------|
+| `strength` | 1.0 | Normal intensity (0.5 = subtle, 2.0 = dramatic) |
+| `blur` | 0.0 | Gaussian blur on height map before conversion |
+| `invert` | false | Flip height values (cavities become bumps) |
+
+### Examples
+
+See `examples/bricks.normal.spec.py` and `examples/tiles.normal.spec.py`.
 
 ---
 

@@ -54,7 +54,7 @@ ai-game-studio:continue --full    # Comprehensive health analysis
 The plugins persist state to `.studio/`:
 - `project-status.md` - Current phase and progress
 - `dispatch-queue.md` - Pending tasks
-- `creative-direction.local.md` - Vision documents
+- `creative-direction.md` - Vision documents
 
 On session start, the system reads these files and can resume from where you left off.
 
@@ -117,7 +117,7 @@ What do you need?
 ```
 1. Describe what you need: "I need a player character with idle and run animations"
 2. asset-designer agent → Creates style spec
-3. character-designer agent → Produces character YAML spec
+3. character-designer agent → Produces character spec (.spec.py)
 4. character-generator agent → Generates mesh, rig, animations from spec
 5. integration-assistant agent → Connects to game code
 6. completion-auditor agent → Verifies everything works
@@ -208,10 +208,9 @@ These provide ZX-specific implementation details:
 | Agent | Plugin | Purpose |
 |-------|--------|---------|
 | `asset-generator` | zx-procgen | Procedural generation code |
-| `character-designer` | zx-procgen | Character specs from requirements |
+| `character-designer` | zx-procgen | Character specs (.spec.py) from requirements |
 | `character-generator` | zx-procgen | Full animated characters |
-| `motion-describer` | zx-procgen | Stage 1: Semantic motion descriptions (YAML) |
-| `animation-coder` | zx-procgen | Stage 2: Motion → bpy code with coordinate reasoning |
+| `motion-describer` | zx-procgen | Motion specs (.motion.py) with bone rotations |
 | `sfx-architect` | sound-design | Sound effect design |
 | `music-architect` | sound-design | Music track design |
 | `code-scaffolder` | zx-dev | Boilerplate game systems |
@@ -398,11 +397,11 @@ ZX-specific game design workflow plugin.
 
 Procedural asset generation plugin.
 
-**Skills (13):** Textures, meshes, sounds, instruments, animations (two-stage pipeline with IK utilities), sprites, characters, normal maps, style guide, texturing workflows, quality tiers, native pipeline, generator patterns
+**Skills (13):** Textures, meshes, sounds, instruments, animations (motion specs + parser), sprites, characters, normal maps, style guide, texturing workflows, quality tiers, native pipeline, generator patterns
 
 **Commands:** `generate-asset`, `generate-sfx`, `generate-instrument`, `new-asset-project`, `improve-assets`, `establish-visual-style`, `generate-all`
 
-**Agents:** `asset-designer`, `asset-generator`, `character-designer`, `character-generator`, `motion-describer` (animation stage 1), `animation-coder` (animation stage 2), `quality-enhancer`, `asset-quality-reviewer`, `procgen-optimizer`, `creative-orchestrator`, `instrument-architect`, `normal-map-generator`
+**Agents:** `asset-designer`, `asset-generator`, `character-designer`, `character-generator`, `motion-describer`, `quality-enhancer`, `asset-quality-reviewer`, `procgen-optimizer`, `creative-orchestrator`, `instrument-architect`, `normal-map-generator`
 
 ### zx-publish
 

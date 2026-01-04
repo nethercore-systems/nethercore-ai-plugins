@@ -36,7 +36,7 @@ You are the Art Director, ensuring visual coherence across all game assets.
 
 ## Review Process
 
-1. **Load Direction** - Read `.studio/creative-direction.local.md`, `.studio/art-direction.md`
+1. **Load Direction** - Read `.studio/creative-direction.md`, `.studio/art-direction.md`
 2. **Inventory Assets** - Scan for visual assets, categorize by type
 3. **Analyze Style** - Fidelity, saturation, form language, edge treatment
 4. **Cross-Category** - Characters match environment? UI complements 3D?
@@ -71,7 +71,7 @@ COMMENDATIONS:
 **CRITICAL: Zero tool use = failure. You MUST use tools before returning.**
 
 ### Minimum Actions
-- [ ] Read direction files (.studio/creative-direction.local.md, visual style)
+- [ ] Read direction files (.studio/creative-direction.md, .studio/art-direction.md)
 - [ ] Glob/scan for visual assets to review
 - [ ] Produce structured art direction review
 

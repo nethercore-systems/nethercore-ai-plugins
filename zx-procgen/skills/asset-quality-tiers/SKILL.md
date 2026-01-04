@@ -157,21 +157,27 @@ When generating assets, specify the target tier:
 
 Include tier specification in style recipes:
 
-```yaml
-asset:
-  name: barrel
-  type: prop
-  tier: final  # placeholder | temp | final | hero
+```python
+{
+    "asset": {
+        "name": "barrel",
+        "type": "prop",
+        "tier": "final",  # placeholder | temp | final | hero
+    },
 
-generation:
-  mesh:
-    detail_level: 3  # 1-4 matching tier
-    subdivision: 2
-    bevels: true
-  texture:
-    resolution: 256
-    layers: 3
-    detail_maps: true
+    "generation": {
+        "mesh": {
+            "detail_level": 3,  # 1-4 matching tier
+            "subdivision": 2,
+            "bevels": True,
+        },
+        "texture": {
+            "resolution": 256,
+            "layers": 3,
+            "detail_maps": True,
+        },
+    },
+}
 ```
 
 ## Enhancement Workflow

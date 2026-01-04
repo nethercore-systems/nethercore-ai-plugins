@@ -41,8 +41,9 @@ See [Audio Pipeline Guide](../docs/audio-pipeline.md) for complete workflows.
 - **Quality Tier System**: Placeholder → Temp → Final → Hero progression for assets
 - **Procedural Instruments**: High-quality instrument samples via Karplus-Strong, FM, wavetable, additive synthesis
 - **Procedural Characters**: Full character generation with meshes, rigs, and animations
-- **7 Commands**: `/new-asset-project`, `/generate-asset`, `/generate-sfx`, `/generate-instrument`, `/improve-assets`, `/establish-visual-style`, `/generate-all`
-- **12 Agents**: Creative pipeline + character generation + animation (two-stage) + normal maps + unified quality review + enhancement + instrument design
+- **Spec-Driven Parsers**: Declarative `.spec.py` files + reusable parsers for textures, sounds, characters, animations, normals
+- **9 Commands**: `/new-asset-project`, `/generate-asset`, `/generate-sfx`, `/generate-instrument`, `/improve-assets`, `/establish-visual-style`, `/generate-all`, `/setup-spec-workflow`, `/migrate-to-specs`
+- **11 Agents**: Creative pipeline + character generation + motion specs + normal maps + unified quality review + enhancement + instrument design
 - **Python-Based Generators**: Use Python with PIL, Blender bpy, numpy/scipy, or any tool that outputs standard formats
 
 ## Installation
@@ -138,15 +139,15 @@ Primitives (cube, sphere, cylinder, etc.), modifiers (subdivide, mirror, smooth)
 
 **Trigger phrases**: "generate mesh", "vertex colors", "3D model", "low-poly character"
 
-### Procedural Animations (v3.0)
+### Procedural Animations (v4.0)
 
-Comprehensive animation generation with a **two-stage pipeline** to avoid coordinate confusion:
+Comprehensive animation generation with **structured motion specs** and a reusable parser:
 
-**Two-Stage Workflow:**
-1. `motion-describer` agent → Semantic motion description (YAML)
-2. `animation-coder` agent → Blender bpy code with coordinate reasoning
+**Motion Spec Pipeline:**
+1. `motion-describer` agent → Structured motion spec (`.motion.py`) with bone rotations
+2. `motion_parser.py` → Reusable Blender script that interprets specs (no LLM needed)
 
-**Why Two Stages?** LLMs confuse coordinate spaces when translating motion intent directly to rotation values. Separating semantic description from coordinate math prevents errors.
+**Why Motion Specs?** Python dict literals work natively in Blender (no PyYAML dependency). Explicit bone rotations in degrees (pitch/yaw/roll) eliminate coordinate confusion. The parser is deterministic and skeleton-agnostic.
 
 **Skeletal Animation:**
 - GPU skinning with 3x4 bone matrices
@@ -270,7 +271,7 @@ A four-tier quality system for progressive asset improvement:
 End-to-end character generation with meshes, rigs, and animations:
 
 **Pipeline:**
-1. **character-designer** agent gathers requirements → produces YAML spec
+1. **character-designer** agent gathers requirements → produces `.spec.py` file
 2. **character-generator** agent builds mesh from spec using Blender bpy
 
 **Character Types:**
@@ -330,8 +331,8 @@ Five specialized agents for end-to-end asset creation:
 | **asset-designer** | Translates creative descriptions to style specs | "design asset", "I want X style" |
 | **asset-generator** | Produces procedural generation code | "generate code for spec", "create mesh generator" |
 | **creative-orchestrator** | Coordinates full pipeline (design→generate→validate→refine) | "create assets for my game", "full asset pipeline" |
-| **character-designer** | Gathers character requirements and produces YAML specs | "design character", "character spec", "plan character mesh" |
-| **character-generator** | Builds character meshes from YAML specs using Blender bpy | "generate character", "create player", "animated NPC" |
+| **character-designer** | Gathers character requirements and produces `.spec.py` files | "design character", "character spec", "plan character mesh" |
+| **character-generator** | Builds character meshes from `.spec.py` files using Blender bpy | "generate character", "create player", "animated NPC" |
 
 ### Quality Agents
 
@@ -341,12 +342,11 @@ Five specialized agents for end-to-end asset creation:
 | **quality-enhancer** | Upgrades assets through tier system | "improve assets", "quality up pass", "upgrade to final" |
 | **procgen-optimizer** | Reduces asset sizes and improves performance | "optimize generation", "reduce poly count", "ROM too big" |
 
-### Animation Agents (Two-Stage Pipeline)
+### Animation Agent
 
 | Agent | Purpose | Triggers |
 |-------|---------|----------|
-| **motion-describer** | Stage 1: Translates animation requests to semantic YAML descriptions | "describe animation", "motion spec", "animation description" |
-| **animation-coder** | Stage 2: Translates motion descriptions to bpy code with coordinate reasoning | "generate animation code", "code this motion", "implement animation" |
+| **motion-describer** | Produces structured `.motion.py` specs with bone rotations | "describe animation", "motion spec", "animation description", "animate character" |
 
 ### Specialty Agents
 
@@ -382,6 +382,36 @@ Interactive wizard to establish the visual style for a game project. Creates a s
 
 ### `/generate-all`
 Run all procedural generators in a project. Scans for generator scripts and executes them in dependency order.
+
+### `/setup-spec-workflow [asset-type]`
+Add spec-driven generation infrastructure to an existing project. Copies parsers to `lib/`, creates example specs, and sets up the generation pipeline.
+
+### `/migrate-to-specs [generator.py]`
+Convert existing Python generator code to the spec-driven format. Analyzes code, extracts parameters into `.spec.py` files, and creates wrappers that use the parsers.
+
+## Spec-Driven Parsers
+
+The plugin includes reusable parsers that interpret `.spec.py` configuration files:
+
+| Parser | Spec Format | Purpose |
+|--------|-------------|---------|
+| `texture_parser.py` | `.texture.spec.py` (TEXTURE) | Layer-based texture generation |
+| `sound_parser.py` | `.spec.py` (SOUND/INSTRUMENT) | SFX and instrument synthesis |
+| `character_parser.py` | `.spec.py` (SPEC) | Character mesh + rig |
+| `motion_parser.py` | `.motion.py` (MOTION) | Skeletal animation |
+| `normal_parser.py` | `.normal.spec.py` (NORMAL) | Normal map patterns |
+
+**Benefits:**
+- Separate configuration from implementation
+- AI generates specs, parsers handle complexity
+- Easy iteration - just edit parameters
+- Reusable across projects
+
+**Locations:**
+- Parsers: `skills/procedural-*/references/*_parser.py`
+- Examples: `skills/procedural-*/examples/*.spec.py`
+
+See [PARSER_ROADMAP.md](PARSER_ROADMAP.md) for planned enhancements.
 
 ## Output Formats
 

@@ -30,8 +30,8 @@ First, scan for existing project documentation:
 
 ```
 .studio/
-├── creative-direction.local.md   # Creative direction
-├── sonic-identity.local.md       # Audio direction (audio style)
+├── creative-direction.md         # Creative direction
+├── sonic-identity.md             # Audio direction (audio style)
 ├── project-status.md             # Project status tracking
 └── architecture/
     └── decisions.md              # ADRs
@@ -155,8 +155,8 @@ PILLARS:
 
 FILES CREATED:
 - docs/gdd.md
-- .studio/creative-direction.local.md
-- .studio/sonic-identity.local.md
+- .studio/creative-direction.md
+- .studio/sonic-identity.md
 - .studio/project-status.md
 
 NEXT: Run `zx-dev:new-game rust` to scaffold your project.

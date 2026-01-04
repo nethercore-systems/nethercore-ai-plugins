@@ -172,7 +172,7 @@ id = "boss-music"
 path = "assets/music/boss.xm"
 ```
 
-## With Skeletal Animation
+## With Skeletal Animation (Explicit)
 
 ```toml
 [game]
@@ -205,6 +205,68 @@ path = "assets/animations/jump.nczxanim"
 [[assets.animations]]
 id = "attack"
 path = "assets/animations/attack.nczxanim"
+```
+
+## With Skeletal Animation (Bulk Import from GLB)
+
+Import all animations from a single GLB file with one entry:
+
+```toml
+[game]
+id = "animated-game"
+title = "Animated Game"
+author = "Developer"
+version = "1.0.0"
+
+# Mesh from GLB
+[[assets.meshes]]
+id = "character"
+path = "assets/character.glb"
+
+# Skeleton from GLB
+[[assets.skeletons]]
+id = "character-skeleton"
+path = "assets/character.glb"
+skin_name = "Armature"
+
+# ALL animations from GLB (wildcard import)
+# Omit 'id' and 'animation_name' to import all animations
+[[assets.animations]]
+path = "assets/character.glb"
+skin_name = "Armature"
+id_prefix = "char_"  # Optional: prevents collisions, creates char_Walk, char_Run, etc.
+```
+
+**Wildcard Import Rules:**
+- Omit both `id` and `animation_name` to import ALL animations
+- Animation IDs use original Blender names (e.g., "WalkCycle", "IdleLoop")
+- Use `id_prefix` to namespace animations from different GLB files
+- Collisions between files without prefix cause pack errors
+
+**Multiple Characters Example:**
+
+```toml
+# Player animations (50+ animations from one file)
+[[assets.animations]]
+path = "models/player.glb"
+skin_name = "Armature"
+id_prefix = "player_"
+# Creates: player_Idle, player_Walk, player_Run, player_Attack, etc.
+
+# Enemy animations
+[[assets.animations]]
+path = "models/enemy.glb"
+skin_name = "Armature"
+id_prefix = "enemy_"
+# Creates: enemy_Idle, enemy_Walk, enemy_Attack, etc.
+```
+
+**Runtime Access:**
+```rust
+// Animation IDs are prefix + original Blender name
+let walk = rom_keyframes(b"player_Walk", 12);
+let idle = rom_keyframes(b"player_Idle", 12);
+let enemy_attack = rom_keyframes(b"enemy_Attack", 12);
 ```
 
 ## With Raw Data Files

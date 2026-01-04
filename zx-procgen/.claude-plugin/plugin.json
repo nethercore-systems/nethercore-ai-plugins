@@ -132,6 +132,10 @@
     "height-to-normal",
     "sobel-filter",
     "bump-mapping",
-    "surface-detail"
+    "surface-detail",
+    "spec-driven",
+    "spec-parser",
+    "declarative-specs",
+    "migration-workflow"
   ]
 }

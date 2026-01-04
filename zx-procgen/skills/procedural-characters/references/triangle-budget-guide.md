@@ -139,25 +139,29 @@ Total:                                     ~750 tris
 
 Most impactful change. Each step costs `base_verts × 2` tris.
 
-```yaml
+```python
 # Before: 5 steps = 60 tris (hex)
-- extrude: 0.02, scale: 1.1
-- extrude: 0.03, scale: 1.0
-- extrude: 0.05, scale: 0.95
-- extrude: 0.03, scale: 0.9
-- extrude: 0.02, scale: 0.85
+[
+    {"extrude": 0.02, "scale": 1.1},
+    {"extrude": 0.03, "scale": 1.0},
+    {"extrude": 0.05, "scale": 0.95},
+    {"extrude": 0.03, "scale": 0.9},
+    {"extrude": 0.02, "scale": 0.85},
+]
 
 # After: 3 steps = 36 tris (hex)
-- extrude: 0.05, scale: 1.1
-- extrude: 0.08, scale: 0.95
-- extrude: 0.02, scale: 0.85
+[
+    {"extrude": 0.05, "scale": 1.1},
+    {"extrude": 0.08, "scale": 0.95},
+    {"extrude": 0.02, "scale": 0.85},
+]
 ```
 
 ### Use Simpler Bases
 
 Switch from octagon to hexagon to square for limbs.
 
-```yaml
+```python
 # hex arm: 12 × 4 = 48 tris/arm
 # sq arm:  8 × 4 = 32 tris/arm
 # Savings: 16 tris/arm, 32 tris for both arms
@@ -167,12 +171,14 @@ Switch from octagon to hexagon to square for limbs.
 
 Remove caps between connected parts (they'll weld anyway).
 
-```yaml
-arm_upper:
-  cap_end: false    # save 4 tris (hex)
+```python
+"arm_upper": {
+    "cap_end": False,    # save 4 tris (hex)
+}
 
-arm_lower:
-  cap_start: false  # save 4 tris (hex)
+"arm_lower": {
+    "cap_start": False,  # save 4 tris (hex)
+}
 ```
 
 ### Skip Thumbs
@@ -189,9 +195,10 @@ Close arm_lower/leg_lower directly instead of separate parts.
 
 Mirrored parts double the tri count of their source:
 
-```yaml
-arm_upper_R:
-  mirror: arm_upper_L    # same tri count as source
+```python
+"arm_upper_R": {
+    "mirror": "arm_upper_L",    # same tri count as source
+}
 ```
 
 When counting, include both sides.
@@ -202,16 +209,19 @@ When counting, include both sides.
 
 Hair spikes and similar instanced parts multiply:
 
-```yaml
-hair_spiky:
-  instances:             # 4 spikes
-    - position: ...
-    - position: ...
-    - position: ...
-    - position: ...
-  steps:
-    - extrude: 0.08, scale: 0.7
-    - extrude: 0.06, scale: 0.3
+```python
+"hair_spiky": {
+    "instances": [             # 4 spikes
+        {"position": [0, -0.05, 0.18]},
+        {"position": [0.04, -0.03, 0.17]},
+        {"position": [-0.04, -0.03, 0.17]},
+        {"position": [0, 0, 0.19]},
+    ],
+    "steps": [
+        {"extrude": 0.08, "scale": 0.7},
+        {"extrude": 0.06, "scale": 0.3},
+    ],
+}
 
 # triangle(3), 2 steps, 1 cap = 6 × 2 + 1 = 13 tris/spike
 # 4 spikes = 52 tris total

@@ -324,7 +324,7 @@ project/
 - Key settings: [list important settings]
 
 ### Runtime Configuration
-- Location: `.studio/creative-direction.local.md`
+- Location: `.studio/creative-direction.md`
 - Purpose: Per-project creative direction settings
 ```
 
@@ -389,7 +389,7 @@ project/
 
 ## Persistent Direction Files
 
-### creative-direction.local.md
+### creative-direction.md
 
 Store project-level creative direction:
 
@@ -435,7 +435,7 @@ pillars:
 ```
 
 This file is:
-- Ignored by git (add to .gitignore)
+- Committed to git (shared with team)
 - Read by director agents for context
 - Updated as decisions are made
 - Persists across Claude sessions

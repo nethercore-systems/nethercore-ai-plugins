@@ -40,7 +40,7 @@ Specific balance concern. Agent compares options quantitatively.
 
 model: haiku
 color: blue
-tools: ["Read", "Glob", "Grep"]
+tools: ["Read", "Write", "Glob", "Grep"]
 ---
 
 You are a balance analyzer for game development. Your role is to examine game systems, stats, and progression to identify balance issues and suggest improvements.
@@ -283,6 +283,12 @@ Difficulty should follow:
 [How to verify changes work]
 ```
 
+## Output Location
+
+`.studio/analysis/balance-report.md`
+
+Create directory if needed: `mkdir -p .studio/analysis`
+
 ## Completion Requirements
 
 **CRITICAL: Zero tool use = failure. You MUST use tools before returning.**
@@ -291,6 +297,8 @@ Difficulty should follow:
 - [ ] Read GDD, stats files, or game code
 - [ ] Perform quantitative analysis (DPS, economy flow, difficulty curve)
 - [ ] Produce structured balance analysis report
+- [ ] Write report to `.studio/analysis/balance-report.md`
+- [ ] Verify file was created with Glob
 
 ### Context Validation
 If no stats/balance data exists → ask what system to analyze or gather info from user

@@ -41,7 +41,7 @@ Use AskUserQuestion to confirm or adjust.
 
 ## Step 3: Check Sonic Identity
 
-Look for `.studio/sonic-identity.md` or `.studio/sonic-identity.local.md`. If found, incorporate style constraints.
+Look for `.studio/sonic-identity.md`. If found, incorporate style constraints.
 
 ## Step 4: Generate
 
