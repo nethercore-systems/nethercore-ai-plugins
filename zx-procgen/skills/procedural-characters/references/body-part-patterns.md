@@ -2,6 +2,16 @@
 
 Reusable patterns for common body parts. Copy and modify for your character.
 
+## Anatomy Quick Ref
+
+| Part | Bulge | Value |
+|------|-------|-------|
+| Calf | back (-) | -0.015 |
+| Glutes | back (-) | -0.02 |
+| Chest (F) | front (+) | +0.025 |
+| Bicep | front (+) | +0.01 |
+| Hamstring | back (-) | -0.008 |
+
 ---
 
 ## Torso Patterns
@@ -26,79 +36,29 @@ torso:
 
 ### Anatomical Torso
 
-Uses translate to create front/back curvature. More realistic silhouette.
+Uses bulge for front/back curvature (replaces translate for anatomy).
 
 ```yaml
 torso:
   bone: spine
   base: octagon(8)
-  base_radius: 0.11
+  base_radius: [0.12, 0.10]
   steps:
-    # PELVIS / BUTTOCKS - push backward
-    - extrude: 0.05
-      scale: [1.15, 1.2]
-      translate: [0, -0.025, 0]
-
-    - extrude: 0.04
-      scale: [1.05, 1.1]
-      translate: [0, -0.015, 0]
-
-    # WAIST - taper inward, return to center
-    - extrude: 0.06
-      scale: [0.8, 0.85]
-      translate: [0, 0.03, 0]
-
-    # STOMACH - slight forward curve
-    - extrude: 0.05
-      scale: [0.9, 1.0]
-      translate: [0, 0.015, 0]
-
-    # CHEST - push forward
-    - extrude: 0.04
-      scale: [1.0, 1.2]
-      translate: [0, 0.03, 0]
-
-    - extrude: 0.05
-      scale: [1.1, 1.15]
-      translate: [0, 0.02, 0]
-
-    # UPPER CHEST - taper back
-    - extrude: 0.04
-      scale: [1.05, 0.95]
-      translate: [0, -0.01, 0]
-
-    # SHOULDERS - wide, slight backward lean
-    - extrude: 0.04
-      scale: [1.25, 0.85]
-      translate: [0, -0.015, 0]
+    - extrude: 0.04, scale: [1.1, 1.15], bulge: -0.02    # pelvis/glutes
+    - extrude: 0.04, scale: [1.0, 1.05], bulge: -0.01    # lower back
+    - extrude: 0.05, scale: [0.8, 0.85]                   # waist
+    - extrude: 0.04, scale: [0.85, 0.95], bulge: 0.01    # stomach
+    - extrude: 0.05, scale: [1.0, 1.1], bulge: 0.015     # chest
+    - extrude: 0.04, scale: [1.1, 1.05], bulge: 0.01     # upper chest
+    - extrude: 0.04, scale: [1.25, 0.9], bulge: -0.005   # shoulders
   cap_start: true
   cap_end: false
 ```
 
-**Side view result:**
-```
-       ┌──┐      shoulders
-      ┌┘  │
-     ┌┘   │      chest (forward)
-    ┌┘    │
-    │     │      stomach
-    └┐    │      waist (narrow)
-     │   ┌┘
-     │  ┌┘       buttocks (backward)
-     └──┘
-```
-
 ### Proportion Notes
 
-**Masculine proportions:**
-- Wider shoulders (scale X: 1.3+)
-- Narrower hips (scale X: 0.9)
-- Less waist taper
-
-**Feminine proportions:**
-- Narrower shoulders (scale X: 1.1)
-- Wider hips (scale X: 1.1)
-- More aggressive waist taper (scale: 0.7)
+**Masculine:** Shoulders 1.3+, hips 0.9, minimal waist taper
+**Feminine:** Shoulders 1.1, hips 1.1+, waist 0.7, chest bulge +0.025
 
 ---
 
@@ -237,13 +197,14 @@ leg_upper_L:
 leg_lower_L:
   bone: leg_lower_L
   base: hexagon(6)
-  base_radius: 0.044
+  base_radius: 0.045
   steps:
-    - extrude: 0.02, scale: 1.15    # knee guard
-    - extrude: 0.03, scale: [1.0, 1.25]  # calf bulge
-    - extrude: 0.15, scale: [1.0, 0.75]  # shin taper
-    - extrude: 0.03, scale: 0.85    # ankle
-    - extrude: 0.05, scale: 1.2     # boot
+    - extrude: 0.02, scale: 1.1                          # knee
+    - extrude: 0.08, scale: 1.15, bulge: -0.018          # calf peak
+    - extrude: 0.08, scale: 0.95, bulge: -0.01           # mid calf
+    - extrude: 0.08, scale: 0.85, bulge: -0.005          # lower calf
+    - extrude: 0.04, scale: 0.9                          # ankle
+    - extrude: 0.03, scale: 1.15                         # boot cuff
   cap_start: false
   cap_end: true
 ```
@@ -586,4 +547,63 @@ tail:
     - extrude: 0.04, scale: 0.3       # tip
   cap_start: false                    # connects to pelvis
   cap_end: true
+```
+
+---
+
+## Feminine Patterns
+
+### Feminine Torso
+
+Narrower shoulders, wider hips, chest/glute bulges.
+
+```yaml
+torso_feminine:
+  bone: spine
+  base: octagon(8)
+  base_radius: [0.11, 0.09]
+  steps:
+    - extrude: 0.04, scale: [1.15, 1.1], bulge: -0.025   # glutes
+    - extrude: 0.03, scale: [1.05, 1.0], bulge: -0.015
+    - extrude: 0.05, scale: [0.7, 0.8]                    # waist
+    - extrude: 0.03, scale: [0.75, 0.9], bulge: 0.005    # stomach
+    - extrude: 0.03, scale: [0.85, 1.0], bulge: 0.015    # under bust
+    - extrude: 0.04, scale: [0.95, 1.15], bulge: 0.03    # bust
+    - extrude: 0.03, scale: [1.0, 1.0], bulge: 0.015     # upper chest
+    - extrude: 0.04, scale: [1.1, 0.9]                    # shoulders
+  cap_start: true
+  cap_end: false
+```
+
+### Feminine Hips
+
+Pelvis bone points DOWN (head at top, tail at bottom). Creates V-taper toward groin.
+
+```yaml
+hips_feminine:
+  bone: pelvis        # tail below head
+  base: hexagon(6)
+  base_radius: [0.18, 0.13]
+  steps:
+    - extrude: 0.25, scale: [1.0, 1.0], bulge: -0.025    # glute peak
+    - extrude: 0.35, scale: [0.75, 0.85], bulge: -0.015  # narrowing
+    - extrude: 0.5, scale: [0.35, 0.5]                    # groin V-taper
+  cap_start: true
+  cap_end: true
+```
+
+### Upper Leg with Glute Attachment
+
+```yaml
+leg_upper_feminine_L:
+  bone: leg_upper_L
+  base: hexagon(6)
+  base_radius: 0.085
+  steps:
+    - extrude: 0.15, scale: 1.0, bulge: -0.015           # glute attachment
+    - extrude: 0.25, scale: 0.92, bulge: -0.008          # upper thigh
+    - extrude: 0.35, scale: 0.85                          # mid thigh
+    - extrude: 0.3, scale: 0.75                           # knee
+  cap_start: true
+  cap_end: false
 ```

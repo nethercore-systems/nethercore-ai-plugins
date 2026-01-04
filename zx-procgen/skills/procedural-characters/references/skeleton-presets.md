@@ -90,6 +90,12 @@ skeleton:
 - Widen pelvis and shoulders
 - Shorten legs significantly
 
+**Feminine (V-taper hips):**
+- Pelvis points DOWN: head at 1.0, tail at 0.85
+- Wider hips: leg attachment at ±0.09
+- Narrower shoulders: arm attachment at ±0.16
+- Allows hip mesh to extrude toward groin with V-taper
+
 ---
 
 ## Quadruped (18 bones)

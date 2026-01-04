@@ -51,26 +51,24 @@ Smooth curves, gradual transitions, muscle-like forms.
 - **Bases:** `hexagon(6)` or `octagon(8)` for rounder cross-sections
 - **Scale transitions:** Gradual (1.0 → 1.05 → 1.1 → 1.15)
 - **Steps:** More steps, smaller extrusions
-- **Asymmetric scaling:** Use `[X, Y]` for muscle bulges
+- **Bulge:** Use `bulge` for anatomical asymmetry (+ front, - back)
 
-### Example Scale Patterns
+### Example Patterns
 
 ```yaml
-# Muscle bulge (calf, bicep)
-- extrude: 0.03, scale: [1.0, 1.15]    # depth bulge
-  translate: [0, 0.01, 0]              # shift backward
-- extrude: 0.05, scale: [1.0, 1.2]
-  translate: [0, 0.015, 0]
-- extrude: 0.03, scale: [1.0, 1.1]
-  translate: [0, 0.01, 0]
-- extrude: 0.04, scale: 0.95           # gradual taper
+# Calf muscle (back bulge)
+- extrude: 0.08, scale: 1.15, bulge: -0.018
+- extrude: 0.08, scale: 0.95, bulge: -0.01
+- extrude: 0.08, scale: 0.85, bulge: -0.005
+
+# Chest (front bulge)
+- extrude: 0.05, scale: [1.0, 1.1], bulge: 0.015
+- extrude: 0.04, scale: [1.1, 1.05], bulge: 0.01
 
 # Smooth torso curve
-- extrude: 0.04, scale: 1.05
-- extrude: 0.04, scale: 1.08
-- extrude: 0.04, scale: 1.1
-- extrude: 0.04, scale: 1.08
-- extrude: 0.04, scale: 1.02
+- extrude: 0.04, scale: [1.1, 1.15], bulge: -0.02   # pelvis
+- extrude: 0.05, scale: [0.8, 0.85]                  # waist
+- extrude: 0.05, scale: [1.0, 1.1], bulge: 0.015    # chest
 ```
 
 ### Visual Result

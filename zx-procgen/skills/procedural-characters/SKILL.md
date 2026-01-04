@@ -3,7 +3,7 @@ name: Procedural Character Generation
 description: |
   Use this skill to GENERATE LOW-POLY CHARACTERS (300-700 tris) for ZX games using the extrude+scale paradigm.
 
-  **Triggers:** "character mesh", "create character", "humanoid mesh", "quadruped mesh", "character spec", "extrude scale", "low-poly character", "PS1 character", "PS2 character"
+  **Triggers:** "character mesh", "create character", "humanoid mesh", "quadruped mesh", "character spec", "extrude scale", "low-poly character", "PS1 character", "PS2 character", "feminine character", "anatomical mesh"
 
   **Before generating:** Check `.studio/visual-style.local.md` for project style.
 
@@ -15,12 +15,12 @@ description: |
   - Triangle budgets → `references/triangle-budget-guide.md`
 
   **Load examples when:**
-  - Need complete spec templates → `examples/knight.yaml`, `examples/mage.yaml`, `examples/spider.yaml`
+  - Need complete spec templates → `examples/knight.yaml`, `examples/mage.yaml`, `examples/spider.yaml`, `examples/feminine_warrior.yaml`
 
   For NORMAL MAPS: use `procedural-normal-maps` skill (enable tangent export).
   For TEXTURING: use `mesh-texturing-workflows` skill.
   For ANIMATIONS: use `procedural-animations` skill (reference only).
-version: 1.1.0
+version: 1.2.0
 ---
 
 # Procedural Character Generation
@@ -126,16 +126,19 @@ Each part requires:
 
 ```yaml
 step:
-  extrude: 0.1              # distance along bone axis (required)
-  scale: 1.2                # uniform scale
-  scale: [1.0, 1.3]         # [perpendicular, depth] for asymmetric
-  translate: [0, 0.02, 0]   # offset in local space
-  rotate: 15                # degrees around bone axis
+  extrude: 0.1              # distance (required)
+  scale: 1.2 | [X, Y]       # uniform or asymmetric
+  bulge: -0.02 | [side, fb] # radial push: + front, - back
+  tilt: 5 | [x, y]          # perpendicular rotation (degrees)
+  translate: [x, y, z]      # offset (prefer bulge for anatomy)
+  rotate: 15                # around bone axis
 ```
 
-**Scale axis mapping** when using `[X, Y]`:
-- **X** = perpendicular to bone (side-to-side)
-- **Y** = depth (front-to-back)
+| Param | Effect |
+|-------|--------|
+| `scale [X,Y]` | Ellipse sizing (X=side, Y=depth) |
+| `bulge` | Teardrop shape (asymmetric radial push) |
+| `tilt` | Slant cross-section plane |
 
 ---
 
