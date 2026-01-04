@@ -42,7 +42,7 @@ See [Audio Pipeline Guide](../docs/audio-pipeline.md) for complete workflows.
 - **Procedural Instruments**: High-quality instrument samples via Karplus-Strong, FM, wavetable, additive synthesis
 - **Procedural Characters**: Full character generation with meshes, rigs, and animations
 - **7 Commands**: `/new-asset-project`, `/generate-asset`, `/generate-sfx`, `/generate-instrument`, `/improve-assets`, `/establish-visual-style`, `/generate-all`
-- **9 Agents**: Creative pipeline + character generation + unified quality review + enhancement + instrument design
+- **10 Agents**: Creative pipeline + character generation + normal maps + unified quality review + enhancement + instrument design
 - **Python-Based Generators**: Use Python with PIL, Blender bpy, numpy/scipy, or any tool that outputs standard formats
 
 ## Installation
@@ -116,7 +116,7 @@ The skills auto-trigger when you ask:
 - "Generate a laser sound effect"
 - "What's the best way to create tileable textures?"
 
-## Skills (12)
+## Skills (13)
 
 ### Procedural Textures
 
@@ -285,6 +285,22 @@ End-to-end character generation with meshes, rigs, and animations:
 
 **Trigger phrases**: "generate character", "create player mesh", "enemy model", "NPC with animations", "character rig", "skeletal mesh"
 
+### Procedural Normal Maps
+
+Generate tangent-space normal maps for surface detail without additional geometry:
+
+**Features:**
+- Height-to-normal conversion (Sobel gradients)
+- Procedural patterns (brick, tile, fabric, metal scratches, noise)
+- Seamless tileable generation (4D torus mapping)
+- BC5 format compression (auto-triggered by `_normal.png` naming)
+
+**Integration:**
+- Meshes must have tangent data (`export_tangents=True` in Blender)
+- Material binding via `material_normal(texture_id)`
+- Works with all render modes (0-3)
+
+**Trigger phrases**: "generate normal map", "normal map", "bump map", "height to normal", "surface detail", "BC5 texture"
 ### Generator Patterns
 
 Common patterns for procedural generation code:
@@ -323,6 +339,7 @@ Five specialized agents for end-to-end asset creation:
 | Agent | Purpose | Triggers |
 |-------|---------|----------|
 | **instrument-architect** | Synthesizes high-quality instrument samples | "generate instrument", "synthesize piano", "not chiptuney" |
+| **normal-map-generator** | Generates procedural normal maps from height patterns | "generate normal map", "normal map for", "height to normal", "surface detail" |
 
 ## Commands
 
