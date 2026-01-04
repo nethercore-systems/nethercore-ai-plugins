@@ -384,6 +384,22 @@ grep "^pub struct\|^pub fn" src/*.rs
 # Compare against GDD features
 ```
 
+## Completion Requirements
+
+**CRITICAL: Zero tool use = failure. You MUST use tools before returning.**
+
+### Minimum Actions
+- [ ] Read the GDD (docs/design/game-design.md)
+- [ ] Scan implementation (src/*.rs, Bash commands)
+- [ ] Produce structured coverage report with percentages
+
+### Context Validation
+If no GDD exists → explain and suggest /design-game or gdd-generator
+
+### Failure Handling
+If cannot track: explain what's missing (no GDD, no implementation).
+Never silently return "Done".
+
 ## Session Continuity
 
 Update `.studio/gdd-coverage.md` with:

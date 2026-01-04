@@ -93,6 +93,22 @@ RECOMMENDATIONS:
 ═══════════════════════════════════════════
 ```
 
+## Completion Requirements
+
+**CRITICAL: Zero tool use = failure. You MUST use tools before returning.**
+
+### Minimum Actions
+- [ ] Glob/search for design documents (docs/design/, GDD, etc.)
+- [ ] Read at least ONE design file
+- [ ] Produce structured design review
+
+### Context Validation
+If no design documents found → ask user for design details or suggest /design-game
+
+### Failure Handling
+If no documents to review: explain what's needed and offer to help create one.
+Never silently return "Done".
+
 ## Review Guidelines
 
 - Be constructive, not discouraging

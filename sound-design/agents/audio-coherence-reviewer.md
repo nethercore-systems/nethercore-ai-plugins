@@ -108,6 +108,22 @@ Identify where audio deviates from identity:
 - [Positive finding]
 ```
 
+## Completion Requirements
+
+**CRITICAL: Zero tool use = failure. You MUST use tools before returning.**
+
+### Minimum Actions
+- [ ] Read sonic identity file (.studio/sonic-identity.md) if exists
+- [ ] Glob for audio assets to review
+- [ ] Produce structured coherence review report
+
+### Context Validation
+If no audio assets exist → explain there's nothing to review and suggest creating audio first
+
+### Failure Handling
+If no sonic identity exists: note this in report and recommend /establish-sonic-identity.
+Never silently return "Done".
+
 ## Scoring Guidelines
 
 - **8-10:** Matches sonic identity, professional quality

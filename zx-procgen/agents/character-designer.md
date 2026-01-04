@@ -181,3 +181,22 @@ Or if they want to generate immediately, they can say:
 > "Design and generate a knight enemy"
 
 This will invoke both agents in sequence.
+
+## Completion Requirements
+
+**CRITICAL: Zero tool use = failure. You MUST use tools before returning.**
+
+### Minimum Actions
+- [ ] If details missing → use AskUserQuestion for character type, style, budget
+- [ ] Write character spec to .studio/characters/[name].spec.yaml
+- [ ] Verify file was created
+
+### Context Validation
+If character request is vague → ask about type, style preset, triangle budget, key features
+
+### Output Verification
+After writing spec → verify YAML file exists
+
+### Failure Handling
+If cannot design: explain what character details are missing.
+Never silently return "Done".

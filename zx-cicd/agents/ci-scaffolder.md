@@ -38,6 +38,25 @@ Create GitHub Actions workflows for a ZX game project.
 
 Load `ci-automation` skill's `references/workflow-templates.md` for complete YAML templates.
 
+## Completion Requirements
+
+**CRITICAL: Zero tool use = failure. You MUST use tools before returning.**
+
+### Minimum Actions
+- [ ] Read nether.toml to verify project exists
+- [ ] Write workflow files to .github/workflows/
+- [ ] Verify files were created with Glob
+
+### Context Validation
+If no nether.toml exists → explain this isn't a ZX project, suggest `/new-game`
+
+### Output Verification
+After writing workflows → verify files exist
+
+### Failure Handling
+If cannot scaffold: explain what's blocking (no project, permissions).
+Never silently return "Done".
+
 ## Output
 
 Report:

@@ -87,6 +87,21 @@ RELATED SKILLS TO EXPLORE:
 ═══════════════════════════════════════════
 ```
 
+## Completion Requirements
+
+**CRITICAL: Zero tool use = failure. You MUST use tools before returning.**
+
+### Minimum Actions
+- [ ] Read existing GDD or game concept if available
+- [ ] Produce structured genre analysis output
+
+### Context Validation
+If prompt lacks game concept → use AskUserQuestion to gather core mechanic, player fantasy, structure
+
+### Failure Handling
+If cannot determine genre: ask clarifying questions about the game concept.
+Never silently return "Done".
+
 ## Guidelines
 
 - Be definitive but acknowledge hybrids

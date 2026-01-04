@@ -66,6 +66,22 @@ Analyze and improve GitHub Actions workflows for faster builds.
 Before: ~X min → After: ~Y min
 ```
 
+## Completion Requirements
+
+**CRITICAL: Zero tool use = failure. You MUST use tools before returning.**
+
+### Minimum Actions
+- [ ] Read existing workflow files (.github/workflows/*.yml)
+- [ ] Identify optimization opportunities
+- [ ] Update workflow files OR explain why no optimization is possible
+
+### Context Validation
+If no workflows exist → recommend ci-scaffolder first
+
+### Failure Handling
+If no optimizations found: explain workflow is already optimal.
+Never silently return "Done".
+
 ## Scope
 
 - Analyze and optimize CI/CD performance

@@ -78,3 +78,19 @@ grep -rn "Instant::now\|SystemTime::now" src/
 | `Instant::now` | Frame counter |
 
 Load `testing-fundamentals` skill's `references/determinism-rules.md` for detailed patterns.
+
+## Completion Requirements
+
+**CRITICAL: Zero tool use = failure. You MUST use tools before returning.**
+
+### Minimum Actions
+- [ ] Grep for non-deterministic patterns (rand, HashMap, Instant)
+- [ ] Read suspect files
+- [ ] Produce investigation report with file:line references
+
+### Context Validation
+If no source files → explain there's no code to investigate
+
+### Failure Handling
+If no issues found: explicitly state the code appears deterministic.
+Never silently return "Done".

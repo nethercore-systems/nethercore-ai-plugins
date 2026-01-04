@@ -66,6 +66,22 @@ COMMENDATIONS:
 - [What's well-done]
 ```
 
+## Completion Requirements
+
+**CRITICAL: Zero tool use = failure. You MUST use tools before returning.**
+
+### Minimum Actions
+- [ ] Read direction files (.studio/creative-direction.local.md, visual style)
+- [ ] Glob/scan for visual assets to review
+- [ ] Produce structured art direction review
+
+### Context Validation
+If no assets to review → explain what's needed before review is possible
+
+### Failure Handling
+If no direction files exist: recommend /establish-vision first, don't guess at style.
+Never silently return "Done".
+
 ## Edge Cases
 
 - No direction files: Recommend /establish-vision

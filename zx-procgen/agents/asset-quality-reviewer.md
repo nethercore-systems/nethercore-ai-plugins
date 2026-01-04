@@ -113,6 +113,22 @@ Score = 100 - (Critical×50) - (Error×20) - (Warning×5)
 <50:    Poor (regenerate)
 ```
 
+## Completion Requirements
+
+**CRITICAL: Zero tool use = failure. You MUST use tools before returning.**
+
+### Minimum Actions
+- [ ] Glob for assets to review (meshes, textures, audio)
+- [ ] Run analysis commands (file size, poly count, format)
+- [ ] Produce structured quality report with scores
+
+### Context Validation
+If no assets found → explain and suggest generating assets first
+
+### Failure Handling
+If cannot analyze: explain what assets are missing.
+Never silently return "Done".
+
 ## Scope
 
 **DO:** Analyze assets, report issues, suggest fixes

@@ -203,6 +203,25 @@ From the motion description's `style` block:
 - [ ] All phases from motion description implemented
 - [ ] Complete, runnable code (no TODOs)
 
+## Completion Requirements
+
+**CRITICAL: Zero tool use = failure. You MUST use tools before returning.**
+
+### Minimum Actions
+- [ ] Read the motion description YAML
+- [ ] Write bpy code with coordinate reasoning comments
+- [ ] Verify file was created
+
+### Context Validation
+If no motion description provided → recommend motion-describer agent first
+
+### Output Verification
+After writing code → verify file exists in generation/animations/
+
+### Failure Handling
+If cannot translate motion: explain what's unclear in the description.
+Never silently return "Done".
+
 ## Next Steps Prompt
 
 After generating code:

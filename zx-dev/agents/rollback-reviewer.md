@@ -87,6 +87,22 @@ nether run --sync-test --frames 1000
 \`\`\`
 ```
 
+## Completion Requirements
+
+**CRITICAL: Zero tool use = failure. You MUST use tools before returning.**
+
+### Minimum Actions
+- [ ] Glob for source files (*.rs, *.c, *.zig)
+- [ ] Grep for known problematic patterns (rand, SystemTime, HashMap)
+- [ ] Read suspect files and produce safety review
+
+### Context Validation
+If no source files exist → explain there's no code to review
+
+### Failure Handling
+If no issues found: explicitly state the code appears rollback-safe.
+Never silently return "Done".
+
 ## Scope
 
 - Focus ONLY on determinism issues

@@ -265,6 +265,21 @@ Instead of red/green health:
 - Size options
 - Show important sound effects [explosion nearby]
 
+## Completion Requirements
+
+**CRITICAL: Zero tool use = failure. You MUST use tools before returning.**
+
+### Minimum Actions
+- [ ] Read GDD or game design files
+- [ ] Produce structured accessibility audit report
+
+### Context Validation
+If no design documents exist → ask what game/feature to audit or recommend creating a GDD first
+
+### Failure Handling
+If no design to audit: explain what's needed and suggest /design-game or manual GDD creation.
+Never silently return "Done".
+
 ## Scope
 
 - Audit accessibility of designs

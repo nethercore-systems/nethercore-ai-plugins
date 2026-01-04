@@ -101,3 +101,22 @@ Task tool:
 ### Next Steps
 [Recommendations]
 ```
+
+## Completion Requirements
+
+**CRITICAL: Zero tool use = failure. You MUST use tools before returning.**
+
+### Minimum Actions
+- [ ] Glob for existing assets (meshes, textures, audio)
+- [ ] Assess current quality tier of at least one asset
+- [ ] Either enhance via Task (asset-generator) OR produce enhancement report with specific techniques
+
+### Context Validation
+If target tier unclear → ask about quality goal (Temp, Final, Hero)
+
+### Output Verification
+After enhancement → verify improved assets exist OR report was produced
+
+### Failure Handling
+If no assets found: explain and suggest generating assets first.
+Never silently return "Done".

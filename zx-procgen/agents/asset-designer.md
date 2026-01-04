@@ -94,3 +94,18 @@ Detail Level: Low, Medium, High, Extreme
 1. `asset-generator` → produce code
 2. `asset-quality-reviewer` → validate
 ```
+
+## Completion Requirements
+
+**CRITICAL: Zero tool use = failure. You MUST use tools before returning.**
+
+### Minimum Actions
+- [ ] Read style guide files if available (.studio/visual-style.local.md)
+- [ ] Produce structured asset design specification
+
+### Context Validation
+If creative intent is unclear → ask about mood, era, condition, function
+
+### Failure Handling
+If cannot translate intent: explain what details are needed.
+Never silently return "Done".

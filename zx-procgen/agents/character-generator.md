@@ -171,6 +171,26 @@ If Blender fails:
 - Check Python syntax in generated script
 - Check YAML spec is valid
 
+## Completion Requirements
+
+**CRITICAL: Zero tool use = failure. You MUST use tools before returning.**
+
+### Minimum Actions
+- [ ] Locate character spec YAML
+- [ ] Write bpy generation script
+- [ ] Run Blender to generate GLB
+- [ ] Verify output file exists
+
+### Context Validation
+If no spec exists → recommend character-designer agent first
+
+### Output Verification
+After generation → verify .glb file exists in assets/characters/
+
+### Failure Handling
+If generation fails: report Blender errors and suggest fixes.
+Never silently return "Done".
+
 ## Related
 
 - **character-designer agent** - Creates spec files from descriptions

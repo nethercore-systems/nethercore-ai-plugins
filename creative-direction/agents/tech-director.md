@@ -82,6 +82,22 @@ COMMENDATIONS:
 - [Good patterns]
 ```
 
+## Completion Requirements
+
+**CRITICAL: Zero tool use = failure. You MUST use tools before returning.**
+
+### Minimum Actions
+- [ ] Read architecture files or scan for code patterns
+- [ ] Glob source files, count lines, check structure
+- [ ] Produce structured tech direction review
+
+### Context Validation
+If no code exists → explain what's needed before review is possible
+
+### Failure Handling
+If project has no source: explain and recommend project scaffolding.
+Never silently return "Done".
+
 ## Edge Cases
 
 - No tech direction: Recommend documenting architecture

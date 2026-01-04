@@ -299,6 +299,22 @@ struct [Mechanic]State {
 - **Edge-case complete:** All situations handled
 - **ZX-compatible:** Within platform limits
 
+## Completion Requirements
+
+**CRITICAL: Zero tool use = failure. You MUST use tools before returning.**
+
+### Minimum Actions
+- [ ] Read existing GDD/design for context if available
+- [ ] If mechanic is vague → ask about purpose, frequency, interactions
+- [ ] Write mechanic specification to docs/design/ or produce in output
+
+### Context Validation
+If mechanic request lacks detail → use AskUserQuestion for purpose, feel, constraints
+
+### Failure Handling
+If cannot design: explain what details are needed (type of action, game context).
+Never silently return "Done".
+
 ## Scope
 
 - Design specific game mechanics

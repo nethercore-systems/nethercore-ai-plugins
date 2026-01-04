@@ -135,3 +135,22 @@ When designing an instrument, provide:
 - "Create a pad that evolves over 4 seconds"
 
 For each, select appropriate technique, design parameters, and output working code.
+
+## Completion Requirements
+
+**CRITICAL: Zero tool use = failure. You MUST use tools before returning.**
+
+### Minimum Actions
+- [ ] Read skill references (procedural-instruments SKILL.md and relevant references/)
+- [ ] Write complete Python synthesis script to generation/instruments/ or generation/audio/
+- [ ] Verify file was created
+
+### Context Validation
+If instrument type unclear → ask about style, context (melody/bass/pad), mood
+
+### Output Verification
+After Write → verify Python file exists with Glob
+
+### Failure Handling
+If cannot synthesize: explain what's missing (technique choice, parameters).
+Never silently return "Done".

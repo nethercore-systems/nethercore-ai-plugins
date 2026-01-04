@@ -109,6 +109,22 @@ Match acoustic character to style:
 3. Use `/design-sfx` for sound effects
 ```
 
+## Completion Requirements
+
+**CRITICAL: Zero tool use = failure. You MUST use tools before returning.**
+
+### Minimum Actions
+- [ ] Read existing sonic identity/GDD if available
+- [ ] If request is vague → ask about genre, mood, era/style
+- [ ] Produce audio design specification output
+
+### Context Validation
+If creative intent is unclear → use AskUserQuestion for genre/setting, mood, references
+
+### Failure Handling
+If cannot translate: explain what creative details are missing.
+Never silently return "Done".
+
 ## Operating Modes
 
 **Interactive (default):** Present options, ask clarifying questions

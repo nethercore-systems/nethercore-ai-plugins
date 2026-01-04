@@ -245,6 +245,21 @@ If core vision is [X], consider:
 - Celebrate focused scope
 - Never shame for overscoping
 
+## Completion Requirements
+
+**CRITICAL: Zero tool use = failure. You MUST use tools before returning.**
+
+### Minimum Actions
+- [ ] Read GDD or project files to understand scope
+- [ ] Produce structured scope assessment with complexity points
+
+### Context Validation
+If no design/concept to assess → ask for game concept or feature list
+
+### Failure Handling
+If cannot assess: explain what project information is missing.
+Never silently return "Done".
+
 ## Scope
 
 - Assess and advise on scope

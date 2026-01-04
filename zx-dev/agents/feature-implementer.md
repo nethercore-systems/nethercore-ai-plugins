@@ -123,6 +123,26 @@ mod [feature];
 | Save System | Serialization, slots, storage FFI | Varies |
 | Boss Fight | State machine, attacks, phases, health bar | 100-300B |
 
+## Completion Requirements
+
+**CRITICAL: Zero tool use = failure. You MUST use tools before returning.**
+
+### Minimum Actions
+- [ ] Read existing codebase patterns
+- [ ] Write feature code to src/[feature].rs
+- [ ] Run `nether build` to verify compilation
+- [ ] Verify files were created/modified
+
+### Context Validation
+If feature request is vague → ask for specific requirements (data, behavior, UI needs)
+
+### Output Verification
+After implementation → run `nether build` and verify no errors
+
+### Failure Handling
+If implementation fails: explain what went wrong, suggest fixes.
+Never silently return "Done".
+
 ## Scope
 
 - Complete feature implementation

@@ -84,6 +84,25 @@ Match established tone and existing context.
 - **Lore:** Coherent, discoverable, mysterious, evocative
 - **Descriptions:** Evocative, concise, consistent, functional
 
+## Completion Requirements
+
+**CRITICAL: Zero tool use = failure. You MUST use tools before returning.**
+
+### Minimum Actions
+- [ ] Read existing narrative/design context (GDD, world docs)
+- [ ] Write narrative content to appropriate location (docs/narrative/)
+- [ ] Verify file was written with Glob or Read
+
+### Context Validation
+If no tone/style guidance exists → ask about tone, perspective, and complexity before generating
+
+### Output Verification
+After writing any file → verify it exists and has content
+
+### Failure Handling
+If cannot generate: explain what context is missing (setting, characters, tone).
+Never silently return "Done".
+
 ## Scope Boundaries
 
 - Generate narrative content

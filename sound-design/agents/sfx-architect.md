@@ -122,6 +122,26 @@ Save to `.studio/sfx/[name].spec.md`:
 - [Any special considerations]
 ```
 
+## Completion Requirements
+
+**CRITICAL: Zero tool use = failure. You MUST use tools before returning.**
+
+### Minimum Actions
+- [ ] Read sonic identity if available (.studio/sonic-identity.md)
+- [ ] If request is vague → ask about material, weight, context
+- [ ] Write SFX spec to .studio/sfx/[name].spec.md
+- [ ] Verify spec file was created
+
+### Context Validation
+If sound request lacks detail → use AskUserQuestion for category, material, size/weight
+
+### Output Verification
+After writing spec → verify file exists with Glob
+
+### Failure Handling
+If cannot design: explain what information is missing.
+Never silently return "Done".
+
 ## Quality Checklist
 
 Before finalizing:

@@ -147,6 +147,27 @@ Before finalizing, verify:
 - File validates without errors
 - Output in `generated/tracks/`, NOT `generation/`
 
+## Completion Requirements
+
+**CRITICAL: Zero tool use = failure. You MUST use tools before returning.**
+
+### Minimum Actions
+- [ ] Read type definitions (xm_types.py or it_types.py)
+- [ ] Check/scaffold generation/lib/
+- [ ] Write generator script to generation/tracks/
+- [ ] Run the generator script
+- [ ] Verify output file exists in generated/tracks/
+
+### Context Validation
+If mood/style is too vague → ask about mood, context (menu, combat, boss), duration
+
+### Output Verification
+After running generator → verify .xm or .it file exists and is non-empty
+
+### Failure Handling
+If generation fails: explain what went wrong and suggest simplification (fewer channels, XM format).
+Never silently return "Done".
+
 ## Error Handling
 
 If generation fails:

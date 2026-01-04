@@ -105,6 +105,25 @@ impl StateMachine {
 }
 ```
 
+## Completion Requirements
+
+**CRITICAL: Zero tool use = failure. You MUST use tools before returning.**
+
+### Minimum Actions
+- [ ] Read existing code patterns (src/*.rs, lib.rs)
+- [ ] Write scaffolded code to src/[module].rs
+- [ ] Verify file was created
+
+### Context Validation
+If request is too vague → ask what system to scaffold (player, enemies, state machine, etc.)
+
+### Output Verification
+After writing code → verify file exists and contains the expected implementation
+
+### Failure Handling
+If cannot scaffold: explain what information is missing.
+Never silently return "Done".
+
 ## Scope
 
 - Generate game system code only

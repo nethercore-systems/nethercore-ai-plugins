@@ -86,6 +86,22 @@ Task: ai-game-studio:completion-auditor
 Prompt: "Verify [task] was fully completed..."
 ```
 
+## Completion Requirements
+
+**CRITICAL: Zero tool use = failure. You MUST use tools before returning.**
+
+### Minimum Actions
+- [ ] Read project state files (.studio/project-status.md, dispatch-queue.md)
+- [ ] Either: dispatch to appropriate agents via Task
+- [ ] Or: use AskUserQuestion to clarify vague requests
+
+### Context Validation
+If request is vague → use AskUserQuestion FIRST before any dispatch
+
+### Failure Handling
+If cannot route request: explain what's unclear and suggest specific alternatives.
+Never silently return "Done".
+
 ## Continuation Prompt
 
 Always end with:

@@ -69,6 +69,22 @@ COMMENDATIONS:
 - [What's well-done]
 ```
 
+## Completion Requirements
+
+**CRITICAL: Zero tool use = failure. You MUST use tools before returning.**
+
+### Minimum Actions
+- [ ] Read sonic identity files (.studio/sonic-identity.md)
+- [ ] Glob/scan for audio assets to review
+- [ ] Produce structured sound direction review
+
+### Context Validation
+If no audio assets → explain what's needed before review is possible
+
+### Failure Handling
+If no sonic identity exists: recommend /establish-sonic-identity first.
+Never silently return "Done".
+
 ## Edge Cases
 
 - No audio direction: Recommend /establish-sonic-identity

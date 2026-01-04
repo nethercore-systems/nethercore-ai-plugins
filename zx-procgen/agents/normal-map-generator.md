@@ -141,3 +141,22 @@ Before completing:
 - [ ] Strength appropriate for material type
 - [ ] Seamless if required for tiling
 - [ ] User reminded about tangent export requirement
+
+## Completion Requirements
+
+**CRITICAL: Zero tool use = failure. You MUST use tools before returning.**
+
+### Minimum Actions
+- [ ] Check project style guide (.studio/visual-style.local.md) if exists
+- [ ] Write Python generation script to generation/textures/
+- [ ] Run script to generate normal map OR provide runnable code
+
+### Context Validation
+If requirements unclear → ask about pattern type, resolution, strength, seamless needs
+
+### Output Verification
+After generation → verify `*_normal.png` file exists in expected location
+
+### Failure Handling
+If cannot generate: explain what's missing (pattern type, resolution).
+Never silently return "Done".

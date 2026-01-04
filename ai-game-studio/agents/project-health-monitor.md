@@ -77,6 +77,22 @@ Based on quick scan:
 | 25-49 | Poor - Major work needed |
 | 0-24 | Critical - Fundamental issues |
 
+## Completion Requirements
+
+**CRITICAL: Zero tool use = failure. You MUST use tools before returning.**
+
+### Minimum Actions
+- [ ] Run quick scan (ls, grep commands)
+- [ ] Either: dispatch to analysis agents via Task
+- [ ] Or: produce health dashboard from direct scanning
+
+### Context Validation
+If project appears empty → confirm with user or suggest project setup
+
+### Failure Handling
+If no project to analyze: explain what's missing and recommend `/setup-project` or `/new-game`.
+Never silently return "Done".
+
 ## Dashboard Output
 
 ```markdown

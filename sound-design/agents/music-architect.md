@@ -147,6 +147,26 @@ Intensity:| Low   | Med  | High | Med  |
 | Rhythm | Drums | 0.3 |
 ```
 
+## Completion Requirements
+
+**CRITICAL: Zero tool use = failure. You MUST use tools before returning.**
+
+### Minimum Actions
+- [ ] Read sonic identity if available (.studio/sonic-identity.md)
+- [ ] If request is vague → ask about purpose, mood, duration
+- [ ] Write music spec to .studio/music/[name].spec.md
+- [ ] Verify spec file was created
+
+### Context Validation
+If no track details provided → use AskUserQuestion for purpose, mood, adaptive needs
+
+### Output Verification
+After writing spec → verify file exists with Glob
+
+### Failure Handling
+If cannot design: explain what information is missing (purpose, mood, style).
+Never silently return "Done".
+
 ## Quality Checklist
 
 Before finalizing:

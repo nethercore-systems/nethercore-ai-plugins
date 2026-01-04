@@ -82,6 +82,23 @@ Verify all release requirements are met and identify blockers.
 - Missing screenshots
 - No description
 
+## Completion Requirements
+
+**CRITICAL: Zero tool use = failure. You MUST use tools before returning.**
+
+### Minimum Actions
+- [ ] Read nether.toml for metadata check
+- [ ] Run `nether build --release`
+- [ ] Check for icon and screenshots
+- [ ] Produce structured validation report
+
+### Context Validation
+If no nether.toml → explain this isn't a ZX project
+
+### Failure Handling
+If validation reveals issues: list all blockers clearly with fix suggestions.
+Never silently return "Done".
+
 ## Scope
 
 - Validate only, do NOT fix issues

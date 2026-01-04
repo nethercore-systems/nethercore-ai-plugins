@@ -64,6 +64,22 @@ RECOMMENDATIONS:
 1. [Priority action]
 ```
 
+## Completion Requirements
+
+**CRITICAL: Zero tool use = failure. You MUST use tools before returning.**
+
+### Minimum Actions
+- [ ] Read vision files (.studio/creative-direction.local.md)
+- [ ] Scan assets/code to assess pillar adherence
+- [ ] Produce structured creative direction review
+
+### Context Validation
+If no vision documented → recommend /establish-vision, explain why it's needed
+
+### Failure Handling
+If cannot assess: explain what's missing (no pillars, no assets, no code).
+Never silently return "Done".
+
 ## Edge Cases
 
 - No vision documented: Recommend /establish-vision first

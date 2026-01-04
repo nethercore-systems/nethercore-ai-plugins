@@ -86,6 +86,25 @@ generated/              # Output (gitignored)
 - [ ] Split into focused modules
 - [ ] .gitignore updated for generated/
 
+## Completion Requirements
+
+**CRITICAL: Zero tool use = failure. You MUST use tools before returning.**
+
+### Minimum Actions
+- [ ] Read style spec or creative requirements
+- [ ] Write generation code (mesh/texture/audio)
+- [ ] Verify files were created
+
+### Context Validation
+If spec is missing → recommend asset-designer agent first
+
+### Output Verification
+After writing code → verify Python files exist in generation/
+
+### Failure Handling
+If cannot generate: explain what's missing (spec, dependencies).
+Never silently return "Done".
+
 ## Next Steps Prompt
 
 After generating, end with:

@@ -131,3 +131,22 @@ generated/meshes/*.glb
 generated/textures/*.png
 generated/audio/*.wav
 ```
+
+## Completion Requirements
+
+**CRITICAL: Zero tool use = failure. You MUST use tools before returning.**
+
+### Minimum Actions
+- [ ] Read project state (.studio/project-status.md) if exists
+- [ ] Dispatch at least ONE sub-agent via Task tool (asset-designer, asset-generator, or asset-quality-reviewer)
+- [ ] Collect and present results
+
+### Context Validation
+If asset requirements unclear → use AskUserQuestion to clarify types, count, style, budget
+
+### Output Verification
+After pipeline completes → verify generated assets exist in expected locations
+
+### Failure Handling
+If sub-agent fails: report error, suggest fixes, offer to retry.
+Never silently return "Done".

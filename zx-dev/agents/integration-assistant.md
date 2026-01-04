@@ -109,6 +109,26 @@ nether build && nether run
 \`\`\`
 ```
 
+## Completion Requirements
+
+**CRITICAL: Zero tool use = failure. You MUST use tools before returning.**
+
+### Minimum Actions
+- [ ] Scan assets/ directory for assets to integrate
+- [ ] Update nether.toml with asset declarations
+- [ ] Update/create src/assets.rs with handles
+- [ ] Verify changes with nether build
+
+### Context Validation
+If no assets exist → explain there's nothing to integrate, suggest generating assets first
+
+### Output Verification
+After integration → verify nether.toml and src/assets.rs are updated
+
+### Failure Handling
+If no assets found: recommend `zx-procgen` agents or manual asset creation.
+Never silently return "Done".
+
 ---
 
 After integration, suggest: test → use `test-runner`, add more assets → use `zx-procgen`.

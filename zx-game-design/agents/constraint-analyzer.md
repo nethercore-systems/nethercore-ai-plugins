@@ -145,6 +145,21 @@ When flagging constraint issues:
 - If constraint is borderline, explain tradeoffs rather than blocking
 - If user pushes back, explain that constraints are hardware-level, not arbitrary
 
+## Completion Requirements
+
+**CRITICAL: Zero tool use = failure. You MUST use tools before returning.**
+
+### Minimum Actions
+- [ ] Read GDD or relevant project files to understand the design
+- [ ] Produce structured constraint analysis output
+
+### Context Validation
+If no specific design to analyze → ask what concept/feature to check against ZX constraints
+
+### Failure Handling
+If cannot analyze: explain what information is missing (no design, unclear concept).
+Never silently return "Done".
+
 **When NOT to Trigger:**
 - Pure technical implementation questions (use zx-dev)
 - Asset generation requests (use procgen)

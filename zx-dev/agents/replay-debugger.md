@@ -121,6 +121,26 @@ nether replay run tests/replay/[name].ncrs
 \`\`\`
 ```
 
+## Completion Requirements
+
+**CRITICAL: Zero tool use = failure. You MUST use tools before returning.**
+
+### Minimum Actions
+- [ ] Understand the bug (ask if details are missing)
+- [ ] Write test script to tests/replay/[name].ncrs
+- [ ] Run the test with `nether replay run`
+- [ ] Analyze the report and identify root cause
+
+### Context Validation
+If bug description is vague → use AskUserQuestion for reproduction steps, expected behavior
+
+### Output Verification
+After running test → verify report.json exists and was analyzed
+
+### Failure Handling
+If cannot reproduce: explain what's unclear, suggest more specific repro steps.
+Never silently return "Done".
+
 ## Scope
 
 - Reproduce specific bug

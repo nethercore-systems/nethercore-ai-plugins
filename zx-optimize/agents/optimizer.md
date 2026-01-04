@@ -69,6 +69,26 @@ strip = true
 2. Only modify optimization settings
 3. If build fails, revert and report
 
+## Completion Requirements
+
+**CRITICAL: Zero tool use = failure. You MUST use tools before returning.**
+
+### Minimum Actions
+- [ ] Run baseline build to measure current size
+- [ ] Update Cargo.toml with optimization settings
+- [ ] Run optimized build and measure improvement
+- [ ] Report before/after comparison
+
+### Context Validation
+If no Cargo.toml exists → explain this isn't a Rust project
+
+### Output Verification
+After optimizing → verify build still succeeds
+
+### Failure Handling
+If build fails after changes: revert and report what went wrong.
+Never silently return "Done".
+
 ## Scope
 
 - Apply WASM and Cargo.toml optimizations

@@ -57,6 +57,22 @@ Add quality checks that prevent bad code from merging.
 Enable required status checks in GitHub Settings → Branches.
 ```
 
+## Completion Requirements
+
+**CRITICAL: Zero tool use = failure. You MUST use tools before returning.**
+
+### Minimum Actions
+- [ ] Read existing workflow files
+- [ ] Assess what quality gates already exist
+- [ ] Add missing quality gates OR explain what's already present
+
+### Context Validation
+If no workflows exist → recommend ci-scaffolder first
+
+### Failure Handling
+If all gates already exist: explain current state is complete.
+Never silently return "Done".
+
 ## Scope
 
 - Add quality gates to CI

@@ -93,6 +93,25 @@ nether run      # Launch in player
 # NEVER use cargo run
 ```
 
+## Completion Requirements
+
+**CRITICAL: Zero tool use = failure. You MUST use tools before returning.**
+
+### Minimum Actions
+- [ ] Read project state (.studio/project-status.md) if exists
+- [ ] Either: dispatch to appropriate agents via Task
+- [ ] Or: use AskUserQuestion to gather requirements for next phase
+
+### Context Validation
+If no project exists → ask what game concept to develop
+
+### Output Verification
+Before declaring tasks complete → run verification commands (grep TODO, nether build)
+
+### Failure Handling
+If orchestration blocked: explain what's preventing progress and suggest alternatives.
+Never silently return "Done".
+
 ## Output Format
 
 ```

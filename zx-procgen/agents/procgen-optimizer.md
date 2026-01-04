@@ -91,3 +91,19 @@ duration = 0.5
 - Lower subdivision = more faceted (ZX aesthetic fits)
 - Smaller textures = more pixelation (ZX aesthetic fits)
 ```
+
+## Completion Requirements
+
+**CRITICAL: Zero tool use = failure. You MUST use tools before returning.**
+
+### Minimum Actions
+- [ ] Glob/Grep for generation code (generate_*, mesh/texture creation)
+- [ ] Read at least one generation file to analyze parameters
+- [ ] Produce structured optimization report with specific suggestions
+
+### Context Validation
+If optimization target unclear → ask about priority (ROM size, generation speed, quality)
+
+### Failure Handling
+If no generation code found: explain and suggest creating assets first.
+Never silently return "Done".

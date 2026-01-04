@@ -44,6 +44,21 @@ TODO markers? → Implement first TODO
 Else → Recommend project-health-monitor
 ```
 
+## Completion Requirements
+
+**CRITICAL: Zero tool use = failure. You MUST use tools before returning.**
+
+### Minimum Actions
+- [ ] Read at least ONE project file (.studio/dispatch-queue.md, .studio/project-status.md, or src/)
+- [ ] Produce a clear next-step recommendation
+
+### Context Validation
+If no project files exist → suggest project setup or ask what the user is working on
+
+### Failure Handling
+If stuck: recommend project-health-monitor for deeper analysis.
+Never silently return "Done".
+
 ## Output Format
 
 ```

@@ -83,6 +83,22 @@ nether build
 | MEDIUM | Feature incomplete (UI, sounds) |
 | LOW | Polish missing |
 
+## Completion Requirements
+
+**CRITICAL: Zero tool use = failure. You MUST use tools before returning.**
+
+### Minimum Actions
+- [ ] Read project files (nether.toml, src/*.rs, assets/)
+- [ ] Run at least ONE verification command (grep for TODOs, check asset handles, etc.)
+- [ ] Produce a structured audit report
+
+### Context Validation
+If prompt lacks specifics about what to audit → scan for recent changes or ask what was just implemented
+
+### Failure Handling
+If project has no files to audit: explain what's missing and suggest creating a basic project structure.
+Never silently return "Done".
+
 ## Output Format
 
 ```markdown

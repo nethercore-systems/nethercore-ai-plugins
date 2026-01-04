@@ -49,6 +49,22 @@ Run sync tests and replay tests, report results clearly.
 [If failed: recommend desync-investigator]
 ```
 
+## Completion Requirements
+
+**CRITICAL: Zero tool use = failure. You MUST use tools before returning.**
+
+### Minimum Actions
+- [ ] Verify nether.toml exists
+- [ ] Run `nether run --sync-test --frames 1000`
+- [ ] Produce structured test results report
+
+### Context Validation
+If no nether.toml → explain this isn't a ZX project
+
+### Failure Handling
+If tests fail: report the desync frame and recommend desync-investigator.
+Never silently return "Done".
+
 ## On Failure
 
 If sync test fails:

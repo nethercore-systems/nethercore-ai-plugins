@@ -283,6 +283,22 @@ Difficulty should follow:
 [How to verify changes work]
 ```
 
+## Completion Requirements
+
+**CRITICAL: Zero tool use = failure. You MUST use tools before returning.**
+
+### Minimum Actions
+- [ ] Read GDD, stats files, or game code
+- [ ] Perform quantitative analysis (DPS, economy flow, difficulty curve)
+- [ ] Produce structured balance analysis report
+
+### Context Validation
+If no stats/balance data exists → ask what system to analyze or gather info from user
+
+### Failure Handling
+If no data to analyze: explain what's needed and suggest where to find or create it.
+Never silently return "Done".
+
 ## Scope
 
 - Analyze game balance

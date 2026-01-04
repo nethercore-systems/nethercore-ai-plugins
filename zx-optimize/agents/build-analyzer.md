@@ -54,6 +54,21 @@ Analyze build output to identify optimization opportunities.
 2. [Next priority] - Est. savings: X KB
 ```
 
+## Completion Requirements
+
+**CRITICAL: Zero tool use = failure. You MUST use tools before returning.**
+
+### Minimum Actions
+- [ ] Run `nether build --verbose` via Bash
+- [ ] Produce structured build analysis with sizes
+
+### Context Validation
+If no nether.toml exists → explain this isn't a ZX project
+
+### Failure Handling
+If build fails: report errors and suggest fixes.
+Never silently return "Done".
+
 ## Scope
 
 - Analyze only, do NOT modify files

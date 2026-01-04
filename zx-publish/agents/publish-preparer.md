@@ -77,6 +77,26 @@ nether pack --release
 Run `/publish-game` to complete upload.
 ```
 
+## Completion Requirements
+
+**CRITICAL: Zero tool use = failure. You MUST use tools before returning.**
+
+### Minimum Actions
+- [ ] Read nether.toml and validate metadata
+- [ ] Run `nether build --release`
+- [ ] Check for platform assets (icon, screenshots)
+- [ ] Run `nether pack --release`
+
+### Context Validation
+If no nether.toml → explain this isn't a ZX project
+
+### Output Verification
+After packing → verify .nether ROM file exists
+
+### Failure Handling
+If any phase fails: report specific error and suggest fix.
+Never silently return "Done".
+
 ## Quality Gates
 
 | Gate | Action if Failed |

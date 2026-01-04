@@ -123,3 +123,22 @@ Ready for coordinate translation. Next:
 
 Pass this motion description to the animation-coder agent?
 ```
+
+## Completion Requirements
+
+**CRITICAL: Zero tool use = failure. You MUST use tools before returning.**
+
+### Minimum Actions
+- [ ] Read animation request and understand type (locomotion, attack, idle)
+- [ ] Write motion description YAML to .studio/animations/ or output to user
+- [ ] Include all required sections: name, duration, style, phases, timing_curves, ik_hints
+
+### Context Validation
+If animation details unclear → ask about character weight, style, duration, purpose
+
+### Output Verification
+After Write → verify YAML file exists OR present complete YAML in response
+
+### Failure Handling
+If cannot describe motion: explain what details are missing.
+Never silently return "Done".

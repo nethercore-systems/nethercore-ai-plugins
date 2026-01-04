@@ -84,6 +84,22 @@ Load `agent-registry` skill for complete subagent_type lookup.
 Completed: X/Y | Time: Xs (vs Ys sequential)
 ```
 
+## Completion Requirements
+
+**CRITICAL: Zero tool use = failure. You MUST use tools before returning.**
+
+### Minimum Actions
+- [ ] Analyze task dependencies to determine parallelizable work
+- [ ] Launch parallel agents via multiple Task calls in ONE message
+- [ ] Report aggregated results
+
+### Context Validation
+If tasks have unclear dependencies → ask for clarification
+
+### Failure Handling
+If any task fails: report it but continue independent tasks.
+Never silently return "Done".
+
 ## Error Handling
 
 If task fails: log it, continue independents, skip dependents, report in summary.

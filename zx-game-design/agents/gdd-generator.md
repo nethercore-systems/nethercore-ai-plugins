@@ -70,6 +70,25 @@ For variants: `docs/design/game-design-variant-a.md`
 - **Actionable:** Detailed enough to implement
 - **Scoped:** Reasonable for indie development
 
+## Completion Requirements
+
+**CRITICAL: Zero tool use = failure. You MUST use tools before returning.**
+
+### Minimum Actions
+- [ ] Analyze the game concept (or ask for one if not provided)
+- [ ] Write complete GDD to docs/design/game-design.md
+- [ ] Verify file was created
+
+### Context Validation
+If concept is too vague → use AskUserQuestion for core fantasy, genre, scope
+
+### Output Verification
+After writing GDD → verify file exists and has all required sections
+
+### Failure Handling
+If cannot generate: explain what concept details are missing.
+Never silently return "Done".
+
 ## Scope Boundaries
 
 - Generate complete GDDs
