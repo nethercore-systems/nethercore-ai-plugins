@@ -18,7 +18,8 @@ description: |
   - ZX limits → `references/zx-constraints.md`
 
   For MESH GENERATION: use `procedural-meshes` skill.
-  For COMPLETE CHARACTERS: use `character-generator` agent.
+  For CHARACTER RIGS: see `procedural-characters → skeleton-presets.md`.
+  For COMPLETE CHARACTERS: use `character-designer` + `character-generator` agents.
 version: 2.0.0
 ---
 

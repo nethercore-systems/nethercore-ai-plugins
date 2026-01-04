@@ -50,9 +50,40 @@ Document position for each. All assets should align.
 1. **Visual Pillars** - 3-5 non-negotiable style principles
 2. **Reference Board** - Target aesthetic by category
 3. **Color Keys** - Paintings for major environments/moods
-4. **Material Definitions** - Surface treatments
+4. **Material Definitions** - Surface treatments, normal map intensity
 5. **Character Design Language** - Proportions, silhouettes
 6. **Environment Design Language** - Scale, architecture
+
+## Normal Map Aesthetic Guidelines
+
+Normal maps add surface detail. Use consistently with visual style:
+
+| Style | Normal Map Intensity | Recommendation |
+|-------|---------------------|----------------|
+| Stylized/Toon | 0.3-0.5 | Subtle or skip |
+| PS1/N64 Retro | 0.5-0.8 | Subtle detail |
+| PS2/Dreamcast | 0.8-1.2 | Standard detail |
+| Realistic | 1.0-2.0 | Full detail |
+
+**When to use normal maps:**
+- Hero characters requiring close-up detail
+- Architecture with visible surface texture
+- Materials that rely on micro-detail (metal, fabric, stone)
+
+**When to skip normal maps:**
+- Flat-shaded stylized aesthetics
+- Memory-constrained scenarios
+- Distant or fast-moving objects
+- When geometry provides sufficient form
+
+**Material-specific intensity:**
+| Material | Intensity Range |
+|----------|----------------|
+| Smooth plastic | 0.2-0.4 |
+| Fabric/cloth | 0.5-0.8 |
+| Stone/concrete | 0.8-1.2 |
+| Metal (brushed) | 1.0-1.5 |
+| Organic (bark, skin) | 0.6-1.0 |
 
 ## Coherence Checklist
 

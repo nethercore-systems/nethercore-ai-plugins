@@ -1,0 +1,138 @@
+# Mage Character - Robed Humanoid
+# Budget: 350 tris
+# Style: Flowing robe with minimal exposed limbs
+
+character:
+  name: "mage_npc"
+  tri_budget: 350
+
+  texturing:
+    uv_mode: "smart_project"
+
+  skeleton:
+    # CORE
+    - bone: pelvis
+      parent: null
+      head: [0, 0, 0.9]
+      tail: [0, 0, 1.0]
+
+    - bone: spine
+      parent: pelvis
+      head: [0, 0, 1.0]
+      tail: [0, 0, 1.3]
+
+    - bone: head
+      parent: spine
+      head: [0, 0, 1.3]
+      tail: [0, 0, 1.55]
+
+    # ARMS (visible from robe)
+    - bone: arm_upper_L
+      parent: spine
+      head: [-0.12, 0, 1.22]
+      tail: [-0.28, 0, 1.12]
+
+    - bone: arm_lower_L
+      parent: arm_upper_L
+      head: [-0.28, 0, 1.12]
+      tail: [-0.45, 0, 1.0]
+
+    # NO LEGS - hidden by robe
+    # Robe extends from torso to ground
+
+    # RIGHT SIDE
+    - bone: arm_upper_R
+      mirror: arm_upper_L
+    - bone: arm_lower_R
+      mirror: arm_lower_L
+
+  parts:
+    # Extended torso becomes robe
+    torso_robe:
+      bone: spine
+      base: octagon(8)
+      base_radius: 0.1
+      steps:
+        # Upper torso
+        - extrude: 0.04, scale: 1.1      # chest
+        - extrude: 0.08, scale: 1.0      # body
+        - extrude: 0.03, scale: 0.85     # waist taper
+
+        # Robe expansion
+        - extrude: 0.05, scale: 1.2      # hip flare
+        - extrude: 0.12, scale: 1.3      # robe body
+        - extrude: 0.15, scale: 1.4      # continue expanding
+        - extrude: 0.1, scale: 1.45      # near hem
+        - extrude: 0.03, scale: 1.0      # hem edge
+      cap_start: true
+      cap_end: true                      # closed at bottom
+
+    head:
+      bone: head
+      base: octagon(8)
+      base_radius: 0.085
+      steps:
+        # Neck
+        - extrude: 0.025, scale: 0.85
+
+        # Face
+        - extrude: 0.04
+          scale: [1.1, 1.15]
+          translate: [0, 0.015, 0]       # chin forward
+
+        - extrude: 0.05
+          scale: [1.15, 1.0]
+
+        # Brow
+        - extrude: 0.03
+          scale: [1.05, 1.05]
+
+        # Forehead/hood
+        - extrude: 0.04, scale: 0.9
+        - extrude: 0.03, scale: 0.6
+      cap_start: false
+      cap_end: true
+
+    # Loose sleeves
+    arm_upper_L:
+      bone: arm_upper_L
+      base: hexagon(6)
+      base_radius: 0.05
+      steps:
+        - extrude: 0.04, scale: 1.3      # sleeve flare
+        - extrude: 0.08, scale: 1.1      # loose sleeve
+        - extrude: 0.04, scale: 0.9      # taper
+      cap_start: true
+      cap_end: false
+
+    arm_lower_L:
+      bone: arm_lower_L
+      base: hexagon(6)
+      base_radius: 0.045
+      steps:
+        - extrude: 0.03, scale: 1.2      # sleeve continues
+        - extrude: 0.08, scale: 1.0      # forearm
+        - extrude: 0.03, scale: 0.8      # wrist
+        - extrude: 0.02, scale: 0.6      # hand stub
+      cap_start: false
+      cap_end: true
+
+    # RIGHT SIDE
+    arm_upper_R:
+      mirror: arm_upper_L
+    arm_lower_R:
+      mirror: arm_lower_L
+
+    # Optional: hood/hat
+    hood:
+      bone: head
+      base: octagon(8)
+      base_radius: 0.11
+      offset: [0, -0.02, 0.06]           # behind and above head
+      steps:
+        - extrude: 0.03, scale: 1.1
+        - extrude: 0.08, scale: 1.0
+        - extrude: 0.05, scale: 0.75
+        - extrude: 0.03, scale: 0.4
+      cap_start: true
+      cap_end: true

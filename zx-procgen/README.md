@@ -40,8 +40,9 @@ See [Audio Pipeline Guide](../docs/audio-pipeline.md) for complete workflows.
 - **Rigid Body Animation**: Vehicle physics, robots, mechanical systems
 - **Quality Tier System**: Placeholder → Temp → Final → Hero progression for assets
 - **Procedural Instruments**: High-quality instrument samples via Karplus-Strong, FM, wavetable, additive synthesis
-- **5 Commands**: `/new-asset-project`, `/generate-asset`, `/generate-sfx`, `/generate-instrument`, `/improve-assets`
-- **8 Agents**: Creative pipeline + unified quality review + enhancement + instrument design
+- **Procedural Characters**: Full character generation with meshes, rigs, and animations
+- **7 Commands**: `/new-asset-project`, `/generate-asset`, `/generate-sfx`, `/generate-instrument`, `/improve-assets`, `/establish-visual-style`, `/generate-all`
+- **9 Agents**: Creative pipeline + character generation + unified quality review + enhancement + instrument design
 - **Python-Based Generators**: Use Python with PIL, Blender bpy, numpy/scipy, or any tool that outputs standard formats
 
 ## Installation
@@ -115,7 +116,7 @@ The skills auto-trigger when you ask:
 - "Generate a laser sound effect"
 - "What's the best way to create tileable textures?"
 
-## Skills
+## Skills (12)
 
 ### Procedural Textures
 
@@ -257,18 +258,57 @@ A four-tier quality system for progressive asset improvement:
 
 **Trigger phrases**: "quality tiers", "upgrade to final", "hero quality", "placeholder vs final", "asset polish"
 
+### Procedural Characters
+
+End-to-end character generation with meshes, rigs, and animations:
+
+**Pipeline:**
+1. **character-designer** agent gathers requirements → produces YAML spec
+2. **character-generator** agent builds mesh from spec using Blender bpy
+
+**Character Types:**
+- Humanoid (bipedal with standard skeleton)
+- Quadruped (4 legs, horizontal spine)
+- Creatures (spider, serpent, bird, custom)
+
+**Style Presets:**
+- Mecha (sharp angles, blocky)
+- Organic (smooth curves)
+- Armored (plate flares, hard edges)
+- Robed (flowing fabric)
+- Chibi (large head, short limbs)
+
+**Output:**
+- GLB mesh with embedded armature
+- Automatic bone weights
+- 300-700 triangle budget
+
+**Trigger phrases**: "generate character", "create player mesh", "enemy model", "NPC with animations", "character rig", "skeletal mesh"
+
+### Generator Patterns
+
+Common patterns for procedural generation code:
+
+- Noise-based generation (Perlin, Simplex, Voronoi)
+- Modular mesh construction
+- Material layering systems
+- Asset variation from parameters
+
+**Trigger phrases**: "generator pattern", "noise algorithm", "procedural pattern", "generation code structure"
+
 ## Agents
 
 ### Creative Pipeline Agents
 
-Four specialized agents for end-to-end asset creation:
+Five specialized agents for end-to-end asset creation:
 
 | Agent | Purpose | Triggers |
 |-------|---------|----------|
 | **asset-designer** | Translates creative descriptions to style specs | "design asset", "I want X style" |
 | **asset-generator** | Produces procedural generation code | "generate code for spec", "create mesh generator" |
 | **creative-orchestrator** | Coordinates full pipeline (design→generate→validate→refine) | "create assets for my game", "full asset pipeline" |
-| **character-generator** | End-to-end animated character creation | "generate character", "create player", "animated NPC" |
+| **character-designer** | Gathers character requirements and produces YAML specs | "design character", "character spec", "plan character mesh" |
+| **character-generator** | Builds character meshes from YAML specs using Blender bpy | "generate character", "create player", "animated NPC" |
 
 ### Quality Agents
 
@@ -306,6 +346,12 @@ Generate high-quality instrument samples using advanced synthesis. Examples:
 ### `/improve-assets [target-tier]`
 Interactive quality improvement workflow. Scans assets, assesses current tiers, and guides upgrades to the target tier (Temp, Final, or Hero).
 
+### `/establish-visual-style`
+Interactive wizard to establish the visual style for a game project. Creates a style guide specification with color palettes, material presets, and aesthetic guidelines.
+
+### `/generate-all`
+Run all procedural generators in a project. Scans for generator scripts and executes them in dependency order.
+
 ## Output Formats
 
 The asset pipeline accepts standard formats:
@@ -333,7 +379,8 @@ path = "generated/textures/my-texture.png"
 ## Related
 
 - **zx-dev**: Game development fundamentals
-- **Showcase workflow**: `SHOWCASE_TEMPLATE.md`
+- **sound-design**: Audio design and sonic identity
+- **tracker-music**: Tracker module music generation
 
 ## License
 

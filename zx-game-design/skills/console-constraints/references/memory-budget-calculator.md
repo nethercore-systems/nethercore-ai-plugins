@@ -21,10 +21,12 @@ Meshes
 ├── Effects:    _______ KB × __ count = _______ KB
 └── Subtotal:   _______ MB
 
-Textures (BC7 compressed for modes 1-3, RGBA8 for mode 0)
+Textures (BC7 for color, BC5 for normals, RGBA8 for mode 0)
 ├── Character diffuse:  _______ KB × __ count = _______ KB
 ├── Character material: _______ KB × __ count = _______ KB
+├── Character normals:  _______ KB × __ count = _______ KB
 ├── Environment:        _______ KB × __ count = _______ KB
+├── Environment normals:_______ KB × __ count = _______ KB
 ├── UI/HUD:             _______ KB × __ count = _______ KB
 ├── Effects:            _______ KB × __ count = _______ KB
 └── Subtotal:           _______ MB
@@ -52,7 +54,7 @@ REMAINING:    _______ MB
 
 ## Texture Size Reference
 
-BC7 compressed sizes (modes 1-3):
+BC7 compressed sizes (albedo, MRE/SSE, specular - modes 1-3):
 | Resolution | BC7 Size |
 |------------|----------|
 | 64×64 | 4 KB |
@@ -61,6 +63,14 @@ BC7 compressed sizes (modes 1-3):
 | 512×512 | 256 KB |
 | 1024×1024 | 1 MB |
 
+BC5 compressed sizes (normal maps - all modes):
+| Resolution | BC5 Size | Use Case |
+|------------|----------|----------|
+| 64×64 | 4 KB | Distant/props |
+| 128×128 | 16 KB | Standard |
+| 256×256 | 64 KB | Hero assets |
+| 512×512 | 256 KB | High detail |
+
 RGBA8 uncompressed sizes (mode 0):
 | Resolution | RGBA8 Size |
 |------------|------------|
@@ -68,6 +78,19 @@ RGBA8 uncompressed sizes (mode 0):
 | 128×128 | 64 KB |
 | 256×256 | 256 KB |
 | 512×512 | 1 MB |
+
+## Vertex Data Size Reference
+
+Tangent data adds 4 bytes per vertex (required for normal maps):
+
+| Mesh Vertices | Tangent Cost |
+|---------------|--------------|
+| 100 | 400 bytes |
+| 500 | 2 KB |
+| 1,000 | 4 KB |
+| 5,000 | 20 KB |
+
+**With normal maps:** Character (500 verts) + tangents = +2 KB per character
 
 ## Audio Size Reference
 

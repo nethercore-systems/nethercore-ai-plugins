@@ -13,9 +13,12 @@ description: |
   - Modifiers (bevel, mirror, array) → `references/bpy-modifiers.md`
   - Organic shapes, metaballs, skin → `references/bpy-organic-workflows.md`
   - Cleanup, UV, normals, export → `references/bpy-post-processing.md`
+  - Tangent export for normal maps → `references/bpy-tangent-export.md`
 
+  For NORMAL MAPS: use `procedural-normal-maps` skill (requires tangent export).
+  For CHARACTERS: use `procedural-characters` skill (extrude+scale paradigm).
   For TEXTURING: use `mesh-texturing-workflows`. For ANIMATION: use `procedural-animations`.
-version: 1.2.0
+version: 1.3.0
 ---
 
 # Procedural Mesh Generation with Blender bpy
@@ -384,6 +387,31 @@ Reference files contain full working scripts for common asset types.
 
 ---
 
+## Tangent Export for Normal Maps
+
+If the mesh will use normal maps, enable tangent export:
+
+```python
+# Calculate tangents before export (requires UVs)
+mesh.calc_tangents()
+
+# Export with tangents
+bpy.ops.export_scene.gltf(
+    filepath="output.glb",
+    export_format='GLB',
+    export_tangents=True,  # Enable for normal maps
+    export_normals=True
+)
+```
+
+**Requirements:**
+- Mesh must have UVs (tangents are calculated per UV layer)
+- Mesh must have normals (tangents depend on normals)
+
+See `references/bpy-tangent-export.md` for complete tangent workflow.
+
+---
+
 ## Quality Checklist
 
 Before exporting any mesh:
@@ -395,3 +423,4 @@ Before exporting any mesh:
 - [ ] Triangulated (no quads/ngons)
 - [ ] Correct scale (1 unit = 1 meter typical)
 - [ ] Origin at logical point (center, base, etc.)
+- [ ] Tangents calculated (if using normal maps)

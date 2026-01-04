@@ -108,17 +108,20 @@ fn init() {
 }
 
 fn render() {
-    // Layer 0: Background
-    layer(0);
-    draw_sprite(0.0, 0.0, 960.0, 540.0, bg_color);
+    // Layer 0: Background (use z_index for 2D ordering)
+    z_index(0);
+    set_color(bg_color);
+    draw_sprite(0.0, 0.0, 960.0, 540.0);
 
     // Layer 1: Game objects
-    layer(1);
-    draw_sprite(player_x, player_y, 32.0, 32.0, 0xFFFFFFFF);
+    z_index(1);
+    set_color(0xFFFFFFFF);
+    draw_sprite(player_x, player_y, 32.0, 32.0);
 
     // Layer 2: UI
-    layer(2);
-    draw_text_str(&format!("Score: {}", score), 10.0, 10.0, 16.0, 0xFFFFFFFF);
+    z_index(2);
+    set_color(0xFFFFFFFF);
+    draw_text_str(&format!("Score: {}", score), 10.0, 10.0, 16.0);
 }
 ```
 

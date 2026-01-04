@@ -1,0 +1,143 @@
+# Knight Enemy - Armored Humanoid
+# Budget: 400 tris
+# Style: Armored with pauldrons and helmet
+
+character:
+  name: "knight_enemy"
+  tri_budget: 400
+
+  texturing:
+    uv_mode: "smart_project"
+
+  skeleton:
+    # CORE
+    - bone: pelvis
+      parent: null
+      head: [0, 0, 0.9]
+      tail: [0, 0, 1.0]
+
+    - bone: spine
+      parent: pelvis
+      head: [0, 0, 1.0]
+      tail: [0, 0, 1.3]
+
+    - bone: head
+      parent: spine
+      head: [0, 0, 1.3]
+      tail: [0, 0, 1.55]
+
+    # LEFT ARM
+    - bone: arm_upper_L
+      parent: spine
+      head: [-0.15, 0, 1.25]
+      tail: [-0.35, 0, 1.15]
+
+    - bone: arm_lower_L
+      parent: arm_upper_L
+      head: [-0.35, 0, 1.15]
+      tail: [-0.55, 0, 1.05]
+
+    # LEFT LEG
+    - bone: leg_upper_L
+      parent: pelvis
+      head: [-0.08, 0, 0.9]
+      tail: [-0.08, 0, 0.5]
+
+    - bone: leg_lower_L
+      parent: leg_upper_L
+      head: [-0.08, 0, 0.5]
+      tail: [-0.08, 0, 0.1]
+
+    # RIGHT SIDE (mirrors)
+    - bone: arm_upper_R
+      mirror: arm_upper_L
+    - bone: arm_lower_R
+      mirror: arm_lower_L
+    - bone: leg_upper_R
+      mirror: leg_upper_L
+    - bone: leg_lower_R
+      mirror: leg_lower_L
+
+  parts:
+    torso:
+      bone: spine
+      base: hexagon(6)
+      base_radius: 0.12
+      steps:
+        - extrude: 0.02, scale: 1.2     # chest plate edge
+        - extrude: 0.1, scale: 1.0      # chest plate body
+        - extrude: 0.02, scale: 0.75    # waist return
+        - extrude: 0.08, scale: 0.9     # waist
+        - extrude: 0.02, scale: 1.1     # belt flare
+      cap_start: true
+      cap_end: false
+
+    head:
+      bone: head
+      base: hexagon(6)
+      base_radius: 0.08
+      steps:
+        - extrude: 0.02, scale: 1.25    # helmet brim
+        - extrude: 0.12, scale: 1.0     # helmet body
+        - extrude: 0.06, scale: 0.7     # helmet taper
+        - extrude: 0.02, scale: 0.4     # helmet peak
+      cap_start: false
+      cap_end: true
+
+    arm_upper_L:
+      bone: arm_upper_L
+      base: hexagon(6)
+      base_radius: 0.045
+      steps:
+        - extrude: 0.02, scale: 1.4     # pauldron flare
+        - extrude: 0.03, scale: 1.0     # pauldron body
+        - extrude: 0.015, scale: 0.6    # shoulder taper
+        - extrude: 0.1, scale: 1.0      # arm body
+      cap_start: true
+      cap_end: false
+
+    arm_lower_L:
+      bone: arm_lower_L
+      base: hexagon(6)
+      base_radius: 0.038
+      steps:
+        - extrude: 0.02, scale: 1.15    # elbow guard
+        - extrude: 0.1, scale: 0.9      # forearm
+        - extrude: 0.03, scale: 1.2     # gauntlet cuff
+        - extrude: 0.02, scale: 0.65    # wrist
+      cap_start: false
+      cap_end: true
+
+    leg_upper_L:
+      bone: leg_upper_L
+      base: hexagon(6)
+      base_radius: 0.055
+      steps:
+        - extrude: 0.02, scale: 1.15    # hip armor
+        - extrude: 0.18, scale: 1.0     # thigh plate
+        - extrude: 0.08, scale: 0.75    # knee taper
+      cap_start: true
+      cap_end: false
+
+    leg_lower_L:
+      bone: leg_lower_L
+      base: hexagon(6)
+      base_radius: 0.041
+      steps:
+        - extrude: 0.02, scale: 1.2     # knee guard
+        - extrude: 0.15, scale: 0.85    # shin
+        - extrude: 0.03, scale: 0.9     # ankle
+        - extrude: 0.04, scale: 1.25    # boot top
+        - extrude: 0.06, scale: 0.9     # boot
+      cap_start: false
+      cap_end: true
+
+    # RIGHT SIDE (mirrors)
+    arm_upper_R:
+      mirror: arm_upper_L
+    arm_lower_R:
+      mirror: arm_lower_L
+    leg_upper_R:
+      mirror: leg_upper_L
+    leg_lower_R:
+      mirror: leg_lower_L

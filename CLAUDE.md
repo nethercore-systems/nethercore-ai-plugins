@@ -66,33 +66,39 @@ Game design workflow plugin.
 
 Procedural asset generation plugin.
 
-**Skills (9):**
+**Skills (12):**
 - `procedural-textures` - Texture generation (Albedo, MRE, SSE, Matcaps)
 - `procedural-meshes` - 3D mesh generation with UVs and vertex colors
 - `procedural-sounds` - Audio synthesis (FM, Karplus-Strong, subtractive) and SFX
 - `procedural-instruments` - Instrument sample synthesis for tracker modules
 - `procedural-animations` - Walk cycles, attacks, skeletal rigging, BVH/mocap
 - `procedural-sprites` - 2D sprites, pixel art, tilesets, UI elements
+- `procedural-characters` - Character mesh generation with rigs (YAML specs + Blender bpy)
 - `semantic-asset-language` - Style guide for AI-first creative workflows
 - `mesh-texturing-workflows` - UV projection techniques
 - `asset-quality-tiers` - Tier system (Placeholder→Temp→Final→Hero)
 - `native-asset-pipeline` - nether.toml integration, build-time generation
+- `generator-patterns` - Common patterns for procedural generation code
 
 **Commands:**
 - `zx-procgen:generate-asset` - Quick single-asset generation
+- `zx-procgen:generate-sfx` - Quick SFX generation with NumPy/SciPy
+- `zx-procgen:generate-instrument` - High-quality instrument sample synthesis
 - `zx-procgen:new-asset-project` - Scaffold asset generation project
 - `zx-procgen:improve-assets` - Guided quality improvement workflow with tier upgrades
+- `zx-procgen:establish-visual-style` - Interactive visual style wizard
+- `zx-procgen:generate-all` - Run all procedural generators in project
 
 **Agents:**
 - `asset-designer` - Translates creative vision to style specs
 - `asset-generator` - Produces procedural generation code
-- `asset-critic` - Reviews asset quality against specs
-- `asset-quality-reviewer` - Validates assets meet ZX budgets
+- `asset-quality-reviewer` - Validates assets meet ZX budgets and match specs
 - `procgen-optimizer` - Optimizes generation code and output
 - `creative-orchestrator` - Coordinates full asset pipeline
-- `character-generator` - End-to-end character creation
-- `quality-analyzer` - Holistic asset quality assessment with actionable recommendations and auto-dispatch support
+- `character-designer` - Gathers requirements and produces character YAML specs
+- `character-generator` - Builds character meshes from specs using Blender bpy
 - `quality-enhancer` - Autonomous asset quality improvement, upgrades assets to higher tiers
+- `instrument-architect` - Designs and implements instrument synthesis
 
 ### zx-publish
 

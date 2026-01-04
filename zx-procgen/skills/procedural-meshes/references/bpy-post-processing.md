@@ -13,8 +13,9 @@ Apply in this sequence for best results:
 4. Clean up geometry
 5. Set normals
 6. Triangulate
-7. Validate
-8. Export
+7. Calculate tangents (if using normal maps)
+8. Validate
+9. Export
 ```
 
 ---
@@ -310,7 +311,45 @@ def triangulate_mesh(obj, quad_method='BEAUTY', ngon_method='BEAUTY'):
 
 ---
 
-## Step 7: Validation
+## Step 7: Calculate Tangents (Optional)
+
+Required only if the mesh will use normal maps. Tangents enable tangent-space normal mapping.
+
+```python
+def calculate_tangents(obj):
+    """Calculate tangent vectors for normal mapping.
+
+    Requirements:
+    - Mesh must have at least one UV layer
+    - Mesh must have normals
+    - Should be called AFTER triangulation
+    """
+    mesh = obj.data
+
+    # Verify UV layer exists
+    if not mesh.uv_layers:
+        raise ValueError("Mesh must have UVs for tangent calculation")
+
+    # Calculate tangents
+    mesh.calc_tangents()
+    print(f"Tangents calculated for {obj.name}")
+```
+
+**When to use:**
+- Mesh will use a normal map texture
+- Mesh needs detailed surface lighting
+- Export format supports tangents (GLB, FBX)
+
+**When to skip:**
+- Flat-shaded low-poly meshes
+- Simple props without surface detail
+- Memory-constrained scenarios (+4 bytes/vertex)
+
+See `bpy-tangent-export.md` for complete tangent workflow.
+
+---
+
+## Step 8: Validation
 
 Check mesh before export.
 
@@ -383,21 +422,29 @@ Export to game-ready formats.
 Binary GLTF — compact, widely supported.
 
 ```python
-def export_glb(filepath, selected_only=False):
-    """Export to GLB format."""
+def export_glb(filepath, selected_only=False, use_normal_maps=False):
+    """Export to GLB format.
+
+    Args:
+        filepath: Output file path
+        selected_only: Export only selected objects
+        use_normal_maps: Enable tangent export for normal mapping
+    """
     bpy.ops.export_scene.gltf(
         filepath=filepath,
         export_format='GLB',
         use_selection=selected_only,
         export_apply_modifiers=True,
         export_normals=True,
-        export_tangents=False,      # Only needed for normal maps
-        export_colors=True,         # Include vertex colors
-        export_materials='NONE',    # Skip materials for procgen
+        export_tangents=use_normal_maps,  # Enable for normal maps
+        export_colors=True,               # Include vertex colors
+        export_materials='NONE',          # Skip materials for procgen
         export_textures=False,
-        export_yup=True             # Y-up for game engines
+        export_yup=True                   # Y-up for game engines
     )
 ```
+
+**Note:** Set `export_tangents=True` when the mesh will use normal maps. This adds ~4 bytes per vertex. See `bpy-tangent-export.md` for complete workflow.
 
 ### GLTF (Separate files)
 
