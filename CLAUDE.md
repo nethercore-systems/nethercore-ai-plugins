@@ -71,7 +71,7 @@ Procedural asset generation plugin.
 - `procedural-meshes` - 3D mesh generation with UVs and vertex colors
 - `procedural-sounds` - Audio synthesis (FM, Karplus-Strong, subtractive) and SFX
 - `procedural-instruments` - Instrument sample synthesis for tracker modules
-- `procedural-animations` - Walk cycles, attacks, skeletal rigging, BVH/mocap
+- `procedural-animations` - Walk cycles, attacks, skeletal rigging, IK utilities, two-stage pipeline (motion-describer → animation-coder)
 - `procedural-sprites` - 2D sprites, pixel art, tilesets, UI elements
 - `procedural-characters` - Character mesh generation with rigs (YAML specs + Blender bpy)
 - `procedural-normal-maps` - Normal map generation (height-to-normal, BC5 format, tangent export)
@@ -98,6 +98,8 @@ Procedural asset generation plugin.
 - `creative-orchestrator` - Coordinates full asset pipeline
 - `character-designer` - Gathers requirements and produces character YAML specs
 - `character-generator` - Builds character meshes from specs using Blender bpy
+- `motion-describer` - Stage 1 animation: translates requests to semantic motion descriptions (YAML)
+- `animation-coder` - Stage 2 animation: translates motion descriptions to bpy code with coordinate reasoning
 - `normal-map-generator` - Generates procedural normal maps from patterns or height maps
 - `quality-enhancer` - Autonomous asset quality improvement, upgrades assets to higher tiers
 - `instrument-architect` - Designs and implements instrument synthesis

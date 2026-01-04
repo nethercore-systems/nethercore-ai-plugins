@@ -210,6 +210,8 @@ These provide ZX-specific implementation details:
 | `asset-generator` | zx-procgen | Procedural generation code |
 | `character-designer` | zx-procgen | Character specs from requirements |
 | `character-generator` | zx-procgen | Full animated characters |
+| `motion-describer` | zx-procgen | Stage 1: Semantic motion descriptions (YAML) |
+| `animation-coder` | zx-procgen | Stage 2: Motion → bpy code with coordinate reasoning |
 | `sfx-architect` | sound-design | Sound effect design |
 | `music-architect` | sound-design | Music track design |
 | `code-scaffolder` | zx-dev | Boilerplate game systems |
@@ -396,11 +398,11 @@ ZX-specific game design workflow plugin.
 
 Procedural asset generation plugin.
 
-**Skills (12):** Textures, meshes, sounds, instruments, animations, sprites, characters, style guide, texturing workflows, quality tiers, native pipeline, generator patterns
+**Skills (13):** Textures, meshes, sounds, instruments, animations (two-stage pipeline with IK utilities), sprites, characters, normal maps, style guide, texturing workflows, quality tiers, native pipeline, generator patterns
 
 **Commands:** `generate-asset`, `generate-sfx`, `generate-instrument`, `new-asset-project`, `improve-assets`, `establish-visual-style`, `generate-all`
 
-**Agents:** `asset-designer`, `asset-generator`, `character-designer`, `character-generator`, `quality-enhancer`, `asset-quality-reviewer`, `procgen-optimizer`, `creative-orchestrator`, `instrument-architect`
+**Agents:** `asset-designer`, `asset-generator`, `character-designer`, `character-generator`, `motion-describer` (animation stage 1), `animation-coder` (animation stage 2), `quality-enhancer`, `asset-quality-reviewer`, `procgen-optimizer`, `creative-orchestrator`, `instrument-architect`, `normal-map-generator`
 
 ### zx-publish
 
