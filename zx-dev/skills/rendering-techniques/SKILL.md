@@ -1,58 +1,93 @@
 ---
 name: Rendering Techniques
 description: |
-  This skill covers advanced ZX rendering: stencil effects, custom fonts, billboard particles. Triggers on "stencil buffer", "portal rendering", "mirror", "custom font", "bitmap font", "billboard", "particles", "smoke/fire effect", "text rendering".
+  This skill covers advanced ZX rendering: render passes, stencil effects, custom fonts, billboard particles. Triggers on "render pass", "stencil buffer", "portal rendering", "mirror", "scope", "viewmodel", "z_index", "z-index", "depth clear", "custom font", "bitmap font", "billboard", "particles", "smoke/fire effect", "text rendering".
 
   **Load references when:**
+  - Advanced stencil patterns → `references/render-passes.md`
   - Particle system examples → Reference skill body (core patterns below)
   - Font atlas creation → See details below
-  - FFI details → Read `nethercore/include/zx.rs` lines 419-471 (stencil), 751-784 (font), 644-662 (billboard)
-version: 2.0.0
+  - FFI details → Read `nethercore/include/zx.rs` lines 417-502 (render passes), 751-784 (font), 644-662 (billboard)
+version: 3.0.0
 ---
 
 # Rendering Techniques for Nethercore ZX
 
-Advanced rendering: stencil buffer, custom fonts, billboard particles.
+Advanced rendering: render passes, stencil buffer, custom fonts, billboard particles.
 
-## Stencil Buffer Effects
+## Render Passes & Stencil Buffer
 
-Create portals, scopes, mirrors, and masked UI elements.
+Create portals, scopes, mirrors, FPS viewmodels, and masked UI elements using render passes.
 
-### Stencil FFI
+### Render Pass FFI
 
 | Function | Purpose |
 |----------|---------|
-| `stencil_begin()` | Start mask creation |
-| `stencil_end()` | Activate mask testing |
-| `stencil_clear()` | Return to normal |
-| `stencil_invert()` | Render outside mask |
+| `begin_pass(clear_depth)` | New pass with optional depth clear |
+| `begin_pass_stencil_write(ref, clear_depth)` | Create stencil mask |
+| `begin_pass_stencil_test(ref, clear_depth)` | Render inside mask |
+| `begin_pass_full(...)` | Full control (8 params) |
+| `z_index(n)` | 2D ordering within pass (0-255) |
 
-### Stencil Flow
+### Constants
 
-```
-stencil_begin()  → Draw mask shape (colors ignored)
-stencil_end()    → Scene only draws inside mask
-[draw scene]
-stencil_clear()  → Normal rendering resumes
+**Depth/Stencil Compare (`compare::*`):**
+| Constant | Value | Use |
+|----------|-------|-----|
+| `NEVER` | 1 | Never pass |
+| `LESS` | 2 | Standard depth (default) |
+| `EQUAL` | 3 | Match exactly |
+| `LESS_EQUAL` | 4 | Less or equal |
+| `GREATER` | 5 | Greater than |
+| `NOT_EQUAL` | 6 | Inverted masks |
+| `GREATER_EQUAL` | 7 | Greater or equal |
+| `ALWAYS` | 8 | Always pass |
+
+**Stencil Operations (`stencil_op::*`):**
+| Constant | Value | Effect |
+|----------|-------|--------|
+| `KEEP` | 0 | Keep current |
+| `ZERO` | 1 | Set to zero |
+| `REPLACE` | 2 | Set to ref |
+| `INCREMENT_CLAMP` | 3 | Increment, clamp |
+| `DECREMENT_CLAMP` | 4 | Decrement, clamp |
+| `INVERT` | 5 | Bitwise invert |
+| `INCREMENT_WRAP` | 6 | Increment, wrap |
+| `DECREMENT_WRAP` | 7 | Decrement, wrap |
+
+### Basic Stencil Flow
+
+```rust
+// 1. Create mask (geometry writes to stencil, not color)
+begin_pass_stencil_write(1, 0);
+draw_circle(SCREEN_CX, SCREEN_CY, 200.0);  // Mask shape
+
+// 2. Render inside mask (only where stencil == ref)
+begin_pass_stencil_test(1, 0);
+draw_scene();  // Only visible inside circle
+
+// 3. Return to normal
+begin_pass(0);
 ```
 
 ### Scope Effect (Circular Mask)
 
 ```rust
 fn render_scoped_view() {
-    stencil_begin();
-    push_scale_uniform(0.8);
-    draw_mesh(CIRCLE_MESH);  // Creates circular mask
-    stencil_end();
+    // Create circular mask
+    begin_pass_stencil_write(1, 0);
+    draw_circle(SCREEN_CX, SCREEN_CY, 200.0);
 
     // World only visible inside circle
+    begin_pass_stencil_test(1, 0);
     camera_set(cam_x, cam_y, cam_z, tx, ty, tz);
     draw_env();
     draw_mesh(WORLD_MESH);
 
-    stencil_clear();
+    // Return to normal, draw scope overlay
+    begin_pass(0);
     texture_bind(SCOPE_OVERLAY);
-    draw_sprite(0.0, 0.0, 960.0, 540.0, 0xFFFFFFFF);
+    draw_sprite(0.0, 0.0, 960.0, 540.0);
 }
 ```
 
@@ -60,32 +95,67 @@ fn render_scoped_view() {
 
 ```rust
 fn render_portal() {
-    stencil_begin();
+    // Draw main world first
+    camera_set(main_cam...);
+    draw_mesh(MAIN_WORLD);
+
+    // Create portal mask
+    begin_pass_stencil_write(1, 0);
     push_translate(portal_x, portal_y, portal_z);
     draw_mesh(PORTAL_FRAME);
-    stencil_end();
+    push_identity();
 
-    // Other world inside portal
+    // Other world inside portal (clear_depth=1 for separate view)
+    begin_pass_stencil_test(1, 1);
     camera_set(other_cam...);
     draw_mesh(OTHER_WORLD);
 
-    stencil_clear();
+    // Return to normal
+    begin_pass(0);
+}
+```
 
-    // Main world
-    camera_set(main_cam...);
-    draw_mesh(MAIN_WORLD);
+### FPS Viewmodel (Gun on Top)
+
+```rust
+fn render_fps() {
+    // Draw world
+    camera_set(player_x, player_y, player_z, look_x, look_y, look_z);
+    draw_env();
+    draw_mesh(LEVEL);
+
+    // New pass with depth clear - viewmodel always renders on top
+    begin_pass(1);  // clear_depth = 1
+    push_translate(0.3, -0.2, 0.5);
+    push_rotate_y(sway_angle);
+    draw_mesh(GUN);
+    push_identity();
 }
 ```
 
 ### Vignette (Inverted Mask)
 
 ```rust
-stencil_begin();
-draw_mesh(ROUNDED_RECT);
-stencil_invert();  // Render OUTSIDE mask
-draw_rect(0.0, 0.0, 960.0, 540.0, 0x000000C0);  // Darken edges
-stencil_clear();
+fn render_vignette() {
+    draw_scene();
+
+    begin_pass_stencil_write(1, 0);
+    draw_circle(SCREEN_CX, SCREEN_CY, 250.0);
+
+    // Render OUTSIDE mask using NOT_EQUAL
+    begin_pass_full(
+        compare::LESS, 1, 0,
+        compare::NOT_EQUAL, 1,
+        stencil_op::KEEP, stencil_op::KEEP, stencil_op::KEEP,
+    );
+    set_color(0x000000AA);
+    draw_rect(0.0, 0.0, 960.0, 540.0);
+
+    begin_pass(0);
+}
 ```
+
+See `references/render-passes.md` for more advanced patterns (diagonal split, animated portals).
 
 ## Custom Fonts
 

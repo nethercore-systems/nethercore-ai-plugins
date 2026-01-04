@@ -13,6 +13,7 @@ description: |
 
   Covers ZX render modes 0-3, noise algorithms, material layers, atlas packing.
 
+  For NORMAL MAPS: use `procedural-normal-maps` skill.
   For UV-AWARE TEXTURING (projecting onto meshes): use mesh-texturing-workflows.
   For 2D SPRITES (pixel art, tilesets): use procedural-sprites.
 version: 2.2.0

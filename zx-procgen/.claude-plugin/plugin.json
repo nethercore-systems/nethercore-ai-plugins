@@ -1,7 +1,7 @@
 {
   "name": "zx-procgen",
   "version": "0.0.1",
-  "description": "Procedural asset generation for Nethercore ZX. Generate 3D meshes via Blender bpy headless scripting (hard surface, organic, metaballs, skin modifier, SDF pipeline), textures (Albedo, MRE, SSE, Matcaps), 2D sprites (pixel art, tilesets, UI elements), skeletal animations (walk cycles, attacks, IK), rigid body animations (vehicles, robots), and high-quality audio. Generators run via nether.toml build.script, output to assets/ directory, and are bundled into ROMs. Includes visual style guide for AI-first creative workflows. Fully supports ZX GPU skinning, render modes 0-3, dither transparency, and the nether-cli asset pipeline.",
+  "description": "Procedural asset generation for Nethercore ZX. Generate 3D meshes via Blender bpy headless scripting (hard surface, organic, metaballs, skin modifier, SDF pipeline), textures (Albedo, MRE, SSE, Matcaps, Normal Maps), 2D sprites (pixel art, tilesets, UI elements), skeletal animations (walk cycles, attacks, IK), rigid body animations (vehicles, robots), and high-quality audio. Supports tangent export for normal mapping, BC5 compression, and height-to-normal conversion. Generators run via nether.toml build.script, output to assets/ directory, and are bundled into ROMs. Includes visual style guide for AI-first creative workflows. Fully supports ZX GPU skinning, render modes 0-3, dither transparency, normal maps, and the nether-cli asset pipeline.",
   "author": {
     "name": "Nethercore Systems",
     "email": "nethercore.systems@gmail.com"
@@ -123,6 +123,15 @@
     "bells",
     "brass",
     "high-quality-audio",
-    "realistic-instruments"
+    "realistic-instruments",
+    "normal-maps",
+    "normal-mapping",
+    "tangent-space",
+    "tangent-export",
+    "BC5-compression",
+    "height-to-normal",
+    "sobel-filter",
+    "bump-mapping",
+    "surface-detail"
   ]
 }

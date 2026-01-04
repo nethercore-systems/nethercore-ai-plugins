@@ -117,9 +117,10 @@ What do you need?
 ```
 1. Describe what you need: "I need a player character with idle and run animations"
 2. asset-designer agent → Creates style spec
-3. character-generator agent → Generates mesh, rig, animations
-4. integration-assistant agent → Connects to game code
-5. completion-auditor agent → Verifies everything works
+3. character-designer agent → Produces character YAML spec
+4. character-generator agent → Generates mesh, rig, animations from spec
+5. integration-assistant agent → Connects to game code
+6. completion-auditor agent → Verifies everything works
 ```
 
 ### Workflow 3: Create Game Music
@@ -191,7 +192,7 @@ These provide ZX-specific implementation details:
 |-------|--------|---------|
 | `project-health-monitor` | ai-game-studio | Overall project health dashboard |
 | `gdd-implementation-tracker` | zx-game-design | GDD vs code comparison |
-| `quality-analyzer` | zx-procgen | Asset quality assessment |
+| `asset-quality-reviewer` | zx-procgen | Asset quality assessment |
 | `completion-auditor` | ai-game-studio | Verify work is truly complete |
 | `build-analyzer` | zx-optimize | Find largest assets |
 
@@ -207,6 +208,7 @@ These provide ZX-specific implementation details:
 | Agent | Plugin | Purpose |
 |-------|--------|---------|
 | `asset-generator` | zx-procgen | Procedural generation code |
+| `character-designer` | zx-procgen | Character specs from requirements |
 | `character-generator` | zx-procgen | Full animated characters |
 | `sfx-architect` | sound-design | Sound effect design |
 | `music-architect` | sound-design | Music track design |
@@ -250,6 +252,8 @@ These provide ZX-specific implementation details:
 | `zx-procgen:generate-sfx` | Sound effect generation |
 | `zx-procgen:generate-instrument` | Instrument sample synthesis |
 | `zx-procgen:improve-assets` | Quality improvement workflow |
+| `zx-procgen:establish-visual-style` | Visual style wizard |
+| `zx-procgen:generate-all` | Run all project generators |
 
 ### Audio Design
 | Command | Purpose |
@@ -392,11 +396,11 @@ ZX-specific game design workflow plugin.
 
 Procedural asset generation plugin.
 
-**Skills (12):** Textures, meshes, sounds, instruments, music (XM), animations, sprites, style guide, texturing workflows, quality tiers, native pipeline
+**Skills (12):** Textures, meshes, sounds, instruments, animations, sprites, characters, style guide, texturing workflows, quality tiers, native pipeline, generator patterns
 
-**Commands:** `generate-asset`, `generate-sfx`, `generate-instrument`, `new-asset-project`, `improve-assets`
+**Commands:** `generate-asset`, `generate-sfx`, `generate-instrument`, `new-asset-project`, `improve-assets`, `establish-visual-style`, `generate-all`
 
-**Agents:** `asset-designer`, `asset-generator`, `character-generator`, `quality-analyzer`, `quality-enhancer`, `asset-critic`, `asset-quality-reviewer`, `procgen-optimizer`, `creative-orchestrator`, `instrument-architect`
+**Agents:** `asset-designer`, `asset-generator`, `character-designer`, `character-generator`, `quality-enhancer`, `asset-quality-reviewer`, `procgen-optimizer`, `creative-orchestrator`, `instrument-architect`
 
 ### zx-publish
 

@@ -56,6 +56,7 @@ The FFI provides 250+ functions across these categories:
 | Transforms | `push_translate`, `push_rotate_y`, `push_scale` | Search "push_" |
 | Meshes | `load_mesh`, `draw_mesh`, `cube`, `sphere` | Search "mesh" |
 | Textures | `load_texture`, `texture_bind` | Search "texture" |
+| Materials | `material_albedo`, `material_mre`, `material_normal` | Search "material" |
 | Audio | `load_sound`, `play_sound`, `music_play` | Search "sound" |
 | 2D Drawing | `draw_sprite`, `draw_text`, `draw_rect` | Search "draw_" |
 | Environment | `draw_env`, `env_gradient` | Search "env_" |
@@ -78,6 +79,28 @@ Must call only during `init()`:
 | 1 | Matcap | Sculpted look, toon |
 | 2 | PBR | Realistic (default) |
 | 3 | Hybrid | PBR + matcap |
+
+## Normal Maps
+
+Normal maps add surface detail without increasing geometry. Use in any render mode.
+
+**Material binding:**
+```rust
+material_albedo(albedo_tex);    // Slot 0
+material_mre(mre_tex);          // Slot 1
+material_normal(normal_tex);    // Slot 3
+```
+
+**Requirements:**
+- Mesh must have tangent vertex data (FORMAT_TANGENT = 16)
+- Normal map texture (BC5 auto-compressed from `*_normal.png`)
+
+**Skip normal map:**
+```rust
+skip_normal_map(1);  // Use vertex normal instead
+```
+
+See `procedural-normal-maps` skill for generation.
 
 ## Rollback Safety
 
