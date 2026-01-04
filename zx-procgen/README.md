@@ -42,7 +42,7 @@ See [Audio Pipeline Guide](../docs/audio-pipeline.md) for complete workflows.
 - **Procedural Instruments**: High-quality instrument samples via Karplus-Strong, FM, wavetable, additive synthesis
 - **Procedural Characters**: Full character generation with meshes, rigs, and animations
 - **7 Commands**: `/new-asset-project`, `/generate-asset`, `/generate-sfx`, `/generate-instrument`, `/improve-assets`, `/establish-visual-style`, `/generate-all`
-- **10 Agents**: Creative pipeline + character generation + normal maps + unified quality review + enhancement + instrument design
+- **12 Agents**: Creative pipeline + character generation + animation (two-stage) + normal maps + unified quality review + enhancement + instrument design
 - **Python-Based Generators**: Use Python with PIL, Blender bpy, numpy/scipy, or any tool that outputs standard formats
 
 ## Installation
@@ -138,16 +138,23 @@ Primitives (cube, sphere, cylinder, etc.), modifiers (subdivide, mirror, smooth)
 
 **Trigger phrases**: "generate mesh", "vertex colors", "3D model", "low-poly character"
 
-### Procedural Animations (v2.0)
+### Procedural Animations (v3.0)
 
-Comprehensive animation generation with three paradigms:
+Comprehensive animation generation with a **two-stage pipeline** to avoid coordinate confusion:
+
+**Two-Stage Workflow:**
+1. `motion-describer` agent → Semantic motion description (YAML)
+2. `animation-coder` agent → Blender bpy code with coordinate reasoning
+
+**Why Two Stages?** LLMs confuse coordinate spaces when translating motion intent directly to rotation values. Separating semantic description from coordinate math prevents errors.
 
 **Skeletal Animation:**
 - GPU skinning with 3x4 bone matrices
 - Procedural bone weight generation (distance, heat diffusion, geodesic)
 - Character locomotion (walk cycles, runs, idles, attacks, jumps)
 - Creature animation (quadrupeds, spiders, flying creatures)
-- Inverse kinematics (two-bone, FABRIK, CCD, foot IK, look-at)
+- **IK utilities for locomotion** - Foot IK prevents sliding, baked to FK for export
+- Coordinate reasoning protocol for accurate FK rotations
 
 **Rigid Body Animation:**
 - Vehicle physics (suspension, steering, wheel rotation)
@@ -333,6 +340,13 @@ Five specialized agents for end-to-end asset creation:
 | **asset-quality-reviewer** | Unified quality assessment (technical + creative + holistic) | "check quality", "review assets", "ZX limits", "match spec" |
 | **quality-enhancer** | Upgrades assets through tier system | "improve assets", "quality up pass", "upgrade to final" |
 | **procgen-optimizer** | Reduces asset sizes and improves performance | "optimize generation", "reduce poly count", "ROM too big" |
+
+### Animation Agents (Two-Stage Pipeline)
+
+| Agent | Purpose | Triggers |
+|-------|---------|----------|
+| **motion-describer** | Stage 1: Translates animation requests to semantic YAML descriptions | "describe animation", "motion spec", "animation description" |
+| **animation-coder** | Stage 2: Translates motion descriptions to bpy code with coordinate reasoning | "generate animation code", "code this motion", "implement animation" |
 
 ### Specialty Agents
 
