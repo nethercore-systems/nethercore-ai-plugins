@@ -121,11 +121,43 @@ my-game/
 │   └── src/
 │       ├── lib.rs          # Game code (compiles to WASM)
 │       └── zx.rs           # FFI module (fetch from GitHub)
-├── generated/              # Generated output (gitignored)
+├── generated/              # Procedural assets (gitignored, regenerable)
 │   ├── textures/
 │   ├── meshes/
 │   └── audio/
+├── assets/                 # Human-made assets (committed to git)
+│   ├── textures/           # Hand-painted textures, photos, etc.
+│   ├── models/             # Artist-created models from Blender/Maya
+│   └── audio/              # Recorded samples, music tracks
 └── .gitignore
+```
+
+### Directory Structure: Generated vs Assets
+
+**Key Distinction:**
+- `generated/` - Procedurally generated assets (gitignored)
+  - Source of truth: generation code in `generation/`
+  - Rebuild anytime with: `python generation/generate_all.py`
+  - Not committed to git - regenerate after clone
+  - Assets are fungible and reproducible
+
+- `assets/` - Human-made assets (committed to git)
+  - Source of truth: the files themselves
+  - Manually created by artists/designers
+  - Version controlled and precious
+  - Assets are unique and irreplaceable
+
+**nether.toml Distinction:**
+```toml
+# Reference procedural assets from generated/
+[[assets.textures]]
+id = "stone"
+path = "../generated/textures/stone.png"  # Regenerated from code
+
+# Reference human-made assets from assets/
+[[assets.textures]]
+id = "hero_portrait"
+path = "../assets/textures/hero_portrait.png"  # Hand-painted, committed
 ```
 
 ### generate_all.py Pattern

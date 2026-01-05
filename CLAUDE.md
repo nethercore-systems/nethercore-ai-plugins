@@ -412,6 +412,17 @@ All plugins write specifications and reports to the `.studio/` directory (commit
 │   └── quality.md                # Asset quality audit
 │
 └── status.md                     # Project progress tracking
+
+generated/                        # Procedural assets (gitignored, regenerable)
+├── textures/
+├── meshes/
+├── sounds/
+└── animations/
+
+assets/                           # Human-made assets (committed to git)
+├── textures/                     # Hand-painted textures, photos
+├── models/                       # Artist-created models
+└── audio/                        # Recorded samples, music
 ```
 
 **Key Concepts:**

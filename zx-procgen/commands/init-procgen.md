@@ -102,24 +102,24 @@ curl -sL "$BASE/parsers/it_types.py" -o "$TARGET/.studio/parsers/it_types.py"
 curl -sL "$BASE/parsers/it_writer.py" -o "$TARGET/.studio/parsers/it_writer.py"
 ```
 
-## Step 5: Create assets/ Directory
+## Step 5: Create generated/ Directory
 
-Create the output directory for generated assets:
+Create the output directory for procedurally generated assets:
 
 ```bash
 TARGET="${1:-.}"
 
-mkdir -p "$TARGET/assets/textures"
-mkdir -p "$TARGET/assets/sounds"
-mkdir -p "$TARGET/assets/meshes"
-mkdir -p "$TARGET/assets/characters"
-mkdir -p "$TARGET/assets/animations"
-mkdir -p "$TARGET/assets/music"
+mkdir -p "$TARGET/generated/textures"
+mkdir -p "$TARGET/generated/sounds"
+mkdir -p "$TARGET/generated/meshes"
+mkdir -p "$TARGET/generated/characters"
+mkdir -p "$TARGET/generated/animations"
+mkdir -p "$TARGET/generated/music"
 ```
 
-## Step 6: Create .gitignore for Assets
+## Step 6: Create .gitignore for Generated Assets
 
-Create `.gitignore` in assets/ to exclude generated files (regenerate from specs):
+Create `.gitignore` in generated/ to exclude generated files (regenerate from specs):
 
 ```
 # Generated assets - regenerate with: python .studio/generate.py
@@ -127,7 +127,7 @@ Create `.gitignore` in assets/ to exclude generated files (regenerate from specs
 !.gitignore
 ```
 
-Use the Write tool to create `assets/.gitignore`.
+Use the Write tool to create `generated/.gitignore`.
 
 ## Step 7: Verify and Report Success
 
@@ -158,12 +158,13 @@ Structure:
   ├── designs/              # Design documents (Markdown)
   └── analysis/             # Generated reports
 
-  assets/                   # Generated output (gitignored)
+  generated/                # Procedural assets (gitignored, regenerable)
+  assets/                   # Human-made assets (committed to git)
 
 Quick Start:
   1. Create specs in .studio/specs/<category>/<name>.spec.py
   2. Run: python .studio/generate.py
-  3. Generated assets appear in assets/
+  3. Generated assets appear in generated/
 
 Commands:
   python .studio/generate.py              # Generate all

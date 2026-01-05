@@ -12,7 +12,7 @@ Usage:
     python .studio/generate.py --dry-run          # Show what would generate
     python .studio/generate.py --clean            # Remove generated assets
 
-Output goes to assets/ directory (parallel to .studio/).
+Output goes to generated/ directory (parallel to .studio/).
 """
 
 import sys
@@ -45,7 +45,7 @@ except ImportError:
 # =============================================================================
 
 SPEC_ROOT = STUDIO_ROOT / "specs"
-ASSET_ROOT = STUDIO_ROOT.parent / "assets"
+ASSET_ROOT = STUDIO_ROOT.parent / "generated"
 
 # Category -> (parser_module, output_extension)
 PARSERS: Dict[str, tuple] = {

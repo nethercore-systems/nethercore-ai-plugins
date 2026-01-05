@@ -67,7 +67,8 @@ project/
 │   ├── direction/          # Creative direction
 │   ├── designs/            # Design documents
 │   └── analysis/           # Generated reports
-└── assets/                 # Output directory (gitignored)
+├── generated/              # Procedural assets (gitignored, regenerable)
+└── assets/                 # Human-made assets (committed to git)
 ```
 
 ## Step 4: Copy Parsers
