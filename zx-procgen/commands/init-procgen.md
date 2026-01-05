@@ -7,7 +7,7 @@ color: blue
 
 # Init Procgen
 
-Copies the complete `.studio/` scaffold to the project, including:
+Downloads the complete `.studio/` scaffold from GitHub, including:
 - Unified `generate.py` entry point
 - All parser modules in `parsers/`
 - Directory structure for specs, direction, designs, and analysis
@@ -21,56 +21,103 @@ Copies the complete `.studio/` scaffold to the project, including:
 **If not provided:**
 - Use current directory (`.`)
 
-## Step 2: Validate Plugin Root
-
-Check that `CLAUDE_PLUGIN_ROOT` environment variable exists:
+## Step 2: Check Existing Setup
 
 ```bash
-if [ -z "$CLAUDE_PLUGIN_ROOT" ]; then
-  echo "Error: CLAUDE_PLUGIN_ROOT not set"
-  echo "This command requires the zx-procgen plugin to be installed."
-  exit 1
+TARGET="${1:-.}"
+
+if [ -f "$TARGET/.studio/generate.py" ]; then
+  echo ".studio/ already exists"
 fi
 ```
 
-## Step 3: Copy Scaffold (Zero Tokens)
+If `.studio/` already exists, present options to the user:
 
-Copy the entire scaffold directory using native OS commands:
+```
+Warning: .studio/ already exists
 
-```bash
-# Set source and target
-SCAFFOLD="$CLAUDE_PLUGIN_ROOT/zx-procgen/scaffold/.studio"
-TARGET="${1:-.}/.studio"
-
-# Create target if it doesn't exist
-mkdir -p "$TARGET"
-
-# Copy entire scaffold (use cp -r for recursive)
-cp -r "$SCAFFOLD"/* "$TARGET/"
-
-# Verify copy
-if [ -f "$TARGET/generate.py" ]; then
-  echo "Copied .studio/ scaffold successfully"
-else
-  echo "Error: Failed to copy scaffold"
-  exit 1
-fi
+Options:
+  1. Overwrite (updates parsers, keeps specs)
+  2. Skip (keep existing)
+  3. Abort
 ```
 
-## Step 4: Create assets/ Directory
+Use AskUserQuestion to let user choose. If overwriting, preserve:
+- `specs/` directory contents
+- `direction/` directory contents
+- `designs/` directory contents
+- `analysis/` directory contents
+- `status.md`
+
+Only overwrite:
+- `generate.py`
+- `parsers/` directory
+
+## Step 3: Create Directory Structure
+
+Create all required directories:
+
+```bash
+TARGET="${1:-.}"
+
+mkdir -p "$TARGET/.studio/parsers"
+mkdir -p "$TARGET/.studio/analysis"
+mkdir -p "$TARGET/.studio/direction"
+mkdir -p "$TARGET/.studio/designs/levels"
+mkdir -p "$TARGET/.studio/designs/mechanics"
+mkdir -p "$TARGET/.studio/designs/systems"
+mkdir -p "$TARGET/.studio/specs/textures"
+mkdir -p "$TARGET/.studio/specs/sounds"
+mkdir -p "$TARGET/.studio/specs/meshes"
+mkdir -p "$TARGET/.studio/specs/characters"
+mkdir -p "$TARGET/.studio/specs/animations"
+mkdir -p "$TARGET/.studio/specs/normals"
+mkdir -p "$TARGET/.studio/specs/instruments"
+mkdir -p "$TARGET/.studio/specs/music"
+```
+
+## Step 4: Download Scaffold from GitHub
+
+Download all scaffold files using curl:
+
+```bash
+TARGET="${1:-.}"
+BASE="https://raw.githubusercontent.com/nethercore-systems/nethercore-ai-plugins/main/zx-procgen/scaffold/.studio"
+
+# Core files
+curl -sL "$BASE/generate.py" -o "$TARGET/.studio/generate.py"
+curl -sL "$BASE/README.md" -o "$TARGET/.studio/README.md"
+
+# Parsers
+curl -sL "$BASE/parsers/__init__.py" -o "$TARGET/.studio/parsers/__init__.py"
+curl -sL "$BASE/parsers/texture.py" -o "$TARGET/.studio/parsers/texture.py"
+curl -sL "$BASE/parsers/sound.py" -o "$TARGET/.studio/parsers/sound.py"
+curl -sL "$BASE/parsers/character.py" -o "$TARGET/.studio/parsers/character.py"
+curl -sL "$BASE/parsers/animation.py" -o "$TARGET/.studio/parsers/animation.py"
+curl -sL "$BASE/parsers/normal.py" -o "$TARGET/.studio/parsers/normal.py"
+curl -sL "$BASE/parsers/music.py" -o "$TARGET/.studio/parsers/music.py"
+curl -sL "$BASE/parsers/xm_types.py" -o "$TARGET/.studio/parsers/xm_types.py"
+curl -sL "$BASE/parsers/xm_writer.py" -o "$TARGET/.studio/parsers/xm_writer.py"
+curl -sL "$BASE/parsers/it_types.py" -o "$TARGET/.studio/parsers/it_types.py"
+curl -sL "$BASE/parsers/it_writer.py" -o "$TARGET/.studio/parsers/it_writer.py"
+```
+
+## Step 5: Create assets/ Directory
 
 Create the output directory for generated assets:
 
 ```bash
-mkdir -p "${1:-.}/assets/textures"
-mkdir -p "${1:-.}/assets/sounds"
-mkdir -p "${1:-.}/assets/meshes"
-mkdir -p "${1:-.}/assets/characters"
-mkdir -p "${1:-.}/assets/animations"
-mkdir -p "${1:-.}/assets/music"
+TARGET="${1:-.}"
+
+mkdir -p "$TARGET/assets/textures"
+mkdir -p "$TARGET/assets/sounds"
+mkdir -p "$TARGET/assets/meshes"
+mkdir -p "$TARGET/assets/characters"
+mkdir -p "$TARGET/assets/animations"
+mkdir -p "$TARGET/assets/music"
 ```
 
-## Step 5: Create .gitignore for Assets
+## Step 6: Create .gitignore for Assets
 
 Create `.gitignore` in assets/ to exclude generated files (regenerate from specs):
 
@@ -82,7 +129,22 @@ Create `.gitignore` in assets/ to exclude generated files (regenerate from specs
 
 Use the Write tool to create `assets/.gitignore`.
 
-## Step 6: Report Success
+## Step 7: Verify and Report Success
+
+Verify the download succeeded:
+
+```bash
+TARGET="${1:-.}"
+
+if [ -f "$TARGET/.studio/generate.py" ] && [ -f "$TARGET/.studio/parsers/texture.py" ]; then
+  echo "Download successful"
+else
+  echo "Error: Download failed. Check your internet connection."
+  exit 1
+fi
+```
+
+Report success:
 
 ```
 .studio/ initialized successfully!
@@ -110,26 +172,13 @@ Commands:
   python .studio/generate.py --list       # List specs
 ```
 
-## Edge Cases
+## Windows Notes
 
-### Already Initialized
-If `.studio/` already exists:
-```
-Warning: .studio/ already exists
+On Windows, use PowerShell or Git Bash. The curl commands work in both:
 
-Options:
-  1. Overwrite (updates parsers, keeps specs)
-  2. Skip (keep existing)
-  3. Abort
+```powershell
+# PowerShell alternative for mkdir
+New-Item -ItemType Directory -Force -Path ".studio\parsers"
 ```
 
-Use AskUserQuestion to let user choose. If overwriting, preserve:
-- `specs/` directory contents
-- `direction/` directory contents
-- `designs/` directory contents
-- `analysis/` directory contents
-- `status.md`
-
-Only overwrite:
-- `generate.py`
-- `parsers/` directory
+The scaffold downloads work identically on Windows, macOS, and Linux.

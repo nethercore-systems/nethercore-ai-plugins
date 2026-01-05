@@ -11,7 +11,7 @@ Ensures the unified `.studio/` infrastructure is set up with music support.
 
 Music generation is now part of the unified asset pipeline. This command:
 1. Checks if `.studio/` exists
-2. If not, runs `/init-procgen` to set up the full infrastructure
+2. If not, downloads the scaffold from GitHub (same as `/init-procgen`)
 3. Verifies music parser files are present
 
 ## Step 1: Check Existing Setup
@@ -30,38 +30,66 @@ if [ -f "$TARGET/.studio/generate.py" ] && [ -f "$TARGET/.studio/parsers/music.p
 fi
 ```
 
-## Step 2: Initialize Full Infrastructure
+If music is already set up, report success and exit.
 
-If `.studio/` doesn't exist or is incomplete, initialize it:
+## Step 2: Initialize Infrastructure if Missing
+
+If `.studio/` doesn't exist, create the full directory structure:
 
 ```bash
+TARGET="${1:-.}"
+
 if [ ! -f "$TARGET/.studio/generate.py" ]; then
   echo "Setting up .studio/ infrastructure..."
-  # This would invoke /init-procgen, but since we can't call commands,
-  # we copy the scaffold directly
+
+  mkdir -p "$TARGET/.studio/parsers"
+  mkdir -p "$TARGET/.studio/analysis"
+  mkdir -p "$TARGET/.studio/direction"
+  mkdir -p "$TARGET/.studio/designs/levels"
+  mkdir -p "$TARGET/.studio/designs/mechanics"
+  mkdir -p "$TARGET/.studio/designs/systems"
+  mkdir -p "$TARGET/.studio/specs/textures"
+  mkdir -p "$TARGET/.studio/specs/sounds"
+  mkdir -p "$TARGET/.studio/specs/meshes"
+  mkdir -p "$TARGET/.studio/specs/characters"
+  mkdir -p "$TARGET/.studio/specs/animations"
+  mkdir -p "$TARGET/.studio/specs/normals"
+  mkdir -p "$TARGET/.studio/specs/instruments"
+  mkdir -p "$TARGET/.studio/specs/music"
 fi
 ```
 
-## Step 3: Copy Scaffold
+## Step 3: Download Scaffold from GitHub
 
-Use the unified scaffold from zx-procgen:
+Download all scaffold files:
 
 ```bash
-SCAFFOLD="$CLAUDE_PLUGIN_ROOT/zx-procgen/scaffold/.studio"
+TARGET="${1:-.}"
+BASE="https://raw.githubusercontent.com/nethercore-systems/nethercore-ai-plugins/main/zx-procgen/scaffold/.studio"
 
-if [ ! -d "$SCAFFOLD" ]; then
-  echo "Error: Scaffold not found at $SCAFFOLD"
-  echo "Make sure zx-procgen plugin is installed."
-  exit 1
-fi
+# Core files
+curl -sL "$BASE/generate.py" -o "$TARGET/.studio/generate.py"
+curl -sL "$BASE/README.md" -o "$TARGET/.studio/README.md"
 
-mkdir -p "$TARGET/.studio"
-cp -r "$SCAFFOLD"/* "$TARGET/.studio/"
+# Parsers (all of them for full infrastructure)
+curl -sL "$BASE/parsers/__init__.py" -o "$TARGET/.studio/parsers/__init__.py"
+curl -sL "$BASE/parsers/texture.py" -o "$TARGET/.studio/parsers/texture.py"
+curl -sL "$BASE/parsers/sound.py" -o "$TARGET/.studio/parsers/sound.py"
+curl -sL "$BASE/parsers/character.py" -o "$TARGET/.studio/parsers/character.py"
+curl -sL "$BASE/parsers/animation.py" -o "$TARGET/.studio/parsers/animation.py"
+curl -sL "$BASE/parsers/normal.py" -o "$TARGET/.studio/parsers/normal.py"
+curl -sL "$BASE/parsers/music.py" -o "$TARGET/.studio/parsers/music.py"
+curl -sL "$BASE/parsers/xm_types.py" -o "$TARGET/.studio/parsers/xm_types.py"
+curl -sL "$BASE/parsers/xm_writer.py" -o "$TARGET/.studio/parsers/xm_writer.py"
+curl -sL "$BASE/parsers/it_types.py" -o "$TARGET/.studio/parsers/it_types.py"
+curl -sL "$BASE/parsers/it_writer.py" -o "$TARGET/.studio/parsers/it_writer.py"
 ```
 
 ## Step 4: Verify Music Support
 
 ```bash
+TARGET="${1:-.}"
+
 if [ -f "$TARGET/.studio/parsers/music.py" ]; then
   echo "Music parser installed"
 else
@@ -72,6 +100,12 @@ if [ -f "$TARGET/.studio/parsers/xm_writer.py" ]; then
   echo "XM writer installed"
 else
   echo "Warning: xm_writer.py not found"
+fi
+
+if [ -f "$TARGET/.studio/parsers/it_writer.py" ]; then
+  echo "IT writer installed"
+else
+  echo "Warning: it_writer.py not found"
 fi
 ```
 
@@ -117,7 +151,14 @@ SONG = {
 
 Use Write tool to create this example if `.studio/specs/music/` is empty.
 
-## Step 6: Report Success
+## Step 6: Create assets/ Directory
+
+```bash
+TARGET="${1:-.}"
+mkdir -p "$TARGET/assets/music"
+```
+
+## Step 7: Report Success
 
 ```
 Tracker music initialized!
