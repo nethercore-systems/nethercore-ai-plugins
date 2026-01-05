@@ -7,17 +7,7 @@ color: blue
 
 # Init Procgen Infrastructure
 
-**Token-efficient infrastructure setup** - Copies parser files directly using native OS commands (cp/xcopy) instead of reading them into context.
-
-This is the **recommended** command for setting up new projects. It uses native file copying to save 95% tokens compared to `/setup-spec-workflow`.
-
-## Performance Comparison
-
-| Approach | Token Usage | Time | Tool Calls |
-|----------|-------------|------|------------|
-| This command | ~300 lines | Seconds | ~15 (mostly Write for examples) |
-| `/setup-spec-workflow` | ~3,094 lines | Minutes | ~45 (Read + Write for parsers) |
-| **Savings** | **95% reduction** | **10-20x faster** | **90% fewer calls** |
+Copies parser files directly using native OS commands instead of reading them into context.
 
 ## Step 1: Parse Asset Types
 
@@ -371,14 +361,7 @@ Create `generate_specs.py` wrapper that uses the parsers:
 
 ```python
 #!/usr/bin/env python3
-"""Generate assets from spec files using parsers.
-
-This script discovers all .spec.py files and generates assets using
-the appropriate parsers from lib/.
-
-Token-efficient approach: This file is small (~200 lines) vs reading
-parsers into context (~3,094 lines).
-"""
+"""Generate assets from spec files using parsers."""
 
 import os
 import sys
@@ -612,11 +595,6 @@ After all steps complete, report to the user:
 
 🔧 Created generator script: generate_specs.py
 
-📊 Token efficiency:
-  - Traditional approach: ~3,094 lines read via Read/Write
-  - This approach: ~300 lines (example specs + wrapper)
-  - Savings: 95% (2,794 lines saved)
-
 Next steps:
   1. Edit specs in specs/ to customize your assets
   2. Run: python generate_specs.py
@@ -694,10 +672,3 @@ Use AskUserQuestion with:
 - Question: "lib/ already contains parser files. Overwrite?"
 - Options: ["Yes, overwrite", "No, skip existing files", "Abort setup"]
 
-## Notes
-
-- This command saves **95% tokens** vs `/setup-spec-workflow`
-- Uses native cp/xcopy for instant file copying
-- Only reads small example specs into context (not parsers)
-- Ideal for new projects and token-conscious workflows
-- For interactive setup or learning, use `/setup-spec-workflow`

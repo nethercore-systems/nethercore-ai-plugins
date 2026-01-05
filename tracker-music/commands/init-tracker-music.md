@@ -7,17 +7,7 @@ color: purple
 
 # Init Tracker Music Infrastructure
 
-**Token-efficient XM/IT infrastructure setup** - Copies writer files directly using native OS commands (cp/xcopy) instead of reading them into context.
-
-This is the **recommended** command for setting up tracker music projects. It uses native file copying to save 85% tokens.
-
-## Performance Comparison
-
-| Approach | Token Usage | Time | Tool Calls |
-|----------|-------------|------|------------|
-| This command | ~130 lines | Seconds | ~10 |
-| Traditional Read/Write | ~904 lines | Minutes | ~35 |
-| **Savings** | **85% reduction** | **10-15x faster** | **80% fewer calls** |
+Copies XM/IT writer files directly using native OS commands instead of reading them into context.
 
 ## What Gets Copied
 
@@ -263,14 +253,7 @@ Create `generate_music.py` wrapper for all music generation:
 
 ```python
 #!/usr/bin/env python3
-"""Generate tracker music files from song definitions.
-
-This script discovers all song definition files and generates
-XM/IT modules using the writers from lib/.
-
-Token-efficient approach: This file is small (~150 lines) vs reading
-writers into context (~904 lines).
-"""
+"""Generate tracker music files from song definitions."""
 
 import os
 import sys
@@ -405,13 +388,6 @@ Generated tracker modules can be used in Nethercore ZX games:
 - XM Format Spec: See `lib/xm_types.py` for constants and structure
 - IT Format Spec: See `lib/it_types.py` for constants and structure
 - Example Songs: See `songs/tracks/demo_song.py`
-
-## Token Efficiency
-
-This infrastructure setup used **85% fewer tokens** than traditional approaches:
-- Traditional: ~904 lines (reading writer files into context)
-- This setup: ~130 lines (only examples and wrapper)
-- **Savings: 774 lines (85% reduction)**
 ```
 
 Use Write tool to create `README.md`.
@@ -473,11 +449,6 @@ After all steps complete, report to the user:
 🔧 Created generator script: generate_music.py
 
 📖 Created README.md with usage instructions
-
-📊 Token efficiency:
-  - Traditional approach: ~904 lines read via Read/Write
-  - This approach: ~130 lines (examples + wrapper)
-  - Savings: 85% (774 lines saved)
 
 Next steps:
   1. Edit songs/tracks/demo_song.py to compose your music
@@ -541,13 +512,3 @@ These will be overwritten. Continue? [y/N]
 ```
 
 Use AskUserQuestion if you detect existing files.
-
-## Notes
-
-- This command saves **85% tokens** vs traditional Read/Write
-- Uses native cp commands for instant file copying
-- Only reads small example files into context (not writers)
-- Ideal for new music composition projects
-- Works seamlessly with `/init-procgen-infrastructure` for complete audio pipeline
-- XM/IT formats are widely supported by tracker software
-- Generated modules can be opened in OpenMPT, MilkyTracker, Schism Tracker, etc.
