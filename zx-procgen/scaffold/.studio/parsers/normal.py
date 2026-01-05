@@ -3,7 +3,7 @@
 Normal Map Parser - Interprets .normal.spec.py files and generates normal maps.
 
 Deterministic normal map generation from declarative specs. Follows the same pattern
-as sound_parser.py for audio and motion_parser.py for animations.
+as sound.py for audio and animation.py for animations.
 
 Usage:
     # From pattern spec

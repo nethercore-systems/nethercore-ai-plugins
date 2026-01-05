@@ -42,8 +42,8 @@ See [Audio Pipeline Guide](../docs/audio-pipeline.md) for complete workflows.
 - **Procedural Instruments**: High-quality instrument samples via Karplus-Strong, FM, wavetable, additive synthesis
 - **Procedural Characters**: Full character generation with meshes, rigs, and animations
 - **Spec-Driven Parsers**: Declarative `.spec.py` files + reusable parsers for textures, sounds, characters, animations, normals
-- **10 Commands**: `/init-procgen-infrastructure` (⚡ recommended), `/new-asset-project`, `/generate-asset`, `/generate-sfx`, `/generate-instrument`, `/improve-assets`, `/establish-visual-style`, `/generate-all`, `/setup-spec-workflow`, `/migrate-to-specs`
-- **11 Agents**: Creative pipeline + character generation + motion specs + normal maps + unified quality review + enhancement + instrument design
+- **10 Commands**: `/init-procgen` (⚡ recommended), `/new-asset-project`, `/generate-asset`, `/generate-sfx`, `/generate-instrument`, `/improve-assets`, `/establish-visual-style`, `/generate-all`, `/setup-spec-workflow`, `/migrate-to-specs`
+- **11 Agents**: Creative pipeline + character generation + animation specs + normal maps + unified quality review + enhancement + instrument design
 - **Python-Based Generators**: Use Python with PIL, Blender bpy, numpy/scipy, or any tool that outputs standard formats
 
 ## Installation
@@ -95,12 +95,12 @@ Add to `.claude/settings.local.json`:
 **Best for:** New projects, token-conscious workflows, fast setup
 
 ```
-/init-procgen-infrastructure all
+/init-procgen
 ```
 
 This instantly copies parsers and sets up the spec-driven workflow:
-- Creates `lib/`, `specs/`, `generated/` directory structure
-- Copies all 5 parsers (texture, sound, character, motion, normal)
+- Creates `.studio/` directory structure with all subdirectories
+- Copies all parsers (texture, sound, character, animation, normal)
 - Creates example `.spec.py` files
 - Generates `generate_specs.py` wrapper script
 - **Uses 95% fewer tokens** (300 lines vs 3,094 lines)
@@ -162,15 +162,15 @@ Primitives (cube, sphere, cylinder, etc.), modifiers (subdivide, mirror, smooth)
 
 **Trigger phrases**: "generate mesh", "vertex colors", "3D model", "low-poly character"
 
-### Procedural Animations (v4.0)
+### Procedural Animations (v5.0)
 
-Comprehensive animation generation with **structured motion specs** and a reusable parser:
+Comprehensive animation generation with **structured animation specs** and the unified generator:
 
-**Motion Spec Pipeline:**
-1. `motion-describer` agent → Structured motion spec (`.motion.py`) with bone rotations
-2. `motion_parser.py` → Reusable Blender script that interprets specs (no LLM needed)
+**Animation Spec Pipeline:**
+1. `animation-describer` agent → Structured animation spec (`.spec.py`) with bone rotations
+2. `python .studio/generate.py --only animations` → Interprets specs in Blender
 
-**Why Motion Specs?** Python dict literals work natively in Blender (no PyYAML dependency). Explicit bone rotations in degrees (pitch/yaw/roll) eliminate coordinate confusion. The parser is deterministic and skeleton-agnostic.
+**Why Animation Specs?** Python dict literals work natively in Blender (no PyYAML dependency). Explicit bone rotations in degrees (pitch/yaw/roll) eliminate coordinate confusion. The parser is deterministic and skeleton-agnostic.
 
 **Skeletal Animation:**
 - GPU skinning with 3x4 bone matrices
@@ -369,7 +369,7 @@ Five specialized agents for end-to-end asset creation:
 
 | Agent | Purpose | Triggers |
 |-------|---------|----------|
-| **motion-describer** | Produces structured `.motion.py` specs with bone rotations | "describe animation", "motion spec", "animation description", "animate character" |
+| **animation-describer** | Produces structured `.spec.py` specs with bone rotations | "describe animation", "animation spec", "animation description", "animate character" |
 
 ### Specialty Agents
 
@@ -380,28 +380,25 @@ Five specialized agents for end-to-end asset creation:
 
 ## Commands
 
-### `/init-procgen-infrastructure [asset-types] [project-dir]` ⚡ (Recommended)
+### `/init-procgen [project-dir]` ⚡ (Recommended)
 
-**Token-efficient infrastructure setup** - Copies parser files directly using native OS commands (cp/xcopy) instead of reading them into context.
+**Token-efficient infrastructure setup** - Copies the complete `.studio/` scaffold using native OS commands (cp/xcopy) instead of reading files into context.
 
 **Usage:**
 ```bash
-/init-procgen-infrastructure all                    # Set up all parsers (textures, sounds, characters, animations, normals)
-/init-procgen-infrastructure textures,sounds        # Set up specific parsers
-/init-procgen-infrastructure all ./my-project       # Set up in specific directory
+/init-procgen                    # Set up in current directory
+/init-procgen ./my-project       # Set up in specific directory
 ```
 
 **What it does:**
-1. Creates directory structure (`lib/`, `specs/*/`, `generated/*/`)
-2. Copies parser files from plugin to `lib/` (zero tokens)
-3. Creates example `.spec.py` files in `specs/` subdirectories
-4. Generates `generate_specs.py` wrapper script
+1. Copies `.studio/` scaffold with unified `generate.py` and all parsers
+2. Creates directory structure (`specs/*/`, `direction/`, `designs/`, `analysis/`)
+3. Creates `assets/` output directory (gitignored)
 
-**Token savings:** 95% reduction vs `/setup-spec-workflow` (3,094 lines → ~300 lines)
+**Token savings:** 95% reduction vs manual setup
 
 **When to use:**
 - ✅ Setting up a new project (fast, efficient)
-- ✅ You know which asset types you need
 - ✅ Default configuration is acceptable
 
 **When to use `/setup-spec-workflow` instead:**
@@ -443,15 +440,16 @@ Convert existing Python generator code to the spec-driven format. Analyzes code,
 
 ## Spec-Driven Parsers
 
-The plugin includes reusable parsers that interpret `.spec.py` configuration files:
+The plugin includes reusable parsers in `scaffold/.studio/parsers/` that interpret `.spec.py` files:
 
 | Parser | Spec Format | Purpose |
 |--------|-------------|---------|
-| `texture_parser.py` | `.texture.spec.py` (TEXTURE) | Layer-based texture generation |
-| `sound_parser.py` | `.spec.py` (SOUND/INSTRUMENT) | SFX and instrument synthesis |
-| `character_parser.py` | `.spec.py` (SPEC) | Character mesh + rig |
-| `motion_parser.py` | `.motion.py` (MOTION) | Skeletal animation |
-| `normal_parser.py` | `.normal.spec.py` (NORMAL) | Normal map patterns |
+| `texture.py` | `.texture.spec.py` (TEXTURE) | Layer-based texture generation |
+| `sound.py` | `.spec.py` (SOUND/INSTRUMENT) | SFX and instrument synthesis |
+| `character.py` | `.spec.py` (CHARACTER) | Character mesh + rig |
+| `animation.py` | `.spec.py` (ANIMATION) | Skeletal animation |
+| `normal.py` | `.normal.spec.py` (NORMAL) | Normal map patterns |
+| `music.py` | `.spec.py` (SONG) | Tracker music (XM/IT) |
 
 **Benefits:**
 - Separate configuration from implementation
@@ -460,7 +458,7 @@ The plugin includes reusable parsers that interpret `.spec.py` configuration fil
 - Reusable across projects
 
 **Locations:**
-- Parsers: `skills/procedural-*/references/*_parser.py`
+- Parsers: `scaffold/.studio/parsers/` (copied to `.studio/parsers/` via `/init-procgen`)
 - Examples: `skills/procedural-*/examples/*.spec.py`
 
 See [PARSER_ROADMAP.md](PARSER_ROADMAP.md) for planned enhancements.

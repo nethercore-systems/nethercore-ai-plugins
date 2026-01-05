@@ -1,12 +1,101 @@
 ---
 description: Convert existing Python generator code to spec-driven format
-argument-hint: "[path-to-generator.py]"
-allowed-tools: ["Read", "Write", "Glob", "AskUserQuestion"]
+argument-hint: "[path-to-generator.py | --upgrade]"
+allowed-tools: ["Read", "Write", "Glob", "Bash", "AskUserQuestion"]
 ---
 
 # Migrate to Specs
 
-Convert existing Python generator code to the spec-driven format. Analyzes your generator, extracts configuration into a `.spec.py` file, and creates a wrapper that uses the parser.
+Two modes:
+1. **Upgrade mode** (`/migrate-to-specs --upgrade`) - Upgrade legacy project to current naming conventions
+2. **Migration mode** (`/migrate-to-specs [file.py]`) - Convert inline Python code to spec format
+
+## Step 0: Detect and Upgrade Legacy Structure
+
+**Always run this step first.** Check if the project uses old naming conventions:
+
+**Detect old patterns:**
+```bash
+# Check for old animation format
+find . -name "*.motion.py" 2>/dev/null
+# Check for old MOTION dict
+grep -r "MOTION\s*=" --include="*.py" .
+# Check for old parser locations
+ls lib/*_parser.py 2>/dev/null
+# Check for missing .studio/
+ls .studio/generate.py 2>/dev/null || echo "No .studio/ found"
+```
+
+**If old patterns found OR .studio/ missing, upgrade:**
+
+1. **Rename `.motion.py` → `.spec.py`:**
+   ```bash
+   for f in $(find . -name "*.motion.py"); do
+     mv "$f" "${f%.motion.py}.spec.py"
+   done
+   ```
+
+2. **Update MOTION → ANIMATION in spec files:**
+   ```bash
+   sed -i 's/MOTION\s*=/ANIMATION =/g' *.spec.py
+   ```
+
+3. **Replace old parsers with new unified system:**
+   - Delete old `lib/*_parser.py` files
+   - Copy new `.studio/` scaffold from plugin:
+   ```bash
+   cp -r $CLAUDE_PLUGIN_ROOT/zx-procgen/scaffold/.studio .
+   ```
+
+4. **Move specs to new location (if needed):**
+   ```bash
+   # If specs exist in old location, move them
+   if [ -d "specs" ] && [ ! -d ".studio/specs" ]; then
+     mv specs/* .studio/specs/ 2>/dev/null
+   fi
+   ```
+
+5. **Update generator imports in any custom scripts:**
+   - Old: `from lib.motion_parser import ...`
+   - New: `from .studio.parsers.animation import ...`
+
+**Summary of naming changes:**
+| Old | New |
+|-----|-----|
+| `.motion.py` | `.spec.py` |
+| `MOTION = {...}` | `ANIMATION = {...}` |
+| `motion_parser.py` | `animation.py` |
+| `lib/` | `.studio/parsers/` |
+| `specs/` | `.studio/specs/` |
+| `motion-describer` agent | `animation-describer` agent |
+
+---
+
+## Step 0.5: Check for Upgrade-Only Mode
+
+**If argument is `--upgrade` OR no generators to migrate:**
+
+Report upgrade summary and stop:
+
+```
+Upgrade complete!
+
+Changes made:
+- Renamed X .motion.py files to .spec.py
+- Updated MOTION → ANIMATION in Y files
+- Installed/updated .studio/ scaffold
+- Moved specs to .studio/specs/
+
+To generate assets:
+  python .studio/generate.py
+
+To migrate inline Python generators:
+  /migrate-to-specs path/to/generator.py
+```
+
+**If user wants to also migrate generators, continue to Step 1.**
+
+---
 
 ## Why Migrate?
 
@@ -58,11 +147,11 @@ Based on analysis, determine which spec format to use:
 
 | Generator Type | Spec Format | Parser |
 |---------------|-------------|--------|
-| PIL texture | `.texture.spec.py` (TEXTURE) | texture_parser.py |
-| numpy/scipy audio | `.spec.py` (SOUND) | sound_parser.py |
-| Blender mesh | `.spec.py` (SPEC) | character_parser.py |
-| Blender animation | `.motion.py` (MOTION) | motion_parser.py |
-| Normal map | `.normal.spec.py` (NORMAL) | normal_parser.py |
+| PIL texture | `.texture.spec.py` (TEXTURE) | texture.py |
+| numpy/scipy audio | `.spec.py` (SOUND) | sound.py |
+| Blender mesh | `.spec.py` (CHARACTER) | character.py |
+| Blender animation | `.spec.py` (ANIMATION) | animation.py |
+| Normal map | `.normal.spec.py` (NORMAL) | normal.py |
 
 ## Step 4: Extract Parameters
 
@@ -181,11 +270,11 @@ SOUND = {
 
 Write the extracted spec to the appropriate location:
 
-- `specs/textures/{name}.texture.spec.py`
-- `specs/sounds/{name}.spec.py`
-- `specs/characters/{name}.spec.py`
-- `specs/animations/{name}.motion.py`
-- `specs/normals/{name}.normal.spec.py`
+- `.studio/specs/textures/{name}.texture.spec.py`
+- `.studio/specs/sounds/{name}.spec.py`
+- `.studio/specs/characters/{name}.spec.py`
+- `.studio/specs/animations/{name}.spec.py`
+- `.studio/specs/normals/{name}.normal.spec.py`
 
 ## Step 6: Create Wrapper Script (Optional)
 
@@ -198,13 +287,19 @@ If the original generator had custom logic that can't be captured in the spec, c
 import sys
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).parent.parent / 'lib'))
+# Add .studio to path
+sys.path.insert(0, str(Path(__file__).parent / '.studio'))
 
-from texture_parser import load_spec, generate_texture, write_png
+from parsers.texture import load_spec, generate_texture, write_png
 
-spec = load_spec('specs/textures/wood.texture.spec.py')
+spec = load_spec('.studio/specs/textures/wood.texture.spec.py')
 result = generate_texture(spec)
-write_png('generated/textures/wood.png', result)
+write_png('assets/textures/wood.png', result)
+```
+
+**Recommended:** Use the unified generator instead:
+```bash
+python .studio/generate.py --only textures
 ```
 
 ## Step 7: Validate Migration
@@ -226,8 +321,8 @@ After migration, report:
 **Migration complete!**
 
 - Original: `generation/textures/wood.py`
-- Spec created: `specs/textures/wood.texture.spec.py`
-- Parser used: `lib/texture_parser.py`
+- Spec created: `.studio/specs/textures/wood.texture.spec.py`
+- Parser used: `.studio/parsers/texture.py`
 
 **Extracted parameters:**
 - Size: 256x256
@@ -237,11 +332,12 @@ After migration, report:
 
 **To generate:**
 ```bash
-python -c "
-from lib.texture_parser import load_spec, generate_texture, write_png
-spec = load_spec('specs/textures/wood.texture.spec.py')
-write_png('generated/textures/wood.png', generate_texture(spec))
-"
+python .studio/generate.py --only textures
+```
+
+Or generate all assets:
+```bash
+python .studio/generate.py
 ```
 
 **Notes:**

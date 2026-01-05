@@ -2,7 +2,7 @@
 Character Parser - Interprets .spec.py files and generates character meshes.
 
 Deterministic character generation from declarative specs. Follows the same pattern
-as motion_parser.py for animations and sound_parser.py for audio.
+as animation.py for animations and sound.py for audio.
 
 Usage:
     blender --background --python character_parser.py -- \\

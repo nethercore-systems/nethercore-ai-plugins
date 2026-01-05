@@ -1,23 +1,27 @@
 """
-Motion Parser - Interprets .motion.py specs in Blender.
+Animation Parser - Interprets .spec.py animation specs in Blender.
 
-Applies structured motion specifications to armatures, creating keyframed
+Applies structured animation specifications to armatures, creating keyframed
 animations. Skeleton-agnostic: works with any armature if bone names match.
 
-Usage:
-    blender --background --python motion_parser.py -- \\
-        motion_spec.motion.py \\
+Usage (standalone):
+    blender --background --python animation.py -- \\
+        animation_spec.spec.py \\
         armature.glb \\
         output.glb
 
+Usage (via generate.py):
+    Place .spec.py files in .studio/specs/animations/
+    Run: python .studio/generate.py --only animations
+
 Arguments:
-    motion_spec.motion.py - Path to motion spec file (contains MOTION dict)
+    animation_spec.spec.py - Path to animation spec file (contains ANIMATION dict)
     armature.glb - Input armature/character GLB
     output.glb - Output path for animated GLB
 
 Example:
-    blender --background --python motion_parser.py -- \\
-        .studio/animations/patch_idle.motion.py \\
+    blender --background --python animation.py -- \\
+        .studio/specs/animations/patch_idle.spec.py \\
         assets/characters/patch.glb \\
         assets/animations/patch_idle.glb
 """
@@ -51,19 +55,29 @@ def get_action_fcurves(action):
         return action.fcurves
 
 
-def load_motion_spec(spec_path):
-    """Load motion spec from .motion.py file."""
+def load_spec(spec_path):
+    """Load animation spec from .spec.py file.
+
+    Supports both ANIMATION and MOTION dict names for backwards compatibility.
+    """
     with open(spec_path, 'r') as f:
         code = f.read()
 
-    # Execute the spec file to get MOTION dict
+    # Execute the spec file to get ANIMATION or MOTION dict
     namespace = {}
     exec(code, namespace)
 
-    if 'MOTION' not in namespace:
-        raise ValueError(f"No MOTION dict found in {spec_path}")
+    # Support both new ANIMATION and legacy MOTION names
+    if 'ANIMATION' in namespace:
+        return namespace['ANIMATION']
+    elif 'MOTION' in namespace:
+        return namespace['MOTION']
+    else:
+        raise ValueError(f"No ANIMATION or MOTION dict found in {spec_path}")
 
-    return namespace['MOTION']
+
+# Backwards compatibility alias
+load_motion_spec = load_spec
 
 
 def find_armature():
@@ -294,28 +308,23 @@ def export_glb(output_path):
     print(f"Exported to {output_path}")
 
 
-def main():
-    """Main entry point for command-line usage."""
-    # Parse arguments after '--'
-    argv = sys.argv
-    if '--' in argv:
-        args = argv[argv.index('--') + 1:]
-    else:
-        print("Usage: blender --background --python motion_parser.py -- "
-              "spec.motion.py input.glb output.glb")
-        sys.exit(1)
+def generate_animation(spec, output_path, input_glb=None):
+    """
+    Generate animation from spec dict.
 
-    if len(args) < 3:
-        print("Error: Need motion_spec, input_glb, and output_glb paths")
-        sys.exit(1)
+    This is the main entry point when called from generate.py.
+    For standalone usage, use main() via command line.
 
-    motion_spec_path = args[0]
-    input_glb = args[1]
-    output_glb = args[2]
-
-    print(f"Loading motion spec: {motion_spec_path}")
-    print(f"Input armature: {input_glb}")
-    print(f"Output: {output_glb}")
+    Args:
+        spec: ANIMATION dict from .spec.py file
+        output_path: Path for output GLB
+        input_glb: Optional input armature GLB. If None, uses spec['input_armature']
+    """
+    # Get input armature path
+    if input_glb is None:
+        input_glb = spec.get('animation', spec).get('input_armature')
+        if not input_glb:
+            raise ValueError("No input_armature specified in spec or arguments")
 
     # Clear default scene
     bpy.ops.wm.read_factory_settings(use_empty=True)
@@ -327,12 +336,39 @@ def main():
     armature = find_armature()
     print(f"Found armature: {armature.name}")
 
-    # Load and apply motion
-    spec = load_motion_spec(motion_spec_path)
+    # Apply animation
     apply_motion(spec, armature)
 
     # Export
-    export_glb(output_glb)
+    export_glb(output_path)
+
+
+def main():
+    """Main entry point for command-line usage."""
+    # Parse arguments after '--'
+    argv = sys.argv
+    if '--' in argv:
+        args = argv[argv.index('--') + 1:]
+    else:
+        print("Usage: blender --background --python animation.py -- "
+              "spec.spec.py input.glb output.glb")
+        sys.exit(1)
+
+    if len(args) < 3:
+        print("Error: Need animation_spec, input_glb, and output_glb paths")
+        sys.exit(1)
+
+    spec_path = args[0]
+    input_glb = args[1]
+    output_glb = args[2]
+
+    print(f"Loading animation spec: {spec_path}")
+    print(f"Input armature: {input_glb}")
+    print(f"Output: {output_glb}")
+
+    # Load spec and generate
+    spec = load_spec(spec_path)
+    generate_animation(spec, output_glb, input_glb)
 
     print("Done!")
 

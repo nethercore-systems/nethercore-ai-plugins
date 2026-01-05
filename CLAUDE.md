@@ -71,7 +71,7 @@ Procedural asset generation plugin.
 - `procedural-meshes` - 3D mesh generation with UVs and vertex colors
 - `procedural-sounds` - Audio synthesis (FM, Karplus-Strong, subtractive) and SFX
 - `procedural-instruments` - Instrument sample synthesis for tracker modules
-- `procedural-animations` - Walk cycles, attacks, skeletal rigging, IK utilities, motion specs (.motion.py) + parser
+- `procedural-animations` - Walk cycles, attacks, skeletal rigging, IK utilities
 - `procedural-sprites` - 2D sprites, pixel art, tilesets, UI elements
 - `procedural-characters` - Character mesh generation with rigs (Python specs + Blender bpy)
 - `procedural-normal-maps` - Normal map generation (height-to-normal, BC5 format, tangent export)
@@ -82,25 +82,23 @@ Procedural asset generation plugin.
 - `generator-patterns` - Common patterns for procedural generation code
 
 **Commands:**
+- `zx-procgen:init-procgen` - Initialize .studio/ with unified generator and all parsers
 - `zx-procgen:generate-asset` - Quick single-asset generation
 - `zx-procgen:generate-sfx` - Quick SFX generation with NumPy/SciPy
 - `zx-procgen:generate-instrument` - High-quality instrument sample synthesis
 - `zx-procgen:new-asset-project` - Scaffold asset generation project
 - `zx-procgen:improve-assets` - Guided quality improvement workflow with tier upgrades
 - `zx-procgen:establish-visual-style` - Interactive visual style wizard
-- `zx-procgen:generate-all` - Run all procedural generators in project
-- `zx-procgen:setup-spec-workflow` - Add spec-driven parser infrastructure to project
-- `zx-procgen:migrate-to-specs` - Convert existing generators to spec format
+- `zx-procgen:generate-all` - Run `python .studio/generate.py` to generate all assets
 
-**Spec-Driven Parsers:**
-Reusable parsers that interpret `.spec.py` configuration files:
-- `texture_parser.py` - Layer-based texture generation
-- `sound_parser.py` - SFX and instrument synthesis
-- `character_parser.py` - Character mesh + rig
-- `motion_parser.py` - Skeletal animation
-- `normal_parser.py` - Normal map patterns
-
-See `zx-procgen/PARSER_ROADMAP.md` for planned enhancements.
+**Unified Generator:**
+All parsers are now modules in `.studio/parsers/`, invoked via `generate.py`:
+- `texture.py` - Layer-based texture generation
+- `sound.py` - SFX and instrument synthesis
+- `character.py` - Character mesh + rig
+- `animation.py` - Skeletal animation (was motion_parser.py)
+- `normal.py` - Normal map patterns
+- `music.py` - Tracker music (XM/IT)
 
 **Agents:**
 - `asset-designer` - Translates creative vision to style specs
@@ -110,7 +108,7 @@ See `zx-procgen/PARSER_ROADMAP.md` for planned enhancements.
 - `creative-orchestrator` - Coordinates full asset pipeline
 - `character-designer` - Gathers requirements and produces character specs (.spec.py)
 - `character-generator` - Builds character meshes from specs using Blender bpy
-- `motion-describer` - Produces structured motion specs (.motion.py) with bone rotations
+- `animation-describer` - Produces structured animation specs (.spec.py) with bone rotations
 - `normal-map-generator` - Generates procedural normal maps from patterns or height maps
 - `quality-enhancer` - Autonomous asset quality improvement, upgrades assets to higher tiers
 - `instrument-architect` - Designs and implements instrument synthesis
@@ -379,49 +377,64 @@ All plugins write specifications and reports to the `.studio/` directory (commit
 
 ```
 .studio/
-├── # Direction Files (global, committed)
-├── creative-direction.md         # Creative vision, pillars, audience
-├── art-direction.md              # Visual style, spectrums, palette
-├── sound-direction.md            # Sonic identity, music style
-├── tech-direction.md             # Architecture, determinism, limits
-├── visual-style.md               # Detailed visual style guide
-├── sonic-identity.md             # Audio direction (SSL)
+├── generate.py                   # Unified asset generator
+├── parsers/                      # Parser modules (copied via /init-procgen)
+│   ├── texture.py
+│   ├── sound.py
+│   ├── character.py
+│   ├── animation.py
+│   ├── normal.py
+│   └── music.py                  # XM/IT writer (optional)
 │
-├── # Project State
-├── project-status.md             # Development progress tracking
-├── dispatch-queue.md             # Pending task queue
+├── direction/                    # Creative direction (Markdown)
+│   ├── creative.md               # Vision, pillars, audience
+│   ├── visual.md                 # Art style, palette, spectrums
+│   ├── sonic.md                  # Audio identity, music style
+│   └── tech.md                   # Architecture, constraints
 │
-├── # Specifications
-├── characters/                   # Character specifications
-│   └── *.spec.py
-├── mechanics/                    # Game mechanic specifications
-│   └── *.spec.md
-├── assets/                       # Asset design specifications
-│   └── *.spec.md
-├── animations/                   # Animation motion specs
-│   └── *.motion.py
-├── music/                        # Music specifications
-│   └── *.spec.md
-└── sfx/                          # SFX specifications
-    └── *.spec.md
+├── specs/                        # Parsable specifications (*.spec.py)
+│   ├── characters/               # Character meshes + rigs
+│   ├── textures/                 # Albedo, patterns
+│   ├── meshes/                   # Static meshes
+│   ├── sounds/                   # SFX synthesis
+│   ├── instruments/              # Instrument samples
+│   ├── music/                    # Tracker songs (XM/IT)
+│   └── animations/               # Skeletal animations
 │
-├── # Analysis Reports
-├── analysis/
-│   ├── scope-assessment.md       # Scope advisor reports
-│   ├── constraint-analysis.md    # ZX constraint analysis
-│   ├── balance-report.md         # Game balance analysis
-│   ├── gdd-coverage.md           # GDD implementation tracking
-│   └── completion-audit.md       # Completion verification
+├── designs/                      # Human-readable design docs (NOT parsed)
+│   ├── mechanics/                # Combat, movement, progression
+│   ├── levels/                   # Level layouts, flow
+│   └── systems/                  # Inventory, dialogue, etc.
 │
-└── architecture/                 # Architecture Decision Records
-    └── decisions.md
+├── analysis/                     # Generated reports
+│   ├── scope.md                  # Scope assessment
+│   ├── coverage.md               # GDD implementation tracking
+│   └── quality.md                # Asset quality audit
+│
+└── status.md                     # Project progress tracking
 ```
 
-**Spec-Driven Development:** All design and analysis agents write their output to persistent files. This ensures:
+**Key Concepts:**
+
+| Folder | Contains | Purpose |
+|--------|----------|---------|
+| `specs/` | `*.spec.py` | Machine-parsable Python dicts fed to parsers |
+| `designs/` | `*.md` | Human-readable design docs for reference |
+| `direction/` | `*.md` | Global creative vision documents |
+| `parsers/` | `*.py` | Generation code (copied from plugin) |
+
+**Usage:**
+```bash
+python .studio/generate.py              # Generate all assets
+python .studio/generate.py --only textures  # Generate one category
+python .studio/generate.py --dry-run    # Preview changes
+```
+
+**Spec-Driven Development:** All specifications use `.spec.py` extension and contain Python dicts that parsers interpret. This ensures:
 - Specifications persist across sessions
 - Other agents can read and build upon previous work
 - Users can review and modify specs directly
-- No work is lost to conversation context limits
+- Single `generate.py` command regenerates all assets
 
 ## Contributing
 

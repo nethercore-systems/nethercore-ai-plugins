@@ -5,15 +5,15 @@ description: |
 
   **Triggers:** "animate mesh", "walk cycle", "skeletal animation", "rig character", "keyframe", "spinning pickup"
 
-  **Before animating:** Check `.studio/visual-style.md` for animation feel.
+  **Before animating:** Check `.studio/direction/visual.md` for animation feel.
 
   **Workflow:**
-  - `motion-describer` agent → Produces `.motion.py` spec
-  - `motion_parser.py` → Interprets spec in Blender
+  - `animation-describer` agent → Produces `.spec.py` in `.studio/specs/animations/`
+  - `python .studio/generate.py --only animations` → Interprets specs in Blender
 
   **Load references when:**
-  - Motion spec format → `references/motion-description-format.md`
-  - Motion parser → `references/motion_parser.py`
+  - Animation spec format → `references/animation-spec-format.md`
+  - Animation parser → `.studio/parsers/animation.py`
   - IK setup → `references/ik-utilities.md`
   - Object animation → `references/object-animation.md`
   - Armature/rigs → `references/armature-creation.md`
@@ -24,7 +24,7 @@ description: |
   **Related skills:**
   - MESH GENERATION: `procedural-meshes`
   - CHARACTER RIGS: `procedural-characters`
-version: 4.1.0
+version: 5.0.0
 ---
 
 # Procedural Animation Generation
@@ -52,10 +52,10 @@ Blender 3.0+ in PATH: `blender --version`
 | Climbing | IK hands + feet | Goal positions |
 | Spinning pickups | Object animation | No deformation |
 
-## Motion Spec Pipeline
+## Animation Spec Pipeline
 
 ```
-motion-describer agent → .motion.py spec → motion_parser.py → .glb
+animation-describer agent → .spec.py → generate.py → .glb
 ```
 
 **Why this architecture:**
@@ -63,13 +63,16 @@ motion-describer agent → .motion.py spec → motion_parser.py → .glb
 - Parser is deterministic, reusable
 - Skeleton-agnostic (any armature)
 - Explicit rotations (degrees)
+- Unified with other asset types
 
-## Motion Spec Format
+## Animation Spec Format
 
 ```python
-MOTION = {
+# .studio/specs/animations/knight_idle.spec.py
+ANIMATION = {
     "animation": {
         "name": "knight_idle",
+        "input_armature": "assets/characters/knight.glb",
         "duration_frames": 120,
         "fps": 60,
         "loop": True,
@@ -86,7 +89,7 @@ MOTION = {
 }
 ```
 
-See `references/motion-description-format.md` for complete spec.
+See `references/animation-spec-format.md` for complete spec.
 
 ## Rotation Convention
 
@@ -141,24 +144,34 @@ bpy.ops.export_scene.gltf(
 
 ## Running the Parser
 
+Via unified generator:
 ```bash
-blender --background --python motion_parser.py -- \
-    spec.motion.py input.glb output.glb
+python .studio/generate.py --only animations
+```
+
+Standalone (for debugging):
+```bash
+blender --background --python .studio/parsers/animation.py -- \
+    .studio/specs/animations/knight_idle.spec.py \
+    assets/characters/knight.glb \
+    assets/animations/knight_idle.glb
 ```
 
 ## File Organization
 
 ```
-.studio/animations/
-├── knight_idle.motion.py
-├── knight_walk.motion.py
-└── knight_attack.motion.py
+.studio/
+├── generate.py                    # Unified generator
+├── parsers/
+│   └── animation.py               # Animation parser
+└── specs/
+    └── animations/
+        ├── knight_idle.spec.py
+        ├── knight_walk.spec.py
+        └── knight_attack.spec.py
 
-generation/lib/
-├── animation_utils.py
-└── motion_parser.py
-
-assets/animations/
-├── knight_idle.glb
-└── knight_walk.glb
+assets/
+└── animations/
+    ├── knight_idle.glb
+    └── knight_walk.glb
 ```

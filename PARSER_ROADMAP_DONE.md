@@ -141,7 +141,7 @@ This file tracks features that have been implemented in the procedural generatio
 
 ---
 
-## Motion Parser (motion_parser.py)
+## Animation Parser (animation.py)
 
 ### Core Features
 
@@ -184,6 +184,6 @@ This file tracks features that have been implemented in the procedural generatio
 | Normal | ~58% | ~15% |
 | Character | ~80% | ~0% |
 | Sound | ~45% | ~10% |
-| Motion | ~70% | ~0% |
+| Animation | ~70% | ~0% |
 
 See `PARSER_ROADMAP.md` for planned features and enhancements.

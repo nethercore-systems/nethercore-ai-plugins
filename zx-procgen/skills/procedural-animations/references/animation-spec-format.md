@@ -1,29 +1,27 @@
-# Motion Spec Format
+# Animation Spec Format
 
-Structured format for animation specifications. Motion specs are Python files (`.motion.py`) containing pose data that can be directly interpreted by the motion parser in Blender.
+Structured format for animation specifications. Animation specs are Python files (`.spec.py`) containing pose data that the unified generator interprets in Blender.
 
 ## Architecture
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│  motion-describer agent                                      │
-│  ───────────────────────────────────────────────             │
+│  animation-describer agent                                   │
+│  ─────────────────────────                                   │
 │  Input: "Create idle animation for PATCH character"         │
-│  Output: .studio/animations/patch_idle.motion.py            │
+│  Output: .studio/specs/animations/patch_idle.spec.py        │
 │                                                              │
-│  Produces structured poses with bone rotations              │
-│  Uses animation principles + character personality          │
+│  Produces structured poses with bone rotations               │
+│  Uses animation principles + character personality           │
 └──────────────────────────┬───────────────────────────────────┘
                            │
                            ▼
 ┌─────────────────────────────────────────────────────────────┐
-│  motion_parser.py (reusable script)                          │
-│  ────────────────────────────────────                        │
-│  Input: .motion.py spec + armature .glb                      │
+│  python .studio/generate.py --only animations                │
+│  ─────────────────────────────────────                       │
+│  Runs parsers/animation.py in Blender headless               │
+│  Input: .spec.py spec + armature .glb                        │
 │  Output: Animated .glb with keyframes                        │
-│                                                              │
-│  blender --background --python motion_parser.py -- \         │
-│      patch_idle.motion.py character.glb output.glb           │
 └─────────────────────────────────────────────────────────────┘
 ```
 
@@ -34,7 +32,7 @@ Structured format for animation specifications. Motion specs are Python files (`
 3. **Skeleton-agnostic** — Works with any armature if bone names match
 4. **Explicit rotations** — No coordinate confusion from natural language
 
-## Motion Spec Format (`.motion.py`)
+## Animation Spec Format (`.spec.py`)
 
 ```python
 # [Animation Name] - [CHARACTER] character
@@ -44,9 +42,10 @@ Structured format for animation specifications. Motion specs are Python files (`
 # - [Character personality and physicality notes]
 # - [Movement style, weight, energy]
 
-MOTION = {
+ANIMATION = {
     "animation": {
         "name": "animation_id",           # snake_case identifier
+        "input_armature": "assets/characters/character.glb",  # Optional
         "duration_frames": 120,           # Total frames
         "fps": 60,                         # Frame rate
         "loop": True,                      # Seamless loop?
@@ -123,7 +122,7 @@ Bone names must **exactly match** the armature's bone names. Common conventions:
 | Left leg | `UpperLegL`, `LowerLegL`, `FootL` | or `_L` suffix |
 | Right leg | `UpperLegR`, `LowerLegR`, `FootR` | or `_R` suffix |
 
-The motion-describer agent should check the target armature's bone names before generating.
+The animation-describer agent should check the target armature's bone names before generating.
 
 ## Poses
 
@@ -275,7 +274,7 @@ Inform the parser about inverse kinematics requirements:
 
 ## Style Metadata
 
-Informs the motion-describer's design choices:
+Informs the animation-describer's design choices:
 
 ```python
 "style": {
@@ -312,9 +311,10 @@ Informs the motion-describer's design choices:
 # Build: Athletic, balanced stance with slight forward lean.
 # Demeanor: Alert but calm, ready but not tense.
 
-MOTION = {
+ANIMATION = {
     "animation": {
         "name": "patch_idle",
+        "input_armature": "assets/characters/patch.glb",
         "duration_frames": 120,
         "fps": 60,
         "loop": True,
@@ -428,276 +428,44 @@ MOTION = {
 }
 ```
 
-## Complete Example: Sword Slash Attack
-
-```python
-# Overhead Sword Slash - Combat attack
-# Duration: 30 frames @ 30fps (1 second)
-#
-# Character: Generic humanoid warrior.
-# Attack: Heavy two-handed sword, full body commitment.
-# Power: Flows from legs through core to arms.
-
-MOTION = {
-    "animation": {
-        "name": "overhead_slash",
-        "duration_frames": 30,
-        "fps": 30,
-        "loop": False,
-
-        "poses": {
-            "ready_stance": {
-                "Hips": {"pitch": -5, "yaw": 0, "roll": 0},
-                "Spine": {"pitch": 3, "yaw": 0, "roll": 0},
-                "Chest": {"pitch": 2, "yaw": 0, "roll": 0},
-                "UpperArmR": {"pitch": -30, "yaw": -10, "roll": 20},
-                "LowerArmR": {"pitch": 0, "yaw": 0, "roll": 45},
-                "UpperArmL": {"pitch": -30, "yaw": 10, "roll": -20},
-                "LowerArmL": {"pitch": 0, "yaw": 0, "roll": -45},
-            },
-
-            "wind_up": {
-                "Hips": {"pitch": -8, "yaw": 15, "roll": 0},
-                "Spine": {"pitch": -5, "yaw": 20, "roll": 0},
-                "Chest": {"pitch": -10, "yaw": 25, "roll": -5},
-                "Head": {"pitch": 5, "yaw": -10, "roll": 0},
-                "UpperArmR": {"pitch": -120, "yaw": -30, "roll": 40},
-                "LowerArmR": {"pitch": 0, "yaw": 0, "roll": 90},
-                "UpperArmL": {"pitch": -80, "yaw": 20, "roll": -30},
-                "LowerArmL": {"pitch": 0, "yaw": 0, "roll": -60},
-                "UpperLegR": {"pitch": 15, "yaw": 0, "roll": 0},
-                "LowerLegR": {"pitch": -25, "yaw": 0, "roll": 0},
-            },
-
-            "strike_peak": {
-                "Hips": {"pitch": 10, "yaw": -20, "roll": 0},
-                "Spine": {"pitch": 15, "yaw": -25, "roll": 0},
-                "Chest": {"pitch": 20, "yaw": -30, "roll": 5},
-                "Head": {"pitch": -10, "yaw": 10, "roll": 0},
-                "UpperArmR": {"pitch": 30, "yaw": 20, "roll": -20},
-                "LowerArmR": {"pitch": 0, "yaw": 0, "roll": 20},
-                "UpperArmL": {"pitch": 20, "yaw": -10, "roll": 10},
-                "LowerArmL": {"pitch": 0, "yaw": 0, "roll": -30},
-                "UpperLegL": {"pitch": 20, "yaw": 0, "roll": 0},
-                "LowerLegL": {"pitch": -15, "yaw": 0, "roll": 0},
-            },
-
-            "recovery": {
-                "Hips": {"pitch": 0, "yaw": -5, "roll": 0},
-                "Spine": {"pitch": 5, "yaw": -5, "roll": 0},
-                "Chest": {"pitch": 5, "yaw": -5, "roll": 0},
-                "UpperArmR": {"pitch": -10, "yaw": 10, "roll": 0},
-                "LowerArmR": {"pitch": 0, "yaw": 0, "roll": 30},
-                "UpperArmL": {"pitch": -20, "yaw": 5, "roll": -10},
-                "LowerArmL": {"pitch": 0, "yaw": 0, "roll": -40},
-            },
-        },
-
-        "phases": [
-            {
-                "name": "anticipation",
-                "frames": [0, 9],
-                "pose": "wind_up",
-                "timing_curve": "ease_in",
-                "description": "Coil power, sword behind shoulder"
-            },
-            {
-                "name": "strike",
-                "frames": [10, 15],
-                "pose": "strike_peak",
-                "timing_curve": "exponential_in",
-                "description": "Explosive downward slash"
-            },
-            {
-                "name": "follow_through",
-                "frames": [16, 22],
-                "pose": "recovery",
-                "timing_curve": "ease_out",
-                "description": "Momentum carries through"
-            },
-            {
-                "name": "return_ready",
-                "frames": [23, 30],
-                "pose": "ready_stance",
-                "timing_curve": "ease_in_out",
-                "description": "Reset to ready stance"
-            },
-        ],
-
-        "procedural_layers": [],
-
-        "ik_hints": {
-            "feet": "ground_contact",
-            "hands": None
-        },
-
-        "style": {
-            "weight": "heavy",
-            "energy": "explosive",
-            "intent": "attack"
-        }
-    }
-}
-```
-
-## Complete Example: Walk Cycle
-
-```python
-# Walk Cycle - Humanoid locomotion
-# Duration: 24 frames @ 30fps (0.8 seconds per cycle)
-#
-# Character: Generic humanoid, medium build.
-# Style: Confident, purposeful walk.
-# Motion: Natural arm swing, slight hip rotation.
-
-MOTION = {
-    "animation": {
-        "name": "walk_cycle",
-        "duration_frames": 24,
-        "fps": 30,
-        "loop": True,
-
-        "poses": {
-            "right_contact": {
-                "Hips": {"pitch": 0, "yaw": 5, "roll": -3},
-                "Spine": {"pitch": 0, "yaw": -3, "roll": 0},
-                "Chest": {"pitch": 0, "yaw": -5, "roll": 0},
-                "UpperArmL": {"pitch": 25, "yaw": 0, "roll": -10},
-                "LowerArmL": {"pitch": 0, "yaw": 0, "roll": -20},
-                "UpperArmR": {"pitch": -25, "yaw": 0, "roll": 10},
-                "LowerArmR": {"pitch": 0, "yaw": 0, "roll": 30},
-                "UpperLegL": {"pitch": -20, "yaw": 0, "roll": 0},
-                "LowerLegL": {"pitch": 35, "yaw": 0, "roll": 0},
-                "UpperLegR": {"pitch": 25, "yaw": 0, "roll": 0},
-                "LowerLegR": {"pitch": -5, "yaw": 0, "roll": 0},
-            },
-
-            "right_passing": {
-                "Hips": {"pitch": 0, "yaw": 0, "roll": 0},
-                "Spine": {"pitch": 0, "yaw": 0, "roll": 0},
-                "UpperArmL": {"pitch": 0, "yaw": 0, "roll": -5},
-                "UpperArmR": {"pitch": 0, "yaw": 0, "roll": 5},
-                "UpperLegL": {"pitch": 0, "yaw": 0, "roll": 0},
-                "LowerLegL": {"pitch": 0, "yaw": 0, "roll": 0},
-                "UpperLegR": {"pitch": 0, "yaw": 0, "roll": 0},
-                "LowerLegR": {"pitch": 0, "yaw": 0, "roll": 0},
-            },
-
-            "left_contact": {
-                "Hips": {"pitch": 0, "yaw": -5, "roll": 3},
-                "Spine": {"pitch": 0, "yaw": 3, "roll": 0},
-                "Chest": {"pitch": 0, "yaw": 5, "roll": 0},
-                "UpperArmL": {"pitch": -25, "yaw": 0, "roll": -10},
-                "LowerArmL": {"pitch": 0, "yaw": 0, "roll": 30},
-                "UpperArmR": {"pitch": 25, "yaw": 0, "roll": 10},
-                "LowerArmR": {"pitch": 0, "yaw": 0, "roll": -20},
-                "UpperLegL": {"pitch": 25, "yaw": 0, "roll": 0},
-                "LowerLegL": {"pitch": -5, "yaw": 0, "roll": 0},
-                "UpperLegR": {"pitch": -20, "yaw": 0, "roll": 0},
-                "LowerLegR": {"pitch": 35, "yaw": 0, "roll": 0},
-            },
-
-            "left_passing": {
-                "Hips": {"pitch": 0, "yaw": 0, "roll": 0},
-                "Spine": {"pitch": 0, "yaw": 0, "roll": 0},
-                "UpperArmL": {"pitch": 0, "yaw": 0, "roll": -5},
-                "UpperArmR": {"pitch": 0, "yaw": 0, "roll": 5},
-                "UpperLegL": {"pitch": 0, "yaw": 0, "roll": 0},
-                "LowerLegL": {"pitch": 0, "yaw": 0, "roll": 0},
-                "UpperLegR": {"pitch": 0, "yaw": 0, "roll": 0},
-                "LowerLegR": {"pitch": 0, "yaw": 0, "roll": 0},
-            },
-        },
-
-        "phases": [
-            {
-                "name": "right_heel_strike",
-                "frames": [0, 5],
-                "pose": "right_contact",
-                "timing_curve": "linear",
-                "description": "Right foot plants"
-            },
-            {
-                "name": "right_pass",
-                "frames": [6, 11],
-                "pose": "right_passing",
-                "timing_curve": "linear",
-                "description": "Left leg swings through"
-            },
-            {
-                "name": "left_heel_strike",
-                "frames": [12, 17],
-                "pose": "left_contact",
-                "timing_curve": "linear",
-                "description": "Left foot plants"
-            },
-            {
-                "name": "left_pass",
-                "frames": [18, 23],
-                "pose": "left_passing",
-                "timing_curve": "linear",
-                "description": "Right leg swings through"
-            },
-        ],
-
-        "procedural_layers": [],
-
-        "ik_hints": {
-            "feet": "ground_contact",
-            "hands": None
-        },
-
-        "style": {
-            "weight": "medium",
-            "energy": "smooth",
-            "intent": "locomotion"
-        }
-    }
-}
-```
-
 ## File Organization
 
 ```
 .studio/
-└── animations/
-    ├── patch_idle.motion.py
-    ├── patch_walk.motion.py
-    └── patch_attack.motion.py
-
-generation/
-├── lib/
-│   └── motion_parser.py      # Reusable parser script
-└── animations/
-    └── (generated bpy scripts, if needed)
+├── generate.py                    # Unified generator
+├── parsers/
+│   └── animation.py               # Animation parser
+└── specs/
+    └── animations/
+        ├── patch_idle.spec.py
+        ├── patch_walk.spec.py
+        └── patch_attack.spec.py
 
 assets/
 └── animations/
-    ├── patch_idle.glb        # Output from parser
+    ├── patch_idle.glb             # Output from generator
     ├── patch_walk.glb
     └── patch_attack.glb
 ```
 
 ## Execution
 
-Run the motion parser to generate animation:
-
+Via unified generator (recommended):
 ```bash
-blender --background --python generation/lib/motion_parser.py -- \
-    .studio/animations/patch_idle.motion.py \
+python .studio/generate.py --only animations
+```
+
+Standalone (for debugging):
+```bash
+blender --background --python .studio/parsers/animation.py -- \
+    .studio/specs/animations/patch_idle.spec.py \
     assets/characters/patch.glb \
     assets/animations/patch_idle.glb
 ```
 
-Or batch process all motion specs:
-
-```bash
-python generation/generate_all_animations.py
-```
-
 ## Related
 
-- `motion_parser.py` reference implementation → `references/motion_parser.py`
-- IK utilities (for `ground_contact`) → `references/ik-utilities.md`
-- Character rigs → `procedural-characters` skill
-- ZX constraints → `references/zx-constraints.md`
+- Animation parser: `.studio/parsers/animation.py`
+- IK utilities (for `ground_contact`): `references/ik-utilities.md`
+- Character rigs: `procedural-characters` skill
+- ZX constraints: `references/zx-constraints.md`

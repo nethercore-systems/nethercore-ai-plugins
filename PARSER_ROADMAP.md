@@ -186,7 +186,7 @@ Ideas for expanding the procedural generation parsers. Each section lists featur
 
 ---
 
-## Animation Parser (motion_parser.py)
+## Animation Parser (animation.py)
 
 ### Additional Procedural Layers
 

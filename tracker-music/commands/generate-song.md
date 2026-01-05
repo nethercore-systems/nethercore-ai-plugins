@@ -1,6 +1,6 @@
 ---
 description: Interactive wizard for generating tracker music from a description
-argument-hint: "[mood/style description] [--format xm|it] [--spec path/to/spec.md]"
+argument-hint: "[mood/style description] [--format xm|it]"
 allowed-tools:
   - Read
   - Write
@@ -14,15 +14,22 @@ allowed-tools:
 
 Generate a complete tracker song (XM or IT format) from a mood/style description.
 
+## Spec-Driven Workflow
+
+This command creates `.spec.py` files (with SONG dict) that are parsed to XM/IT modules:
+
+```
+User description → song spec (.spec.py) → song_parser.py → .xm/.it
+```
+
+All specs use `.spec.py` extension. The folder and dict name identify the type.
+
 ## Arguments
 
 - **description**: Mood/style (e.g., "dark mysterious boss theme")
 - **--format**: XM or IT (defaults to XM)
-- **--spec**: Path to spec file with pre-defined parameters
 
 ## Step 1: Gather Requirements
-
-**If --spec provided:** Read spec file, skip to Step 3.
 
 **If description provided:** Parse for mood, context, style. If clear enough, proceed.
 
@@ -51,7 +58,20 @@ Invoke song-generator agent:
 Task tool:
 - subagent_type: "tracker-music:song-generator"
 - description: "Generate [mood] [context] song"
-- prompt: All parameters, constraints, output path
+- prompt: |
+    Create a .spec.py file (SONG dict) for: [description]
+
+    Requirements:
+    - Create instrument specs in .studio/instruments/*.spec.py if needed
+    - Create song spec in .studio/music/[name].spec.py
+    - Run song_parser.py to generate output
+    - Output to generated/tracks/
+
+    Parameters:
+    - Format: [xm/it]
+    - Mood: [mood]
+    - Context: [context]
+    - Tempo: [bpm]
 ```
 
 ## Step 5: Report Results
@@ -59,7 +79,9 @@ Task tool:
 After completion, show:
 
 ```
-Created: generated/tracks/boss_theme.it
+Created:
+- .studio/music/boss_theme.spec.py (spec - committed)
+- generated/tracks/boss_theme.xm (output - gitignored)
 
 Song Details:
 - Key: D Minor, Tempo: 140 BPM
@@ -71,9 +93,9 @@ Instruments: Kick, Snare, Hi-hat, Bass, Lead, Pad
 Next steps:
 1. Test in MilkyTracker/OpenMPT
 2. Add to nether.toml:
-   [[assets.trackers]]
+   [[assets.sounds]]
    id = "boss_theme"
-   path = "music/boss_theme.it"
+   path = "../generated/tracks/boss_theme.xm"
 3. Use: music_play(rom_tracker(b"boss_theme", 10), 0.8, 1)
 ```
 

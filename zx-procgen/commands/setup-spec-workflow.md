@@ -6,7 +6,7 @@ allowed-tools: ["Read", "Write", "Glob", "Bash", "AskUserQuestion"]
 
 # Setup Spec Workflow
 
-> **💡 Prefer `/init-procgen-infrastructure` for new projects** - It's 10-20x faster and uses 95% fewer tokens by copying files directly with cp/xcopy instead of Read/Write tools. Use this command when you need interactive setup or want to review parser code before copying.
+> **💡 Prefer `/init-procgen` for new projects** - It's 10-20x faster and uses 95% fewer tokens by copying files directly with cp/xcopy instead of Read/Write tools. Use this command when you need interactive setup or want to review parser code before copying.
 
 Add spec-driven procedural generation infrastructure to an existing project. This sets up the parser files and creates example specs so you can use the declarative spec format instead of inline Python code.
 
@@ -50,34 +50,39 @@ Create `lib/` directory for parsers if it doesn't exist:
 
 ```
 project/
-├── lib/                    # Shared parser infrastructure
-│   ├── texture_parser.py
-│   ├── sound_parser.py
-│   ├── character_parser.py
-│   ├── motion_parser.py
-│   └── normal_parser.py
-├── specs/                  # Asset specifications
-│   ├── textures/
-│   │   └── example.texture.spec.py
-│   ├── sounds/
-│   │   └── example.spec.py
-│   └── ...
-└── generated/              # Output directory
+├── .studio/                # Spec-driven infrastructure
+│   ├── generate.py         # Unified generator entry point
+│   ├── parsers/            # Shared parser modules
+│   │   ├── texture.py
+│   │   ├── sound.py
+│   │   ├── character.py
+│   │   ├── animation.py
+│   │   └── normal.py
+│   ├── specs/              # Asset specifications
+│   │   ├── textures/
+│   │   ├── sounds/
+│   │   ├── characters/
+│   │   ├── animations/
+│   │   └── normals/
+│   ├── direction/          # Creative direction
+│   ├── designs/            # Design documents
+│   └── analysis/           # Generated reports
+└── assets/                 # Output directory (gitignored)
 ```
 
 ## Step 4: Copy Parsers
 
-For each selected asset type, copy the parser from the plugin's references:
+For each selected asset type, copy the parser from the plugin's scaffold:
 
 | Asset Type | Parser Source |
 |------------|---------------|
-| Textures | `zx-procgen/skills/procedural-textures/references/texture_parser.py` |
-| Sounds | `zx-procgen/skills/procedural-sounds/references/sound_parser.py` |
-| Characters | `zx-procgen/skills/procedural-characters/references/character_parser.py` |
-| Animations | `zx-procgen/skills/procedural-animations/references/motion_parser.py` |
-| Normals | `zx-procgen/skills/procedural-normal-maps/references/normal_parser.py` |
+| Textures | `zx-procgen/scaffold/.studio/parsers/texture.py` |
+| Sounds | `zx-procgen/scaffold/.studio/parsers/sound.py` |
+| Characters | `zx-procgen/scaffold/.studio/parsers/character.py` |
+| Animations | `zx-procgen/scaffold/.studio/parsers/animation.py` |
+| Normals | `zx-procgen/scaffold/.studio/parsers/normal.py` |
 
-Read each parser file and write it to the project's `lib/` directory.
+Read each parser file and write it to the project's `.studio/parsers/` directory.
 
 ## Step 5: Create Example Specs
 

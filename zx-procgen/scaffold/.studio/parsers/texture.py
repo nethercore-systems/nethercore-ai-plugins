@@ -3,7 +3,7 @@
 Texture Parser - Interprets .texture.spec.py files and generates textures.
 
 Deterministic texture generation from declarative specs. Follows the same pattern
-as sound_parser.py for audio and motion_parser.py for animations.
+as sound.py for audio and animation.py for animations.
 
 Usage:
     python texture_parser.py input.texture.spec.py output.png

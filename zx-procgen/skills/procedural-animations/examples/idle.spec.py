@@ -6,7 +6,7 @@
 # Demeanor: Relaxed but alert stance.
 # Goal: Subtle breathing and weight shifts for life-like presence.
 
-MOTION = {
+ANIMATION = {
     "animation": {
         "name": "humanoid_idle",
         "duration_frames": 120,

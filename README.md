@@ -67,8 +67,8 @@ For procgen and music projects, use these commands to copy infrastructure files 
 ### Procgen Infrastructure
 
 ```bash
-/init-procgen-infrastructure all              # All parsers (textures, sounds, characters, animations, normals)
-/init-procgen-infrastructure textures,sounds  # Specific parsers only
+/init-procgen                         # All parsers (textures, sounds, characters, animations, normals)
+/init-procgen textures,sounds         # Specific parsers only (not yet implemented)
 ```
 
 **What it does:**
@@ -262,7 +262,7 @@ These provide ZX-specific implementation details:
 | `asset-generator` | zx-procgen | Procedural generation code |
 | `character-designer` | zx-procgen | Character specs (.spec.py) from requirements |
 | `character-generator` | zx-procgen | Full animated characters |
-| `motion-describer` | zx-procgen | Motion specs (.motion.py) with bone rotations |
+| `animation-describer` | zx-procgen | Animation specs (.spec.py) with bone rotations |
 | `sfx-architect` | sound-design | Sound effect design |
 | `music-architect` | sound-design | Music track design |
 | `code-scaffolder` | zx-dev | Boilerplate game systems |
@@ -449,11 +449,11 @@ ZX-specific game design workflow plugin.
 
 Procedural asset generation plugin.
 
-**Skills (13):** Textures, meshes, sounds, instruments, animations (motion specs + parser), sprites, characters, normal maps, style guide, texturing workflows, quality tiers, native pipeline, generator patterns
+**Skills (13):** Textures, meshes, sounds, instruments, animations, sprites, characters, normal maps, style guide, texturing workflows, quality tiers, native pipeline, generator patterns
 
 **Commands:** `generate-asset`, `generate-sfx`, `generate-instrument`, `new-asset-project`, `improve-assets`, `establish-visual-style`, `generate-all`
 
-**Agents:** `asset-designer`, `asset-generator`, `character-designer`, `character-generator`, `motion-describer`, `quality-enhancer`, `asset-quality-reviewer`, `procgen-optimizer`, `creative-orchestrator`, `instrument-architect`, `normal-map-generator`
+**Agents:** `asset-designer`, `asset-generator`, `character-designer`, `character-generator`, `animation-describer`, `quality-enhancer`, `asset-quality-reviewer`, `procgen-optimizer`, `creative-orchestrator`, `instrument-architect`, `normal-map-generator`
 
 ### zx-publish
 

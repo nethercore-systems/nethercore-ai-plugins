@@ -3,7 +3,7 @@
 Sound Parser - Interprets .spec.py files and generates audio.
 
 Deterministic audio generation from declarative specs. Follows the same pattern
-as motion_parser.py for animations.
+as animation.py for animations.
 
 Usage:
     python sound_parser.py sfx laser.spec.py output.wav
