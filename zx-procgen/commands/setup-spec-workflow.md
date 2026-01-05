@@ -6,6 +6,8 @@ allowed-tools: ["Read", "Write", "Glob", "Bash", "AskUserQuestion"]
 
 # Setup Spec Workflow
 
+> **💡 Prefer `/init-procgen-infrastructure` for new projects** - It's 10-20x faster and uses 95% fewer tokens by copying files directly with cp/xcopy instead of Read/Write tools. Use this command when you need interactive setup or want to review parser code before copying.
+
 Add spec-driven procedural generation infrastructure to an existing project. This sets up the parser files and creates example specs so you can use the declarative spec format instead of inline Python code.
 
 ## Why Spec-Driven?

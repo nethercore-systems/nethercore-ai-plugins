@@ -320,3 +320,305 @@ Features that benefit all parsers:
    - Include files
    - Watch mode
    - Preset libraries
+
+---
+
+## Cross-Cutting Pipeline Features
+
+Features that apply to ALL parsers - the difference between a cool generator and a production system.
+
+### Determinism & Reproducibility
+
+| Feature | Description |
+|---------|-------------|
+| Global seed propagation | Hierarchical seeds (`asset_seed → layer_seed → sublayer_seed`) |
+| Deterministic random streams | Avoid order-dependent randomness |
+| Spec hashing | Hash spec → cache outputs → detect changes |
+
+### Versioning & Compatibility
+
+| Feature | Description |
+|---------|-------------|
+| Spec versioning | `spec_version: 1.2` field for format evolution |
+| Migration hooks | Auto-upgrade old specs to current format |
+| Deprecation warnings | Non-breaking evolution of features |
+
+### Variants & Parameter Sweeps
+
+| Feature | Description |
+|---------|-------------|
+| Variant generation | Ranges in specs (`roughness: [0.3, 0.6]`) |
+| Combinatorial variants | Generate N permutations automatically |
+| Constraint-based variation | "Different but within bounds" |
+
+### Validation & Debugging
+
+| Feature | Description |
+|---------|-------------|
+| Schema validation | JSON Schema / custom DSL validation |
+| Visualization hooks | Render intermediate layers for debugging |
+| Error localization | "Layer X invalid parameter Y" with line numbers |
+
+---
+
+## Texture Parser - Additional Gaps
+
+Beyond patterns and blend modes, control & data flow features.
+
+### Data-Driven Mask Layers
+
+| Mask Type | Description |
+|-----------|-------------|
+| `curvature_mask` | Mask from mesh curvature data |
+| `ao_mask` | Mask from ambient occlusion |
+| `slope_mask` | Terrain-style slope-based masking |
+| `id_mask` | Material zone masks from ID map |
+
+### Procedural Mask Generators
+
+| Generator | Description |
+|-----------|-------------|
+| `noise_mask` | Thresholded noise patterns |
+| `edge_mask` | Derived from normal or height data |
+| `distance_mask` | Distance field from shapes |
+| `directional_mask` | Wind/wear direction masks |
+
+### Color Intelligence
+
+| Feature | Description |
+|---------|-------------|
+| Gradient maps | Map grayscale → color ramps |
+| Physically plausible colors | Energy-conserving albedo ranges |
+| Weathering models | Dirt accumulates after rust, etc. |
+
+### Output Targets
+
+| Feature | Description |
+|---------|-------------|
+| Engine-specific exports | Unity HDRP, Unreal Material Instance formats |
+| Packed texture control | Custom channel packing layouts (ORM, MRE, etc.) |
+
+---
+
+## Normal/Height Parser - Additional Gaps
+
+Signal processing and analysis beyond patterns.
+
+### Height Signal Operations
+
+| Operation | Description |
+|-----------|-------------|
+| Erosion | Hydraulic / thermal erosion simulation |
+| Edge-preserving blur | Blur while keeping sharp features |
+| Height remapping | Curves / bias / gain adjustment |
+| Frequency splitting | Separate macro vs micro detail layers |
+
+### Normal-Specific Controls
+
+| Feature | Description |
+|---------|-------------|
+| Per-layer strength | Independent intensity per pattern |
+| Reoriented Normal Mapping (RNM) | Correct detail normal blending |
+| Detail normal blending | Overlay/blend methods |
+| Tangent space selection | MikkTSpace vs custom |
+
+### Analysis Outputs
+
+| Output | Description |
+|--------|-------------|
+| Slope map | Surface angle for terrain texturing |
+| Curvature map | Convex/concave for wear patterns |
+| Thickness map | For SSS approximation |
+| Bent normal | For improved ambient lighting |
+
+---
+
+## Character Parser - Additional Gaps
+
+Beyond parts, structural and metadata features.
+
+### Topology & Structure
+
+| Feature | Description |
+|---------|-------------|
+| Symmetry rules | Mirror, radial, broken symmetry |
+| Parametric skeleton generation | Generate bones from proportions |
+| Constraint-driven proportions | "Long legs, short torso" params |
+| Boolean mesh ops | Union / subtract / bevel for details |
+
+### Surface & Deformation
+
+| Feature | Description |
+|---------|-------------|
+| Muscle / fat volumes | Anatomical volume hints |
+| Pose-aware deformation | Corrective shapes per pose |
+| Weight painting rules | Automatic weight distribution rules |
+
+### Metadata Outputs
+
+| Output | Description |
+|--------|-------------|
+| Attachment sockets | Named points for weapons/items |
+| Gameplay tags | Per-part tags (head, weakpoint, armor) |
+| Material zones | Per-region material IDs |
+| Damage regions | Hurtbox/hitbox zone definitions |
+
+---
+
+## Sound Parser - Additional Gaps
+
+Structure and context beyond synthesis.
+
+### Time & Structure
+
+| Feature | Description |
+|---------|-------------|
+| Multi-stage envelopes | Beyond ADSR (attack→body→tail sections) |
+| Macro timing | Distinct attack / sustain / decay phases |
+| Loop-aware generation | Seamless loop points |
+
+### Spatial & Runtime Awareness
+
+| Feature | Description |
+|---------|-------------|
+| Distance curves | Attenuation/filtering by distance |
+| Occlusion hints | Muffling parameters |
+| Surface interaction | Same impact, different material response |
+
+### Asset Families
+
+| Feature | Description |
+|---------|-------------|
+| Sound sets | Variants with shared identity |
+| State-based layers | Idle / effort / extreme versions |
+
+---
+
+## Animation Parser - Additional Gaps
+
+Motion intent and runtime integration.
+
+### Motion Semantics
+
+| Feature | Description |
+|---------|-------------|
+| Gait definitions | Walk / run / sneak parameters |
+| Phase-aware cycles | Footfall timing, contact frames |
+| Balance constraints | Center-of-mass tracking |
+
+### Authoring Helpers
+
+| Feature | Description |
+|---------|-------------|
+| Pose libraries | Reusable named poses |
+| Constraint stacks | IK chains, aim constraints |
+| Procedural posing | Reach, brace, lean generators |
+
+### Runtime Integration
+
+| Feature | Description |
+|---------|-------------|
+| State machine hints | Transition conditions metadata |
+| Blend tree metadata | Weight/parameter mappings |
+| Sync markers | Footfall, impact event frames |
+
+---
+
+## Spec Language & Tooling
+
+Making "assets as code" actually usable.
+
+### Spec Language Features
+
+| Feature | Description |
+|---------|-------------|
+| Expressions | `roughness = base * wear_factor` |
+| Conditionals | If/else based on parameters |
+| Inheritance | Base spec → override specs |
+| Includes / references | `#include` for reusable blocks |
+
+### Authoring Experience
+
+| Feature | Description |
+|---------|-------------|
+| Live preview | Real-time generation feedback |
+| Hot reload | Auto-regenerate on save |
+| Graph view | Visualize layer stacks / dependencies |
+| CLI tooling | Batch generation, CI integration |
+
+---
+
+## Code Generator Parsers (future)
+
+These parsers output **code** (Rust/C/Zig) rather than data files. More complex but enables runtime systems.
+
+### UI Parser
+
+Outputs: Rust/C/Zig code for UI layouts
+
+| Feature | Description |
+|---------|-------------|
+| Layout specs | Widget tree definitions |
+| Style specs | Colors, fonts, spacing |
+| State bindings | Data binding hints |
+| Focus navigation | Controller/keyboard nav order |
+
+**Output example:** `ui_main_menu.rs` with widget creation code
+
+### VFX Parser
+
+Outputs: Rust/C/Zig code for particle systems
+
+| Feature | Description |
+|---------|-------------|
+| Emitter definitions | Spawn rate, lifetime, velocity |
+| Particle properties | Size, color, rotation curves |
+| Force fields | Gravity, wind, turbulence |
+| Collision response | Bounce, stick, die |
+
+**Output example:** `vfx_explosion.rs` with particle system setup
+
+### Cutscene Parser
+
+Outputs: Rust/C/Zig code for scripted sequences
+
+| Feature | Description |
+|---------|-------------|
+| Camera paths | Keyframed positions/rotations |
+| Entity actions | Move, animate, spawn, despawn |
+| Timing | Delays, triggers, conditions |
+| Dialogue integration | Text display triggers |
+
+**Output example:** `cutscene_intro.rs` with sequenced actions
+
+**Note:** These are higher effort than asset parsers due to language binding complexity. Consider starting with a single target language (Rust) and adding C/Zig later.
+
+---
+
+## Tilemap Parser (future)
+
+Procedural level generation - outputs data files (JSON/binary), not runtime code.
+
+### Generation Algorithms
+
+| Algorithm | Description |
+|-----------|-------------|
+| BSP dungeons | Binary space partition rooms |
+| Cellular automata | Cave and organic terrain |
+| Wave Function Collapse | Pattern-based generation |
+| Noise-based terrain | Heightmap with biomes |
+
+### Tilemap Features
+
+| Feature | Description |
+|---------|-------------|
+| Autotile | 4-bit, 8-bit, 47-tile blob systems |
+| RLE compression | Efficient storage |
+| Collision layer output | Walkable/blocked data |
+| Entity placement | Spawn point / pickup markers |
+
+---
+
+## Tracking
+
+See `PARSER_ROADMAP_DONE.md` for completed features.

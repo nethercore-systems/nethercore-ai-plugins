@@ -42,7 +42,7 @@ See [Audio Pipeline Guide](../docs/audio-pipeline.md) for complete workflows.
 - **Procedural Instruments**: High-quality instrument samples via Karplus-Strong, FM, wavetable, additive synthesis
 - **Procedural Characters**: Full character generation with meshes, rigs, and animations
 - **Spec-Driven Parsers**: Declarative `.spec.py` files + reusable parsers for textures, sounds, characters, animations, normals
-- **9 Commands**: `/new-asset-project`, `/generate-asset`, `/generate-sfx`, `/generate-instrument`, `/improve-assets`, `/establish-visual-style`, `/generate-all`, `/setup-spec-workflow`, `/migrate-to-specs`
+- **10 Commands**: `/init-procgen-infrastructure` (⚡ recommended), `/new-asset-project`, `/generate-asset`, `/generate-sfx`, `/generate-instrument`, `/improve-assets`, `/establish-visual-style`, `/generate-all`, `/setup-spec-workflow`, `/migrate-to-specs`
 - **11 Agents**: Creative pipeline + character generation + motion specs + normal maps + unified quality review + enhancement + instrument design
 - **Python-Based Generators**: Use Python with PIL, Blender bpy, numpy/scipy, or any tool that outputs standard formats
 
@@ -90,7 +90,24 @@ Add to `.claude/settings.local.json`:
 
 ## Quick Start
 
-### Create a New Asset Project
+### Option 1: Token-Efficient Setup (Recommended) ⚡
+
+**Best for:** New projects, token-conscious workflows, fast setup
+
+```
+/init-procgen-infrastructure all
+```
+
+This instantly copies parsers and sets up the spec-driven workflow:
+- Creates `lib/`, `specs/`, `generated/` directory structure
+- Copies all 5 parsers (texture, sound, character, motion, normal)
+- Creates example `.spec.py` files
+- Generates `generate_specs.py` wrapper script
+- **Uses 95% fewer tokens** (300 lines vs 3,094 lines)
+
+### Option 2: Full Asset Project Scaffold
+
+**Best for:** Complete project with game integration, viewer, build system
 
 ```
 /new-asset-project my-game-assets
@@ -362,6 +379,35 @@ Five specialized agents for end-to-end asset creation:
 | **normal-map-generator** | Generates procedural normal maps from height patterns | "generate normal map", "normal map for", "height to normal", "surface detail" |
 
 ## Commands
+
+### `/init-procgen-infrastructure [asset-types] [project-dir]` ⚡ (Recommended)
+
+**Token-efficient infrastructure setup** - Copies parser files directly using native OS commands (cp/xcopy) instead of reading them into context.
+
+**Usage:**
+```bash
+/init-procgen-infrastructure all                    # Set up all parsers (textures, sounds, characters, animations, normals)
+/init-procgen-infrastructure textures,sounds        # Set up specific parsers
+/init-procgen-infrastructure all ./my-project       # Set up in specific directory
+```
+
+**What it does:**
+1. Creates directory structure (`lib/`, `specs/*/`, `generated/*/`)
+2. Copies parser files from plugin to `lib/` (zero tokens)
+3. Creates example `.spec.py` files in `specs/` subdirectories
+4. Generates `generate_specs.py` wrapper script
+
+**Token savings:** 95% reduction vs `/setup-spec-workflow` (3,094 lines → ~300 lines)
+
+**When to use:**
+- ✅ Setting up a new project (fast, efficient)
+- ✅ You know which asset types you need
+- ✅ Default configuration is acceptable
+
+**When to use `/setup-spec-workflow` instead:**
+- Interactive setup with customization
+- Need to review parser code before copying
+- Educational/learning context
 
 ### `/new-asset-project [name]`
 Scaffold a complete procedural asset project with generator code and ZX viewer.

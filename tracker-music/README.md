@@ -54,15 +54,34 @@ This plugin enables Claude to generate complete, polished tracker music autonomo
 |-------|---------|-------------|
 | `song-generator` | "generate a song", "make tracker music" | End-to-end song generation from mood/style description |
 
-### Commands (1)
+### Commands (2)
 
-| Command | Description |
-|---------|-------------|
-| `/generate-song` | Interactive song generation wizard |
+| Command | Description | Token Efficiency |
+|---------|-------------|------------------|
+| `/init-tracker-music` | Copy XM/IT writers to project (fast setup) ⚡ | 85% savings |
+| `/generate-song` | Interactive song generation wizard | Standard |
 
 ## Quick Start
 
-### Generate a Song
+### Option 1: Set Up Infrastructure (Recommended for Projects) ⚡
+
+**Token-efficient setup** - copies XM/IT writer files using native OS commands:
+
+```
+/init-tracker-music
+```
+
+This instantly sets up your tracker music project:
+- Copies `xm_writer.py`, `it_writer.py`, `xm_types.py`, `it_types.py` to `lib/`
+- Creates directory structure (`songs/`, `instruments/`, `patterns/`, `generated/`)
+- Generates example song template and wrapper scripts
+- **Uses 85% fewer tokens** (130 lines vs 904 lines)
+
+**Best for:** New music composition projects, working with multiple songs, token-conscious workflows
+
+### Option 2: Generate a Single Song (Quick)
+
+**AI-assisted composition** - describe what you want and let the agent compose:
 
 ```
 Ask: "Generate a dark, mysterious boss battle theme"
@@ -70,11 +89,13 @@ Ask: "Generate a dark, mysterious boss battle theme"
 → Produces: boss_battle.it with embedded samples
 ```
 
-### Use the Command
+Or use the command:
 
 ```
 /generate-song "exploration theme for a haunted forest"
 ```
+
+**Best for:** Quick one-off songs, experimenting with styles, learning tracker music
 
 ## Skill Architecture
 
