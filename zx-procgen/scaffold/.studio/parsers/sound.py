@@ -581,7 +581,14 @@ def generate_instrument(spec: Dict[str, Any]) -> np.ndarray:
                 index_decay=synth.get('index_decay', 5.0)
             )
         else:
-            signal = fm_synth(freq, duration)
+            # Use spec's index and index_decay parameters
+            signal = fm_synth(
+                carrier_freq=freq,
+                duration=duration,
+                mod_ratio=1.0,
+                mod_index=synth.get('index', 2.0),
+                index_decay=synth.get('index_decay', 5.0)
+            )
 
     elif synth_type == 'subtractive':
         oscs = synth.get('oscillators', [{'waveform': 'saw'}])

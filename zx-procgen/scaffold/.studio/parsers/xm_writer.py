@@ -13,7 +13,7 @@ Usage:
     write_xm(module, "output.xm")
 """
 
-from xm_types import (
+from .xm_types import (
     XmModule, XmPattern, XmNote, XmInstrument, XmEnvelope,
     MAX_CHANNELS, MAX_PATTERNS, MAX_INSTRUMENTS,
 )

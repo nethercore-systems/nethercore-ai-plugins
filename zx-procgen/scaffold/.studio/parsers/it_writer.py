@@ -13,7 +13,7 @@ Usage:
     write_it(module, "output.it")
 """
 
-from it_types import (
+from .it_types import (
     ItModule, ItPattern, ItNote, ItInstrument, ItSample, ItEnvelope,
 )
 import struct
@@ -38,8 +38,14 @@ def _write_string(data: bytearray, s: str, length: int):
     data.extend(bytes(length - len(b)))
 
 
-def _write_envelope(env: ItEnvelope | None) -> bytes:
-    """Write envelope data (82 bytes)."""
+def _write_envelope(env: ItEnvelope | None, extra_reserved: int = 0) -> bytes:
+    """
+    Write envelope data (82 bytes for vol/pan, 83 bytes for pitch).
+
+    Args:
+        env: Envelope data or None
+        extra_reserved: Extra reserved bytes (1 for pitch envelope)
+    """
     data = bytearray()
 
     if env is None:
@@ -63,7 +69,9 @@ def _write_envelope(env: ItEnvelope | None) -> bytes:
         else:
             data.extend(bytes(3))
 
-    data.append(0)  # Reserved
+    data.append(0)  # Reserved byte 1
+    for _ in range(extra_reserved):
+        data.append(0)  # Extra reserved bytes
 
     return bytes(data)
 
@@ -74,12 +82,13 @@ def _pack_pattern(pattern: ItPattern, num_channels: int) -> bytes:
 
     prev_note = [0] * 64
     prev_instrument = [0] * 64
-    prev_volume = [0] * 64
+    prev_volume = [-1] * 64  # -1 = not set yet (so volume 0 will be written on first occurrence)
     prev_effect = [0] * 64
     prev_effect_param = [0] * 64
 
-    for row in pattern.notes:
+    for row_idx, row in enumerate(pattern.notes):
         for channel, note in enumerate(row[:num_channels]):
+            # Skip completely empty entries
             if (note.note == 0 and note.instrument == 0 and
                 note.volume == 0 and note.effect == 0 and note.effect_param == 0):
                 continue
@@ -98,11 +107,13 @@ def _pack_pattern(pattern: ItPattern, num_channels: int) -> bytes:
             elif note.instrument != 0:
                 mask |= 0x20
 
-            if note.volume != 0 and note.volume != prev_volume[channel]:
+            # Only write volume if: has note/instrument, OR volume > 0, OR explicit volume change
+            has_note_data = note.note != 0 or note.instrument != 0
+            if note.volume != prev_volume[channel] and (has_note_data or note.volume > 0):
                 mask |= 0x04
                 prev_volume[channel] = note.volume
-            elif note.volume != 0:
-                mask |= 0x40
+            elif note.volume != 0 and note.volume == prev_volume[channel]:
+                mask |= 0x40  # Use previous volume (non-zero)
 
             if ((note.effect != 0 or note.effect_param != 0) and
                 (note.effect != prev_effect[channel] or note.effect_param != prev_effect_param[channel])):
@@ -115,7 +126,7 @@ def _pack_pattern(pattern: ItPattern, num_channels: int) -> bytes:
             if mask == 0:
                 continue
 
-            data.append(channel | 0x80)
+            data.append((channel + 1) | 0x80)
             data.append(mask)
 
             if mask & 0x01:
@@ -168,7 +179,7 @@ def write_it(module: ItModule, filename: str) -> None:
 
     # Instruments
     instruments_start = offset_table_start + offset_table_size + message_size
-    instrument_size = 550
+    instrument_size = 551  # 64 header + 240 note-table + 82 vol + 82 pan + 83 pitch
     instrument_offsets = [instruments_start + i * instrument_size for i in range(num_instruments)]
 
     # Samples
@@ -255,25 +266,25 @@ def write_it(module: ItModule, filename: str) -> None:
         idata.append(dfp)
         idata.append(instr.random_volume)
         idata.append(instr.random_pan)
-        idata.extend(bytes(4))  # TrkVers/NoS
+        idata.extend(bytes(4))  # TrkVers/NoS (includes reserved byte at 0x1F)
         _write_string(idata, instr.name, 26)
         ifc = (instr.filter_cutoff | 0x80) if instr.filter_cutoff is not None else 0
         ifr = (instr.filter_resonance | 0x80) if instr.filter_resonance is not None else 0
-        idata.append(ifc)
-        idata.append(ifr)
-        idata.append(instr.midi_channel)
-        idata.append(instr.midi_program)
-        idata.extend(struct.pack('<H', instr.midi_bank))
+        idata.append(ifc)  # IFC is 1 byte
+        idata.append(ifr)  # IFR is 1 byte
+        idata.append(instr.midi_channel)  # MCh is 1 byte
+        idata.append(instr.midi_program)  # MPr is 1 byte
+        idata.extend(struct.pack('<H', instr.midi_bank))  # MIDIBnk is 2 bytes
 
         # Note-sample table
         for note, sample in instr.note_sample_table:
             idata.append(note)
             idata.append(sample)
 
-        # Envelopes
+        # Envelopes (vol=82 bytes, pan=82 bytes, pitch=83 bytes)
         idata.extend(_write_envelope(instr.volume_envelope))
         idata.extend(_write_envelope(instr.panning_envelope))
-        idata.extend(_write_envelope(instr.pitch_envelope))
+        idata.extend(_write_envelope(instr.pitch_envelope, extra_reserved=1))
 
         data.extend(idata)
 

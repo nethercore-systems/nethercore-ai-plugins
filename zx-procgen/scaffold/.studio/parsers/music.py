@@ -28,6 +28,12 @@ import numpy as np
 from pathlib import Path
 from typing import Dict, List, Any, Optional, Tuple, Union
 
+# Import writer modules
+from . import xm_writer
+from . import it_writer
+from . import xm_types
+from . import it_types
+
 
 # =============================================================================
 # CONSTANTS
@@ -84,6 +90,11 @@ IT_EFFECT_MAP = {
 # =============================================================================
 # SPEC LOADING
 # =============================================================================
+
+def load_spec(spec_path: str) -> Dict[str, Any]:
+    """Wrapper for API consistency with other parsers."""
+    return load_song_spec(spec_path)
+
 
 def load_song_spec(spec_path: str) -> Dict[str, Any]:
     """Load SONG spec from .spec.py file via exec()."""
@@ -153,25 +164,25 @@ def load_wav(wav_path: str) -> Tuple[bytes, int]:
 
 
 def generate_instrument_from_inline(inst_spec: Dict[str, Any]) -> np.ndarray:
-    """Generate instrument from inline synthesis spec."""
-    # Import sound_parser functions (assumes it's available)
+    """Generate instrument from inline synthesis spec.
+
+    Uses the base_note from the spec to generate the instrument at the correct pitch.
+    The XM/IT pitch correction will account for both sample rate and synthesis pitch.
+    """
+    # Import sound functions (assumes it's available)
     try:
-        from sound_parser import generate_instrument
+        from . import sound
+        # Use the original base_note from spec (don't override!)
         wrapped = {'instrument': inst_spec}
-        return generate_instrument(wrapped)
-    except ImportError:
-        # Fallback: generate a simple sine wave
-        freq = 440.0
+        return sound.generate_instrument(wrapped)
+    except ImportError as e:
+        # Fallback: generate a simple sine wave at specified base_note
+        print(f"Warning: sound module not available, using fallback sine wave for {inst_spec.get('name', 'unknown')}")
         base_note = inst_spec.get('base_note', 'C4')
-
-        # Parse note to frequency
-        note_map = {'C': 0, 'D': 2, 'E': 4, 'F': 5, 'G': 7, 'A': 9, 'B': 11}
-        if isinstance(base_note, str) and len(base_note) >= 2:
-            semitone = note_map.get(base_note[0].upper(), 0)
-            octave = int(base_note[-1])
-            midi = 12 + octave * 12 + semitone
-            freq = 440.0 * (2 ** ((midi - 69) / 12))
-
+        # Parse base_note to frequency (simplified)
+        note_map = {'C': 261.63, 'D': 293.66, 'E': 329.63, 'F': 349.23,
+                    'G': 392.00, 'A': 440.00, 'B': 493.88}
+        freq = note_map.get(base_note[0], 261.63)
         duration = inst_spec.get('output', {}).get('duration', 1.0)
         t = np.linspace(0, duration, int(SAMPLE_RATE * duration))
         return np.sin(2 * np.pi * freq * t).astype(np.float32)
@@ -179,13 +190,21 @@ def generate_instrument_from_inline(inst_spec: Dict[str, Any]) -> np.ndarray:
 
 def load_instruments(
     spec: Dict[str, Any],
-    spec_dir: str
-) -> Tuple[List[bytes], List[str], List[int]]:
+    spec_dir: str,
+    reference_note: str = 'C4'
+) -> Tuple[List[bytes], List[str], List[int], List[str]]:
     """
     Load all instruments from spec.
 
+    Args:
+        spec: Song specification dict
+        spec_dir: Directory containing spec file (for resolving relative paths)
+        reference_note: Reference note for format ('C4' for XM, 'C5' for IT) -
+                       only used as default for WAV files without base_note
+
     Returns:
-        Tuple of (sample_data_list, instrument_names, sample_rates)
+        Tuple of (sample_data_list, instrument_names, sample_rates, base_notes)
+        - base_notes: The pitch each sample was synthesized/recorded at
     """
     song = spec.get('song', spec)
     instruments = song.get('instruments', [])
@@ -193,49 +212,56 @@ def load_instruments(
     sample_data = []
     names = []
     rates = []
+    base_notes = []  # Track the pitch of each sample
 
     for inst_spec in instruments:
         if isinstance(inst_spec, dict):
             if 'ref' in inst_spec:
-                # External reference
+                # External reference - use its base_note
                 ref_path = inst_spec['ref']
                 try:
-                    from sound_parser import load_spec, generate_instrument
-                    external_spec = load_spec(ref_path)
-                    signal = generate_instrument(external_spec)
+                    from . import sound
+                    external_spec = sound.load_spec(ref_path)
+                    signal = sound.generate_instrument(external_spec)
                     samples = np.clip(signal * 32767, -32768, 32767).astype(np.int16)
                     data = samples.tobytes()
                     name = external_spec.get('instrument', {}).get('name', 'instrument')
                     rate = external_spec.get('instrument', {}).get('sample_rate', SAMPLE_RATE)
+                    base_note = external_spec.get('instrument', {}).get('base_note', reference_note)
                 except ImportError:
-                    print(f"Warning: sound_parser not available, using fallback for {ref_path}")
-                    signal = generate_instrument_from_inline({'base_note': 'C4'})
+                    print(f"Warning: sound not available, using fallback for {ref_path}")
+                    signal = generate_instrument_from_inline({'base_note': reference_note})
                     samples = np.clip(signal * 32767, -32768, 32767).astype(np.int16)
                     data = samples.tobytes()
                     name = Path(ref_path).stem
                     rate = SAMPLE_RATE
+                    base_note = reference_note
 
             elif 'wav' in inst_spec:
-                # Pre-recorded WAV
+                # Pre-recorded WAV - respect original pitch!
                 wav_path = inst_spec['wav']
                 data, rate = load_wav(wav_path)
                 name = inst_spec.get('name', Path(wav_path).stem)
+                # For WAV files, user MUST specify base_note if it's not at reference pitch
+                base_note = inst_spec.get('base_note', reference_note)
 
             else:
-                # Inline synthesis
+                # Inline synthesis - use spec's base_note!
                 signal = generate_instrument_from_inline(inst_spec)
                 samples = np.clip(signal * 32767, -32768, 32767).astype(np.int16)
                 data = samples.tobytes()
                 name = inst_spec.get('name', 'inline')
                 rate = inst_spec.get('sample_rate', SAMPLE_RATE)
+                base_note = inst_spec.get('base_note', reference_note)
         else:
             raise ValueError(f"Invalid instrument spec: {inst_spec}")
 
         sample_data.append(data)
         names.append(name)
         rates.append(rate)
+        base_notes.append(base_note)
 
-    return sample_data, names, rates
+    return sample_data, names, rates, base_notes
 
 
 # =============================================================================
@@ -301,8 +327,9 @@ def parse_note_name_it(name: str) -> int:
     except ValueError:
         return 0
 
-    note = octave * 12 + semitone
-    return max(0, min(119, note))
+    # IT notes are 1-indexed: C-0 = 1, B-9 = 120
+    note = octave * 12 + semitone + 1
+    return max(1, min(120, note))
 
 
 # =============================================================================
@@ -314,7 +341,7 @@ def build_xm_patterns(
     num_channels: int
 ) -> Tuple[List[Any], Dict[str, int]]:
     """Build XM patterns from spec. Returns (patterns, name_to_index_map)."""
-    from xm_types import XmPattern, XmNote
+    from .xm_types import XmPattern, XmNote
 
     song = spec.get('song', spec)
     pattern_specs = song.get('patterns', {})
@@ -395,7 +422,7 @@ def build_it_patterns(
     num_channels: int
 ) -> Tuple[List[Any], Dict[str, int]]:
     """Build IT patterns from spec. Returns (patterns, name_to_index_map)."""
-    from it_types import ItPattern, ItNote
+    from .it_types import ItPattern, ItNote
 
     song = spec.get('song', spec)
     pattern_specs = song.get('patterns', {})
@@ -587,6 +614,31 @@ def apply_automation_it(
 
 
 # =============================================================================
+# PITCH HELPERS
+# =============================================================================
+
+def note_name_to_semitones(note_str: str) -> int:
+    """Convert note string like 'C4' to semitones from C0."""
+    note_map = {'C': 0, 'D': 2, 'E': 4, 'F': 5, 'G': 7, 'A': 9, 'B': 11}
+    note_str = note_str.upper()
+
+    if '#' in note_str:
+        base = note_str[0]
+        octave = int(note_str[2:])
+        semitone = note_map[base] + 1
+    elif 'B' in note_str and len(note_str) > 2:
+        base = note_str[0]
+        octave = int(note_str[2:])
+        semitone = note_map[base] - 1
+    else:
+        base = note_str[0]
+        octave = int(note_str[1:])
+        semitone = note_map[base]
+
+    return octave * 12 + semitone
+
+
+# =============================================================================
 # MODULE BUILDING
 # =============================================================================
 
@@ -596,20 +648,39 @@ def build_xm_module(
     sample_data: List[bytes],
     instrument_names: List[str],
     sample_rates: List[int],
+    base_notes: List[str],
     order_table: List[int]
 ) -> Any:
     """Build complete XmModule from components."""
-    from xm_types import XmModule, XmInstrument
+    from .xm_types import XmModule, XmInstrument, calculate_pitch_correction
+    import math
 
     song = spec.get('song', spec)
 
     # Create instruments
     instruments = []
-    for data, name, rate in zip(sample_data, instrument_names, sample_rates):
+    for data, name, rate, base_note in zip(sample_data, instrument_names, sample_rates, base_notes):
         inst = XmInstrument.for_zx(name, data)
-        # Override sample rate if different
-        if rate != 22050:
-            inst.sample_rate = rate
+
+        # Calculate pitch correction accounting for BOTH sample rate and base_note
+        # XM reference is C-4 at 8363 Hz
+
+        # Step 1: Sample rate correction
+        finetune_sr, relative_note_sr = calculate_pitch_correction(rate)
+
+        # Step 2: Base note correction (offset from C-4)
+        base_semitones = note_name_to_semitones(base_note)
+        c4_semitones = note_name_to_semitones('C4')
+        note_offset = base_semitones - c4_semitones
+
+        # Combine: relative_note accounts for both sample rate and synthesis pitch
+        # If sample is at C2 (-24 from C4) and sample rate is 22050 (+16), total is -8
+        # +1 correction: XM period formula rounds in a way that loses ~1 semitone
+        # compared to IT's exact c5_speed calculation. Adding 1 aligns the formats.
+        inst.sample_relative_note = relative_note_sr - note_offset + 1
+        inst.sample_finetune = finetune_sr
+        inst.sample_rate = 0  # Don't use auto-calculation, we've set it manually
+
         instruments.append(inst)
 
     return XmModule(
@@ -631,12 +702,13 @@ def build_it_module(
     sample_data: List[bytes],
     instrument_names: List[str],
     sample_rates: List[int],
+    base_notes: List[str],
     order_table: List[int]
 ) -> Any:
     """Build complete ItModule from components."""
-    from it_types import (
+    from .it_types import (
         ItModule, ItInstrument, ItSample,
-        NNA_CUT, FLAG_STEREO, FLAG_INSTRUMENTS, FLAG_LINEAR_SLIDES
+        NNA_CUT, NNA_FADE, FLAG_STEREO, FLAG_INSTRUMENTS, FLAG_LINEAR_SLIDES
     )
 
     song = spec.get('song', spec)
@@ -645,23 +717,56 @@ def build_it_module(
     instruments = []
     samples = []
 
-    for i, (data, name, rate) in enumerate(zip(sample_data, instrument_names, sample_rates)):
+    for i, (data, name, rate, base_note) in enumerate(zip(sample_data, instrument_names, sample_rates, base_notes)):
+        # Get instrument spec to check synthesis type
+        inst_spec = song['instruments'][i] if i < len(song.get('instruments', [])) else {}
+        synth_type = inst_spec.get('synthesis', {}).get('type', 'unknown')
+        envelope = inst_spec.get('envelope', {})
+        sustain = envelope.get('sustain', 0)
+
+        # Use NNA_FADE for sustained instruments to allow polyphony and natural decay
+        # Use NNA_CUT for percussive one-shots
+        if sustain > 0.3 and synth_type in ('subtractive', 'additive', 'karplus_strong'):
+            nna = NNA_FADE
+            fadeout = 512  # Slower fadeout for sustained instruments
+        else:
+            nna = NNA_CUT
+            fadeout = 256  # Faster fadeout for percussion
+
         # Create instrument
         inst = ItInstrument(
             name=name,
-            nna=NNA_CUT,
-            fadeout=256,
+            nna=nna,
+            fadeout=fadeout,
             note_sample_table=[(n, i + 1) for n in range(120)]
         )
         instruments.append(inst)
 
-        # Create sample
+        # Calculate c5_speed accounting for base_note
+        # IT reference is C-5 (one octave above XM's C-4)
+        # c5_speed is "samples per second at C-5"
+
+        # If sample is synthesized at C5, c5_speed = sample_rate
+        # If sample is at different pitch, adjust c5_speed proportionally
+
+        base_semitones = note_name_to_semitones(base_note)
+        c5_semitones = note_name_to_semitones('C5')
+        note_offset = base_semitones - c5_semitones
+
+        # Adjust c5_speed: if sample is lower than C5, c5_speed should be higher
+        # (play faster to reach C5 pitch)
+        # Example: C4 sample (12 semitones below C5) needs c5_speed = rate * 2
+        c5_speed = int(rate * (2 ** (-note_offset / 12)))
+
+        length_in_samples = len(data) // 2  # 16-bit samples
+
+        # Create sample with standard IT volumes
         sample = ItSample(
             name=name,
-            global_volume=64,
+            global_volume=64,  # Standard IT sample volume
             default_volume=64,
-            c5_speed=rate,
-            length=len(data) // 2  # 16-bit samples
+            c5_speed=c5_speed,
+            length=length_in_samples
         )
         samples.append(sample)
 
@@ -670,11 +775,15 @@ def build_it_module(
     if it_opts.get('stereo', True):
         flags |= FLAG_STEREO
 
+    # IT and XM use identical timing model: tempo = BPM directly
+    speed = song.get('speed', 6)
+    bpm = song.get('bpm', 125)
+
     return ItModule(
         name=song.get('title', song.get('name', 'Untitled')),
         num_channels=song.get('channels', 8),
-        default_speed=song.get('speed', 6),
-        default_bpm=song.get('bpm', 125),
+        default_speed=speed,
+        default_bpm=bpm,
         global_volume=it_opts.get('global_volume', 128),
         mix_volume=it_opts.get('mix_volume', 48),
         flags=flags,
@@ -689,6 +798,25 @@ def build_it_module(
 # =============================================================================
 # MAIN
 # =============================================================================
+
+def generate_song(spec: Dict[str, Any], output_path: str) -> None:
+    """Wrapper for API consistency - reuses parse_song logic."""
+    # For simplicity, write spec to a temp file and call parse_song
+    # Or directly inline the logic from parse_song
+    import tempfile
+    import json
+
+    # Write spec to temporary file
+    with tempfile.NamedTemporaryFile(mode='w', suffix='.spec.py', delete=False) as f:
+        f.write(f"SONG = {repr(spec.get('song', spec))}\n")
+        temp_path = f.name
+
+    try:
+        parse_song(temp_path, output_path)
+    finally:
+        import os
+        os.unlink(temp_path)
+
 
 def parse_song(spec_path: str, output_path: str) -> None:
     """Parse song spec and generate XM/IT module."""
@@ -712,9 +840,13 @@ def parse_song(spec_path: str, output_path: str) -> None:
 
     num_channels = song.get('channels', 8)
 
+    # Determine reference note based on format
+    # XM uses C-4 as reference, IT uses C-5 as reference
+    reference_note = 'C5' if fmt == 'it' else 'C4'
+
     # Load instruments
     print("Loading instruments...")
-    sample_data, instrument_names, sample_rates = load_instruments(spec, spec_dir)
+    sample_data, instrument_names, sample_rates, base_notes = load_instruments(spec, spec_dir, reference_note)
     print(f"  Loaded {len(sample_data)} instruments")
 
     # Build patterns
@@ -750,15 +882,15 @@ def parse_song(spec_path: str, output_path: str) -> None:
     Path(output_path).parent.mkdir(parents=True, exist_ok=True)
 
     if fmt == 'xm':
-        from xm_writer import write_xm
+        from .xm_writer import write_xm
         module = build_xm_module(
-            spec, patterns, sample_data, instrument_names, sample_rates, order_table
+            spec, patterns, sample_data, instrument_names, sample_rates, base_notes, order_table
         )
         write_xm(module, output_path)
     else:
-        from it_writer import write_it
+        from .it_writer import write_it
         module = build_it_module(
-            spec, patterns, sample_data, instrument_names, sample_rates, order_table
+            spec, patterns, sample_data, instrument_names, sample_rates, base_notes, order_table
         )
         write_it(module, output_path)
 

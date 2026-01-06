@@ -340,8 +340,9 @@ def height_to_normal(height_map: np.ndarray, strength: float = 1.0) -> np.ndarra
 
     # Compute normal vectors
     # In tangent space: X = right, Y = up, Z = out
-    nx = -gx
-    ny = -gy
+    # Image coords: Y-down, Normal coords: Y-up → negate gy
+    nx = gx    # Positive X gradient → normal points right
+    ny = -gy   # Negate Y because image Y-axis is flipped (Y-down vs Y-up)
     nz = np.ones_like(gx)
 
     # Normalize
@@ -455,7 +456,7 @@ def generate_normal(spec: Dict[str, Any]) -> np.ndarray:
     processing = normal.get('processing', {})
     strength = processing.get('strength', 1.0)
     blur = processing.get('blur', 0.0)
-    invert = processing.get('invert', False)
+    invert = processing.get('invert', True)  # Default True for correct appearance
 
     # Generate height map based on method
     method = normal.get('method', 'from_pattern')
