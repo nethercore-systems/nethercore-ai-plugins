@@ -160,22 +160,32 @@ let music = rom_tracker(b"boss_theme", 10);
 music_play(music, 0.8, 1);
 ```
 
+## Parser Location
+
+The XM writer is part of the unified `.studio/` infrastructure.
+
+**Source:** `zx-procgen/scaffold/.studio/parsers/`
+- `xm_writer.py` - XM file writing
+- `xm_types.py` - XM data structures
+
+**Setup:** Run `/init-procgen` or `/init-tracker-music` to download parsers.
+
 ## Project Structure
 
 ```
 project/
-├── generation/lib/
-│   ├── xm_writer.py     # Copy from tracker-music/skills/xm-format/scripts/
-│   └── xm_types.py      # Copy from tracker-music/skills/xm-format/scripts/
-├── generation/tracks/
-│   └── song_name.py     # Your generator script
-└── generated/tracks/
+├── .studio/parsers/
+│   ├── xm_writer.py     # Downloaded via /init-procgen
+│   └── xm_types.py
+├── .studio/specs/music/
+│   └── song_name.spec.py
+└── generated/music/
     └── song_name.xm     # Output (gitignored)
 ```
 
 ## API Reference Files
 
-- **`scripts/xm_types.py`** - API surface (~250 lines, READ THIS)
-- **`scripts/xm_writer.py`** - Binary packing (just import, don't read)
+- **`.studio/parsers/xm_types.py`** - API surface (~250 lines, READ THIS)
+- **`.studio/parsers/xm_writer.py`** - Binary packing (just import, don't read)
 - **`references/xm-effects.md`** - Complete effect reference
 - **`references/xm-format-spec.md`** - Binary format specification

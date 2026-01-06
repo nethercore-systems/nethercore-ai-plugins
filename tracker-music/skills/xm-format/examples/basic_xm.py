@@ -5,6 +5,10 @@ Basic XM Generation Example
 Generates a simple 4-channel drum loop with embedded samples.
 This is the DEFAULT workflow - always generate samples!
 
+Prerequisites:
+    Run /init-procgen or /init-tracker-music to set up .studio/parsers/
+    Then copy this example to your project root to run it.
+
 Usage:
     python basic_xm.py
 
@@ -26,8 +30,10 @@ import sys
 import math
 from pathlib import Path
 
-# Add scripts directory to path for import
-sys.path.insert(0, str(Path(__file__).parent.parent / "scripts"))
+# Add .studio/parsers to path (set up via /init-procgen or /init-tracker-music)
+parsers_path = Path(".studio/parsers")
+if parsers_path.exists():
+    sys.path.insert(0, str(parsers_path))
 
 from xm_writer import (
     XmModule, XmPattern, XmNote, XmInstrument,

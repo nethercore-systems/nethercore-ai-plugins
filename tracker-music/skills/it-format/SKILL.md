@@ -164,16 +164,26 @@ from it_writer import validate_it
 validate_it("output.it")
 ```
 
+## Parser Location
+
+The IT writer is part of the unified `.studio/` infrastructure.
+
+**Source:** `zx-procgen/scaffold/.studio/parsers/`
+- `it_writer.py` - IT file writing
+- `it_types.py` - IT data structures
+
+**Setup:** Run `/init-procgen` or `/init-tracker-music` to download parsers.
+
 ## Project Structure
 
 ```
 project/
-├── generation/lib/
-│   ├── it_writer.py     # Copy from tracker-music/skills/it-format/scripts/
-│   └── it_types.py      # Copy from tracker-music/skills/it-format/scripts/
-├── generation/tracks/
-│   └── song_name.py
-└── generated/tracks/
+├── .studio/parsers/
+│   ├── it_writer.py     # Downloaded via /init-procgen
+│   └── it_types.py
+├── .studio/specs/music/
+│   └── song_name.spec.py
+└── generated/music/
     └── song_name.it     # Output (gitignored)
 ```
 
@@ -191,8 +201,8 @@ project/
 
 ## API Reference Files
 
-- **`scripts/it_types.py`** - API surface (~280 lines, READ THIS)
-- **`scripts/it_writer.py`** - Binary packing (just import)
+- **`.studio/parsers/it_types.py`** - API surface (~280 lines, READ THIS)
+- **`.studio/parsers/it_writer.py`** - Binary packing (just import)
 - **`references/it-effects.md`** - Complete effect reference
 - **`references/workflow-guide.md`** - NNA, envelopes, filters, examples
 - **`references/it-format-spec.md`** - Binary format specification

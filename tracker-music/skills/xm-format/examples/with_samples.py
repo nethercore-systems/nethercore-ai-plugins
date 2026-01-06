@@ -7,6 +7,10 @@ Includes simple waveform generators (sine, square, sawtooth) for demonstration.
 
 For complex synthesis (FM, Karplus-Strong, subtractive), use the procedural-sounds skill!
 
+Prerequisites:
+    Run /init-procgen or /init-tracker-music to set up .studio/parsers/
+    Then copy this example to your project root to run it.
+
 Usage:
     python with_samples.py
 
@@ -28,8 +32,10 @@ import sys
 import math
 from pathlib import Path
 
-# Add scripts directory to path for import
-sys.path.insert(0, str(Path(__file__).parent.parent / "scripts"))
+# Add .studio/parsers to path (set up via /init-procgen or /init-tracker-music)
+parsers_path = Path(".studio/parsers")
+if parsers_path.exists():
+    sys.path.insert(0, str(parsers_path))
 
 from xm_writer import (
     XmModule, XmPattern, XmNote, XmInstrument,

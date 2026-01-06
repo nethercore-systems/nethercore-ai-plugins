@@ -203,17 +203,19 @@ IT format provides NNA polyphony, pitch envelopes, and filters not available in 
 
 ## Parser Location
 
-The parser requires XM/IT writers. Copy to project:
+All parsers are part of the unified `.studio/` infrastructure.
+
+**Source:** `zx-procgen/scaffold/.studio/parsers/`
+- `music.py` - Song spec parser (SONG dict → XM/IT file)
+- `xm_writer.py`, `xm_types.py` - XM format
+- `it_writer.py`, `it_types.py` - IT format
+- `sound.py` - Instrument synthesis
+
+**Setup:** Run `/init-procgen` or `/init-tracker-music` to download parsers.
 
 ```bash
-# Copy from plugin to project
-cp tracker-music/skills/song-format/scripts/song_parser.py generation/lib/
-cp tracker-music/skills/xm-format/scripts/xm_*.py generation/lib/
-cp tracker-music/skills/it-format/scripts/it_*.py generation/lib/
-cp zx-procgen/skills/procedural-sounds/references/sound_parser.py generation/lib/
+python .studio/generate.py --only music
 ```
-
-Or use the `/init-tracker-music` command.
 
 ## File Organization
 
