@@ -19,8 +19,7 @@ NORMAL = {
 
         "processing": {
             "blur": 0.5,       # Slight blur for smoother normals
-            "strength": 1.2,   # Normal intensity (>1 = more pronounced)
-            "invert": False
+            "strength": 1.2    # Normal intensity (>1 = more pronounced)
         },
 
         "output": {

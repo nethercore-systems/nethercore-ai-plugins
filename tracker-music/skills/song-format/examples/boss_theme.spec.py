@@ -60,17 +60,21 @@ SONG = {
                 "base_note": "C1",
                 "output": {"duration": 1.0}
             },
-            # Lead - bright saw
+            # Lead - aggressive detuned saw with character
             {
                 "name": "lead",
                 "synthesis": {
                     "type": "subtractive",
-                    "oscillators": [{"waveform": "saw"}],
-                    "filter": {"type": "lowpass", "cutoff": 4000}
+                    "oscillators": [
+                        {"waveform": "saw", "detune": 0},
+                        {"waveform": "saw", "detune": -8},
+                        {"waveform": "square", "detune": 5, "duty": 0.3}
+                    ],
+                    "filter": {"type": "lowpass", "cutoff": 3500}
                 },
-                "envelope": {"attack": 0.01, "decay": 0.1, "sustain": 0.7, "release": 0.2},
+                "envelope": {"attack": 0.015, "decay": 0.2, "sustain": 0.65, "release": 0.15},
                 "base_note": "C4",
-                "output": {"duration": 0.8}
+                "output": {"duration": 1.2}
             },
             # Pad - dark atmosphere
             {
@@ -144,14 +148,21 @@ SONG = {
                         {"row": 44, "note": "E-1", "inst": 3, "vol": 48},
                         {"row": 48, "note": "D-1", "inst": 3, "vol": 64}
                     ],
-                    4: [  # Lead - aggressive stabs
-                        {"row": 0, "note": "D-4", "inst": 4, "vol": 56},
-                        {"row": 6, "note": "===", "inst": 4},
-                        {"row": 16, "note": "F-4", "inst": 4, "vol": 56},
-                        {"row": 22, "note": "===", "inst": 4},
+                    4: [  # Lead - menacing riff
+                        {"row": 0, "note": "D-4", "inst": 4, "vol": 58},
+                        {"row": 8, "note": "F-4", "inst": 4, "vol": 60},
+                        {"row": 14, "note": "E-4", "inst": 4, "vol": 56},
+                        {"row": 16, "note": "D-4", "inst": 4, "vol": 62},
+                        {"row": 24, "note": "C-4", "inst": 4, "vol": 58},
                         {"row": 32, "note": "A-4", "inst": 4, "vol": 64},
-                        {"row": 40, "note": "G-4", "inst": 4, "vol": 56},
-                        {"row": 48, "note": "F-4", "inst": 4, "vol": 64}
+                        {"row": 36, "note": "G-4", "inst": 4, "vol": 58},
+                        {"row": 40, "note": "F-4", "inst": 4, "vol": 60},
+                        {"row": 44, "note": "E-4", "inst": 4, "vol": 56},
+                        {"row": 48, "note": "D-4", "inst": 4, "vol": 64},
+                        {"row": 56, "note": "C#4", "inst": 4, "vol": 60}
+                    ],
+                    5: [  # Pad - dark atmosphere
+                        {"row": 0, "note": "D-2", "inst": 5, "vol": 32}
                     ]
                 }
             },

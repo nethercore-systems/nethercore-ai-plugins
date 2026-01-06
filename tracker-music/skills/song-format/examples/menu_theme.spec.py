@@ -73,22 +73,22 @@ SONG = {
                 "base_note": "C2",
                 "output": {"duration": 1.5}
             },
-            # Light percussion - soft click
+            # Light percussion - soft click (boosted for clarity)
             {
                 "name": "perc",
                 "synthesis": {
                     "type": "fm",
-                    "index": 2.0,
-                    "index_decay": 40.0
+                    "index": 3.5,
+                    "index_decay": 35.0
                 },
                 "envelope": {
                     "attack": 0.001,
-                    "decay": 0.08,
+                    "decay": 0.12,
                     "sustain": 0,
-                    "release": 0.02
+                    "release": 0.03
                 },
                 "base_note": "C5",
-                "output": {"duration": 0.15}
+                "output": {"duration": 0.2}
             }
         ],
 
@@ -132,11 +132,11 @@ SONG = {
                         {"row": 0, "note": "C-2", "inst": 2, "vol": 48},
                         {"row": 32, "note": "G-1", "inst": 2, "vol": 44}
                     ],
-                    3: [  # Light percussion
-                        {"row": 0, "note": "C-5", "inst": 3, "vol": 24},
-                        {"row": 16, "note": "C-5", "inst": 3, "vol": 20},
-                        {"row": 32, "note": "C-5", "inst": 3, "vol": 24},
-                        {"row": 48, "note": "C-5", "inst": 3, "vol": 20}
+                    3: [  # Light percussion (boosted volumes)
+                        {"row": 0, "note": "C-5", "inst": 3, "vol": 40},
+                        {"row": 16, "note": "C-5", "inst": 3, "vol": 32},
+                        {"row": 32, "note": "C-5", "inst": 3, "vol": 40},
+                        {"row": 48, "note": "C-5", "inst": 3, "vol": 32}
                     ]
                 }
             },

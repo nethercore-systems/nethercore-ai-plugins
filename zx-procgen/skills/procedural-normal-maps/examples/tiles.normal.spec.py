@@ -18,8 +18,7 @@ NORMAL = {
 
         "processing": {
             "blur": 0.3,       # Minimal blur
-            "strength": 1.0,   # Standard strength
-            "invert": False
+            "strength": 1.0    # Standard strength
         },
 
         "output": {
