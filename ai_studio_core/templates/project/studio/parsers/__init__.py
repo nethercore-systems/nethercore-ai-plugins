@@ -1,5 +1,5 @@
 """
-Nethercore ZX Asset Parsers
+AI Studio Asset Parsers
 
 This module contains all parsers for the spec-driven asset pipeline.
 Each parser reads .spec.py files and generates corresponding assets.

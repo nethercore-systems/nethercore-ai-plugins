@@ -38,7 +38,7 @@ from . import it_types
 # CONSTANTS
 # =============================================================================
 
-SAMPLE_RATE = 22050  # ZX standard sample rate
+SAMPLE_RATE = 22050  # default sample rate (project may override)
 
 # Effect name to XM effect code mapping
 XM_EFFECT_MAP = {

@@ -30,7 +30,7 @@ import math
 # XM reference frequency (C-4 in XM)
 XM_BASE_FREQ = 8363  # Hz
 
-# Nethercore ZX standard sample rate
+# Default sample rate used by this scaffold (project may override)
 ZX_SAMPLE_RATE = 22050  # Hz
 
 # Note values
@@ -82,7 +82,7 @@ def calculate_pitch_correction(sample_rate: int) -> Tuple[int, int]:
         Tuple of (finetune, relative_note)
 
     Examples:
-        >>> calculate_pitch_correction(22050)  # ZX standard
+        >>> calculate_pitch_correction(22050)
         (101, 16)
         >>> calculate_pitch_correction(8363)   # XM native
         (0, 0)
@@ -214,7 +214,7 @@ class XmInstrument:
 
     ## Quick Start
 
-    For ZX (22050 Hz) samples, use the convenience constructor:
+    For 22050 Hz samples, use the convenience constructor:
     ```python
     kick = XmInstrument.for_zx("kick", kick_pcm_bytes)
     ```
@@ -257,7 +257,7 @@ class XmInstrument:
     @staticmethod
     def for_zx(name: str, sample_data: Optional[bytes] = None, **kwargs) -> "XmInstrument":
         """
-        Create an instrument configured for ZX 22050 Hz samples.
+        Create an instrument configured for 22050 Hz samples.
 
         Args:
             name: Instrument name (becomes ROM sample ID)

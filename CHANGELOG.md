@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add deterministic 3D preview + artifact validation via headless Blender (hardsurface + lowpoly only).
 - Add `ai-studio lint-repo` for repo integrity checks.
 - Add `ai-studio init` and a legacy `.studio` wrapper for `ai-studio generate`.
+- Add `ai_studio.toml` project configuration defaults and engine adapter modules.
 
 ## [0.1.0] - 2026-01-08
 

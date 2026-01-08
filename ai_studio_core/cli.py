@@ -166,7 +166,10 @@ def cmd_validate(args: argparse.Namespace) -> int:
         print(str(e), file=sys.stderr)
         return 1
 
-    out_root = Path(args.out) if args.out else Path("generated")
+    from .config import load_config
+
+    cfg = load_config(Path(".").resolve())
+    out_root = Path(args.out) if args.out else Path(cfg.paths_output_root)
     report_path = out_root / "reports" / f"{spec.asset_id}.report.json"
 
     report = _base_report(spec=spec, spec_path=Path(args.spec))
@@ -233,7 +236,10 @@ def cmd_preview(args: argparse.Namespace) -> int:
         print(f"error: preview currently supports only 3D specs (got {asset_type})", file=sys.stderr)
         return 2
 
-    out_root = Path(args.out) if args.out else Path("generated")
+    from .config import load_config
+
+    cfg = load_config(Path(".").resolve())
+    out_root = Path(args.out) if args.out else Path(cfg.paths_output_root)
     report_path = out_root / "reports" / f"{spec.asset_id}.report.json"
 
     report = _base_report(spec=spec, spec_path=Path(args.spec))

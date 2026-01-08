@@ -2898,7 +2898,7 @@ def export_glb(output_path):
         export_animations=True,
         export_animation_mode='ACTIONS',
         export_skins=True,
-        export_all_influences=False,  # Max 4 bones per vertex for ZX
+        export_all_influences=False,  # Max 4 bones per vertex (engine-friendly default)
     )
     print(f"Exported to {output_path}")
 

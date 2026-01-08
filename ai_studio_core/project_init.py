@@ -22,21 +22,43 @@ _CATEGORIES = [
 
 def _write_core_version_config(project_root: Path) -> None:
     cfg = project_root / "ai_studio.toml"
-    line = f'core_version = "{__version__}"\n'
+    template = f"""# ai-studio project configuration
+core_version = "{__version__}"
+
+[engine]
+# One or more of: "godot", "unity", "unreal"
+default_targets = ["godot"]
+
+[export]
+# Preferred formats (validation tools may enforce these per asset type)
+model_3d = "glb"
+texture_2d = "png"
+audio_sfx = "wav"  # or "ogg"
+music = "xm"       # or "it"
+
+[conventions]
+units = "meters"
+up_axis = "Y"
+forward_axis = "-Z"
+scale = 1.0
+
+[paths]
+output_root = "generated"
+studio_root = ".studio"
+"""
+
+    line = f'core_version = "{__version__}"'
     if not cfg.exists():
-        cfg.write_text(
-            "# ai-studio project configuration\n" + line,
-            encoding="utf-8",
-        )
+        cfg.write_text(template, encoding="utf-8")
         return
 
     text = cfg.read_text(encoding="utf-8")
     if re.search(r'^\s*core_version\s*=\s*".*"\s*$', text, flags=re.MULTILINE):
-        text = re.sub(r'^\s*core_version\s*=\s*".*"\s*$', line.strip(), text, flags=re.MULTILINE) + "\n"
+        text = re.sub(r'^\s*core_version\s*=\s*".*"\s*$', line, text, flags=re.MULTILINE).rstrip() + "\n"
         cfg.write_text(text, encoding="utf-8")
         return
 
-    cfg.write_text(text.rstrip() + "\n\n" + line, encoding="utf-8")
+    cfg.write_text(text.rstrip() + "\n\n" + line + "\n", encoding="utf-8")
 
 
 def _ensure_generated_gitignore(generated_root: Path) -> None:
@@ -89,4 +111,3 @@ def init_project(project_root: Path) -> None:
     _ensure_generated_gitignore(generated)
 
     _write_core_version_config(project_root)
-

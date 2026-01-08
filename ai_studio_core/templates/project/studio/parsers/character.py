@@ -690,7 +690,7 @@ def merge_and_skin(parts_with_specs, armature, spec=None):
         bpy.context.view_layer.objects.active = armature
         bpy.ops.object.parent_set(type='ARMATURE_AUTO')
 
-        # Limit bone influences to 4 (ZX requirement)
+        # Limit bone influences to 4 (engine-friendly default)
         bpy.context.view_layer.objects.active = merged
         bpy.ops.object.vertex_group_limit_total(limit=4)
 

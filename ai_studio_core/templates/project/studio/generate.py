@@ -467,7 +467,7 @@ def _argv_for_argparse() -> List[str]:
 
 def main() -> None:
     parser = argparse.ArgumentParser(
-        description="Unified asset generator for Nethercore ZX",
+        description="Unified asset generator (legacy .studio scaffold)",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
@@ -509,7 +509,7 @@ Examples:
     args = parser.parse_args(_argv_for_argparse())
 
     print("=" * 50)
-    print("  Nethercore ZX - Unified Asset Generator")
+    print("  AI Studio - Unified Asset Generator")
     print("=" * 50)
     print(f"Specs:  {SPEC_ROOT}")
     print(f"Output: {OUTPUT_ROOT}")

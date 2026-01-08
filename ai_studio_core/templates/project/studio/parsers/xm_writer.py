@@ -216,7 +216,7 @@ def write_xm(module: XmModule, output_path: str) -> None:
     output.extend(name_bytes.ljust(20, b"\x00"))
 
     output.append(0x1A)
-    output.extend(b"Nethercore XM Writer".ljust(20, b"\x00"))
+    output.extend(b"AI Studio XM Writer".ljust(20, b"\x00"))
 
     output.extend(struct.pack("<H", XM_VERSION))
     output.extend(struct.pack("<I", 276))
