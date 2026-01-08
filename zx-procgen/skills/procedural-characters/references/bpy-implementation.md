@@ -1,21 +1,19 @@
 # Blender bpy Implementation
 
-Complete Python implementation for generating characters from `.spec.py` files.
+Python implementation for generating characters from `.spec.py` files.
+
+**Coordinate System:** See `references/canonical-coordinates.md`
 
 ## Prerequisites
 
 ```bash
 blender --version  # Requires Blender 3.0+
-```
-
-Run scripts via headless Blender:
-```bash
 blender --background --python generate_character.py
 ```
 
----
-
 ## Complete Implementation
+
+**NOTE:** Use `/init-procgen` to copy the canonical parser to your project.
 
 ```python
 import bpy
@@ -70,51 +68,76 @@ def create_armature(skeleton_spec):
 
 
 def get_bone_transform(armature, bone_name):
-    """Get transformation matrix to align mesh along bone."""
-    bone = armature.pose.bones[bone_name]
+    """Get transform matrix: +Z=bone, +Y=forward (with fallback), +X=lateral (cross axis)."""
+    bone = armature.data.bones[bone_name]
 
-    # Bone direction
-    head = armature.matrix_world @ bone.head
-    tail = armature.matrix_world @ bone.tail
-    direction = (tail - head).normalized()
+    # Bone direction in world space
+    head = armature.matrix_world @ bone.head_local
+    tail = armature.matrix_world @ bone.tail_local
+    bone_dir = (tail - head).normalized()
 
-    # Build rotation matrix (Z-up to bone direction)
-    z_axis = mathutils.Vector((0, 0, 1))
-    rotation = z_axis.rotation_difference(direction).to_matrix().to_4x4()
+    # Anatomical reference directions (world space)
+    world_forward = Vector((0, 1, 0))  # Character faces +Y
+    world_up = Vector((0, 0, 1))       # Up is +Z
+
+    # Project world_forward onto plane perpendicular to bone
+    # This becomes "forward" for this bone
+    bone_forward = world_forward - world_forward.dot(bone_dir) * bone_dir
+
+    if bone_forward.length < 0.001:
+        # Bone is parallel to world forward (rare case)
+        # Use world_up projected instead
+        bone_forward = world_up - world_up.dot(bone_dir) * bone_dir
+
+    bone_forward.normalize()
+
+    # Right completes the orthonormal basis
+    bone_right = bone_dir.cross(bone_forward).normalized()
+
+    # Build rotation matrix
+    # Columns are: where local X goes, where local Y goes, where local Z goes
+    rotation = Matrix((
+        (bone_right.x, bone_forward.x, bone_dir.x),
+        (bone_right.y, bone_forward.y, bone_dir.y),
+        (bone_right.z, bone_forward.z, bone_dir.z),
+    )).to_4x4()
 
     # Translation to bone head
-    translation = mathutils.Matrix.Translation(head)
+    translation = Matrix.Translation(head)
 
     return translation @ rotation
 
 
-def apply_bulge(vertices, center, bone_dir, bulge):
-    """Asymmetric radial push. + = front bulges, - = back bulges."""
+def apply_bulge(vertices, center, bulge):
+    """Bulge vertices: +value=forward, -value=backward. Uses fixed local axes."""
     if isinstance(bulge, (list, tuple)):
         bulge_side, bulge_fb = bulge[0], bulge[1] if len(bulge) > 1 else 0
     else:
         bulge_side, bulge_fb = 0, bulge
 
-    up = Vector((0, 0, 1))
-    if abs(bone_dir.z) > 0.9:
-        forward, right = Vector((0, 1, 0)), Vector((1, 0, 0))
-    else:
-        right = bone_dir.cross(up).normalized()
-        forward = right.cross(bone_dir).normalized()
+    # Fixed axes in mesh local space (guaranteed by get_bone_transform)
+    forward = Vector((0, 1, 0))
+    right = Vector((1, 0, 0))
 
     for v in vertices:
         radial = (v.co - center).normalized()
+
+        # Forward/back bulge
         if abs(bulge_fb) > 0.0001:
             facing = radial.dot(forward)
+            # Positive bulge = affect forward-facing verts
+            # Negative bulge = affect backward-facing verts
             alignment = max(0, facing * (1 if bulge_fb > 0 else -1))
             v.co += radial * alignment * abs(bulge_fb)
+
+        # Side bulge (symmetric - affects both left and right)
         if abs(bulge_side) > 0.0001:
             facing = abs(radial.dot(right))
             v.co += radial * facing * bulge_side
 
 
-def apply_tilt(vertices, center, bone_dir, tilt):
-    """Rotate face perpendicular to bone axis."""
+def apply_tilt(vertices, center, tilt):
+    """Tilt vertex ring: [tilt_x, tilt_y] in degrees. Uses fixed local axes."""
     if isinstance(tilt, (list, tuple)):
         tilt_x, tilt_y = tilt[0], tilt[1] if len(tilt) > 1 else 0
     else:
@@ -123,12 +146,9 @@ def apply_tilt(vertices, center, bone_dir, tilt):
     if abs(tilt_x) < 0.001 and abs(tilt_y) < 0.001:
         return
 
-    up = Vector((0, 0, 1))
-    if abs(bone_dir.z) > 0.9:
-        right_axis, forward_axis = Vector((1, 0, 0)), Vector((0, 1, 0))
-    else:
-        right_axis = bone_dir.cross(up).normalized()
-        forward_axis = right_axis.cross(bone_dir).normalized()
+    # Fixed axes in mesh local space (guaranteed by get_bone_transform)
+    right_axis = Vector((1, 0, 0))
+    forward_axis = Vector((0, 1, 0))
 
     rot = Matrix.Identity(4)
     if abs(tilt_x) > 0.001:
@@ -137,7 +157,8 @@ def apply_tilt(vertices, center, bone_dir, tilt):
         rot = Matrix.Rotation(math.radians(tilt_y), 4, forward_axis) @ rot
 
     for v in vertices:
-        v.co = center + rot @ (v.co - center)
+        local = v.co - center
+        v.co = center + (rot @ local)
 
 
 def build_body_part(spec, armature):
@@ -198,12 +219,6 @@ def build_body_part(spec, armature):
 
     bmesh.update_edit_mesh(obj.data)
 
-    # Get bone direction for bulge/tilt orientation
-    bone = armature.pose.bones[spec['bone']]
-    bone_head = armature.matrix_world @ bone.head
-    bone_tail = armature.matrix_world @ bone.tail
-    bone_dir = (bone_tail - bone_head).normalized()
-
     # Execute step sequence
     for step in spec['steps']:
         if isinstance(step, str):
@@ -236,16 +251,16 @@ def build_body_part(spec, armature):
                 orient_axis='Z'
             )
 
-        # Bulge/Tilt - requires bmesh access
+        # Bulge/Tilt
         if 'bulge' in step or 'tilt' in step:
             bm = bmesh.from_edit_mesh(obj.data)
             sel_verts = [v for v in bm.verts if v.select]
             if sel_verts:
                 center = sum((v.co for v in sel_verts), Vector()) / len(sel_verts)
                 if 'bulge' in step:
-                    apply_bulge(sel_verts, center, bone_dir, step['bulge'])
+                    apply_bulge(sel_verts, center, step['bulge'])
                 if 'tilt' in step:
-                    apply_tilt(sel_verts, center, bone_dir, step['tilt'])
+                    apply_tilt(sel_verts, center, step['tilt'])
                 bmesh.update_edit_mesh(obj.data)
 
     # Cap end if specified

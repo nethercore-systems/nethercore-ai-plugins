@@ -12,6 +12,7 @@ description: |
   - `python .studio/generate.py --only animations` → Interprets specs in Blender
 
   **Load references when:**
+  - **COORDINATE SYSTEM** → `procedural-characters → references/canonical-coordinates.md` (CRITICAL)
   - Animation spec format → `references/animation-spec-format.md`
   - Animation parser → `.studio/parsers/animation.py`
   - IK setup → `references/ik-utilities.md`
@@ -68,22 +69,33 @@ animation-describer agent → .spec.py → generate.py → .glb
 ## Animation Spec Format
 
 ```python
-# .studio/specs/animations/knight_idle.spec.py
+# .studio/specs/animations/knight_walk.spec.py
 ANIMATION = {
     "animation": {
-        "name": "knight_idle",
+        "name": "knight_walk",
         "input_armature": "assets/characters/knight.glb",
-        "duration_frames": 120,
+        "duration_frames": 60,
         "fps": 60,
         "loop": True,
-        "poses": {
-            "idle_base": {
-                "Hips": {"pitch": -3, "yaw": 0, "roll": 0},
-                "Spine": {"pitch": 2, "yaw": 0, "roll": 0},
-            },
+
+        # Declarative rig setup (IK, constraints, presets)
+        "rig_setup": {
+            "presets": {"humanoid_legs": True},  # Auto IK chains
+            "constraints": [
+                {"bone": "leg_lower_L", "type": "hinge", "axis": "X", "limits": [0, 160]},
+            ],
         },
+
+        "poses": {...},
         "phases": [
-            {"name": "neutral", "frames": [0, 59], "pose": "idle_base"},
+            {
+                "name": "step",
+                "frames": [0, 15],
+                "pose": "right_forward",
+                "ik_targets": {
+                    "ik_foot_R": [{"frame": 0, "location": [0.09, 0.25, 0]}],
+                },
+            },
         ],
     }
 }
@@ -91,15 +103,117 @@ ANIMATION = {
 
 See `references/animation-spec-format.md` for complete spec.
 
+## Declarative Rig Setup
+
+The `rig_setup` section provides professional rigging features:
+
+| Feature | Description |
+|---------|-------------|
+| `presets` | Quick setup: `humanoid_legs`, `humanoid_arms`, `spider_legs`, `quadruped_legs` |
+| `ik_chains` | Explicit IK chains for any bone count |
+| `constraints` | Intent-based: `hinge`, `ball`, `planar` |
+| `aim_constraints` | Look-at/aim for head tracking |
+
+**Presets expand to full IK chain definitions** - just enable and animate!
+
+```python
+"rig_setup": {
+    "presets": {"spider_legs": True},  # Creates 8 IK chains with poles
+    "ik_chains": [  # Or explicit chains for tails/hair
+        {"name": "tail", "bones": ["tail_1", "tail_2", "tail_3"], "target": {"name": "ik_tail"}},
+    ],
+}
+```
+
+Everything bakes to FK before export - no game engine IK needed.
+
+## IK Target Naming Convention
+
+**Standard:** `ik_{end_bone}` - named after the bone the IK controls.
+
+| Chain | IK Target | Pole Vector |
+|-------|-----------|-------------|
+| Leg | `ik_foot_L`, `ik_foot_R` | `pole_knee_L`, `pole_knee_R` |
+| Arm | `ik_hand_L`, `ik_hand_R` | `pole_elbow_L`, `pole_elbow_R` |
+| Tail | `ik_tail_tip` | (none for single-chain) |
+| Spider leg | `ik_leg_front_L`, `ik_leg_mid_front_R`, etc. | `pole_front_L`, etc. |
+
+**Presets auto-create these names** - just reference them in `ik_targets`:
+
+```python
+"ik_targets": {
+    "ik_foot_L": [{"frame": 0, "location": [-0.08, 0.2, 0]}],  # humanoid_legs preset
+    "ik_hand_R": [{"frame": 0, "location": [0.3, 0.5, 1.2]}],  # humanoid_arms preset
+}
+```
+
+**For custom chains**, use `ik_{chain_name}_tip`:
+```python
+"ik_chains": [
+    {"name": "tail", "bones": ["tail_1", "tail_2"], "target": {"name": "ik_tail_tip"}},
+]
+```
+
+See `references/preset-reference.md` for full preset bone requirements.
+
+## Validation
+
+The parser validates animation specs at multiple stages:
+
+### Bone Validation (Pre-Generation)
+- **Spec-to-spec:** Checked before Blender work (catches early)
+- **Runtime GLB:** Checked when loading armature (safety net)
+
+Missing bones cause hard errors with detailed messages:
+```
+AnimationValidationError: Spec references bones not in armature 'knight':
+
+Missing bones:
+  - arm_twist_L (referenced in: rig_setup.twist_bones[0].target)
+  - toe_L (referenced in: preset 'humanoid_legs')
+
+Available bones (14):
+  arm_lower_L, arm_lower_R, arm_upper_L, arm_upper_R, ...
+```
+
+### Motion Validation (Post-Bake)
+
+After IK is baked to FK, the parser validates hinge joint motion:
+
+1. **Calibration**: Determines flexion axis/sign from rest geometry
+2. **Frame-by-frame check**: Detects hyperextension/overflexion
+3. **Report generation**: Produces `.validation.json` alongside `.glb`
+
+```json
+{
+  "version": "2026-01-08",
+  "armature": "knight",
+  "status": "pass",
+  "hinges": {
+    "leg_lower_L": {"axis": "X", "flexion_sign": "+", "range_deg": [0, 160], "violations": []}
+  }
+}
+```
+
+**Strict mode** fails on violations:
+```bash
+blender --background --python animation.py -- spec.spec.py in.glb out.glb --strict
+```
+
+Or in spec:
+```python
+"conventions": {"version": "2026-01-08", "strict": True}
+```
+
 ## Rotation Convention
 
 | Term | Axis | Example |
 |------|------|---------|
-| pitch | X | Nodding, elbow bend |
-| yaw | Y | Twisting, turning |
-| roll | Z | Tilting, side-bend |
+| **pitch** | X | Nodding, elbow bend |
+| **yaw** | Y | Twisting, turning |
+| **roll** | Z | Tilting, side-bend |
 
-All values in degrees. Parser converts to radians.
+All values in degrees. See `procedural-characters → references/canonical-coordinates.md` for full reference.
 
 ## Object Animation (Simple)
 

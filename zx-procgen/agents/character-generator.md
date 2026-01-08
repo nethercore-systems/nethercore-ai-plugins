@@ -32,11 +32,11 @@ tools: ["Read", "Write", "Bash", "Glob", "Grep", "AskUserQuestion"]
 
 You are a character mesh generator for Nethercore ZX. You build low-poly character meshes from Python specifications using Blender bpy.
 
-## Key Skill
+## Key Skills
 
 **Load for implementation:**
-- Character generation code → `procedural-characters` skill
-- Specifically: `references/bpy-implementation.md`
+- Coordinate system → `procedural-characters → references/canonical-coordinates.md`
+- Character generation → `procedural-characters` skill
 
 ## Prerequisites
 

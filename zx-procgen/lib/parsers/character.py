@@ -19,20 +19,8 @@ Example:
         assets/characters/knight.glb
 """
 
-import bpy
-import bmesh
-import mathutils
-from mathutils import Vector, Matrix
 import math
 import sys
-
-
-# =============================================================================
-# BLENDER VERSION COMPATIBILITY
-# =============================================================================
-
-BLENDER_VERSION = bpy.app.version
-IS_BLENDER_4_PLUS = BLENDER_VERSION[0] >= 4
 
 
 # =============================================================================
@@ -59,6 +47,8 @@ def load_spec(spec_path):
 
 def clear_scene():
     """Remove all objects from scene."""
+    import bpy
+
     bpy.ops.object.select_all(action='SELECT')
     bpy.ops.object.delete()
 
@@ -69,6 +59,9 @@ def clear_scene():
 
 def create_armature(skeleton_spec):
     """Create armature from skeleton definition."""
+    import bpy
+    import mathutils
+
     bpy.ops.object.armature_add(enter_editmode=True)
     armature = bpy.context.active_object
     armature.name = "Armature"
@@ -101,25 +94,73 @@ def create_armature(skeleton_spec):
 
         bones_created[bone_def['bone']] = bone
 
+    # Fix bone roll for ALL limb bones - ensures positive pitch = flexion
+    # Pattern matches: arm_upper_L, leg_lower_R, leg_front_upper_L, etc.
+    # align_roll() sets bone Z axis toward vector; -Y = backward
+    for bone_name, bone in bones_created.items():
+        # Match any bone with _upper_ or _lower_ in the name (limb segments)
+        if '_upper_' in bone_name or '_lower_' in bone_name:
+            bone.align_roll(mathutils.Vector((0, -1, 0)))
+
     bpy.ops.object.mode_set(mode='OBJECT')
+
+    # Ensure armature is at origin
+    armature.location = (0, 0, 0)
+    armature.rotation_euler = (0, 0, 0)
+    armature.scale = (1, 1, 1)
+
     return armature
 
 
 def get_bone_transform(armature, bone_name):
-    """Get transformation matrix to align mesh along bone."""
-    bone = armature.pose.bones[bone_name]
+    """
+    Build transformation matrix with consistent anatomical orientation.
 
-    # Bone direction
-    head = armature.matrix_world @ bone.head
-    tail = armature.matrix_world @ bone.tail
-    direction = (tail - head).normalized()
+    Guarantees:
+    - Mesh +Z aligns with bone direction (extrusion axis)
+    - Mesh +Y aligns with anatomical forward (projected onto bone plane)
+    - Mesh +X aligns with anatomical right (cross product)
 
-    # Build rotation matrix (Z-up to bone direction)
-    z_axis = mathutils.Vector((0, 0, 1))
-    rotation = z_axis.rotation_difference(direction).to_matrix().to_4x4()
+    This ensures all operations (scale, translate, bulge, tilt) have
+    consistent meaning regardless of bone orientation.
+    """
+    from mathutils import Vector, Matrix
+
+    bone = armature.data.bones[bone_name]
+
+    # Bone direction in world space
+    head = armature.matrix_world @ bone.head_local
+    tail = armature.matrix_world @ bone.tail_local
+    bone_dir = (tail - head).normalized()
+
+    # Anatomical reference directions (world space)
+    world_forward = Vector((0, 1, 0))  # Character faces +Y
+    world_up = Vector((0, 0, 1))       # Up is +Z
+
+    # Project world_forward onto plane perpendicular to bone
+    # This becomes "forward" for this bone
+    bone_forward = world_forward - world_forward.dot(bone_dir) * bone_dir
+
+    if bone_forward.length < 0.001:
+        # Bone is parallel to world forward (rare case)
+        # Use world_up projected instead
+        bone_forward = world_up - world_up.dot(bone_dir) * bone_dir
+
+    bone_forward.normalize()
+
+    # Right completes the orthonormal basis
+    bone_right = bone_dir.cross(bone_forward).normalized()
+
+    # Build rotation matrix
+    # Columns are: where local X goes, where local Y goes, where local Z goes
+    rotation = Matrix((
+        (bone_right.x, bone_forward.x, bone_dir.x),
+        (bone_right.y, bone_forward.y, bone_dir.y),
+        (bone_right.z, bone_forward.z, bone_dir.z),
+    )).to_4x4()
 
     # Translation to bone head
-    translation = mathutils.Matrix.Translation(head)
+    translation = Matrix.Translation(head)
 
     return translation @ rotation
 
@@ -128,33 +169,68 @@ def get_bone_transform(armature, bone_name):
 # MESH MODIFIERS (BULGE/TILT)
 # =============================================================================
 
-def apply_bulge(vertices, center, bone_dir, bulge):
-    """Asymmetric radial push. + = front bulges, - = back bulges."""
+def apply_bulge(vertices, center, bulge):
+    """
+    Apply asymmetric bulge displacement.
+
+    Args:
+        vertices: List of BMVerts to modify
+        center: Center point of the vertex ring
+        bulge: Either a single value (forward/back) or [side, forward_back]
+               Positive = bulge outward in that direction
+               Negative = bulge outward in opposite direction
+
+    Coordinate convention (mesh local space, guaranteed by get_bone_transform):
+        +X = anatomical right (sideways)
+        +Y = anatomical forward (depth)
+    """
+    from mathutils import Vector
+
+    # Parse bulge value
     if isinstance(bulge, (list, tuple)):
         bulge_side, bulge_fb = bulge[0], bulge[1] if len(bulge) > 1 else 0
     else:
         bulge_side, bulge_fb = 0, bulge
 
-    up = Vector((0, 0, 1))
-    if abs(bone_dir.z) > 0.9:
-        forward, right = Vector((0, 1, 0)), Vector((1, 0, 0))
-    else:
-        right = bone_dir.cross(up).normalized()
-        forward = right.cross(bone_dir).normalized()
+    # Fixed axes in mesh local space (guaranteed by get_bone_transform)
+    forward = Vector((0, 1, 0))
+    right = Vector((1, 0, 0))
 
     for v in vertices:
         radial = (v.co - center).normalized()
+
+        # Forward/back bulge
         if abs(bulge_fb) > 0.0001:
             facing = radial.dot(forward)
+            # Positive bulge = affect forward-facing verts
+            # Negative bulge = affect backward-facing verts
             alignment = max(0, facing * (1 if bulge_fb > 0 else -1))
             v.co += radial * alignment * abs(bulge_fb)
+
+        # Side bulge (symmetric - affects both left and right)
         if abs(bulge_side) > 0.0001:
             facing = abs(radial.dot(right))
             v.co += radial * facing * bulge_side
 
 
-def apply_tilt(vertices, center, bone_dir, tilt):
-    """Rotate face perpendicular to bone axis."""
+def apply_tilt(vertices, center, tilt):
+    """
+    Tilt the vertex ring around fixed local axes.
+
+    Args:
+        vertices: List of BMVerts to modify
+        center: Center point of the vertex ring
+        tilt: Either a single value (tilt around X) or [tilt_x, tilt_y]
+              tilt_x = tilt sideways (around X axis, pitch)
+              tilt_y = tilt forward/back (around Y axis, yaw)
+
+    Coordinate convention (mesh local space, guaranteed by get_bone_transform):
+        +X = anatomical right (sideways)
+        +Y = anatomical forward (depth)
+        +Z = bone direction (extrusion axis)
+    """
+    from mathutils import Vector, Matrix
+
     if isinstance(tilt, (list, tuple)):
         tilt_x, tilt_y = tilt[0], tilt[1] if len(tilt) > 1 else 0
     else:
@@ -163,12 +239,9 @@ def apply_tilt(vertices, center, bone_dir, tilt):
     if abs(tilt_x) < 0.001 and abs(tilt_y) < 0.001:
         return
 
-    up = Vector((0, 0, 1))
-    if abs(bone_dir.z) > 0.9:
-        right_axis, forward_axis = Vector((1, 0, 0)), Vector((0, 1, 0))
-    else:
-        right_axis = bone_dir.cross(up).normalized()
-        forward_axis = right_axis.cross(bone_dir).normalized()
+    # Fixed axes in mesh local space (guaranteed by get_bone_transform)
+    right_axis = Vector((1, 0, 0))
+    forward_axis = Vector((0, 1, 0))
 
     rot = Matrix.Identity(4)
     if abs(tilt_x) > 0.001:
@@ -177,7 +250,8 @@ def apply_tilt(vertices, center, bone_dir, tilt):
         rot = Matrix.Rotation(math.radians(tilt_y), 4, forward_axis) @ rot
 
     for v in vertices:
-        v.co = center + rot @ (v.co - center)
+        local = v.co - center
+        v.co = center + (rot @ local)
 
 
 # =============================================================================
@@ -205,6 +279,9 @@ def parse_step_string(step_str):
 
 def build_body_part(spec, armature):
     """Build mesh from extrude+scale sequence, oriented to bone."""
+    import bpy
+    import bmesh
+    from mathutils import Vector
 
     # Parse base shape
     base_str = spec['base']
@@ -216,10 +293,17 @@ def build_body_part(spec, armature):
     # Handle offset (for sub-parts like thumbs, hair)
     offset = spec.get('offset', [0, 0, 0])
 
+    # Handle base_radius as float or array [bottom, top]
+    base_radius = spec['base_radius']
+    if isinstance(base_radius, list):
+        radius = base_radius[0]  # Use bottom radius for initial cylinder
+    else:
+        radius = base_radius
+
     # Create cylinder (will be transformed to bone orientation)
     bpy.ops.mesh.primitive_cylinder_add(
         vertices=verts,
-        radius=spec['base_radius'],
+        radius=radius,
         depth=0.001,  # nearly flat disc
         end_fill_type='NGON',
         location=tuple(offset)
@@ -261,13 +345,8 @@ def build_body_part(spec, armature):
 
     bmesh.update_edit_mesh(obj.data)
 
-    # Get bone direction for bulge/tilt orientation
-    bone = armature.pose.bones[spec['bone']]
-    bone_head = armature.matrix_world @ bone.head
-    bone_tail = armature.matrix_world @ bone.tail
-    bone_dir = (bone_tail - bone_head).normalized()
-
     # Execute step sequence
+    # Note: bulge/tilt use fixed local axes (guaranteed by get_bone_transform)
     for step in spec['steps']:
         if isinstance(step, str):
             step = parse_step_string(step)
@@ -300,15 +379,16 @@ def build_body_part(spec, armature):
             )
 
         # Bulge/Tilt - requires bmesh access
+        # Uses fixed local axes (guaranteed by get_bone_transform)
         if 'bulge' in step or 'tilt' in step:
             bm = bmesh.from_edit_mesh(obj.data)
             sel_verts = [v for v in bm.verts if v.select]
             if sel_verts:
                 center = sum((v.co for v in sel_verts), Vector()) / len(sel_verts)
                 if 'bulge' in step:
-                    apply_bulge(sel_verts, center, bone_dir, step['bulge'])
+                    apply_bulge(sel_verts, center, step['bulge'])
                 if 'tilt' in step:
-                    apply_tilt(sel_verts, center, bone_dir, step['tilt'])
+                    apply_tilt(sel_verts, center, step['tilt'])
                 bmesh.update_edit_mesh(obj.data)
 
     # Cap end if specified
@@ -325,10 +405,7 @@ def build_body_part(spec, armature):
     # Apply transform
     bpy.ops.object.transform_apply(location=True, rotation=True, scale=True)
 
-    # Parent to bone
-    obj.parent = armature
-    obj.parent_type = 'BONE'
-    obj.parent_bone = bone_name
+    # Don't parent yet - will be handled in merge_and_skin based on skinning_type
 
     return obj
 
@@ -446,11 +523,11 @@ def validate_spec(spec):
 
     char = spec.get('character', spec)
 
-    # Check triangle budget
+    # Check triangle budget (warning only, actual count reported at export)
     budget = char.get('tri_budget', 500)
     estimated = estimate_tris(char)
     if estimated > budget:
-        errors.append(f"Triangle budget exceeded: ~{estimated} > {budget}")
+        warnings.append(f"Estimated triangles exceed budget: ~{estimated} > {budget}")
     elif estimated > budget * 0.9:
         warnings.append(f"Near triangle budget: ~{estimated} / {budget}")
 
@@ -498,6 +575,8 @@ def validate_spec(spec):
 
 def apply_uvs(obj, spec):
     """Apply UV mapping to character mesh."""
+    import bpy
+
     bpy.context.view_layer.objects.active = obj
     obj.select_set(True)
 
@@ -521,6 +600,8 @@ def apply_uvs(obj, spec):
 
 def apply_region_uvs(obj, regions):
     """Apply region-based UV mapping for texture atlas compatibility."""
+    import bmesh
+
     bm = bmesh.from_edit_mesh(obj.data)
     uv_layer = bm.loops.layers.uv.verify()
 
@@ -556,44 +637,86 @@ def apply_region_uvs(obj, regions):
 # MESH MERGING AND SKINNING
 # =============================================================================
 
-def merge_and_skin(parts, armature, spec=None):
-    """Merge all parts into single mesh with automatic weights and UVs."""
+def merge_and_skin(parts_with_specs, armature, spec=None):
+    """
+    Merge and skin parts based on their skinning type.
 
-    # Select all parts
-    bpy.ops.object.select_all(action='DESELECT')
-    for part in parts:
-        part.select_set(True)
-    bpy.context.view_layer.objects.active = parts[0]
+    Args:
+        parts_with_specs: List of (mesh_obj, part_spec) tuples
+        armature: Armature object
+        spec: Character spec dict (for UV mapping)
 
-    # Join into single mesh
-    bpy.ops.object.join()
-    merged = bpy.context.active_object
-    merged.name = "Character"
+    Returns:
+        List of final objects (merged soft mesh + individual rigid parts)
+    """
+    import bpy
 
-    # Weld vertices at seams
-    bpy.ops.object.mode_set(mode='EDIT')
-    bpy.ops.mesh.select_all(action='SELECT')
-    bpy.ops.mesh.remove_doubles(threshold=0.002)  # 2mm tolerance
-    bpy.ops.mesh.normals_make_consistent(inside=False)
-    bpy.ops.object.mode_set(mode='OBJECT')
+    # Separate parts by skinning type
+    soft_parts = []
+    rigid_parts = []
 
-    # Apply UV mapping
-    if spec:
-        apply_uvs(merged, spec)
+    for mesh_obj, part_spec in parts_with_specs:
+        skinning_type = part_spec.get('skinning_type', 'soft')
 
-    # Apply smooth skinning with automatic weights
-    bpy.ops.object.select_all(action='DESELECT')
-    merged.select_set(True)
-    armature.select_set(True)
-    bpy.context.view_layer.objects.active = armature
+        if skinning_type == 'rigid':
+            rigid_parts.append((mesh_obj, part_spec))
+        else:
+            soft_parts.append(mesh_obj)
 
-    bpy.ops.object.parent_set(type='ARMATURE_AUTO')
+    final_objects = []
 
-    # Limit bone influences to 4 (ZX requirement)
-    bpy.context.view_layer.objects.active = merged
-    bpy.ops.object.vertex_group_limit_total(limit=4)
+    # Process soft-skinned parts (merge + automatic weights)
+    if soft_parts:
+        bpy.ops.object.select_all(action='DESELECT')
+        for part in soft_parts:
+            part.select_set(True)
+        bpy.context.view_layer.objects.active = soft_parts[0]
 
-    return merged
+        # Join into single mesh
+        bpy.ops.object.join()
+        merged = bpy.context.active_object
+        merged.name = "Character_Soft"
+
+        # Weld vertices at seams
+        bpy.ops.object.mode_set(mode='EDIT')
+        bpy.ops.mesh.select_all(action='SELECT')
+        bpy.ops.mesh.remove_doubles(threshold=0.002)
+        bpy.ops.mesh.normals_make_consistent(inside=False)
+        bpy.ops.object.mode_set(mode='OBJECT')
+
+        # Apply UV mapping
+        if spec:
+            apply_uvs(merged, spec)
+
+        # Apply automatic armature skinning
+        bpy.ops.object.select_all(action='DESELECT')
+        merged.select_set(True)
+        armature.select_set(True)
+        bpy.context.view_layer.objects.active = armature
+        bpy.ops.object.parent_set(type='ARMATURE_AUTO')
+
+        # Limit bone influences to 4 (ZX requirement)
+        bpy.context.view_layer.objects.active = merged
+        bpy.ops.object.vertex_group_limit_total(limit=4)
+
+        final_objects.append(merged)
+
+    # Process rigid-skinned parts (individual bone parenting)
+    for mesh_obj, part_spec in rigid_parts:
+        bone_name = part_spec['bone']
+
+        # Parent to bone (rigid transform)
+        mesh_obj.parent = armature
+        mesh_obj.parent_type = 'BONE'
+        mesh_obj.parent_bone = bone_name
+
+        # Apply UVs
+        if spec:
+            apply_uvs(mesh_obj, spec)
+
+        final_objects.append(mesh_obj)
+
+    return final_objects
 
 
 # =============================================================================
@@ -610,23 +733,27 @@ def generate_character(spec):
     # Create armature first
     armature = create_armature(char['skeleton'])
 
-    parts = []
+    parts_with_specs = []  # List of (mesh, part_spec) tuples
 
     for part_name, part_spec in char['parts'].items():
         # Handle mirrored parts
         if 'mirror' in part_spec:
             src_spec = char['parts'][part_spec['mirror']].copy()
             src_spec['bone'] = part_name
+            # Inherit skinning type from source if not specified
+            if 'skinning_type' not in part_spec and 'skinning_type' in src_spec:
+                part_spec['skinning_type'] = src_spec['skinning_type']
             part_spec = src_spec
 
         # Handle instanced parts (hair spikes, etc.)
         if 'instances' in part_spec:
             instance_meshes = build_instances(part_spec, armature, part_name)
-            parts.extend(instance_meshes)
+            for mesh in instance_meshes:
+                parts_with_specs.append((mesh, part_spec))
         else:
             mesh = build_body_part(part_spec, armature)
             mesh.name = part_name
-            parts.append(mesh)
+            parts_with_specs.append((mesh, part_spec))
 
         # Handle sub-parts (fingers, thumb)
         for sub_key in ['thumb', 'fingers']:
@@ -637,25 +764,40 @@ def generate_character(spec):
                 for sub_spec in sub_parts:
                     if 'bone' not in sub_spec:
                         sub_spec['bone'] = part_spec.get('bone')
+                    # Inherit skinning type from parent part
+                    if 'skinning_type' not in sub_spec:
+                        sub_spec['skinning_type'] = part_spec.get('skinning_type', 'soft')
                     sub_mesh = build_body_part(sub_spec, armature)
                     sub_mesh.name = f"{part_name}_{sub_spec.get('name', sub_key)}"
-                    parts.append(sub_mesh)
+                    parts_with_specs.append((sub_mesh, sub_spec))
 
-    # Merge into single mesh with smooth skinning and UVs
-    merged = merge_and_skin(parts, armature, char)
+    # Merge and skin based on skinning type
+    final_objects = merge_and_skin(parts_with_specs, armature, char)
 
-    return armature, merged
+    return armature, final_objects
 
 
 # =============================================================================
 # EXPORT
 # =============================================================================
 
-def export_character(armature, merged, filepath):
-    """Export character as GLB."""
+def export_character(armature, objects, filepath):
+    """
+    Export character as GLB.
+
+    Args:
+        armature: Armature object
+        objects: List of mesh objects (merged soft mesh + rigid parts)
+        filepath: Output GLB path
+    """
+    import bpy
+
     bpy.ops.object.select_all(action='DESELECT')
     armature.select_set(True)
-    merged.select_set(True)
+
+    for obj in objects:
+        obj.select_set(True)
+
     bpy.context.view_layer.objects.active = armature
 
     bpy.ops.export_scene.gltf(
@@ -676,6 +818,8 @@ def export_character(armature, merged, filepath):
 
 def main():
     """Main entry point for command-line usage."""
+    import bpy
+
     # Parse arguments after '--'
     argv = sys.argv
     if '--' in argv:
@@ -702,16 +846,16 @@ def main():
     spec = load_spec(spec_path)
 
     # Generate character
-    armature, merged = generate_character(spec)
+    armature, final_objects = generate_character(spec)
 
     # Report stats
     char = spec.get('character', spec)
-    tri_count = len(merged.data.polygons)
+    total_tris = sum(len(obj.data.polygons) for obj in final_objects)
     budget = char.get('tri_budget', 500)
-    print(f"Triangle count: {tri_count} / {budget}")
+    print(f"Triangle count: {total_tris} / {budget}")
 
     # Export
-    export_character(armature, merged, output_glb)
+    export_character(armature, final_objects, output_glb)
 
     print("Done!")
 

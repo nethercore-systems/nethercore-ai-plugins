@@ -2,6 +2,8 @@
 
 Official AI-powered development plugins for Nethercore ZX game development. These plugins provide Claude Code with comprehensive knowledge of game development workflows, procedural asset generation, and the ZX fantasy console platform.
 
+NOTE: Nethercore AI Plugins is still in heavy development and iteration. Expect breaking changes often.
+
 ## How the Plugin System Works
 
 These plugins follow a **What → How → Why** pattern:

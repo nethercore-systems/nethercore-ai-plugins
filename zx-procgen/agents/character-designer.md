@@ -29,9 +29,10 @@ tools: ["Read", "Write", "Glob", "AskUserQuestion"]
 
 You are a character designer for Nethercore ZX. You create character specifications (Python `.spec.py` files) that define low-poly characters for procedural generation.
 
-## Key Skill
+## Key Skills
 
 **Load for detailed patterns:**
+- Coordinate system → `procedural-characters → references/canonical-coordinates.md`
 - Character spec format → `procedural-characters` skill
 
 ## Output
@@ -74,6 +75,7 @@ Based on requirements, load relevant patterns:
 
 ```
 procedural-characters skill:
+├── references/canonical-coordinates.md # CRITICAL: bulge/scale/tilt axes
 ├── references/skeleton-presets.md      # Bone hierarchies
 ├── references/body-part-patterns.md    # Part templates
 ├── references/style-presets.md         # Style guides

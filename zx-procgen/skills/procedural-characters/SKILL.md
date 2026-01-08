@@ -8,6 +8,7 @@ description: |
   **Before generating:** Check `.studio/visual-style.md` for project style.
 
   **Load references when:**
+  - **COORDINATE SYSTEM** → `references/canonical-coordinates.md` (CRITICAL for bulge/scale/tilt)
   - Python bpy code → `references/bpy-implementation.md`
   - Skeleton hierarchies → `references/skeleton-presets.md`
   - Body part patterns → `references/body-part-patterns.md`
@@ -63,14 +64,18 @@ SPEC = {
 }
 ```
 
+## Canonical Coordinate System
+
+**CRITICAL:** Always follow `references/canonical-coordinates.md` (it is the authoritative, code-accurate mapping used by `get_bone_transform()`, including edge-case fallback behavior).
+
 ## Step Operations
 
 | Param | Effect |
 |-------|--------|
-| `extrude` | Distance (required) |
-| `scale` | Uniform or [X, Y] asymmetric |
-| `bulge` | Radial push (teardrop shape) |
-| `tilt` | Perpendicular rotation (degrees) |
+| `extrude` | Distance along bone (+Z) |
+| `scale` | Uniform or [width, depth] asymmetric |
+| `bulge` | Forward/back push (+/- = forward/back) |
+| `tilt` | Rotation in degrees [sideways, forward] |
 
 ## Base Shapes
 
@@ -144,3 +149,7 @@ Add to spec for tangent export:
 ```
 
 See `procedural-normal-maps` skill for texture generation.
+
+## Validation
+
+See `CHARACTER_MODELING_VALIDATION_PLAN.md` for the code-accurate, end-to-end validation strategy (conventions, strict mode, probe specs, and mesh-based checks).

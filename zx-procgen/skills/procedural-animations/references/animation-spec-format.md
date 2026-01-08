@@ -101,13 +101,27 @@ ANIMATION = {
 
 All rotations are specified in **degrees** using **pitch/yaw/roll**:
 
-| Term | Axis | Humanoid Example |
-|------|------|------------------|
-| **pitch** | X-axis | Nodding head, bending elbow |
-| **yaw** | Y-axis | Twisting spine, turning head |
-| **roll** | Z-axis | Tilting head, side-bending |
+| Term | Axis | Positive (+) | Negative (-) |
+|------|------|--------------|--------------|
+| **pitch** | X-axis | Forward (arm swings forward, head nods down) | Backward (arm swings back, head looks up) |
+| **yaw** | Y-axis | Turn left (for head/spine) | Turn right |
+| **roll** | Z-axis | Tilt right | Tilt left |
 
-The parser converts degrees to radians and applies rotations using Blender's Euler XYZ mode.
+**Examples:**
+- `arm_upper_L: pitch: 45` = left arm swings forward
+- `arm_upper_R: pitch: -35` = right arm swings backward
+- `head: pitch: 10` = head nods down (looking at ground)
+- `head: pitch: -15` = head tilts back (looking up)
+
+The parser converts degrees to radians and applies rotations using Blender's Euler XYZ mode in LOCAL bone space.
+
+### Bone Orientation
+
+Limb bones (`*_upper_*`, `*_lower_*`) have explicit roll alignment. Use **positive pitch for flexion**:
+- `leg_lower_L: pitch: 90` = knee bent 90 degrees
+- `arm_lower_R: pitch: 60` = elbow bent 60 degrees
+
+See `references/bone-orientation.md` for details.
 
 ### Bone Naming
 
@@ -271,6 +285,38 @@ Inform the parser about inverse kinematics requirements:
 | `None` | Use FK directly |
 
 **Note:** ZX runtime only supports FK, so IK is always baked out.
+
+## IK/FK Switching (Advanced)
+
+For animations that transition between grounded and airborne states (jumps, climbs), use the modern `rig_setup` format with inline IK/FK control:
+
+```python
+"rig_setup": {
+    "presets": {"humanoid_legs": True}
+},
+
+"phases": [
+    {
+        "name": "launch",
+        "frames": [15, 25],
+        "pose": "jump_launch",
+        "ik_targets": {
+            "ik_foot_L": [
+                {"frame": 15, "location": [-0.08, 0, 0], "ikfk": 1.0},  # Grounded
+                {"frame": 25, "location": [-0.08, 0, 0.3], "ikfk": 0.0}, # Airborne
+            ]
+        }
+    }
+]
+```
+
+| `ikfk` Value | Mode | Use Case |
+|--------------|------|----------|
+| 1.0 | Full IK | Feet planted, precise positioning |
+| 0.0 | Full FK | Airborne, FK poses control legs |
+| 0.5 | Blend | Transition frames |
+
+See `references/ikfk-switching.md` for detailed workflow and jump animation patterns.
 
 ## Style Metadata
 

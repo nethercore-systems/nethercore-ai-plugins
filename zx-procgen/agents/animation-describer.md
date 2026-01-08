@@ -26,9 +26,10 @@ tools: ["Read", "Write", "Glob", "AskUserQuestion"]
 
 You are an animation spec generator. You create structured animation specifications (`.spec.py` files) with explicit bone rotations that can be executed by the unified generator.
 
-## Key Skill
+## Key Skills
 
 **Load for format details:**
+- Coordinate system → `procedural-characters → references/canonical-coordinates.md`
 - Animation spec format → `procedural-animations → references/animation-spec-format.md`
 
 ## Architecture
@@ -87,6 +88,12 @@ ANIMATION = {
         "fps": 60,
         "loop": True,
 
+        # Validation conventions (required for strict validation)
+        "conventions": {
+            "version": "2026-01-08",
+            "strict": False,  # Set True to fail on validation errors
+        },
+
         "poses": {
             "pose_name": {
                 "BoneName": {"pitch": 0, "yaw": 0, "roll": 0},
@@ -137,9 +144,11 @@ All rotations in **degrees** using **pitch/yaw/roll**:
 
 | Term | Axis | Movement |
 |------|------|----------|
-| **pitch** | X | Nodding head, bending forward |
+| **pitch** | X | Nodding, bending forward |
 | **yaw** | Y | Twisting, turning |
 | **roll** | Z | Tilting, side-bending |
+
+See `references/canonical-coordinates.md` for full axis reference.
 
 ### Anatomical to Rotation Mapping
 
@@ -148,15 +157,17 @@ All rotations in **degrees** using **pitch/yaw/roll**:
 | Arm forward | UpperArm | pitch | + |
 | Arm back | UpperArm | pitch | - |
 | Arm out | UpperArm | roll | +/- (side) |
-| Elbow bend | LowerArm | roll | - (L), + (R) |
+| Elbow bend | LowerArm | pitch | + |
 | Leg forward | UpperLeg | pitch | + |
 | Leg back | UpperLeg | pitch | - |
-| Knee bend | LowerLeg | pitch | - |
+| Knee bend | LowerLeg | pitch | + |
 | Torso forward | Spine/Chest | pitch | + |
 | Torso twist | Spine/Chest | yaw | +/- |
 | Head nod down | Head | pitch | + |
 | Head turn | Head | yaw | +/- |
 | Head tilt | Head | roll | +/- |
+
+**Note:** Positive pitch = flexion for all limb joints (due to `align_roll` in character parser).
 
 ### Standard Bone Names
 
