@@ -21,7 +21,7 @@ assistant: "[Invokes character-generator to find and process spider spec]"
 </example>
 
 <example>
-user: "Generate all characters in .studio/characters/"
+user: "Generate all characters in .studio/specs/characters/"
 assistant: "[Invokes character-generator to batch process all spec files]"
 </example>
 
@@ -52,8 +52,8 @@ blender --version
 Find the character spec:
 
 ```bash
-# Check .studio/characters/
-ls .studio/characters/*.spec.py
+# Check .studio/specs/characters/
+ls .studio/specs/characters/*.spec.py
 
 # Or search project
 find . -name "*.spec.py" -path "*character*"
@@ -79,7 +79,7 @@ The parser is a standalone, reusable script:
 
 ```bash
 blender --background --python generation/lib/character_parser.py -- \
-    .studio/characters/[name].spec.py \
+    .studio/specs/characters/[name].spec.py \
     assets/characters/[name].glb
 ```
 
@@ -112,7 +112,7 @@ path = "assets/characters/[name].glb"
 
 ### Files
 - `assets/characters/[name].glb` - Mesh with skeleton
-- `.studio/characters/[name].spec.py` - Spec (version controlled)
+- `.studio/specs/characters/[name].spec.py` - Spec (version controlled)
 
 ### Stats
 - Triangles: X (budget: Y)
@@ -142,7 +142,7 @@ For multiple characters:
 
 ```bash
 # Bash one-liner
-for spec in .studio/characters/*.spec.py; do
+for spec in .studio/specs/characters/*.spec.py; do
     name=$(basename "$spec" .spec.py)
     blender --background --python generation/lib/character_parser.py -- \
         "$spec" "assets/characters/${name}.glb"
@@ -155,7 +155,7 @@ Or via Python:
 import glob
 import subprocess
 
-specs = glob.glob('.studio/characters/*.spec.py')
+specs = glob.glob('.studio/specs/characters/*.spec.py')
 for spec in specs:
     name = spec.split('/')[-1].replace('.spec.py', '')
     subprocess.run([

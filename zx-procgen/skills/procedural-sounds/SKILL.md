@@ -4,7 +4,7 @@ description: |
   Generate sound effects for ZX games using Python synthesis.
 
   **Spec-Driven Workflow (RECOMMENDED):**
-  1. Create `.spec.py` in `.studio/sounds/`
+  1. Create `.spec.py` in `.studio/specs/sounds/`
   2. Run `python sound_parser.py sfx spec.py output.wav`
 
   **Load references when:**
@@ -31,7 +31,7 @@ pip install numpy scipy soundfile
 
 **Step 1: Create Spec**
 ```python
-# .studio/sounds/laser.spec.py
+# .studio/specs/sounds/laser.spec.py
 SOUND = {
     "sound": {
         "name": "laser",
@@ -47,7 +47,7 @@ SOUND = {
 
 **Step 2: Run Parser**
 ```bash
-python sound_parser.py sfx .studio/sounds/laser.spec.py generated/audio/laser.wav
+python sound_parser.py sfx .studio/specs/sounds/laser.spec.py generated/audio/laser.wav
 ```
 
 See `references/sound-spec-format.md` for complete format.
@@ -123,7 +123,7 @@ generation/
 └── utils/
     └── synthesis.py
 
-.studio/sounds/
+.studio/specs/sounds/
 ├── laser.spec.py
 └── explosion.spec.py
 ```

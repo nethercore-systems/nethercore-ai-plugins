@@ -11,8 +11,8 @@ End-to-end audio workflow spanning three plugins, each handling a distinct phase
 │                                                                  │
 │  Commands: /establish-sonic-identity, /design-sfx, /design-soundtrack
 │  Agents:   sfx-architect, music-architect, sonic-designer       │
-│  Outputs:  .studio/sonic-identity.md, .studio/sfx/*.spec.md,    │
-│            .studio/music/*.spec.md                               │
+│  Outputs:  .studio/sonic-identity.md (persisted)                │
+│            Design specs stay in conversation (no .spec.md files)│
 └────────────────────────────┬────────────────────────────────────┘
                              │
                              ▼
@@ -21,8 +21,8 @@ End-to-end audio workflow spanning three plugins, each handling a distinct phase
 │                   SYNTHESIS - "How to Make"                      │
 │                                                                  │
 │  Commands: /generate-sfx, /generate-instrument                   │
-│  Agents:   instrument-architect                                  │
-│  Outputs:  Python synthesis scripts, .wav files                  │
+│  Agents:   instrument-architect, sfx-architect                   │
+│  Outputs:  .studio/instruments/*.spec.py, .wav files             │
 └────────────────────────────┬────────────────────────────────────┘
                              │
                              ▼
@@ -32,7 +32,7 @@ End-to-end audio workflow spanning three plugins, each handling a distinct phase
 │                                                                  │
 │  Commands: /generate-song                                        │
 │  Agents:   song-generator                                        │
-│  Outputs:  .xm or .it tracker files                             │
+│  Outputs:  .studio/specs/music/*.spec.py, .xm/.it files         │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
@@ -40,9 +40,9 @@ End-to-end audio workflow spanning three plugins, each handling a distinct phase
 
 | Plugin | Role | What It Does | What It Outputs |
 |--------|------|--------------|-----------------|
-| **sound-design** | DESIGN | Defines audio style, SFX layer patterns, music theory | `.studio/*.spec.md` specification files |
-| **zx-procgen** | SYNTHESIS | Generates actual audio using NumPy/SciPy | Python scripts, `.wav` files |
-| **tracker-music** | COMPOSITION | Arranges music into tracker modules | `.xm` or `.it` files |
+| **sound-design** | DESIGN | Defines audio style, SFX layer patterns, music theory | `.studio/sonic-identity.md`, design specs in conversation |
+| **zx-procgen** | SYNTHESIS | Generates actual audio using NumPy/SciPy | `.studio/instruments/*.spec.py`, `.wav` files |
+| **tracker-music** | COMPOSITION | Arranges music into tracker modules | `.studio/specs/music/*.spec.py`, `.xm`/`.it` files |
 
 ## When to Use Each Plugin
 
@@ -57,13 +57,16 @@ End-to-end audio workflow spanning three plugins, each handling a distinct phase
 
 ## Agent Clarification
 
-**"Architect" agents** create specifications and design documents:
-- `sfx-architect` (sound-design) - Outputs `.studio/sfx/*.spec.md` with layer breakdown
-- `music-architect` (sound-design) - Outputs `.studio/music/*.spec.md` with harmony/structure
-- `instrument-architect` (zx-procgen) - Outputs Python synthesis code for specific instruments
+**"Design" phase agents** keep specs in conversation context:
+- `sfx-architect` (sound-design) - Outputs design in conversation, then offers synthesis
+- `music-architect` (sound-design) - Outputs design in conversation, then offers generation
+
+**"Synthesis" agents** create parsable `.spec.py` files:
+- `instrument-architect` (zx-procgen) - Outputs `.studio/instruments/*.spec.py` with synthesis params
+- `sfx-architect` (also zx-procgen) - Outputs `.studio/specs/sounds/*.spec.py`
 
 **"Generator" agents** create runnable output:
-- `song-generator` (tracker-music) - Outputs complete `.xm` or `.it` tracker files
+- `song-generator` (tracker-music) - Outputs `.spec.py` specs and complete `.xm`/`.it` files
 
 ## Recommended Workflows
 
@@ -75,18 +78,12 @@ End-to-end audio workflow spanning three plugins, each handling a distinct phase
    → Creates .studio/sonic-identity.md
    ```
 
-2. **Design SFX** (design layer)
+2. **Design SFX** (design → synthesis in one flow)
    ```
    /design-sfx "sword impact"
-   → Creates .studio/sfx/sword-impact.spec.md
-   → Contains layers, frequencies, synthesis approach
-   ```
-
-3. **Generate Code** (synthesis layer)
-   ```
-   /generate-sfx hit generated/audio/sword_hit.py
-   → Creates Python script using spec guidance
-   → Run script to produce sword_hit.wav
+   → Shows design spec in conversation (layers, frequencies, synthesis approach)
+   → Offers: "Ready to synthesize? I can spawn sfx-architect."
+   → User says yes → sfx-architect creates .spec.py and .wav
    ```
 
 ### Workflow 2: Complete Music Creation
@@ -96,25 +93,16 @@ End-to-end audio workflow spanning three plugins, each handling a distinct phase
    /establish-sonic-identity "8-bit platformer"
    ```
 
-2. **Design Track** (design layer)
+2. **Design Track** (design → generation in one flow)
    ```
    /design-soundtrack "boss battle"
-   → Creates .studio/music/boss-battle.spec.md
-   → Contains tempo, key, chord progressions, structure
+   → Shows design spec in conversation (tempo, key, structure, chord progressions)
+   → Offers: "Ready to generate? I can spawn song-generator."
+   → User says yes → song-generator creates .spec.py files and .xm
    ```
 
-3. **Generate Instruments** (synthesis layer)
-   ```
-   /generate-instrument bass punchy
-   /generate-instrument lead square
-   → Creates Python scripts for instrument samples
-   ```
-
-4. **Compose Song** (composition layer)
-   ```
-   /generate-song "boss battle per spec"
-   → Creates complete .xm or .it file using instruments and spec
-   ```
+   The song-generator handles instruments and composition together,
+   creating `.studio/instruments/*.spec.py` and `.studio/specs/music/*.spec.py`.
 
 ### Workflow 3: Quick SFX (Skip Design)
 
@@ -136,22 +124,25 @@ For rapid iteration, skip the design phase:
 ```
                    .studio/sonic-identity.md
                             │
-              ┌─────────────┴─────────────┐
-              ▼                           ▼
-    .studio/sfx/*.spec.md      .studio/music/*.spec.md
-              │                           │
-              ▼                           ▼
-   Python synthesis scripts    Python instrument scripts
-              │                           │
-              ▼                           ▼
-      generated/audio/*.wav         generated/audio/*.wav
-                                          │
-                                          ▼
-                               .xm/.it tracker files
-                                          │
-                                          ▼
-                                 nether.toml → ROM
+    ┌───────────────────────┴───────────────────────┐
+    │                                               │
+    ▼ (SFX path)                                    ▼ (Music path)
+
+Design in conversation                 Design in conversation
+         │                                      │
+         ▼                                      ▼
+.studio/specs/sounds/*.spec.py    .studio/instruments/*.spec.py
+         │                        .studio/specs/music/*.spec.py
+         ▼                                      │
+  generated/audio/*.wav                         ▼
+                                   generated/tracks/*.xm
+                                   generated/audio/*.wav (instruments)
+                                                │
+                                                ▼
+                                       nether.toml → ROM
 ```
+
+**Key change:** Design specs stay in conversation, only `.spec.py` files are persisted.
 
 ## Cross-Plugin Skill Loading
 
@@ -175,23 +166,18 @@ User: "I'm making a dark fantasy RPG. Help me with the audio."
    → Creates sonic-identity.md with Orchestral + Dark Ambient style
 
 2. User: "Design a sword hit sound"
-   → sfx-architect creates .studio/sfx/sword-hit.spec.md
+   → /design-sfx shows spec in conversation
+   → Offers to synthesize → User says yes
+   → sfx-architect creates .spec.py and .wav
 
-3. User: "Generate that sound effect"
-   → /generate-sfx produces Python script
-   → Script generates sword_hit.wav
-
-4. User: "Design a boss battle theme"
-   → music-architect creates .studio/music/boss-battle.spec.md
-
-5. User: "Generate the instruments I need"
-   → instrument-architect creates synthesis scripts
-   → Scripts generate instrument samples
-
-6. User: "Compose the boss theme"
-   → song-generator creates boss_battle.it
-   → Uses the generated instruments and follows spec
+3. User: "Design a boss battle theme"
+   → /design-soundtrack shows spec in conversation
+   → Offers to generate → User says yes
+   → song-generator creates instrument specs, song spec, and .xm file
 ```
+
+**Key difference:** No intermediate `.spec.md` files clutter the project.
+Design flows directly from conversation to synthesis/composition.
 
 ## Troubleshooting
 
@@ -203,9 +189,9 @@ User: "I'm making a dark fantasy RPG. Help me with the audio."
 | "I want actual audio files" | zx-procgen |
 | "I want tracker music" | tracker-music (uses zx-procgen for samples) |
 
-### "Why separate design from synthesis?"
+### "Why keep design in conversation instead of files?"
 
-1. **Iteration** - Change specs without regenerating
-2. **Consistency** - All audio follows the same style guide
-3. **Parallelization** - Design all specs first, batch generate later
-4. **Review** - Specs can be reviewed before committing to generation
+1. **Efficiency** - No wasteful intermediate files
+2. **Flow** - Design → synthesis happens in one conversation
+3. **Consistency** - Only `.spec.py` files that parsers actually use are persisted
+4. **Review** - User can review design in conversation before confirming generation

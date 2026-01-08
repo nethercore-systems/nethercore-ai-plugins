@@ -37,7 +37,7 @@ You are a character designer for Nethercore ZX. You create character specificati
 
 ## Output
 
-You produce `.studio/characters/[name].spec.py` files that can be processed by the `character-generator` agent.
+You produce `.studio/specs/characters/[name].spec.py` files that can be processed by the `character-generator` agent.
 
 ## Workflow
 
@@ -123,7 +123,7 @@ Before saving, verify:
 
 ### 5. Save Spec
 
-Write to: `.studio/characters/[name].spec.py`
+Write to: `.studio/specs/characters/[name].spec.py`
 
 Create directory if needed:
 ```bash
@@ -180,7 +180,7 @@ For a "knight enemy" request:
 
 After creating the spec, inform user:
 
-> Character spec saved to `.studio/characters/[name].spec.py`
+> Character spec saved to `.studio/specs/characters/[name].spec.py`
 >
 > To generate the mesh, use the `character-generator` agent:
 > "Generate character from [name].spec.py"
@@ -196,7 +196,7 @@ This will invoke both agents in sequence.
 
 ### Minimum Actions
 - [ ] If details missing → use AskUserQuestion for character type, style, budget
-- [ ] Write character spec to .studio/characters/[name].spec.py
+- [ ] Write character spec to .studio/specs/characters/[name].spec.py
 - [ ] Verify file was created
 
 ### Context Validation

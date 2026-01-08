@@ -24,7 +24,7 @@ All specs use `.spec.py` extension. The containing folder and dict name (`SONG`)
 ## Quick Start
 
 ```python
-# .studio/music/theme.spec.py
+# .studio/specs/music/theme.spec.py
 SONG = {
     "song": {
         "name": "theme",
@@ -57,7 +57,7 @@ SONG = {
 Generate:
 
 ```bash
-python song_parser.py .studio/music/theme.spec.py generated/tracks/theme.xm
+python song_parser.py .studio/specs/music/theme.spec.py generated/tracks/theme.xm
 ```
 
 ## Spec Structure Overview

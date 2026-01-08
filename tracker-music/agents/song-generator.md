@@ -5,7 +5,7 @@ description: |
 
   **Spec-Driven Workflow:**
   1. Create instrument specs in `.studio/instruments/*.spec.py`
-  2. Create song spec in `.studio/music/*.spec.py` (SONG dict)
+  2. Create song spec in `.studio/specs/music/*.spec.py` (SONG dict)
   3. Run `python song_parser.py spec.spec.py output.xm`
 
   <example>
@@ -29,7 +29,7 @@ All specs use `.spec.py` extension. The folder and dict name identify the type:
 LLM creates specs  →  song_parser.py  →  XM/IT file
          ↓
   .studio/instruments/*.spec.py  (INSTRUMENT dict)
-  .studio/music/*.spec.py        (SONG dict)
+  .studio/specs/music/*.spec.py        (SONG dict)
 ```
 
 ## Project Structure
@@ -101,7 +101,7 @@ INSTRUMENT = {
 Write the song spec with SONG dict:
 
 ```python
-# .studio/music/boss_theme.spec.py
+# .studio/specs/music/boss_theme.spec.py
 SONG = {
     "song": {
         "name": "boss_theme",
@@ -140,7 +140,7 @@ SONG = {
 ### Step 4: Generate
 
 ```bash
-python generation/lib/song_parser.py .studio/music/boss_theme.spec.py generated/tracks/boss_theme.xm
+python generation/lib/song_parser.py .studio/specs/music/boss_theme.spec.py generated/tracks/boss_theme.xm
 ```
 
 ### Step 5: Validate
@@ -243,9 +243,27 @@ Before finalizing, verify:
 ### Minimum Actions
 - [ ] Read song-format/SKILL.md for spec format
 - [ ] Create instrument specs in .studio/instruments/*.spec.py (if needed)
-- [ ] Create song spec in .studio/music/*.spec.py (SONG dict)
+- [ ] Create song spec in .studio/specs/music/*.spec.py (SONG dict)
 - [ ] Run song_parser.py to generate
 - [ ] Verify output file exists in generated/tracks/
+
+### What Files To Write
+**ONLY write these file types:**
+- `.studio/instruments/*.spec.py` - INSTRUMENT dict specs
+- `.studio/specs/music/*.spec.py` - SONG dict specs
+- Run commands to generate `.xm` or `.it` files
+
+### What NOT To Write
+**NEVER create these intermediate files:**
+- `*_DESIGN.md` - Design thinking goes in conversation, not files
+- `*_SUMMARY.md` - Summary goes in conversation, not files
+- `*_SYNTHESIS.md` - Synthesis details go in `.spec.py`, not separate docs
+- `MELLOW_*_DESIGN.md`, `BASS_*_DESIGN.md`, etc. - NO design files
+- `HIHAT_CLOSED_SUMMARY`, `GENERATION_SUMMARY.md` - NO summary files
+- `GENERATE_*_INSTRUCTIONS.md` - Instructions go in conversation
+- Any `.md` file describing instruments, design, or generation
+
+Keep your design reasoning in conversation context. Only persist `.spec.py` files.
 
 ### Context Validation
 If mood/style is too vague -> ask about mood, context (menu, combat, boss), duration

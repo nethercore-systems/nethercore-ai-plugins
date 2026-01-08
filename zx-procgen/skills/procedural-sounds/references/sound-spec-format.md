@@ -7,15 +7,15 @@ Declarative specification format for procedural audio generation. Specs are **da
 ```
 LLM creates spec (.spec.py)  →  sound_parser.py  →  audio file (WAV/XM/IT)
          ↓
-  .studio/sounds/
+  .studio/specs/sounds/
   .studio/instruments/
-  .studio/music/
+  .studio/specs/music/
 ```
 
 ## SFX Spec Format (SOUND)
 
 ```python
-# .studio/sounds/laser.spec.py
+# .studio/specs/sounds/laser.spec.py
 SOUND = {
     "sound": {
         "name": "laser",
@@ -191,7 +191,7 @@ INSTRUMENT = {
 ## Track Spec Format (TRACK)
 
 ```python
-# .studio/music/boss_theme.spec.py
+# .studio/specs/music/boss_theme.spec.py
 TRACK = {
     "track": {
         "name": "boss_theme",
@@ -290,13 +290,13 @@ Notes can be specified as:
 
 ```bash
 # Generate SFX
-python sound_parser.py sfx .studio/sounds/laser.spec.py generated/audio/laser.wav
+python sound_parser.py sfx .studio/specs/sounds/laser.spec.py generated/audio/laser.wav
 
 # Generate instrument sample
 python sound_parser.py instrument .studio/instruments/bass.spec.py generated/samples/bass.wav
 
 # Generate tracker module (generates instrument samples + XM/IT)
-python sound_parser.py track .studio/music/boss_theme.spec.py generated/tracks/boss_theme.xm
+python sound_parser.py track .studio/specs/music/boss_theme.spec.py generated/tracks/boss_theme.xm
 ```
 
 ## Directory Structure

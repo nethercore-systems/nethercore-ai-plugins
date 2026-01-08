@@ -7,7 +7,7 @@ Complete specification for song `.spec.py` files used by `song_parser.py`.
 Song specs are Python files containing a single `SONG` dict. All spec files use the `.spec.py` extension - the folder and dict name identify the type:
 
 ```python
-# .studio/music/example.spec.py
+# .studio/specs/music/example.spec.py
 SONG = {
     "song": {
         # ... specification fields
@@ -391,13 +391,13 @@ SONG = {
 
 ```bash
 # XM output (explicit)
-python song_parser.py .studio/music/theme.spec.py generated/tracks/theme.xm
+python song_parser.py .studio/specs/music/theme.spec.py generated/tracks/theme.xm
 
 # IT output (explicit)
-python song_parser.py .studio/music/theme.spec.py generated/tracks/theme.it
+python song_parser.py .studio/specs/music/theme.spec.py generated/tracks/theme.it
 
 # Format from spec (when output has no extension)
-python song_parser.py .studio/music/theme.spec.py generated/tracks/theme
+python song_parser.py .studio/specs/music/theme.spec.py generated/tracks/theme
 ```
 
 ## Integration with Build System

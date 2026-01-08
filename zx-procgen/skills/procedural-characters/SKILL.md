@@ -113,12 +113,12 @@ Connected parts MUST share same base vertex count:
 
 **1. Design Phase (character-designer agent)**
 - Determine type, style, budget
-- Generate `.spec.py` to `.studio/characters/`
+- Generate `.spec.py` to `.studio/specs/characters/`
 
 **2. Generation Phase (character_parser.py)**
 ```bash
 blender --background --python character_parser.py -- \
-    .studio/characters/knight.spec.py \
+    .studio/specs/characters/knight.spec.py \
     assets/characters/knight.glb
 ```
 

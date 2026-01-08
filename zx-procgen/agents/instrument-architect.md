@@ -142,8 +142,25 @@ For each, select appropriate technique, design parameters, and output working co
 
 ### Minimum Actions
 - [ ] Read skill references (procedural-instruments SKILL.md and relevant references/)
-- [ ] Write complete Python synthesis script to generation/instruments/ or generation/audio/
+- [ ] Write complete Python synthesis script to `.studio/instruments/[name].spec.py`
 - [ ] Verify file was created
+
+### What Files To Write
+**ONLY write these file types:**
+- `.studio/instruments/[name].spec.py` - Instrument INSTRUMENT dict specs
+- `generation/instruments/[name].py` - Legacy Python synthesis scripts
+- `.wav` files via running the synthesis
+
+### What NOT To Write
+**NEVER create these intermediate files:**
+- `*_DESIGN.md` - Design thinking goes in conversation, not files
+- `*_SUMMARY.md` - Summary goes in conversation, not files
+- `*_SYNTHESIS.md` - Synthesis details go in `.spec.py`, not separate docs
+- `*_INSTRUCTIONS.md` - Instructions go in conversation, not files
+- `GENERATE_*.md` - Generation instructions go in conversation
+- Any `.md` file with instrument/design/summary in the name
+
+Keep your design reasoning in conversation context. Only persist the actual `.spec.py` or `.py` code files.
 
 ### Context Validation
 If instrument type unclear → ask about style, context (melody/bass/pad), mood

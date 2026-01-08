@@ -26,8 +26,8 @@ You are an audio coherence reviewer. Ensure all game audio works together as a u
 ### 1. Load Context
 
 - Read `.studio/sonic-identity.md` if exists
-- Read `.studio/music/*.spec.md` and `.studio/sfx/*.spec.md`
-- Glob for audio assets (`*.wav`, `*.ogg`, `*.xm`)
+- Glob for audio specs: `.studio/specs/sounds/*.spec.py`, `.studio/specs/music/*.spec.py`, `.studio/instruments/*.spec.py`
+- Glob for generated audio: `generated/**/*.wav`, `generated/**/*.xm`, `generated/**/*.it`
 
 ### 2. Assess Each Category
 

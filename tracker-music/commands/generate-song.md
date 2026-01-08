@@ -63,7 +63,7 @@ Task tool:
 
     Requirements:
     - Create instrument specs in .studio/instruments/*.spec.py if needed
-    - Create song spec in .studio/music/[name].spec.py
+    - Create song spec in .studio/specs/music/[name].spec.py
     - Run song_parser.py to generate output
     - Output to generated/tracks/
 
@@ -80,7 +80,7 @@ After completion, show:
 
 ```
 Created:
-- .studio/music/boss_theme.spec.py (spec - committed)
+- .studio/specs/music/boss_theme.spec.py (spec - committed)
 - generated/tracks/boss_theme.xm (output - gitignored)
 
 Song Details:

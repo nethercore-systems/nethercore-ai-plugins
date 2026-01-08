@@ -92,13 +92,15 @@ Create track specifications:
 /design-soundtrack "boss battle"
 ```
 
-Produces `.studio/music/boss-battle.spec.md` with:
+Outputs a music specification in conversation with:
 - Tempo, key, time signature
 - Chord progressions per section
 - Structure diagram
 - Instrumentation
 - Loop point design
 - Adaptive layers (if applicable)
+
+Then immediately offers to generate with `song-generator` agent.
 
 ### 3. Design SFX
 
@@ -108,11 +110,13 @@ Create sound effect specifications:
 /design-sfx "sword impact"
 ```
 
-Produces `.studio/sfx/sword-impact.spec.md` with:
+Outputs an SFX specification in conversation with:
 - Layer breakdown
 - Synthesis parameters
 - Variation strategy
-- Implementation code
+- Implementation guidance
+
+Then immediately offers to synthesize with `sfx-architect` agent.
 
 ### 4. Review Coherence
 
@@ -200,20 +204,19 @@ mix_priorities:
 
 ## Files Created
 
-The plugin creates specs in `.studio/`:
+This plugin creates minimal files - design specifications stay in conversation context to avoid waste.
 
-```
-.studio/
-├── sonic-identity.md      # From /establish-sonic-identity
-├── music/
-│   ├── main-theme.spec.md
-│   ├── boss-battle.spec.md
-│   └── ...
-└── sfx/
-    ├── sword-impact.spec.md
-    ├── jump.spec.md
-    └── ...
-```
+**Files persisted:**
+- `.studio/sonic-identity.md` - From `/establish-sonic-identity`
+
+**Downstream specs (created by synthesis agents):**
+- `.studio/instruments/*.spec.py` - Instrument synthesis specs
+- `.studio/specs/sounds/*.spec.py` - SFX synthesis specs
+- `.studio/specs/music/*.spec.py` - Song structure specs
+
+**Generated audio (gitignored):**
+- `generated/audio/*.wav` - Synthesized sounds
+- `generated/tracks/*.xm` - Tracker music files
 
 ## Installation
 
