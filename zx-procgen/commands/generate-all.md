@@ -15,12 +15,12 @@ Generate assets from `.studio/specs/**` using the unified generator.
 
 If `.studio/generate.py` is missing, run `/init-procgen` first.
 
-## Generate (Python)
+## Generate (Preferred)
 
 From the project root:
 
 ```bash
-python .studio/generate.py
+ai-studio generate
 ```
 
 ## Generate (Blender-Dependent Categories)
@@ -28,7 +28,7 @@ python .studio/generate.py
 Meshes, characters, and animations run by invoking Blender on the same entrypoint:
 
 ```bash
-blender --background --python .studio/generate.py -- --only meshes
-blender --background --python .studio/generate.py -- --only characters
-blender --background --python .studio/generate.py -- --only animations
+ai-studio generate --only meshes
+ai-studio generate --only characters
+ai-studio generate --only animations
 ```

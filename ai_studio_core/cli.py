@@ -58,16 +58,42 @@ def cmd_doctor(_: argparse.Namespace) -> int:
 
 
 def cmd_init(args: argparse.Namespace) -> int:
-    print("ai-studio init: not implemented yet", file=sys.stderr)
-    if args.project_dir:
-        _ = Path(args.project_dir)
-    return 2
+    from .project_init import init_project
+
+    project_dir = Path(args.project_dir) if args.project_dir else Path(".")
+    init_project(project_dir)
+    print(f"OK: installed .studio scaffold into {project_dir.resolve()}")
+    print("Pinned: ai_studio.toml (core_version)")
+    return 0
 
 
 def cmd_generate(args: argparse.Namespace) -> int:
-    print("ai-studio generate: not implemented yet", file=sys.stderr)
-    _ = args
-    return 2
+    from .legacy_studio import build_legacy_generate_argv, validate_legacy_project
+
+    project_root = Path(getattr(args, "project", ".")) if getattr(args, "project", None) else Path(".")
+    project_root = project_root.resolve()
+
+    try:
+        validate_legacy_project(project_root)
+    except FileNotFoundError as e:
+        print(f"error: {e}", file=sys.stderr)
+        return 2
+
+    blender_bin = _command_path("blender")
+    try:
+        argv = build_legacy_generate_argv(
+            project_root=project_root,
+            blender_bin=blender_bin,
+            only=getattr(args, "only", None),
+            spec=getattr(args, "spec", None),
+            dry_run=bool(getattr(args, "dry_run", False)),
+        )
+    except RuntimeError as e:
+        print(f"error: {e}. Run: ai-studio doctor", file=sys.stderr)
+        return 2
+
+    proc = subprocess.run(argv, check=False, cwd=project_root)
+    return int(proc.returncode)
 
 
 def _base_report(*, spec, spec_path: Path) -> dict:
@@ -273,8 +299,11 @@ def build_parser() -> argparse.ArgumentParser:
     init_p.set_defaults(func=cmd_init)
 
     gen_p = subparsers.add_parser("generate", help="Run generation from a spec")
-    gen_p.add_argument("--spec", help="Path to an asset spec")
-    gen_p.add_argument("--out", help="Output directory (default: project convention)")
+    gen_p.add_argument("--project", help="Target project directory (default: current directory)")
+    gen_p.add_argument("--spec", help="Path to a legacy .studio spec (e.g. .studio/specs/textures/foo.spec.py)")
+    gen_p.add_argument("--only", help="Legacy .studio category (textures/normals/sounds/instruments/music/meshes/characters/animations)")
+    gen_p.add_argument("--dry-run", action="store_true", help="Print what would be generated without writing outputs")
+    gen_p.add_argument("--out", help="(reserved) Output directory (default: project convention)")
     gen_p.set_defaults(func=cmd_generate)
 
     val_p = subparsers.add_parser("validate", help="Validate a spec and/or output artifacts")

@@ -15,13 +15,13 @@ Create a SOUND spec at `.studio/specs/sounds/<id>.spec.py`.
 ## Output
 
 - Writes: `.studio/specs/sounds/<id>.spec.py`
-- Generate with: `python .studio/generate.py --only sounds`
+- Generate with: `ai-studio generate --only sounds` (legacy: `python .studio/generate.py --only sounds`)
 
 ## Spec Template
 
 ```python
 # <id> SFX Specification
-# Run: python .studio/generate.py --only sounds
+# Run: ai-studio generate --only sounds
 
 SOUND = {
     "sound": {

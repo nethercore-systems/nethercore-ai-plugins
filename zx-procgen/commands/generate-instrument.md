@@ -15,13 +15,13 @@ Create an INSTRUMENT spec at `.studio/specs/instruments/<id>.spec.py`.
 ## Output
 
 - Writes: `.studio/specs/instruments/<id>.spec.py`
-- Generate with: `python .studio/generate.py --only instruments`
+- Generate with: `ai-studio generate --only instruments` (legacy: `python .studio/generate.py --only instruments`)
 
 ## Spec Template
 
 ```python
 # <id> Instrument Specification
-# Run: python .studio/generate.py --only instruments
+# Run: ai-studio generate --only instruments
 
 INSTRUMENT = {
     "instrument": {

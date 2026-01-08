@@ -9,6 +9,8 @@ color: blue
 
 Install the unified `.studio/` scaffold into a user project by copying from `zx-procgen/scaffold/.studio/`.
 
+> Deprecation notice: Prefer `ai-studio init [project-dir]`. This command remains for backward compatibility.
+
 ## Behavior (No Prompts)
 
 - Always overwrites:
@@ -24,6 +26,15 @@ Install the unified `.studio/` scaffold into a user project by copying from `zx-
 
 ```bash
 TARGET="${1:-.}"
+
+echo "[DEPRECATED] zx-procgen:init-procgen → use: ai-studio init [project-dir]"
+
+if command -v ai-studio >/dev/null 2>&1; then
+  ai-studio init "$TARGET"
+  exit $?
+fi
+
+echo "ai-studio not found; falling back to zx-procgen/scaffold/.studio copy."
 SCAFFOLD="zx-procgen/scaffold/.studio"
 
 mkdir -p "$TARGET/.studio"
@@ -65,5 +76,5 @@ EOF
 ## Next
 
 ```bash
-python .studio/generate.py
+ai-studio generate
 ```
