@@ -1,9 +1,12 @@
 from __future__ import annotations
 
 import argparse
+import json
 import shutil
+import subprocess
 import sys
 from dataclasses import dataclass
+from importlib import resources
 from pathlib import Path
 
 from . import __version__
@@ -67,6 +70,57 @@ def cmd_generate(args: argparse.Namespace) -> int:
     return 2
 
 
+def _base_report(*, spec, spec_path: Path) -> dict:
+    return {
+        "ok": True,
+        "asset_id": spec.asset_id,
+        "asset_type": str(getattr(spec.asset_type, "value", spec.asset_type)),
+        "core_version": __version__,
+        "spec_path": str(spec_path),
+        "outputs": [
+            {"kind": o.kind.value, "format": o.format.value, "path": o.path}
+            for o in spec.outputs  # type: ignore[attr-defined]
+        ],
+        "errors": [],
+        "warnings": [],
+        "metrics": {},
+        "previews": {},
+    }
+
+
+def _run_blender(
+    *,
+    blender_path: Path,
+    mode: str,
+    spec_path: Path,
+    out_root: Path,
+    report_path: Path,
+    generate_placeholder: bool,
+) -> int:
+    script = resources.files("ai_studio_core.blender").joinpath("entrypoint.py")
+    with resources.as_file(script) as script_path:
+        argv = [
+            str(blender_path),
+            "--background",
+            "--factory-startup",
+            "--python",
+            str(script_path),
+            "--",
+            "--mode",
+            mode,
+            "--spec",
+            str(spec_path.resolve()),
+            "--out-root",
+            str(out_root.resolve()),
+            "--report",
+            str(report_path.resolve()),
+        ]
+        if generate_placeholder:
+            argv.append("--generate-placeholder")
+        proc = subprocess.run(argv, check=False)
+        return int(proc.returncode)
+
+
 def cmd_validate(args: argparse.Namespace) -> int:
     if not args.spec:
         print("error: --spec is required", file=sys.stderr)
@@ -76,10 +130,7 @@ def cmd_validate(args: argparse.Namespace) -> int:
         from .specs.io import dump_json, load_asset_spec_json
     except ModuleNotFoundError as e:
         if e.name == "pydantic":
-            print(
-                "error: validation requires pydantic. Install with: pip install -e .",
-                file=sys.stderr,
-            )
+            print("error: validation requires pydantic. Install with: pip install -e .", file=sys.stderr)
             return 2
         raise
 
@@ -92,32 +143,101 @@ def cmd_validate(args: argparse.Namespace) -> int:
     out_root = Path(args.out) if args.out else Path("generated")
     report_path = out_root / "reports" / f"{spec.asset_id}.report.json"
 
-    report = {
-        "ok": True,
-        "asset_id": spec.asset_id,
-        "asset_type": str(getattr(spec.asset_type, "value", spec.asset_type)),
-        "core_version": __version__,
-        "spec_path": str(Path(args.spec)),
-        "outputs": [
-            {"kind": o.kind.value, "format": o.format.value, "path": o.path}
-            for o in spec.outputs  # type: ignore[attr-defined]
-        ],
-        "errors": [],
-        "warnings": [],
-        "metrics": {},
-        "previews": {},
-    }
-
+    report = _base_report(spec=spec, spec_path=Path(args.spec))
     dump_json(report, report_path)
-    print(f"OK: {spec.asset_id} ({report['asset_type']})")
+
+    asset_type = report["asset_type"]
+    if asset_type in ("mesh_3d_hardsurface", "character_3d_lowpoly"):
+        blender_bin = _command_path("blender")
+        if blender_bin is None:
+            report["ok"] = False
+            report["errors"].append("blender not found (required for 3D artifact validation/preview)")
+            dump_json(report, report_path)
+            print("Validation failed: blender not found. Run: ai-studio doctor", file=sys.stderr)
+            print(f"Report: {report_path}")
+            return 2
+
+        code = _run_blender(
+            blender_path=Path(blender_bin),
+            mode="validate",
+            spec_path=Path(args.spec),
+            out_root=out_root,
+            report_path=report_path,
+            generate_placeholder=bool(getattr(args, "generate_placeholder", False)),
+        )
+        try:
+            final = json.loads(report_path.read_text(encoding="utf-8"))
+            ok = bool(final.get("ok")) if isinstance(final, dict) else False
+        except Exception:  # noqa: BLE001
+            ok = False
+        print(f"Report: {report_path}")
+        return 0 if (code == 0 and ok) else 1
+
+    print(f"OK: {spec.asset_id} ({asset_type})")
     print(f"Report: {report_path}")
     return 0
 
 
 def cmd_preview(args: argparse.Namespace) -> int:
-    print("ai-studio preview: not implemented yet", file=sys.stderr)
-    _ = args
-    return 2
+    if not args.spec:
+        print("error: --spec is required", file=sys.stderr)
+        return 2
+
+    blender_bin = _command_path("blender")
+    if blender_bin is None:
+        print("error: blender not found (required for 3D preview). Run: ai-studio doctor", file=sys.stderr)
+        return 2
+
+    try:
+        from .specs.io import dump_json, load_asset_spec_json
+    except ModuleNotFoundError as e:
+        if e.name == "pydantic":
+            print("error: preview requires pydantic. Install with: pip install -e .", file=sys.stderr)
+            return 2
+        raise
+
+    try:
+        spec = load_asset_spec_json(args.spec)
+    except ValueError as e:
+        print(str(e), file=sys.stderr)
+        return 1
+
+    asset_type = str(getattr(spec.asset_type, "value", spec.asset_type))
+    if asset_type not in ("mesh_3d_hardsurface", "character_3d_lowpoly"):
+        print(f"error: preview currently supports only 3D specs (got {asset_type})", file=sys.stderr)
+        return 2
+
+    out_root = Path(args.out) if args.out else Path("generated")
+    report_path = out_root / "reports" / f"{spec.asset_id}.report.json"
+
+    report = _base_report(spec=spec, spec_path=Path(args.spec))
+    dump_json(report, report_path)
+
+    code = _run_blender(
+        blender_path=Path(blender_bin),
+        mode="preview",
+        spec_path=Path(args.spec),
+        out_root=out_root,
+        report_path=report_path,
+        generate_placeholder=True,
+    )
+    if code != 0:
+        print(f"Report: {report_path}")
+        return code
+
+    try:
+        final = json.loads(report_path.read_text(encoding="utf-8"))
+        previews = final.get("previews", {}) if isinstance(final, dict) else {}
+    except Exception:  # noqa: BLE001
+        previews = {}
+
+    if isinstance(previews, dict):
+        if previews.get("turntable_png"):
+            print(f"Turntable: {previews['turntable_png']}")
+        if previews.get("ortho_png"):
+            print(f"Ortho: {previews['ortho_png']}")
+    print(f"Report: {report_path}")
+    return 0
 
 
 def cmd_lint_repo(args: argparse.Namespace) -> int:
@@ -144,6 +264,11 @@ def build_parser() -> argparse.ArgumentParser:
     val_p = subparsers.add_parser("validate", help="Validate a spec and/or output artifacts")
     val_p.add_argument("--spec", help="Path to an asset spec")
     val_p.add_argument("--out", help="Output directory root (default: generated/)")
+    val_p.add_argument(
+        "--generate-placeholder",
+        action="store_true",
+        help="If the 3D model is missing, generate a deterministic placeholder before validating",
+    )
     val_p.set_defaults(func=cmd_validate)
 
     prev_p = subparsers.add_parser("preview", help="Render deterministic previews (thumbnails/turntables)")

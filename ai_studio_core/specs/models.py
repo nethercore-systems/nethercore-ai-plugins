@@ -220,6 +220,7 @@ class GltfExportSpec(BaseModel):
 
 class Mesh3DHardsurfaceSpec(BaseAssetSpec):
     asset_type: Literal[AssetType.mesh_3d_hardsurface]
+    pipeline_preset: Literal["hardsurface_prop_v1"] = "hardsurface_prop_v1"
     triangle_budget: int = Field(ge=12, le=200_000)
     max_material_slots: int = Field(ge=1, le=4, description="Hard cap to prevent combinatorial materials")
     use_normal_map: bool = True
@@ -252,6 +253,7 @@ class CharacterConstraints(BaseModel):
 
 class Character3DLowpolySpec(BaseAssetSpec):
     asset_type: Literal[AssetType.character_3d_lowpoly]
+    pipeline_preset: Literal["lowpoly_character_v1"] = "lowpoly_character_v1"
     triangle_budget: int = Field(ge=100, le=200_000)
     skeleton_preset: SkeletonPreset = SkeletonPreset.humanoid_basic_v1
     constraints: CharacterConstraints = Field(default_factory=CharacterConstraints)

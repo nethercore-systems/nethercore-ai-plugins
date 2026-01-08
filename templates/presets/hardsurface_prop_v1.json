@@ -1,0 +1,20 @@
+{
+  "name": "hardsurface_prop_v1",
+  "scope": "mesh_3d_hardsurface",
+  "notes": "Narrow golden-path preset for game-ready hard-surface props.",
+  "constraints": {
+    "triangle_budget_default": 1500,
+    "max_material_slots_default": 2,
+    "require_uvs": true,
+    "require_normals": true,
+    "require_tangents_when_normal_map": true
+  },
+  "export": {
+    "format": "glb"
+  },
+  "preview": {
+    "turntable_png": "generated/previews/<asset_id>_turntable.png",
+    "ortho_png": "generated/previews/<asset_id>_ortho.png"
+  }
+}
+

@@ -25,6 +25,7 @@
       "path": "characters/character_knight_lowpoly.meta.json"
     }
   ],
+  "pipeline_preset": "lowpoly_character_v1",
   "seed": 271828,
   "skeleton_preset": "humanoid_basic_v1",
   "style_tags": [
@@ -36,4 +37,3 @@
   "use_normal_map": false,
   "variants": []
 }
-

@@ -121,6 +121,8 @@ Primary outputs must be `png`.
 
 Additional required fields:
 
+- `pipeline_preset` (string enum):
+  - `hardsurface_prop_v1`
 - `triangle_budget` (int)
 - `max_material_slots` (int, `1..4`)
 - `use_normal_map` (bool)
@@ -136,6 +138,8 @@ Primary outputs must be `glb`.
 
 Additional required fields:
 
+- `pipeline_preset` (string enum):
+  - `lowpoly_character_v1`
 - `triangle_budget` (int)
 - `skeleton_preset` (string enum):
   - `humanoid_basic_v1`
@@ -160,3 +164,7 @@ The current core tooling only commits to:
 
 Everything else (organic sculpts, cloth sim, hair, photoreal scans, VFX, etc.) is out of scope for now and should be treated as a future extension.
 
+Preset definitions live under `templates/presets/`:
+
+- `templates/presets/hardsurface_prop_v1.json`
+- `templates/presets/lowpoly_character_v1.json`
