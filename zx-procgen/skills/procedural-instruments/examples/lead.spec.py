@@ -1,5 +1,5 @@
 # Lead Synth Instrument Specification
-# Usage: python sound_parser.py instrument lead.spec.py lead.wav
+# Run: python .studio/generate.py --only instruments
 
 INSTRUMENT = {
     "instrument": {

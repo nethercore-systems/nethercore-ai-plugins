@@ -129,7 +129,7 @@ After writing assets, ensure:
 generated/meshes/*.obj
 generated/meshes/*.glb
 generated/textures/*.png
-generated/audio/*.wav
+generated/sounds/*.wav
 ```
 
 ## Completion Requirements

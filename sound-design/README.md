@@ -210,13 +210,13 @@ This plugin creates minimal files - design specifications stay in conversation c
 - `.studio/sonic-identity.md` - From `/establish-sonic-identity`
 
 **Downstream specs (created by synthesis agents):**
-- `.studio/instruments/*.spec.py` - Instrument synthesis specs
+- `.studio/specs/instruments/*.spec.py` - Instrument synthesis specs
 - `.studio/specs/sounds/*.spec.py` - SFX synthesis specs
 - `.studio/specs/music/*.spec.py` - Song structure specs
 
 **Generated audio (gitignored):**
-- `generated/audio/*.wav` - Synthesized sounds
-- `generated/tracks/*.xm` - Tracker music files
+- `generated/sounds/*.wav` - Synthesized sounds
+- `generated/music/*.xm` - Tracker music files
 
 ## Installation
 

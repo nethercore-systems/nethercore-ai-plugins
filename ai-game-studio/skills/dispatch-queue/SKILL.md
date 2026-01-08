@@ -33,7 +33,6 @@ The dispatch queue (`.studio/dispatch-queue.md`) tracks pending tasks for sessio
 - When completion-auditor finds gaps
 - When project-health-monitor identifies issues
 - When user requests deferred work
-- Via SubagentStop hooks
 
 **Remove/Complete:**
 - When task dispatched and completed

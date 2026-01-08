@@ -14,7 +14,7 @@ Asset generators are **native binaries** that run on your development machine du
 ┌─────────────────────────────────────────────────────────────┐
 │                    BUILD TIME (Native)                      │
 │                                                             │
-│  generation/         →  generated/        →  game.nczx     │
+│  .studio/specs/      →  generated/        →  game.nczx     │
 │  (Rust/Python/etc)      (PNG, OBJ, WAV)      (bundled ROM) │
 │  Runs on your CPU       Standard formats      Final output  │
 └─────────────────────────────────────────────────────────────┘
@@ -71,7 +71,7 @@ version = "1.0.0"
 
 # Build pipeline: generate assets THEN compile WASM
 [build]
-script = "python generation/generate_all.py && cargo build -p game --target wasm32-unknown-unknown --release"
+script = "python .studio/generate.py && cargo build -p game --target wasm32-unknown-unknown --release"
 wasm = "target/wasm32-unknown-unknown/release/game.wasm"
 
 # Declare generated assets
@@ -85,50 +85,47 @@ path = "../generated/meshes/level.obj"
 
 [[assets.sounds]]
 id = "jump"
-path = "../generated/audio/jump.wav"
+path = "../generated/sounds/jump.wav"
 ```
 
 ---
 
 ## Project Structure
 
-### Python Generator Structure (Recommended)
+### Studio Scaffold (Recommended)
 
-Use a modular Python structure with shared lib/ for all asset types:
+Install the `.studio/` scaffold (generator + parsers) with `/init-procgen` and put specs under `.studio/specs/`:
 
 ```
 my-game/
-├── generation/
-│   ├── lib/                # Shared libraries (scaffold once)
-│   │   ├── __init__.py
-│   │   ├── texture_buffer.py  # Texture generation helpers
-│   │   ├── bpy_utils.py       # Blender mesh utilities
-│   │   ├── synthesis.py       # Audio: ADSR, FM, Karplus-Strong
-│   │   └── xm_writer.py       # XM file generation
-│   ├── textures/           # One .py per texture (~100 lines each)
-│   │   ├── wood_plank.py
-│   │   └── metal_rust.py
-│   ├── meshes/             # One .py per mesh (~100 lines each)
-│   │   ├── barrel.py
-│   │   └── crate.py
-│   ├── sounds/             # One .py per sound (~50 lines each)
-│   │   ├── laser.py
-│   │   └── coin.py
-│   └── generate_all.py     # Runs all generators
+├── .studio/
+│   ├── generate.py
+│   ├── parsers/            # Installed by /init-procgen
+│   └── specs/              # Source of truth (*.spec.py)
+│       ├── textures/
+│       ├── normals/
+│       ├── sounds/
+│       ├── instruments/
+│       ├── music/
+│       ├── meshes/
+│       ├── characters/
+│       └── animations/
 ├── game/
 │   ├── Cargo.toml          # WASM library (cdylib)
 │   ├── nether.toml         # Build config
 │   └── src/
 │       ├── lib.rs          # Game code (compiles to WASM)
 │       └── zx.rs           # FFI module (fetch from GitHub)
-├── generated/              # Procedural assets (gitignored, regenerable)
+├── generated/              # Procedural outputs (gitignored, regenerable)
 │   ├── textures/
+│   ├── normals/
 │   ├── meshes/
-│   └── audio/
+│   ├── characters/
+│   ├── animations/
+│   ├── audio/
+│   │   └── instruments/
+│   └── tracks/
 ├── assets/                 # Human-made assets (committed to git)
-│   ├── textures/           # Hand-painted textures, photos, etc.
-│   ├── models/             # Artist-created models from Blender/Maya
-│   └── audio/              # Recorded samples, music tracks
 └── .gitignore
 ```
 
@@ -136,8 +133,8 @@ my-game/
 
 **Key Distinction:**
 - `generated/` - Procedurally generated assets (gitignored)
-  - Source of truth: generation code in `generation/`
-  - Rebuild anytime with: `python generation/generate_all.py`
+  - Source of truth: specs in `.studio/specs/`
+  - Rebuild anytime with: `python .studio/generate.py`
   - Not committed to git - regenerate after clone
   - Assets are fungible and reproducible
 
@@ -160,49 +157,21 @@ id = "hero_portrait"
 path = "../assets/textures/hero_portrait.png"  # Hand-painted, committed
 ```
 
-### generate_all.py Pattern
+### Generator Invocation
 
-Run all asset generators with a single script:
-
-```python
-#!/usr/bin/env python3
-"""Generate all assets for the project."""
-import subprocess
-from pathlib import Path
-
-generators_dir = Path(__file__).parent
-
-# Ensure output directories exist
-(generators_dir.parent / "generated/textures").mkdir(parents=True, exist_ok=True)
-(generators_dir.parent / "generated/meshes").mkdir(parents=True, exist_ok=True)
-(generators_dir.parent / "generated/audio").mkdir(parents=True, exist_ok=True)
-
-# Generate textures (PIL/numpy)
-for script in sorted((generators_dir / "textures").glob("*.py")):
-    if script.name != "__init__.py":
-        print(f"Generating texture: {script.stem}...")
-        subprocess.run(["python", str(script)], check=True)
-
-# Generate meshes (Blender bpy)
-for script in sorted((generators_dir / "meshes").glob("*.py")):
-    if script.name != "__init__.py":
-        print(f"Generating mesh: {script.stem}...")
-        subprocess.run(["blender", "--background", "--python", str(script)], check=True)
-
-# Generate sounds (numpy/scipy)
-for script in sorted((generators_dir / "sounds").glob("*.py")):
-    if script.name != "__init__.py":
-        print(f"Generating sound: {script.stem}...")
-        subprocess.run(["python", str(script)], check=True)
-
-print("All assets generated!")
-```
-
-nether.toml runs Python generators before WASM compilation:
+Run the unified generator before WASM compilation:
 
 ```toml
 [build]
-script = "python generation/generate_all.py && cargo build -p game --target wasm32-unknown-unknown --release"
+script = "python .studio/generate.py && cargo build -p game --target wasm32-unknown-unknown --release"
+```
+
+For Blender-dependent categories, run Blender on the same entrypoint:
+
+```bash
+blender --background --python .studio/generate.py -- --only meshes
+blender --background --python .studio/generate.py -- --only characters
+blender --background --python .studio/generate.py -- --only animations
 ```
 
 ---
@@ -268,7 +237,7 @@ cargo build -p game --target wasm32-unknown-unknown --release
 nether pack
 
 # Run generators only (debug)
-python generation/generate_all.py
+python .studio/generate.py
 
 # Regenerate after git clone
 cd game && nether build

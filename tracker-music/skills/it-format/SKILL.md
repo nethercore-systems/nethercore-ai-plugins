@@ -172,7 +172,7 @@ The IT writer is part of the unified `.studio/` infrastructure.
 - `it_writer.py` - IT file writing
 - `it_types.py` - IT data structures
 
-**Setup:** Run `/init-procgen` or `/init-tracker-music` to download parsers.
+**Setup:** Run `/init-procgen` to install the `.studio/` scaffold (generator + parsers).
 
 ## Project Structure
 

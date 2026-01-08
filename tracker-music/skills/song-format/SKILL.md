@@ -3,7 +3,7 @@ name: Song Spec Format
 description: |
   Declarative song specification format for programmatic XM/IT tracker module generation.
 
-  **Trigger phrases:** "song spec", "SONG dict", "song_parser", "generate song from spec",
+  **Trigger phrases:** "song spec", "SONG dict", "generate song from spec",
   "tracker module spec", "song specification", "music spec"
 
   **Load references when:**
@@ -34,8 +34,8 @@ SONG = {
         "channels": 4,
 
         "instruments": [
-            {"ref": "instruments/kick.spec.py"},
-            {"ref": "instruments/bass.spec.py"}
+            {"ref": "../instruments/kick.spec.py"},
+            {"ref": "../instruments/bass.spec.py"}
         ],
 
         "patterns": {
@@ -57,7 +57,7 @@ SONG = {
 Generate:
 
 ```bash
-python song_parser.py .studio/specs/music/theme.spec.py generated/tracks/theme.xm
+python .studio/generate.py --only music
 ```
 
 ## Spec Structure Overview
@@ -79,9 +79,9 @@ Three loading modes:
 
 ### External Reference (Recommended)
 ```python
-{"ref": "instruments/kick.spec.py"}
+{"ref": "../instruments/kick.spec.py"}
 ```
-Uses `sound_parser.generate_instrument()` for synthesis. Best for reusable instruments.
+Best for reusable instruments defined in `.studio/specs/instruments/`.
 
 ### Inline Synthesis
 ```python
@@ -211,7 +211,7 @@ All parsers are part of the unified `.studio/` infrastructure.
 - `it_writer.py`, `it_types.py` - IT format
 - `sound.py` - Instrument synthesis
 
-**Setup:** Run `/init-procgen` or `/init-tracker-music` to download parsers.
+**Setup:** Run `/init-procgen` to install/update the unified `.studio/` scaffold.
 
 ```bash
 python .studio/generate.py --only music
@@ -223,16 +223,17 @@ All specs use `.spec.py`. The folder determines the type:
 
 ```
 .studio/
-├── instruments/
-│   ├── kick.spec.py       # INSTRUMENT dict
-│   ├── bass.spec.py
-│   └── lead.spec.py
-└── music/
-    ├── boss_theme.spec.py  # SONG dict
-    └── menu_theme.spec.py
+└── specs/
+    ├── instruments/
+    │   ├── kick.spec.py       # INSTRUMENT dict
+    │   ├── bass.spec.py
+    │   └── lead.spec.py
+    └── music/
+        ├── boss_theme.spec.py  # SONG dict
+        └── menu_theme.spec.py
 
 generated/
-└── tracks/
+└── music/
     ├── boss_theme.xm
     └── menu_theme.xm
 ```

@@ -227,11 +227,6 @@ Quality assurance and coherence plugin providing "director" level oversight acro
 - `tech-director` - Reviews architecture, code quality, file size compliance
 - `creative-director` - Meta-director for holistic vision alignment, coordinates other directors
 
-**Hooks:**
-- PostToolUse file-size guards (warns when files exceed limits)
-- SessionStart direction context loading
-- Stop checkpoint for documenting decisions
-
 ### sound-design
 
 Platform-agnostic game audio design with audio style guide - the audio equivalent of the visual style guide for visual assets.
@@ -288,11 +283,6 @@ Intelligent game development studio providing request routing, quality analysis,
 - `completion-auditor` - Semantic verification that work is complete; catches "generated but not integrated" issues
 - `project-health-monitor` - Comprehensive project health assessment; coordinates analysis agents, produces health dashboard
 - `next-step-suggester` - Fast, focused next-action recommendations (uses haiku for speed)
-
-**Hooks:**
-- SubagentStop verification prompts (ensures follow-up actions aren't forgotten)
-- SessionStart health check reminder
-- Stop checkpoint for documenting incomplete work
 
 **Key Capabilities:**
 - **Intelligent Dispatch:** Parses vague requests like "improve mesh quality" and routes to correct experts

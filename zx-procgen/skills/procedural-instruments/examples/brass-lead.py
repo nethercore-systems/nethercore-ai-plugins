@@ -201,7 +201,7 @@ def supersaw(freq: float, duration: float = 1.0,
 
 
 def main():
-    output_dir = Path("generated/audio/instruments")
+    output_dir = Path("generated/sounds/instruments")
     output_dir.mkdir(parents=True, exist_ok=True)
 
     notes = {

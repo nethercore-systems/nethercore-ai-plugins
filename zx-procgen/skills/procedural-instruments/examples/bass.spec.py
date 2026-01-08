@@ -1,5 +1,5 @@
 # Bass Instrument Specification
-# Usage: python sound_parser.py instrument bass.spec.py bass.wav
+# Run: python .studio/generate.py --only instruments
 
 INSTRUMENT = {
     "instrument": {

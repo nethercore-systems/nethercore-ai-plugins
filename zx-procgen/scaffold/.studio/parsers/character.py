@@ -4,19 +4,14 @@ Character Parser - Interprets .spec.py files and generates character meshes.
 Deterministic character generation from declarative specs. Follows the same pattern
 as animation.py for animations and sound.py for audio.
 
-Usage:
-    blender --background --python character_parser.py -- \\
-        character.spec.py \\
-        output.glb
+Usage (via unified generator):
+    blender --background --python .studio/generate.py -- --only characters
 
-Arguments:
-    character.spec.py - Path to character spec file (contains SPEC dict)
-    output.glb        - Output path for character GLB
+Specs:
+    .studio/specs/characters/*.spec.py
 
-Example:
-    blender --background --python character_parser.py -- \\
-        .studio/characters/knight.spec.py \\
-        assets/characters/knight.glb
+Outputs:
+    generated/characters/*.glb
 """
 
 import math

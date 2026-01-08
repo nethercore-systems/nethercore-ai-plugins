@@ -54,28 +54,27 @@ This plugin enables Claude to generate complete, polished tracker music autonomo
 |-------|---------|-------------|
 | `song-generator` | "generate a song", "make tracker music" | End-to-end song generation from mood/style description |
 
-### Commands (2)
+### Commands (1)
 
 | Command | Description | Token Efficiency |
 |---------|-------------|------------------|
-| `/init-tracker-music` | Copy XM/IT writers to project (fast setup) ⚡ | 85% savings |
 | `/generate-song` | Interactive song generation wizard | Standard |
 
 ## Quick Start
 
 ### Option 1: Set Up Infrastructure (Recommended for Projects) ⚡
 
-**Token-efficient setup** - copies XM/IT writer files using native OS commands:
+**Token-efficient setup** - installs the unified `.studio/` scaffold using native OS commands:
 
 ```
-/init-tracker-music
+/init-procgen
 ```
 
-This instantly sets up your tracker music project:
-- Copies `xm_writer.py`, `it_writer.py`, `xm_types.py`, `it_types.py` to `lib/`
-- Creates directory structure (`songs/`, `instruments/`, `patterns/`, `generated/`)
-- Generates example song template and wrapper scripts
-- **Uses 85% fewer tokens** (130 lines vs 904 lines)
+This installs/updates:
+- `.studio/generate.py`
+- `.studio/parsers/**` (XM/IT writers, types, and SONG parsing)
+- `.studio/specs/music/**` and `.studio/specs/instruments/**` folders
+- `generated/music/` output folder
 
 **Best for:** New music composition projects, working with multiple songs, token-conscious workflows
 

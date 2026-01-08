@@ -5,11 +5,10 @@ description: |
 
   **Spec-Driven Workflow (RECOMMENDED):**
   1. Create `.spec.py` in `.studio/specs/sounds/`
-  2. Run `python sound_parser.py sfx spec.py output.wav`
+  2. Run `python .studio/generate.py --only sounds`
 
   **Load references when:**
   - SFX specs → `references/sound-spec-format.md`
-  - Parser → `references/sound_parser.py`
   - Example specs → `examples/laser.spec.py`, `examples/explosion.spec.py`
   - Recipes → `references/sfx-recipes/`
   - Manual synthesis → `references/numpy-scipy-building-blocks.md`
@@ -45,9 +44,9 @@ SOUND = {
 }
 ```
 
-**Step 2: Run Parser**
+**Step 2: Run Generator**
 ```bash
-python sound_parser.py sfx .studio/specs/sounds/laser.spec.py generated/audio/laser.wav
+python .studio/generate.py --only sounds
 ```
 
 See `references/sound-spec-format.md` for complete format.
@@ -104,7 +103,7 @@ See `references/quality-standards.md` for complete checklist.
 ```toml
 [[assets.sounds]]
 id = "laser"
-path = "generated/audio/laser.wav"
+path = "generated/sounds/laser.wav"
 ```
 
 ```rust
@@ -115,15 +114,11 @@ play_sound(laser);
 ## File Organization
 
 ```
-generation/
-├── sfx.py
-├── sounds/
-│   ├── combat.py
-│   └── gameplay.py
-└── utils/
-    └── synthesis.py
-
 .studio/specs/sounds/
 ├── laser.spec.py
 └── explosion.spec.py
+
+generated/sounds/
+├── laser.wav
+└── explosion.wav
 ```

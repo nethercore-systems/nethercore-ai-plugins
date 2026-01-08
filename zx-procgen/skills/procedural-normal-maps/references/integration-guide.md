@@ -192,22 +192,22 @@ fn tick() {
 # Mesh with tangent data
 [[assets.meshes]]
 id = "brick_wall"
-path = "assets/meshes/brick_wall.glb"
+path = "generated/meshes/brick_wall.glb"
 
 # Albedo texture (BC7 compressed)
 [[assets.textures]]
 id = "brick_albedo"
-path = "assets/textures/brick_albedo.png"
+path = "generated/textures/brick_albedo.png"
 
 # MRE texture (BC7 compressed)
 [[assets.textures]]
 id = "brick_mre"
-path = "assets/textures/brick_mre.png"
+path = "generated/textures/brick_mre.png"
 
 # Normal map (auto-BC5 due to _normal suffix)
 [[assets.textures]]
 id = "brick_normal"
-path = "assets/textures/brick_normal.png"
+path = "generated/textures/brick_normal.png"
 ```
 
 ### Build Script Integration
@@ -216,12 +216,13 @@ path = "assets/textures/brick_normal.png"
 [build]
 script = """
 # Generate textures
-python generation/textures/brick_albedo.py
-python generation/textures/brick_mre.py
-python generation/textures/brick_normal.py
+python .studio/generate.py --only textures
 
-# Generate mesh with tangents
-blender --background --python generation/meshes/brick_wall.py
+# Generate normals
+python .studio/generate.py --only normals
+
+# Generate meshes (Blender)
+blender --background --python .studio/generate.py -- --only meshes
 
 # Build game
 cargo build --release

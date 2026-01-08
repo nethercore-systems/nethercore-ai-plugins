@@ -22,7 +22,8 @@ End-to-end audio workflow spanning three plugins, each handling a distinct phase
 │                                                                  │
 │  Commands: /generate-sfx, /generate-instrument                   │
 │  Agents:   instrument-architect, sfx-architect                   │
-│  Outputs:  .studio/instruments/*.spec.py, .wav files             │
+│  Outputs:  .studio/specs/sounds/*.spec.py,                        │
+│            .studio/specs/instruments/*.spec.py                    │
 └────────────────────────────┬────────────────────────────────────┘
                              │
                              ▼
@@ -41,7 +42,7 @@ End-to-end audio workflow spanning three plugins, each handling a distinct phase
 | Plugin | Role | What It Does | What It Outputs |
 |--------|------|--------------|-----------------|
 | **sound-design** | DESIGN | Defines audio style, SFX layer patterns, music theory | `.studio/sonic-identity.md`, design specs in conversation |
-| **zx-procgen** | SYNTHESIS | Generates actual audio using NumPy/SciPy | `.studio/instruments/*.spec.py`, `.wav` files |
+| **zx-procgen** | SYNTHESIS | Writes synthesis specs and runs the generator | `.studio/specs/sounds/*.spec.py`, `.studio/specs/instruments/*.spec.py` |
 | **tracker-music** | COMPOSITION | Arranges music into tracker modules | `.studio/specs/music/*.spec.py`, `.xm`/`.it` files |
 
 ## When to Use Each Plugin
@@ -62,7 +63,7 @@ End-to-end audio workflow spanning three plugins, each handling a distinct phase
 - `music-architect` (sound-design) - Outputs design in conversation, then offers generation
 
 **"Synthesis" agents** create parsable `.spec.py` files:
-- `instrument-architect` (zx-procgen) - Outputs `.studio/instruments/*.spec.py` with synthesis params
+- `instrument-architect` (zx-procgen) - Outputs `.studio/specs/instruments/*.spec.py` with synthesis params
 - `sfx-architect` (also zx-procgen) - Outputs `.studio/specs/sounds/*.spec.py`
 
 **"Generator" agents** create runnable output:
@@ -83,7 +84,7 @@ End-to-end audio workflow spanning three plugins, each handling a distinct phase
    /design-sfx "sword impact"
    → Shows design spec in conversation (layers, frequencies, synthesis approach)
    → Offers: "Ready to synthesize? I can spawn sfx-architect."
-   → User says yes → sfx-architect creates .spec.py and .wav
+   → User says yes → sfx-architect writes .spec.py, then you run the generator
    ```
 
 ### Workflow 2: Complete Music Creation
@@ -98,18 +99,19 @@ End-to-end audio workflow spanning three plugins, each handling a distinct phase
    /design-soundtrack "boss battle"
    → Shows design spec in conversation (tempo, key, structure, chord progressions)
    → Offers: "Ready to generate? I can spawn song-generator."
-   → User says yes → song-generator creates .spec.py files and .xm
+   → User says yes → song-generator writes .spec.py files, then you run the generator
    ```
 
    The song-generator handles instruments and composition together,
-   creating `.studio/instruments/*.spec.py` and `.studio/specs/music/*.spec.py`.
+   creating `.studio/specs/instruments/*.spec.py` and `.studio/specs/music/*.spec.py`.
 
 ### Workflow 3: Quick SFX (Skip Design)
 
 For rapid iteration, skip the design phase:
 ```
 /generate-sfx laser
-→ Creates laser.py with sensible defaults
+→ Writes `.studio/specs/sounds/laser.spec.py`
+→ Run: `python .studio/generate.py --only sounds`
 ```
 
 ### Workflow 4: Quick Song (Skip Design)
@@ -131,12 +133,12 @@ For rapid iteration, skip the design phase:
 Design in conversation                 Design in conversation
          │                                      │
          ▼                                      ▼
-.studio/specs/sounds/*.spec.py    .studio/instruments/*.spec.py
+.studio/specs/sounds/*.spec.py    .studio/specs/instruments/*.spec.py
          │                        .studio/specs/music/*.spec.py
          ▼                                      │
-  generated/audio/*.wav                         ▼
-                                   generated/tracks/*.xm
-                                   generated/audio/*.wav (instruments)
+  generated/sounds/*.wav                        ▼
+                                   generated/music/*.xm
+                                   generated/sounds/instruments/*.wav
                                                 │
                                                 ▼
                                        nether.toml → ROM

@@ -3,12 +3,12 @@ name: sfx-architect
 description: |
   Use this agent to DESIGN sound effects - creating executable spec files.
 
-  **Outputs:** `.studio/specs/sounds/*.spec.py` files that `sound_parser.py` can execute directly.
+  **Outputs:** `.studio/specs/sounds/*.spec.py` files for the unified generator.
 
   **Workflow:**
   1. Design sound spec with layers, envelope, filters
   2. Write `.spec.py` file to `.studio/specs/sounds/`
-  3. User runs `python sound_parser.py sfx spec.py output.wav`
+  3. User runs `python .studio/generate.py --only sounds`
 
   Triggers: "design a sound", "what layers for", "SFX specification", "plan this sound effect", "how should this sound"
 
@@ -82,7 +82,7 @@ Save to `.studio/specs/sounds/[name].spec.py`:
 
 ```python
 # [Sound Name] SFX Specification
-# Run: python sound_parser.py sfx [name].spec.py [name].wav
+# Run: python .studio/generate.py --only sounds
 
 SOUND = {
     "sound": {
@@ -134,7 +134,7 @@ See `zx-procgen/skills/procedural-sounds/references/sound-spec-format.md` for co
 - [ ] If request is vague → ask about material, weight, context
 - [ ] Write spec to .studio/specs/sounds/[name].spec.py
 - [ ] Verify spec file was created
-- [ ] Tell user how to run: `python sound_parser.py sfx ...`
+- [ ] Tell user how to run: `python .studio/generate.py --only sounds`
 
 ### What Files To Write
 **ONLY write these file types:**

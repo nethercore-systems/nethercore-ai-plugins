@@ -212,7 +212,7 @@ def glass_pad(freq: float, duration: float = 4.0) -> np.ndarray:
 
 
 def main():
-    output_dir = Path("generated/audio/instruments")
+    output_dir = Path("generated/sounds/instruments")
     output_dir.mkdir(parents=True, exist_ok=True)
 
     # Generate at common chord frequencies

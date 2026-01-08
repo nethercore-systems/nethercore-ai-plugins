@@ -56,7 +56,7 @@ Z reconstructed in shader: `z = sqrt(1 - x² - y²)`
 
 ## Spec-Based Workflow
 
-Create `.normal.spec.py` in `.studio/normals/`:
+Create `.spec.py` in `.studio/specs/normals/`:
 
 ```python
 NORMAL = {
@@ -74,11 +74,9 @@ NORMAL = {
 }
 ```
 
-Run: `python normal_parser.py pattern spec.py output.png`
+Run: `python .studio/generate.py --only normals`
 
 **Pattern types:** `bricks`, `tiles`, `hexagons`, `noise`, `scratches`, `rivets`, `weave`
-
-Parser at `references/normal_parser.py`.
 
 ## Height to Normal (Quick)
 

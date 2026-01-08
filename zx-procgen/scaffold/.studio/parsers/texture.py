@@ -1,19 +1,18 @@
 #!/usr/bin/env python3
 """
-Texture Parser - Interprets .texture.spec.py files and generates textures.
+Texture Parser - Interprets .spec.py files and generates textures.
 
 Deterministic texture generation from declarative specs. Follows the same pattern
 as sound.py for audio and animation.py for animations.
 
-Usage:
-    python texture_parser.py input.texture.spec.py output.png
+Usage (via unified generator):
+    python .studio/generate.py --only textures
 
-Arguments:
-    input.texture.spec.py - Path to texture spec file (contains TEXTURE dict)
-    output.png            - Output path for generated texture
+Specs:
+    .studio/specs/textures/*.spec.py
 
-Example:
-    python texture_parser.py .studio/textures/wood.texture.spec.py assets/textures/wood.png
+Outputs:
+    generated/textures/*.png
 """
 
 import sys
@@ -37,7 +36,7 @@ except ImportError:
 # =============================================================================
 
 def load_spec(spec_path: str) -> Dict[str, Any]:
-    """Load spec from .texture.spec.py file via exec()."""
+    """Load spec from .spec.py file via exec()."""
     with open(spec_path, 'r') as f:
         code = f.read()
 

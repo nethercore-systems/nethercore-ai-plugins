@@ -21,7 +21,7 @@
 
 ## Sound Asset
 
-- [ ] File exists: `generated/audio/[name].wav`
+- [ ] File exists: `generated/sounds/[name].wav`
 - [ ] Format correct: WAV, 22050 Hz, 16-bit, mono
 - [ ] Declared in nether.toml: `[[assets.sounds]]`
 - [ ] Handle exists: `pub const SND_[NAME]: SoundHandle = asset_handle!(...);`

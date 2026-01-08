@@ -1,25 +1,18 @@
 #!/usr/bin/env python3
 """
-Normal Map Parser - Interprets .normal.spec.py files and generates normal maps.
+Normal Map Parser - Interprets .spec.py files and generates normal maps.
 
 Deterministic normal map generation from declarative specs. Follows the same pattern
 as sound.py for audio and animation.py for animations.
 
-Usage:
-    # From pattern spec
-    python normal_parser.py pattern input.normal.spec.py output.png
+Usage (via unified generator):
+    python .studio/generate.py --only normals
 
-    # From height image
-    python normal_parser.py height height_map.png output.png [--strength 1.0]
+Specs:
+    .studio/specs/normals/*.spec.py
 
-Arguments:
-    mode              - Either 'pattern' or 'height'
-    input             - Spec file (.normal.spec.py) or height map image
-    output            - Output path for generated normal map
-
-Example:
-    python normal_parser.py pattern .studio/normals/bricks.normal.spec.py assets/textures/bricks_normal.png
-    python normal_parser.py height assets/textures/bricks_height.png assets/textures/bricks_normal.png
+Outputs:
+    generated/normals/*.png
 """
 
 import sys
@@ -42,7 +35,7 @@ except ImportError:
 # =============================================================================
 
 def load_spec(spec_path: str) -> Dict[str, Any]:
-    """Load spec from .normal.spec.py file via exec()."""
+    """Load spec from .spec.py file via exec()."""
     with open(spec_path, 'r') as f:
         code = f.read()
 

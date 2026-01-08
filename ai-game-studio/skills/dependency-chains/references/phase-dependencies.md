@@ -74,7 +74,7 @@ Feature renders correctly requires:
 ### Audio Feature
 ```
 Sound plays correctly requires:
-├── Audio file exists (generated/audio/, WAV 22050Hz mono 16-bit)
+├── Audio file exists (generated/sounds/, WAV 22050Hz mono 16-bit)
 ├── nether.toml declares sound
 ├── Sound handle exists
 ├── Code calls sound_play()

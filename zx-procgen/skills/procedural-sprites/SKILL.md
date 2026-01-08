@@ -86,7 +86,7 @@ def apply_bayer_dither(img, palette):
 # nether.toml
 [[assets.textures]]
 id = "ui-sprites"
-path = "generated/sprites/ui_elements.png"
+path = "generated/textures/ui_elements.png"
 filter = "nearest"  # Critical for pixel art
 ```
 
@@ -100,29 +100,11 @@ draw_sprite_region(sprites, x, y, state * width, 0, width, height);
 
 ## File Organization
 
-**One sprite per file.** Each sprite/sprite sheet should have its own Python script:
+Author sprite sheets as texture specs under `.studio/specs/textures/` and generate with:
 
+```bash
+python .studio/generate.py --only textures
 ```
-generation/
-├── lib/
-│   └── sprite_utils.py       # Palettes, dithering (from generator-patterns)
-├── sprites/
-│   ├── player_idle.py        # One file per sprite/sheet
-│   ├── player_walk.py
-│   ├── enemy_slime.py
-│   ├── ui_buttons.py
-│   └── tileset_grass.py
-├── data/
-│   ├── autotile_47.py        # Neighbor map (DATA ONLY)
-│   └── palettes.py           # Custom palettes
-└── generate_all.py           # Batch runner
-```
-
-**File size limit:** ≤150 lines per sprite file. Extract reusable logic to `lib/sprite_utils.py`.
-
-**Critical:** Keep data tables (autotile maps, palettes) in separate `data/` modules.
-
-For complete setup, see the `generator-patterns` skill.
 
 ## References
 

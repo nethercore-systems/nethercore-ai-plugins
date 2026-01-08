@@ -1,6 +1,6 @@
 # Song Spec Format Reference
 
-Complete specification for song `.spec.py` files used by `song_parser.py`.
+Complete specification for song `.spec.py` files used by the unified generator.
 
 ## File Format
 
@@ -43,10 +43,10 @@ Instruments can be defined in three ways:
 
 ### 1. External Reference
 
-Reference a `.spec.py` file that `sound_parser.py` can process:
+Reference an instrument spec file:
 
 ```python
-{"ref": "instruments/kick.spec.py"}
+{"ref": "../instruments/kick.spec.py"}
 ```
 
 Path is relative to the song spec file's directory.
@@ -387,40 +387,23 @@ SONG = {
 }
 ```
 
-## Parser CLI
+## Generator CLI
 
 ```bash
-# XM output (explicit)
-python song_parser.py .studio/specs/music/theme.spec.py generated/tracks/theme.xm
-
-# IT output (explicit)
-python song_parser.py .studio/specs/music/theme.spec.py generated/tracks/theme.it
-
-# Format from spec (when output has no extension)
-python song_parser.py .studio/specs/music/theme.spec.py generated/tracks/theme
+python .studio/generate.py --only music
 ```
 
 ## Integration with Build System
 
-Add to `generate_all.py`:
-
-```python
-# In RUNNERS dict:
-RUNNERS = {
-    "meshes": ["blender", "--background", "--python"],
-    "textures": ["python"],
-    "sounds": ["python", "sound_parser.py", "sfx"],
-    "instruments": ["python", "sound_parser.py", "instrument"],
-    "music": ["python", "song_parser.py"],  # NEW
-}
-```
-
-Or in `nether.toml`:
+In `nether.toml`:
 
 ```toml
+[build]
+script = "python .studio/generate.py && cargo build -p game --target wasm32-unknown-unknown --release"
+
 [[assets.sounds]]
 id = "boss_theme"
-path = "../generated/tracks/boss_theme.xm"
+path = "../generated/music/boss_theme.xm"
 ```
 
 ## Validation

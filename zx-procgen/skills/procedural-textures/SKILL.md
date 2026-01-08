@@ -9,7 +9,6 @@ description: |
 
   **Load references when:**
   - Render modes (0-3), MRE/SSE → `references/render-modes.md`
-  - TextureBuffer API → `references/texture-api.md`
   - Noise algorithms → `references/noise-algorithms.md`
   - Material recipes → `references/material-recipes.md`
   - Matcap library → `references/matcap-generation.md`
@@ -52,16 +51,7 @@ See `references/render-modes.md` for complete mode documentation.
 
 ## Quick Start
 
-```python
-from texture_buffer import TextureBuffer
-
-tex = TextureBuffer(256, 256)
-tex.fill((139, 69, 19, 255))  # Brown base
-tex.add_perlin_noise(scale=0.03, intensity=0.2, seed=42)
-tex.save("bark_albedo.png")
-```
-
-See `references/texture-api.md` for TextureBuffer implementation.
+Create a texture spec under `.studio/specs/textures/` and run the unified generator.
 
 ## Noise Algorithms
 
@@ -89,7 +79,7 @@ See `references/layer-system.md` for layer system details.
 
 ## Spec-Based Workflow
 
-Create `.texture.spec.py` files for deterministic generation:
+Create `.spec.py` files for deterministic generation:
 
 ```python
 TEXTURE = {
@@ -106,12 +96,10 @@ TEXTURE = {
 }
 ```
 
-Run: `python texture_parser.py spec.py output.png`
+Run: `python .studio/generate.py --only textures`
 
 **Layer types:** `solid`, `noise`, `gradient`, `wood_grain`, `brick`, `checkerboard`, `stripes`
 **Blend modes:** `normal`, `multiply`, `add`, `screen`, `overlay`, `soft_light`
-
-Parser at `references/texture_parser.py`.
 
 ## Console Constraints
 
@@ -123,16 +111,14 @@ Parser at `references/texture_parser.py`.
 
 ## File Organization
 
-One texture per file. Target ≤150 lines per generator.
-
 ```
-generation/
-├── lib/texture_buffer.py
-├── textures/
-│   ├── wood_plank.py
-│   ├── metal_brushed.py
-│   └── stone_cobble.py
-└── generate_all.py
+.studio/specs/textures/
+├── wood_plank.spec.py
+└── metal_brushed.spec.py
+
+generated/textures/
+├── wood_plank.png
+└── metal_brushed.png
 ```
 
 See `generator-patterns` skill for full project setup.

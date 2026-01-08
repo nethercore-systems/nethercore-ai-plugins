@@ -8,7 +8,6 @@ description: |
   **Before generating:** Check `.studio/visual-style.md` for project style specs.
 
   **Load references when:**
-  - Script templates, boilerplate → `references/mesh-script-template.md`
   - Basic shapes, primitives → `references/bpy-primitives.md`
   - Modifiers (bevel, mirror, array) → `references/bpy-modifiers.md`
   - Organic shapes, metaballs, skin → `references/bpy-organic-workflows.md`
@@ -36,7 +35,31 @@ Blender 3.0+ must be installed and in PATH:
 blender --version
 ```
 
-Run scripts via: `blender --background --python generator.py`
+Run mesh generation via: `blender --background --python .studio/generate.py -- --only meshes`
+
+## Spec-Based Workflow
+
+Write one mesh spec per file under `.studio/specs/meshes/`:
+
+```python
+# .studio/specs/meshes/barrel.spec.py
+MESH = {
+    "mesh": {
+        "name": "barrel",
+        "primitive": "cylinder",
+        "params": {"radius": 0.45, "depth": 1.1, "vertices": 24},
+        "modifiers": [{"type": "bevel", "width": 0.02, "segments": 2}],
+        "uv": {"mode": "smart_project", "angle_limit": 66.0},
+        "export": {"tangents": True},
+    }
+}
+```
+
+Generate with:
+
+```bash
+blender --background --python .studio/generate.py -- --only meshes
+```
 
 ## Workflow Selection
 
@@ -85,25 +108,23 @@ See `references/bpy-post-processing.md` for implementation.
 
 ## File Organization
 
-One mesh per file. Target ≤150 lines per generator.
+One mesh spec per file:
 
 ```
-generation/
-├── lib/bpy_utils.py         # Shared helpers
-├── meshes/
-│   ├── barrel.py            # One file per mesh
-│   ├── crate.py
-│   └── chair.py
-└── generate_all.py          # Batch runner
-```
+.studio/specs/meshes/
+├── barrel.spec.py
+└── crate.spec.py
 
-See `references/mesh-script-template.md` for templates and `generator-patterns` skill for full project setup.
+generated/meshes/
+├── barrel.glb
+└── crate.glb
+```
 
 ## nether.toml Integration
 
 ```toml
 [build]
-script = "blender --background --python generator.py && cargo build -p game --target wasm32-unknown-unknown --release"
+script = "blender --background --python .studio/generate.py -- --only meshes && cargo build -p game --target wasm32-unknown-unknown --release"
 
 [[assets.meshes]]
 id = "barrel"

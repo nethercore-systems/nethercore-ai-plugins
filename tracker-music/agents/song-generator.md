@@ -4,9 +4,9 @@ description: |
   Use this agent for end-to-end tracker song generation from a mood/style description.
 
   **Spec-Driven Workflow:**
-  1. Create instrument specs in `.studio/instruments/*.spec.py`
+  1. Create instrument specs in `.studio/specs/instruments/*.spec.py`
   2. Create song spec in `.studio/specs/music/*.spec.py` (SONG dict)
-  3. Run `python song_parser.py spec.spec.py output.xm`
+  3. Run `python .studio/generate.py --only music`
 
   <example>
   Context: User wants a song generated
@@ -26,9 +26,9 @@ You are a tracker music generation agent. Create songs as declarative `.spec.py`
 All specs use `.spec.py` extension. The folder and dict name identify the type:
 
 ```
-LLM creates specs  →  song_parser.py  →  XM/IT file
+LLM creates specs  →  python .studio/generate.py  →  XM/IT file
          ↓
-  .studio/instruments/*.spec.py  (INSTRUMENT dict)
+  .studio/specs/instruments/*.spec.py  (INSTRUMENT dict)
   .studio/specs/music/*.spec.py        (SONG dict)
 ```
 
@@ -36,18 +36,10 @@ LLM creates specs  →  song_parser.py  →  XM/IT file
 
 ```
 project/
-├── .studio/
+├── .studio/specs/
 │   ├── instruments/     # Instrument specs (INSTRUMENT dict)
-│   │   ├── kick.spec.py
-│   │   └── bass.spec.py
 │   └── music/           # Song specs (SONG dict)
-│       └── boss_theme.spec.py
-├── generation/lib/      # Parser scripts
-│   ├── song_parser.py
-│   ├── sound_parser.py
-│   ├── xm_types.py
-│   └── xm_writer.py
-└── generated/tracks/    # Output files (gitignored)
+└── generated/music/     # Output files (gitignored)
 ```
 
 ## Required Pre-Generation Steps
@@ -65,7 +57,7 @@ Read `zx-procgen/skills/procedural-sounds/references/sound-spec-format.md` for:
 ### 2. Check for Existing Instruments
 
 ```bash
-ls .studio/instruments/ 2>/dev/null || echo "No instruments yet"
+ls .studio/specs/instruments/ 2>/dev/null || echo "No instruments yet"
 ```
 
 ## Generation Process
@@ -83,7 +75,7 @@ Extract:
 For each instrument needed, write a `.spec.py` file:
 
 ```python
-# .studio/instruments/kick.spec.py
+# .studio/specs/instruments/kick.spec.py
 INSTRUMENT = {
     "instrument": {
         "name": "kick",
@@ -112,8 +104,8 @@ SONG = {
         "channels": 8,
 
         "instruments": [
-            {"ref": "instruments/kick.spec.py"},
-            {"ref": "instruments/bass.spec.py"}
+            {"ref": "../instruments/kick.spec.py"},
+            {"ref": "../instruments/bass.spec.py"}
         ],
 
         "patterns": {
@@ -140,7 +132,7 @@ SONG = {
 ### Step 4: Generate
 
 ```bash
-python generation/lib/song_parser.py .studio/specs/music/boss_theme.spec.py generated/tracks/boss_theme.xm
+python .studio/generate.py --only music
 ```
 
 ### Step 5: Validate
@@ -164,7 +156,7 @@ Reference `tracker-fundamentals/references/quality-checklist.md` before finalizi
 
 ```python
 # Reference external spec (recommended - reusable)
-{"ref": "instruments/kick.spec.py"}
+{"ref": "../instruments/kick.spec.py"}
 
 # Inline synthesis (self-contained)
 {"name": "bass", "synthesis": {...}, "envelope": {...}, "base_note": "C2"}
@@ -234,7 +226,7 @@ Before finalizing, verify:
 - Sustained notes have vibrato
 - Loop boundaries have fades/fills
 - File validates without errors
-- Output in `generated/tracks/`, NOT `generation/`
+- Output in `generated/music/`
 
 ## Completion Requirements
 
@@ -242,16 +234,16 @@ Before finalizing, verify:
 
 ### Minimum Actions
 - [ ] Read song-format/SKILL.md for spec format
-- [ ] Create instrument specs in .studio/instruments/*.spec.py (if needed)
+- [ ] Create instrument specs in .studio/specs/instruments/*.spec.py (if needed)
 - [ ] Create song spec in .studio/specs/music/*.spec.py (SONG dict)
-- [ ] Run song_parser.py to generate
-- [ ] Verify output file exists in generated/tracks/
+- [ ] Tell user how to run: `python .studio/generate.py --only music`
+- [ ] Verify output file exists in generated/music/
 
 ### What Files To Write
 **ONLY write these file types:**
-- `.studio/instruments/*.spec.py` - INSTRUMENT dict specs
+- `.studio/specs/instruments/*.spec.py` - INSTRUMENT dict specs
 - `.studio/specs/music/*.spec.py` - SONG dict specs
-- Run commands to generate `.xm` or `.it` files
+- Provide the run command to generate `.xm` or `.it` files
 
 ### What NOT To Write
 **NEVER create these intermediate files:**
@@ -269,7 +261,7 @@ Keep your design reasoning in conversation context. Only persist `.spec.py` file
 If mood/style is too vague -> ask about mood, context (menu, combat, boss), duration
 
 ### Output Verification
-After running parser -> verify .xm or .it file exists and is non-empty
+After running the generator -> verify .xm or .it file exists and is non-empty
 
 ### Failure Handling
 If generation fails: explain what went wrong and suggest simplification (fewer channels, XM format).

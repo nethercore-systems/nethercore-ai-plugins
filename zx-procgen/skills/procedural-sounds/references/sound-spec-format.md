@@ -5,10 +5,10 @@ Declarative specification format for procedural audio generation. Specs are **da
 ## Architecture
 
 ```
-LLM creates spec (.spec.py)  →  sound_parser.py  →  audio file (WAV/XM/IT)
+LLM creates spec (.spec.py)  →  python .studio/generate.py  →  outputs in generated/
          ↓
   .studio/specs/sounds/
-  .studio/instruments/
+  .studio/specs/instruments/
   .studio/specs/music/
 ```
 
@@ -115,7 +115,7 @@ SOUND = {
 ## Instrument Spec Format (INSTRUMENT)
 
 ```python
-# .studio/instruments/bass.spec.py
+# .studio/specs/instruments/bass.spec.py
 INSTRUMENT = {
     "instrument": {
         "name": "bass",
@@ -286,38 +286,30 @@ Notes can be specified as:
 | `"C"` | Set Volume | Set Volume | xx = 0-64 |
 | `"F"` | Set Speed/BPM | Set Speed/BPM | xx < 32 = speed, else BPM |
 
-## Parser Usage
+## Generator Usage
 
 ```bash
-# Generate SFX
-python sound_parser.py sfx .studio/specs/sounds/laser.spec.py generated/audio/laser.wav
+# Generate SFX WAVs
+python .studio/generate.py --only sounds
 
-# Generate instrument sample
-python sound_parser.py instrument .studio/instruments/bass.spec.py generated/samples/bass.wav
+# Generate instrument WAVs
+python .studio/generate.py --only instruments
 
-# Generate tracker module (generates instrument samples + XM/IT)
-python sound_parser.py track .studio/specs/music/boss_theme.spec.py generated/tracks/boss_theme.xm
+# Generate tracker files (XM/IT)
+python .studio/generate.py --only music
 ```
 
 ## Directory Structure
 
 ```
 project/
-├── .studio/
-│   ├── sounds/           # SFX specs
-│   │   ├── laser.spec.py
-│   │   ├── explosion.spec.py
-│   │   └── coin.spec.py
-│   ├── instruments/      # Instrument specs
-│   │   ├── kick.spec.py
-│   │   ├── bass.spec.py
-│   │   └── lead.spec.py
-│   └── music/            # Track specs
-│       ├── menu.spec.py
-│       └── boss_theme.spec.py
+├── .studio/specs/
+│   ├── sounds/
+│   ├── instruments/
+│   └── music/
 └── generated/
     ├── audio/            # Generated WAV files
-    ├── samples/          # Generated instrument samples
+    │   └── instruments/  # Generated instrument WAV files
     └── tracks/           # Generated XM/IT files
 ```
 

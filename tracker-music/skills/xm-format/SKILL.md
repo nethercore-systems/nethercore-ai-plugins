@@ -168,7 +168,7 @@ The XM writer is part of the unified `.studio/` infrastructure.
 - `xm_writer.py` - XM file writing
 - `xm_types.py` - XM data structures
 
-**Setup:** Run `/init-procgen` or `/init-tracker-music` to download parsers.
+**Setup:** Run `/init-procgen` to install the `.studio/` scaffold (generator + parsers).
 
 ## Project Structure
 

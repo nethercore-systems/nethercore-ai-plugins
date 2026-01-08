@@ -131,7 +131,7 @@ grep -r "^pub enum\|^enum" src/*.rs
 
 ```bash
 # Check for described assets
-ls generated/meshes/*.obj generated/textures/*.png generated/audio/*.wav 2>/dev/null
+ls generated/meshes/*.obj generated/textures/*.png generated/sounds/*.wav 2>/dev/null
 
 # Check nether.toml declarations
 grep -A 2 "\[\[assets" nether.toml

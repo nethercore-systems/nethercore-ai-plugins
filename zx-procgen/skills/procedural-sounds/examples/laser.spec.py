@@ -1,5 +1,5 @@
 # Laser Shot SFX Specification
-# Usage: python sound_parser.py sfx laser.spec.py laser.wav
+# Run: python .studio/generate.py --only sounds
 
 SOUND = {
     "sound": {

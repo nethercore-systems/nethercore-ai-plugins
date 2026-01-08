@@ -165,7 +165,7 @@ def sub_bass(freq: float, duration: float = 0.5) -> np.ndarray:
 
 
 def main():
-    output_dir = Path("generated/audio/instruments")
+    output_dir = Path("generated/sounds/instruments")
     output_dir.mkdir(parents=True, exist_ok=True)
 
     bass_notes = {

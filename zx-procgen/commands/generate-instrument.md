@@ -1,6 +1,6 @@
 ---
-description: Generate a high-quality procedural instrument sample using advanced synthesis techniques
-argument-hint: "<instrument> [style]"
+description: Write an INSTRUMENT spec and run the unified generator
+argument-hint: "<id>"
 allowed-tools:
   - Read
   - Write
@@ -8,68 +8,30 @@ allowed-tools:
   - Bash
 ---
 
-# Generate Instrument Sample
+# Generate Instrument
 
-Generate a production-quality instrument sample for use in XM tracker music.
-
-## Arguments
-
-- `<instrument>`: The instrument type (e.g., "guitar", "piano", "bass", "pad", "bell")
-- `[style]`: Optional style modifier (e.g., "warm", "bright", "aggressive", "ethereal")
-
-## Examples
-
-```
-/generate-instrument guitar acoustic
-/generate-instrument piano electric
-/generate-instrument bass punchy
-/generate-instrument pad warm
-/generate-instrument bell tubular
-```
-
-## Workflow
-
-1. **Parse the request** to understand instrument type and desired character
-2. **Select synthesis technique**:
-   - Plucked strings → Karplus-Strong
-   - Keys → FM synthesis
-   - Pads → Wavetable
-   - Organs → Additive
-   - Leads/Bass → Subtractive
-   - Bells → FM with inharmonic ratios
-
-3. **Load the appropriate example** from `zx-procgen/skills/procedural-instruments/examples/`
-
-4. **Generate the Python script** customized for the user's needs
-
-5. **Run the script** to generate WAV files
-
-6. **Provide integration instructions** for XM tracker
-
-## Instrument Quick Reference
-
-| Instrument | Example File | Technique |
-|------------|--------------|-----------|
-| Acoustic Guitar | `acoustic-guitar.py` | Karplus-Strong |
-| Electric Piano | `electric-piano.py` | FM Synthesis |
-| Synth Bass | `synth-bass.py` | Subtractive |
-| Strings/Pad | `strings-pad.py` | Wavetable |
-| Organ | `organ.py` | Additive |
-| Brass/Lead | `brass-lead.py` | Subtractive |
-| Bells | `fm-bell.py` | FM (inharmonic) |
-| Pluck Synth | `pluck-synth.py` | Karplus-Strong |
+Create an INSTRUMENT spec at `.studio/specs/instruments/<id>.spec.py`.
 
 ## Output
 
-The command will:
-1. Create a Python generator script in `generation/instruments/`
-2. Run the script to generate WAV samples in `generated/audio/instruments/`
-3. Show how to add to `nether.toml`
-4. Explain how to use in XM tracker
+- Writes: `.studio/specs/instruments/<id>.spec.py`
+- Generate with: `python .studio/generate.py --only instruments`
 
-## Related Skills
+## Spec Template
 
-- `procedural-instruments` - Synthesis techniques and recipes
-- `procedural-sounds` - SFX generation (for non-musical sounds)
-- `procedural-music` - XM tracker composition
-- `xm-writer` - Programmatic XM generation
+```python
+# <id> Instrument Specification
+# Run: python .studio/generate.py --only instruments
+
+INSTRUMENT = {
+    "instrument": {
+        "name": "<id>",
+        "category": "lead",
+        "base_note": "C4",
+        "sample_rate": 22050,
+        "synthesis": {"type": "karplus_strong", "damping": 0.996, "brightness": 0.6},
+        "envelope": {"attack": 0.01, "decay": 0.3, "sustain": 0.4, "release": 0.2},
+        "output": {"duration": 1.0, "bit_depth": 16, "loop": True, "loop_start": 0.1, "loop_end": 0.9},
+    }
+}
+```

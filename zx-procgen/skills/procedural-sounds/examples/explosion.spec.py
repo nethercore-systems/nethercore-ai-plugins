@@ -1,5 +1,5 @@
 # Explosion SFX Specification
-# Usage: python sound_parser.py sfx explosion.spec.py explosion.wav
+# Run: python .studio/generate.py --only sounds
 
 SOUND = {
     "sound": {

@@ -22,9 +22,9 @@ Pre-release validation checklist for tracker music. Use before finalizing any ge
 
 ## Output Structure
 
-- [ ] **Generator script**: Located in `generation/tracks/[name].py`
-- [ ] **Output file**: Located in `generated/tracks/[name].xm` or `.it`
-- [ ] **Imports correct**: Uses `lib/` primitives, not pre-made instruments
+- [ ] **Song spec**: Located in `.studio/specs/music/[name].spec.py`
+- [ ] **Output file**: Located in `generated/music/[name].xm` or `.it`
+- [ ] **Instrument refs**: Reference `.studio/specs/instruments/*.spec.py` (or generated WAV paths) consistently
 
 ## Playback Test
 

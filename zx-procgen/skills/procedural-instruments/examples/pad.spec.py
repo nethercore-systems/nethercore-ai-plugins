@@ -1,5 +1,5 @@
 # Pad Instrument Specification
-# Usage: python sound_parser.py instrument pad.spec.py pad.wav
+# Run: python .studio/generate.py --only instruments
 
 INSTRUMENT = {
     "instrument": {

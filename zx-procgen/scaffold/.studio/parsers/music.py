@@ -5,16 +5,15 @@ Song Parser - Converts .spec.py files (with SONG dict) to XM/IT tracker modules.
 Deterministic tracker module generation from declarative specs. Follows the same
 pattern as animation.py for animations and sound.py for audio.
 
-Usage:
-    python song_parser.py input.spec.py output.xm
-    python song_parser.py input.spec.py output.it
+Usage (via unified generator):
+    python .studio/generate.py --only music
 
-Arguments:
-    input.spec.py   - Path to song spec file (contains SONG dict)
-    output.xm/it    - Output path for generated module
+Specs:
+    .studio/specs/music/*.spec.py
 
-Example:
-    python song_parser.py .studio/music/boss_theme.spec.py generated/tracks/boss_theme.xm
+Outputs:
+    generated/music/*.xm
+    generated/music/*.it
 
 Requires xm_types.py, xm_writer.py, it_types.py, it_writer.py in the same directory
 or accessible via PYTHONPATH.

@@ -2,21 +2,19 @@
 """
 Sound Parser - Interprets .spec.py files and generates audio.
 
-Deterministic audio generation from declarative specs. Follows the same pattern
-as animation.py for animations.
+Deterministic audio generation from declarative specs.
 
-Usage:
-    python sound_parser.py sfx laser.spec.py output.wav
-    python sound_parser.py instrument bass.spec.py output.wav
-    python sound_parser.py track boss_theme.spec.py output.xm
+Usage (via unified generator):
+    python .studio/generate.py --only sounds
+    python .studio/generate.py --only instruments
 
-Arguments:
-    mode          - One of: sfx, instrument, track
-    spec_path     - Path to .spec.py file
-    output_path   - Output file path (.wav for sfx/instrument, .xm/.it for track)
+Specs:
+    .studio/specs/sounds/*.spec.py
+    .studio/specs/instruments/*.spec.py
 
-Example:
-    python sound_parser.py sfx .studio/sounds/laser.spec.py generated/audio/laser.wav
+Outputs:
+    generated/sounds/*.wav
+    generated/sounds/instruments/*.wav
 """
 
 import sys

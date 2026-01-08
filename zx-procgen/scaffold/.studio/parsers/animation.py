@@ -4,26 +4,12 @@ Animation Parser - Interprets .spec.py animation specs in Blender.
 Applies structured animation specifications to armatures, creating keyframed
 animations. Skeleton-agnostic: works with any armature if bone names match.
 
-Usage (standalone):
-    blender --background --python animation.py -- \\
-        animation_spec.spec.py \\
-        armature.glb \\
-        output.glb
-
-Usage (via generate.py):
+Usage (via unified generator):
     Place .spec.py files in .studio/specs/animations/
-    Run: python .studio/generate.py --only animations
+    Run: blender --background --python .studio/generate.py -- --only animations
 
-Arguments:
-    animation_spec.spec.py - Path to animation spec file (contains ANIMATION dict)
-    armature.glb - Input armature/character GLB
-    output.glb - Output path for animated GLB
-
-Example:
-    blender --background --python animation.py -- \\
-        .studio/specs/animations/patch_idle.spec.py \\
-        assets/characters/patch.glb \\
-        assets/animations/patch_idle.glb
+Outputs:
+    generated/animations/*.glb
 """
 
 import math
@@ -276,27 +262,18 @@ def get_action_fcurves(action):
 
 def load_spec(spec_path):
     """Load animation spec from .spec.py file.
-
-    Supports both ANIMATION and MOTION dict names for backwards compatibility.
     """
     with open(spec_path, 'r') as f:
         code = f.read()
 
-    # Execute the spec file to get ANIMATION or MOTION dict
+    # Execute the spec file to get ANIMATION dict
     namespace = {}
     exec(code, namespace)
 
-    # Support both new ANIMATION and legacy MOTION names
     if 'ANIMATION' in namespace:
         return namespace['ANIMATION']
-    elif 'MOTION' in namespace:
-        return namespace['MOTION']
     else:
-        raise ValueError(f"No ANIMATION or MOTION dict found in {spec_path}")
-
-
-# Backwards compatibility alias
-load_motion_spec = load_spec
+        raise ValueError(f"No ANIMATION dict found in {spec_path}")
 
 
 def find_armature():

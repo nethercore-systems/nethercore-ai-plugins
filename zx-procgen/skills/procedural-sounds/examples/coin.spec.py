@@ -1,5 +1,5 @@
 # Coin Collect SFX Specification
-# Usage: python sound_parser.py sfx coin.spec.py coin.wav
+# Run: python .studio/generate.py --only sounds
 
 SOUND = {
     "sound": {

@@ -8,7 +8,7 @@ Directors are different from reviewers:
 - **Reviewers** check compliance with specifications
 - **Directors** ensure qualitative coherence and guard the vision
 
-This plugin provides four specialized directors, each with their own vision skill and continuous monitoring hooks.
+This plugin provides four specialized directors, each with their own vision skill and continuous monitoring.
 
 ## Components
 
@@ -29,13 +29,6 @@ This plugin provides four specialized directors, each with their own vision skil
 | `sound-vision` | Audio style guide, sonic identity, mixing |
 | `tech-vision` | Architecture patterns, code quality standards |
 | `creative-vision` | Overall game vision, creative pillars |
-
-### Hooks
-
-Continuous coherence monitoring via PostToolUse hooks:
-- After asset generation: Art coherence check
-- After audio creation: Sound coherence check
-- After code changes: Tech coherence check
 
 ### Commands
 

@@ -19,7 +19,7 @@ Generate a complete tracker song (XM or IT format) from a mood/style description
 This command creates `.spec.py` files (with SONG dict) that are parsed to XM/IT modules:
 
 ```
-User description → song spec (.spec.py) → song_parser.py → .xm/.it
+User description → song spec (.spec.py) → python .studio/generate.py --only music → .xm/.it
 ```
 
 All specs use `.spec.py` extension. The folder and dict name identify the type.
@@ -62,10 +62,10 @@ Task tool:
     Create a .spec.py file (SONG dict) for: [description]
 
     Requirements:
-    - Create instrument specs in .studio/instruments/*.spec.py if needed
+    - Create instrument specs in .studio/specs/instruments/*.spec.py if needed
     - Create song spec in .studio/specs/music/[name].spec.py
-    - Run song_parser.py to generate output
-    - Output to generated/tracks/
+    - Generation instruction: python .studio/generate.py --only music
+    - Output: generated/music/
 
     Parameters:
     - Format: [xm/it]
@@ -81,7 +81,7 @@ After completion, show:
 ```
 Created:
 - .studio/specs/music/boss_theme.spec.py (spec - committed)
-- generated/tracks/boss_theme.xm (output - gitignored)
+- generated/music/boss_theme.xm (output - gitignored)
 
 Song Details:
 - Key: D Minor, Tempo: 140 BPM
@@ -95,7 +95,7 @@ Next steps:
 2. Add to nether.toml:
    [[assets.sounds]]
    id = "boss_theme"
-   path = "../generated/tracks/boss_theme.xm"
+   path = "../generated/music/boss_theme.xm"
 3. Use: music_play(rom_tracker(b"boss_theme", 10), 0.8, 1)
 ```
 

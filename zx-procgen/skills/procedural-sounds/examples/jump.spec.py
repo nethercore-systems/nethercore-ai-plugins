@@ -1,5 +1,5 @@
 # Jump SFX Specification
-# Usage: python sound_parser.py sfx jump.spec.py jump.wav
+# Run: python .studio/generate.py --only sounds
 
 SOUND = {
     "sound": {

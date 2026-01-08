@@ -209,4 +209,4 @@ if __name__ == "__main__":
     render()
 
     # Or render complete UI set:
-    # render_ui_set("generated/audio/ui")
+    # render_ui_set("generated/sounds/ui")

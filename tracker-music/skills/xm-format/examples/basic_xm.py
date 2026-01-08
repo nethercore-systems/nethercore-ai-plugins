@@ -6,7 +6,7 @@ Generates a simple 4-channel drum loop with embedded samples.
 This is the DEFAULT workflow - always generate samples!
 
 Prerequisites:
-    Run /init-procgen or /init-tracker-music to set up .studio/parsers/
+    Run /init-procgen to set up .studio/parsers/
     Then copy this example to your project root to run it.
 
 Usage:
@@ -30,7 +30,7 @@ import sys
 import math
 from pathlib import Path
 
-# Add .studio/parsers to path (set up via /init-procgen or /init-tracker-music)
+# Add .studio/parsers to path (set up via /init-procgen)
 parsers_path = Path(".studio/parsers")
 if parsers_path.exists():
     sys.path.insert(0, str(parsers_path))
