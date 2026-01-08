@@ -34,8 +34,7 @@ jobs:
         run: |
           if command -v blender >/dev/null 2>&1; then
             ai-studio preview --spec templates/specs/mesh_3d_hardsurface_crate.json --out generated-ci
-            ai-studio validate --spec templates/specs/mesh_3d_hardsurface_crate.json --out generated-ci --generate-placeholder
+            ai-studio validate --spec templates/specs/mesh_3d_hardsurface_crate.json --out generated-ci --artifacts --generate-placeholder
           else
             echo "blender not available; skipping 3D smoke test"
           fi
-

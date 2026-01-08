@@ -28,7 +28,7 @@ ai-studio validate --spec templates/specs/texture_2d_brick_wall.json --out gener
 ```bash
 ai-studio doctor
 ai-studio preview --spec templates/specs/mesh_3d_hardsurface_crate.json --out generated
-ai-studio validate --spec templates/specs/mesh_3d_hardsurface_crate.json --out generated --generate-placeholder
+ai-studio validate --spec templates/specs/mesh_3d_hardsurface_crate.json --out generated --artifacts --generate-placeholder
 ```
 
 Scope guardrails:
@@ -71,4 +71,3 @@ for spec in templates/specs/*.json; do
   ai-studio validate --spec "$spec" --out generated-ci
 done
 ```
-

@@ -177,30 +177,33 @@ def cmd_validate(args: argparse.Namespace) -> int:
 
     asset_type = report["asset_type"]
     if asset_type in ("mesh_3d_hardsurface", "character_3d_lowpoly"):
-        blender_bin = _command_path("blender")
-        if blender_bin is None:
-            report["ok"] = False
-            report["errors"].append("blender not found (required for 3D artifact validation/preview)")
-            dump_json(report, report_path)
-            print("Validation failed: blender not found. Run: ai-studio doctor", file=sys.stderr)
-            print(f"Report: {report_path}")
-            return 2
+        # Spec validation always succeeds/fails independently of Blender.
+        # Artifact validation is optional and can be enabled explicitly.
+        if bool(getattr(args, "artifacts", False)):
+            blender_bin = _command_path("blender")
+            if blender_bin is None:
+                report["ok"] = False
+                report["errors"].append("blender not found (required for 3D artifact validation)")
+                dump_json(report, report_path)
+                print("Validation failed: blender not found. Run: ai-studio doctor", file=sys.stderr)
+                print(f"Report: {report_path}")
+                return 2
 
-        code = _run_blender(
-            blender_path=Path(blender_bin),
-            mode="validate",
-            spec_path=Path(args.spec),
-            out_root=out_root,
-            report_path=report_path,
-            generate_placeholder=bool(getattr(args, "generate_placeholder", False)),
-        )
-        try:
-            final = json.loads(report_path.read_text(encoding="utf-8"))
-            ok = bool(final.get("ok")) if isinstance(final, dict) else False
-        except Exception:  # noqa: BLE001
-            ok = False
-        print(f"Report: {report_path}")
-        return 0 if (code == 0 and ok) else 1
+            code = _run_blender(
+                blender_path=Path(blender_bin),
+                mode="validate",
+                spec_path=Path(args.spec),
+                out_root=out_root,
+                report_path=report_path,
+                generate_placeholder=bool(getattr(args, "generate_placeholder", False)),
+            )
+            try:
+                final = json.loads(report_path.read_text(encoding="utf-8"))
+                ok = bool(final.get("ok")) if isinstance(final, dict) else False
+            except Exception:  # noqa: BLE001
+                ok = False
+            print(f"Report: {report_path}")
+            return 0 if (code == 0 and ok) else 1
 
     print(f"OK: {spec.asset_id} ({asset_type})")
     print(f"Report: {report_path}")
@@ -315,6 +318,11 @@ def build_parser() -> argparse.ArgumentParser:
     val_p = subparsers.add_parser("validate", help="Validate a spec and/or output artifacts")
     val_p.add_argument("--spec", help="Path to an asset spec")
     val_p.add_argument("--out", help="Output directory root (default: generated/)")
+    val_p.add_argument(
+        "--artifacts",
+        action="store_true",
+        help="For 3D specs, validate output artifacts using Blender (requires generated model files)",
+    )
     val_p.add_argument(
         "--generate-placeholder",
         action="store_true",

@@ -168,3 +168,27 @@ Preset definitions live under `templates/presets/`:
 
 - `templates/presets/hardsurface_prop_v1.json`
 - `templates/presets/lowpoly_character_v1.json`
+
+## Validation Commands
+
+### Spec validation
+
+Validates the JSON spec structure and constraints:
+
+```bash
+ai-studio validate --spec templates/specs/texture_2d_brick_wall.json --out generated
+```
+
+### 3D artifact validation (requires Blender)
+
+Validates generated 3D outputs (triangle budget, UVs, normals/tangents, non-manifold checks) and writes preview renders to the report:
+
+```bash
+ai-studio validate --spec templates/specs/mesh_3d_hardsurface_crate.json --out generated --artifacts
+```
+
+If the model output doesn’t exist yet, you can generate a deterministic placeholder for validation:
+
+```bash
+ai-studio validate --spec templates/specs/mesh_3d_hardsurface_crate.json --out generated --artifacts --generate-placeholder
+```
