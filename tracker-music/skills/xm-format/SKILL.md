@@ -164,7 +164,7 @@ music_play(music, 0.8, 1);
 
 The XM writer is part of the unified `.studio/` infrastructure.
 
-**Source:** `zx-procgen/scaffold/.studio/parsers/`
+**Source:** `ai_studio_core/templates/project/studio/parsers/`
 - `xm_writer.py` - XM file writing
 - `xm_types.py` - XM data structures
 

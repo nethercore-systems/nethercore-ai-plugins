@@ -3,7 +3,7 @@
 This repo currently mixes:
 
 - **Plugin packs** (Claude Code/Codex skills/commands/agents; mostly Markdown/JSON)
-- **A project scaffold + pipeline code** (the `.studio/` asset-generation scaffold inside `zx-procgen/scaffold/`)
+- **A project scaffold + pipeline code** (the canonical `.studio/` scaffold under `ai_studio_core/templates/project/studio/`)
 
 Goal: incrementally separate a stable, versioned **core** (library + CLI) from the fast-iterating **plugin ecosystem**, without breaking existing workflows.
 
@@ -22,12 +22,12 @@ Top-level plugin folders:
 
 ### Pipeline code + scaffold
 
-The only “real” pipeline implementation shipped as files is the `.studio/` scaffold:
+The “real” pipeline implementation shipped as files is the `.studio/` scaffold:
 
-- `zx-procgen/scaffold/.studio/generate.py` — unified generator entrypoint
-- `zx-procgen/scaffold/.studio/parsers/**` — category parsers (textures, normals, sounds, music, meshes, characters, animations)
+- `ai_studio_core/templates/project/studio/generate.py` — unified generator entrypoint
+- `ai_studio_core/templates/project/studio/parsers/**` — category parsers (textures, normals, sounds, music, meshes, characters, animations)
 
-This scaffold is copied into user projects via the `init-procgen` command and becomes the executable pipeline inside the project.
+This scaffold is copied into user projects via `ai-studio init` (preferred) or the legacy `init-procgen` command and becomes the executable pipeline inside the project.
 
 ## 2) Stable Contracts That Belong in Core
 
@@ -103,7 +103,7 @@ Near-term we **do not move existing plugin directories**. We introduce `ai_studi
 ### Strategy: “wrap, then extract”
 
 1. **Wrap** existing behavior behind `ai-studio` CLI (no pipeline rewrite).
-2. **Extract** stable modules from `zx-procgen/scaffold/.studio/**` into core over time.
+2. **Extract** stable modules from the `.studio/` scaffold into core over time.
 3. **Replace** plugin command implementations with `ai-studio …` calls once the CLI is stable.
 
 ## 5) Phased Plan (with Definition of Done)
@@ -134,7 +134,7 @@ Near-term we **do not move existing plugin directories**. We introduce `ai_studi
 **Work:**
 - Add `templates/project/.studio/**` as the canonical scaffold.
 - Implement `ai-studio init` to install/upgrade `.studio/` deterministically.
-- Keep `zx-procgen/scaffold/` as a compatibility mirror (or a thin wrapper) until downstream usage migrates.
+- Keep legacy plugin commands working, but treat `ai_studio_core/templates/project/studio/` as the canonical scaffold source.
 
 **DoD:**
 - `ai-studio init` installs `.studio/` and creates expected `generated/` subfolders.
@@ -219,4 +219,3 @@ Near-term we **do not move existing plugin directories**. We introduce `ai_studi
 - Narrow supported 3D to hardsurface props + lowpoly characters.
 - Require explicit budgets and constraints in schema.
 - Treat everything else as “future work” in docs and tooling output.
-

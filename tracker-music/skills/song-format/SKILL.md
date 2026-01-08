@@ -205,7 +205,7 @@ IT format provides NNA polyphony, pitch envelopes, and filters not available in 
 
 All parsers are part of the unified `.studio/` infrastructure.
 
-**Source:** `zx-procgen/scaffold/.studio/parsers/`
+**Source:** `ai_studio_core/templates/project/studio/parsers/`
 - `music.py` - Song spec parser (SONG dict → XM/IT file)
 - `xm_writer.py`, `xm_types.py` - XM format
 - `it_writer.py`, `it_types.py` - IT format

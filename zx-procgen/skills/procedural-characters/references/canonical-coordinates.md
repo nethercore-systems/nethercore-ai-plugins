@@ -4,7 +4,7 @@
 > Last reviewed: 2026-01-08
 
 This document is the single source of truth for **character mesh construction** axes and operations (extrude+scale) as implemented by:
-- `nethercore-ai-plugins/zx-procgen/scaffold/.studio/parsers/character.py`
+- `nethercore-ai-plugins/ai_studio_core/templates/project/studio/parsers/character.py`
 - `nethercore-ai-plugins/zx-procgen/skills/procedural-characters/references/bpy-implementation.md`
 
 **Important:** This is **not** the same thing as animation pose-bone rotation axes. Animation `pitch/yaw/roll` semantics are defined by the animation pipeline (`animation.py`) and related docs; do not reuse this table for animation.

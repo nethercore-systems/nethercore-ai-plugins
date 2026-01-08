@@ -168,7 +168,7 @@ validate_it("output.it")
 
 The IT writer is part of the unified `.studio/` infrastructure.
 
-**Source:** `zx-procgen/scaffold/.studio/parsers/`
+**Source:** `ai_studio_core/templates/project/studio/parsers/`
 - `it_writer.py` - IT file writing
 - `it_types.py` - IT data structures
 

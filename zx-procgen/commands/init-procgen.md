@@ -7,7 +7,7 @@ color: blue
 
 # Init Procgen
 
-Install the unified `.studio/` scaffold into a user project by copying from `zx-procgen/scaffold/.studio/`.
+Install the unified `.studio/` scaffold into a user project.
 
 > Deprecation notice: Prefer `ai-studio init [project-dir]`. This command remains for backward compatibility.
 
@@ -34,8 +34,8 @@ if command -v ai-studio >/dev/null 2>&1; then
   exit $?
 fi
 
-echo "ai-studio not found; falling back to zx-procgen/scaffold/.studio copy."
-SCAFFOLD="zx-procgen/scaffold/.studio"
+echo "ai-studio not found; falling back to copying the scaffold from this repo."
+SCAFFOLD="ai_studio_core/templates/project/studio"
 
 mkdir -p "$TARGET/.studio"
 mkdir -p "$TARGET/.studio/specs" "$TARGET/.studio/direction" "$TARGET/.studio/designs" "$TARGET/.studio/analysis"
@@ -67,7 +67,7 @@ mkdir -p "$TARGET/generated/music"
 
 # Gitignore generated outputs
 cat > "$TARGET/generated/.gitignore" << 'EOF'
-# Generated assets - regenerate with: python .studio/generate.py
+# Generated assets - regenerate with: ai-studio generate
 *
 !.gitignore
 EOF
