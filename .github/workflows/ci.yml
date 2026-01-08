@@ -1,0 +1,41 @@
+name: ci
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  ai-studio-core:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e .
+
+      - name: Lint repo references
+        run: |
+          ai-studio lint-repo --repo-root .
+
+      - name: Validate spec examples
+        run: |
+          rm -rf generated-ci
+          for spec in templates/specs/*.json; do
+            ai-studio validate --spec "$spec" --out generated-ci
+          done
+
+      - name: 3D smoke test (optional)
+        run: |
+          if command -v blender >/dev/null 2>&1; then
+            ai-studio preview --spec templates/specs/mesh_3d_hardsurface_crate.json --out generated-ci
+            ai-studio validate --spec templates/specs/mesh_3d_hardsurface_crate.json --out generated-ci --generate-placeholder
+          else
+            echo "blender not available; skipping 3D smoke test"
+          fi
+

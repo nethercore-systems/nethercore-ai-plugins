@@ -241,9 +241,25 @@ def cmd_preview(args: argparse.Namespace) -> int:
 
 
 def cmd_lint_repo(args: argparse.Namespace) -> int:
-    print("ai-studio lint-repo: not implemented yet", file=sys.stderr)
-    _ = args
-    return 2
+    from .lint_repo import lint_repo
+
+    repo_root = Path(args.repo_root).resolve()
+    messages = lint_repo(repo_root)
+
+    errors = [m for m in messages if m.level == "error"]
+    warnings = [m for m in messages if m.level == "warning"]
+
+    for m in errors:
+        print(f"ERROR: {m.message}", file=sys.stderr)
+    for m in warnings:
+        print(f"WARNING: {m.message}", file=sys.stderr)
+
+    if errors:
+        print(f"lint-repo: FAIL ({len(errors)} error(s), {len(warnings)} warning(s))", file=sys.stderr)
+        return 1
+
+    print(f"lint-repo: OK ({len(warnings)} warning(s))")
+    return 0
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -280,6 +296,7 @@ def build_parser() -> argparse.ArgumentParser:
     doc_p.set_defaults(func=cmd_doctor)
 
     lint_p = subparsers.add_parser("lint-repo", help="Lint repo internals (references, templates, examples)")
+    lint_p.add_argument("--repo-root", default=".", help="Path to the nethercore-ai-plugins repo root")
     lint_p.set_defaults(func=cmd_lint_repo)
 
     return parser
