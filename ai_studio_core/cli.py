@@ -68,9 +68,50 @@ def cmd_generate(args: argparse.Namespace) -> int:
 
 
 def cmd_validate(args: argparse.Namespace) -> int:
-    print("ai-studio validate: not implemented yet", file=sys.stderr)
-    _ = args
-    return 2
+    if not args.spec:
+        print("error: --spec is required", file=sys.stderr)
+        return 2
+
+    try:
+        from .specs.io import dump_json, load_asset_spec_json
+    except ModuleNotFoundError as e:
+        if e.name == "pydantic":
+            print(
+                "error: validation requires pydantic. Install with: pip install -e .",
+                file=sys.stderr,
+            )
+            return 2
+        raise
+
+    try:
+        spec = load_asset_spec_json(args.spec)
+    except ValueError as e:
+        print(str(e), file=sys.stderr)
+        return 1
+
+    out_root = Path(args.out) if args.out else Path("generated")
+    report_path = out_root / "reports" / f"{spec.asset_id}.report.json"
+
+    report = {
+        "ok": True,
+        "asset_id": spec.asset_id,
+        "asset_type": str(getattr(spec.asset_type, "value", spec.asset_type)),
+        "core_version": __version__,
+        "spec_path": str(Path(args.spec)),
+        "outputs": [
+            {"kind": o.kind.value, "format": o.format.value, "path": o.path}
+            for o in spec.outputs  # type: ignore[attr-defined]
+        ],
+        "errors": [],
+        "warnings": [],
+        "metrics": {},
+        "previews": {},
+    }
+
+    dump_json(report, report_path)
+    print(f"OK: {spec.asset_id} ({report['asset_type']})")
+    print(f"Report: {report_path}")
+    return 0
 
 
 def cmd_preview(args: argparse.Namespace) -> int:
@@ -127,4 +168,3 @@ def main(argv: list[str] | None = None) -> int:
         parser.print_help(sys.stderr)
         return 2
     return int(func(args))
-

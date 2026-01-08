@@ -7,9 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-- Initial scaffolding (package + CLI).
+- Add machine-validated `AssetSpec` schemas and examples.
+- Implement `ai-studio validate` (spec-level) and report JSON output.
 
 ## [0.1.0] - 2026-01-08
 
 - Initial release scaffolding.
-

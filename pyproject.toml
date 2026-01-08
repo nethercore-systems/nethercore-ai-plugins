@@ -8,6 +8,7 @@ version = "0.1.0"
 description = "Stable core CLI and library for an AI asset studio."
 requires-python = ">=3.10"
 license = { text = "MIT OR Apache-2.0" }
+dependencies = ["pydantic>=2.0,<3"]
 
 [project.scripts]
 ai-studio = "ai_studio_core.cli:main"
@@ -15,4 +16,3 @@ ai-studio = "ai_studio_core.cli:main"
 [tool.setuptools.packages.find]
 where = ["."]
 include = ["ai_studio_core*"]
-

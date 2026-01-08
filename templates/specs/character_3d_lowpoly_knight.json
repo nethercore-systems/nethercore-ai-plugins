@@ -1,0 +1,39 @@
+{
+  "asset_id": "character_knight_lowpoly",
+  "asset_type": "character_3d_lowpoly",
+  "constraints": {
+    "max_bone_influences": 4,
+    "max_bones": 64
+  },
+  "description": "A lowpoly knight character rigged to a basic humanoid skeleton.",
+  "export": {
+    "format": "glb",
+    "require_normals": true,
+    "require_tangents": false,
+    "require_uvs": true
+  },
+  "license": "CC0-1.0",
+  "outputs": [
+    {
+      "format": "glb",
+      "kind": "primary",
+      "path": "characters/character_knight_lowpoly.glb"
+    },
+    {
+      "format": "json",
+      "kind": "metadata",
+      "path": "characters/character_knight_lowpoly.meta.json"
+    }
+  ],
+  "seed": 271828,
+  "skeleton_preset": "humanoid_basic_v1",
+  "style_tags": [
+    "lowpoly",
+    "readable",
+    "game-ready"
+  ],
+  "triangle_budget": 4000,
+  "use_normal_map": false,
+  "variants": []
+}
+
