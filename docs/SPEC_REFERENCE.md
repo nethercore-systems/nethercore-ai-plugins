@@ -2,7 +2,8 @@
 
 The canonical `AssetSpec` JSON reference now lives in the **core** repo:
 
-- `ai-studio-core/docs/SPEC_REFERENCE.md`
+- Workspace: `../ai-studio-core/docs/SPEC_REFERENCE.md`
+- GitHub: `https://github.com/RobDavenport/ai-studio-core`
 
 This repo (`nethercore-ai-plugins`) contains plugin packs (skills/commands/agents) that wrap the core CLI.
 

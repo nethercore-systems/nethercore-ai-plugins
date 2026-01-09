@@ -42,5 +42,6 @@ When adding a new plugin:
 
 Asset specs, schemas, validators, presets, and examples live in **`ai-studio-core`**.
 
-- Follow the core repo contributing guide in `ai-studio-core/CONTRIBUTING.md`.
-
+- Follow the core repo contributing guide:
+  - Workspace: `../ai-studio-core/CONTRIBUTING.md`
+  - GitHub: `https://github.com/RobDavenport/ai-studio-core`
