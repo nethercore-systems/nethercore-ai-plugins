@@ -98,12 +98,13 @@ Add to `.claude/settings.local.json`:
 /init-procgen
 ```
 
-This instantly copies parsers and sets up the spec-driven workflow:
-- Creates `.studio/` directory structure with all subdirectories
-- Copies all parsers (texture, sound, character, animation, normal)
-- Creates example `.spec.py` files
-- Generates `generate_specs.py` wrapper script
-- **Uses 95% fewer tokens** (300 lines vs 3,094 lines)
+Installs/updates the unified `.studio/` scaffold (wrapper around `ai-studio init`):
+- Installs/overwrites `.studio/generate.py` and `.studio/parsers/**`
+- Preserves existing `.studio/specs/**`, `.studio/direction/**`, `.studio/designs/**`, `.studio/analysis/**`
+- Ensures output folders under `generated/` and a `generated/.gitignore`
+- Writes/updates `ai_studio.toml` with a pinned `core_version`
+
+**Token savings:** avoids “Read/Write” copying large scaffolds into context.
 
 ### Option 2: Full Asset Project Scaffold
 
@@ -168,7 +169,7 @@ Comprehensive animation generation with **structured animation specs** and the u
 
 **Animation Spec Pipeline:**
 1. `animation-describer` agent → Structured animation spec (`.spec.py`) with bone rotations
-2. `python .studio/generate.py --only animations` → Interprets specs in Blender
+2. `ai-studio generate --only animations` → Interprets specs in Blender (legacy: `blender --background --python .studio/generate.py -- --only animations`)
 
 **Why Animation Specs?** Python dict literals work natively in Blender (no PyYAML dependency). Explicit bone rotations in degrees (pitch/yaw/roll) eliminate coordinate confusion. The parser is deterministic and skeleton-agnostic.
 
@@ -382,7 +383,7 @@ Five specialized agents for end-to-end asset creation:
 
 ### `/init-procgen [project-dir]` ⚡ (Recommended)
 
-**Token-efficient infrastructure setup** - Copies the complete `.studio/` scaffold using native OS commands (cp/xcopy) instead of reading files into context.
+**Token-efficient infrastructure setup** - Installs/updates the `.studio/` scaffold via `ai-studio init` (fast local file copy).
 
 **Usage:**
 ```bash
@@ -391,9 +392,10 @@ Five specialized agents for end-to-end asset creation:
 ```
 
 **What it does:**
-1. Copies `.studio/` scaffold with unified `generate.py` and all parsers
-2. Creates directory structure (`specs/*/`, `direction/`, `designs/`, `analysis/`)
-3. Creates `assets/` output directory (gitignored)
+1. Installs `.studio/generate.py` and `.studio/parsers/**` (overwritten), preserving `.studio/specs/**` etc.
+2. Ensures `.studio/` directory structure (`specs/*/`, `direction/`, `designs/`, `analysis/`)
+3. Ensures `generated/` output folders (gitignored) match the generator conventions
+4. Writes/updates `ai_studio.toml` with a pinned `core_version`
 
 **Token savings:** 95% reduction vs manual setup
 
@@ -433,14 +435,14 @@ Interactive wizard to establish the visual style for a game project. Creates a s
 Run all procedural generators in a project. Scans for generator scripts and executes them in dependency order.
 
 ### `/setup-spec-workflow [asset-type]`
-Add spec-driven generation infrastructure to an existing project. Copies parsers to `lib/`, creates example specs, and sets up the generation pipeline.
+Compatibility alias for installing the unified `.studio/` scaffold (preferred: `ai-studio init`).
 
 ### `/migrate-to-specs [generator.py]`
 Convert existing Python generator code to the spec-driven format. Analyzes code, extracts parameters into `.spec.py` files, and creates wrappers that use the parsers.
 
 ## Spec-Driven Parsers
 
-The plugin includes reusable parsers in `scaffold/.studio/parsers/` that interpret `.spec.py` files:
+The unified generator uses parsers installed into `.studio/parsers/` (canonical source: `ai-studio-core/ai_studio_core/templates/project/studio/parsers/`):
 
 | Parser | Spec Format | Purpose |
 |--------|-------------|---------|
@@ -458,7 +460,8 @@ The plugin includes reusable parsers in `scaffold/.studio/parsers/` that interpr
 - Reusable across projects
 
 **Locations:**
-- Parsers: `scaffold/.studio/parsers/` (copied to `.studio/parsers/` via `/init-procgen`)
+- Canonical source (core repo): `ai-studio-core/ai_studio_core/templates/project/studio/parsers/`
+- Installed into projects: `.studio/parsers/` (via `ai-studio init` or `/init-procgen`)
 - Examples: `skills/procedural-*/examples/*.spec.py`
 
 See [PARSER_ROADMAP.md](PARSER_ROADMAP.md) for planned enhancements.

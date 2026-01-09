@@ -64,10 +64,13 @@ This plugin enables Claude to generate complete, polished tracker music autonomo
 
 ### Option 1: Set Up Infrastructure (Recommended for Projects) ⚡
 
-**Token-efficient setup** - installs the unified `.studio/` scaffold using native OS commands:
+**Token-efficient setup** - installs/updates the unified `.studio/` scaffold via `ai-studio init`:
 
 ```
-/init-procgen
+ai-studio init [project-dir]
+
+# Claude wrapper (still supported):
+/init-procgen [project-dir]
 ```
 
 This installs/updates:

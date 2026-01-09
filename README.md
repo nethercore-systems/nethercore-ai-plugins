@@ -88,7 +88,7 @@ zx-procgen:init-procgen [project-dir]
 ```
 
 **What it does:**
-- Copies `.studio/generate.py` and `.studio/parsers/**` into your project using native cp/xcopy
+- Copies `.studio/generate.py` and `.studio/parsers/**` into your project via `ai-studio init` (fast local file copy)
 - Preserves your `.studio/specs/**`, `.studio/direction/**`, `.studio/designs/**`, `.studio/analysis/**`
 - Ensures output folders under `generated/` (textures, normals, meshes, characters, animations, sounds, music)
 
@@ -96,7 +96,7 @@ zx-procgen:init-procgen [project-dir]
 
 | Approach | Token Usage | Time | Mechanism |
 |----------|-------------|------|-----------|
-| **Infrastructure command** | ~300-400 lines | Seconds | Native cp/xcopy |
+| **Infrastructure command** | ~300-400 lines | Seconds | Local file copy (`ai-studio init`) |
 | Traditional Read/Write | ~3,000-4,000 lines | Minutes | Read tool + Write tool |
 | **Efficiency gain** | **95% reduction** | **10-20x faster** | Direct file copying |
 
