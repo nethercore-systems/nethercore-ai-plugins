@@ -1,3 +1,7 @@
 # Pinned dependency for Nethercore AI Plugins.
 # Install with: python3 -m pip install -r requirements-core.txt
-ai-studio-core @ git+https://github.com/RobDavenport/ai-studio-core@v0.1.0
+#
+# Includes extra deps used by the legacy `.studio/` generator scaffold:
+# - numpy (textures/normals/sounds/instruments/music)
+# (3D categories additionally require Blender on PATH.)
+ai-studio-core[generate] @ git+https://github.com/RobDavenport/ai-studio-core@v0.1.0
