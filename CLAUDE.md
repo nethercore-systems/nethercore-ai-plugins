@@ -11,6 +11,15 @@ This repository contains Claude Code plugins for developing games on Nethercore 
 
 The plugins provide skills, commands, and agents covering the full game development lifecycle from concept to publication.
 
+## Prerequisite: `ai-studio` Core CLI
+
+Procedural asset generation scaffolding, spec validation, and deterministic previews are provided by the standalone `ai-studio-core` repo/CLI. Install the pinned version:
+
+```bash
+python3 -m pip install -r requirements-core.txt
+ai-studio --help
+```
+
 ## Plugins
 
 ### zx-dev
@@ -82,14 +91,14 @@ Procedural asset generation plugin.
 - `generator-patterns` - Common patterns for procedural generation code
 
 **Commands:**
-- `zx-procgen:init-procgen` - Initialize .studio/ with unified generator and all parsers
+- `zx-procgen:init-procgen` - Install/update the unified `.studio/` scaffold (wrapper around `ai-studio init`)
 - `zx-procgen:generate-asset` - Quick single-asset generation
 - `zx-procgen:generate-sfx` - Quick SFX generation with NumPy/SciPy
 - `zx-procgen:generate-instrument` - High-quality instrument sample synthesis
 - `zx-procgen:new-asset-project` - Scaffold asset generation project
 - `zx-procgen:improve-assets` - Guided quality improvement workflow with tier upgrades
 - `zx-procgen:establish-visual-style` - Interactive visual style wizard
-- `zx-procgen:generate-all` - Run `python .studio/generate.py` to generate all assets
+- `zx-procgen:generate-all` - Generate assets (preferred: `ai-studio generate`, legacy: `python .studio/generate.py`)
 
 **Unified Generator:**
 All parsers are now modules in `.studio/parsers/`, invoked via `generate.py`:
@@ -368,7 +377,7 @@ All plugins write specifications and reports to the `.studio/` directory (commit
 ```
 .studio/
 ├── generate.py                   # Unified asset generator
-├── parsers/                      # Parser modules (copied via /init-procgen)
+├── parsers/                      # Parser modules (installed via `ai-studio init` / `zx-procgen:init-procgen`)
 │   ├── texture.py
 │   ├── sound.py
 │   ├── character.py
@@ -426,9 +435,9 @@ assets/                           # Human-made assets (committed to git)
 
 **Usage:**
 ```bash
-python .studio/generate.py              # Generate all assets
-python .studio/generate.py --only textures  # Generate one category
-python .studio/generate.py --dry-run    # Preview changes
+ai-studio generate                       # Generate all assets
+ai-studio generate --only textures       # Generate one category
+ai-studio generate --dry-run             # Preview changes
 ```
 
 **Spec-Driven Development:** All specifications use `.spec.py` extension and contain Python dicts that parsers interpret. This ensures:

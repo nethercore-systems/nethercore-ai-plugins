@@ -4,6 +4,18 @@ Official AI-powered development plugins for Nethercore ZX game development. Thes
 
 NOTE: Nethercore AI Plugins is still in heavy development and iteration. Expect breaking changes often.
 
+## Prerequisite: Install `ai-studio` Core (Pinned)
+
+The plugins provide orchestration, prompts, and workflows. The **actual** asset validation/preview tooling lives in the standalone core CLI.
+
+Install the pinned core dependency:
+
+```bash
+python3 -m pip install -r requirements-core.txt
+ai-studio --help
+ai-studio doctor
+```
+
 ## How the Plugin System Works
 
 These plugins follow a **What → How → Why** pattern:
@@ -64,12 +76,15 @@ On session start, the system reads these files and can resume from where you lef
 
 ## Infrastructure Setup (Token-Efficient) ⚡
 
-For procgen and tracker music projects, use this command to copy the unified `.studio/` scaffold directly (large token savings vs traditional Read/Write approach):
+For procgen and tracker music projects, install the `ai-studio` core CLI and use it to install/update the unified `.studio/` scaffold (large token savings vs traditional Read/Write approach).
 
 ### Unified `.studio/` Infrastructure
 
 ```bash
-/init-procgen [project-dir]           # Install/update .studio scaffold (defaults to .)
+ai-studio init [project-dir]          # Install/update .studio scaffold (defaults to .)
+
+# Legacy (plugin wrapper, still supported):
+zx-procgen:init-procgen [project-dir]
 ```
 
 **What it does:**

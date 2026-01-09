@@ -1,73 +1,46 @@
-# Contributing (nethercore-ai-plugins / ai-studio-core)
+# Contributing (nethercore-ai-plugins)
 
-This repo contains two layers:
+This repo contains **plugin packs** (skills, commands, agents) that wrap the standalone `ai-studio-core` CLI/library.
 
-- **Plugin packs** (Markdown/JSON skills, commands, agents)
-- **`ai-studio-core`** (a stable Python package + CLI for specs, validation, previews)
+- Core repo (schemas/validators/CLI/templates): `ai-studio-core`
+- Plugin repo (orchestration/prompts): `nethercore-ai-plugins`
 
-Core goal: keep workflows working while making the core **deterministic and checkable**.
+## Local Setup
 
-## Local Setup (Core)
-
-```bash
-python3 -m pip install -e .
-```
-
-Verify:
+Install the pinned core dependency:
 
 ```bash
+python3 -m pip install -r requirements-core.txt
 ai-studio --help
-ai-studio lint-repo --repo-root .
-ai-studio validate --spec templates/specs/texture_2d_brick_wall.json --out generated
 ```
 
-### 3D (optional)
+## Validate Changes
 
-3D preview/validation requires Blender on PATH.
-
-```bash
-ai-studio doctor
-ai-studio preview --spec templates/specs/mesh_3d_hardsurface_crate.json --out generated
-ai-studio validate --spec templates/specs/mesh_3d_hardsurface_crate.json --out generated --artifacts --generate-placeholder
-```
-
-Scope guardrails:
-
-- Supported 3D types: **hardsurface props** + **lowpoly characters** only
-- Anything organic/cloth/etc is out of scope for now (document as future work)
-
-## Adding a New Asset Type (Core Contract)
-
-When you add an asset type, it must be **fully checkable**:
-
-1. Add a new schema in `ai_studio_core/specs/models.py`
-   - Add to `AssetType`
-   - Add a Pydantic model with `extra="forbid"`
-   - Add explicit numeric budgets/constraints (avoid open-ended fields)
-2. Add at least one example spec in `templates/specs/`
-3. Document the fields/rules in `docs/SPEC_REFERENCE.md`
-4. Update `ai_studio_core/lint_repo.py` if the new type adds new referenced resources (presets, templates, etc.)
-
-## Validation Standards
-
-`ai-studio validate` must:
-
-- Fail with actionable messages (no stack traces)
-- Produce a report JSON under `<out>/reports/<asset_id>.report.json`
-- For 3D types: include preview paths and geometry metrics when Blender is available
-
-## CI
-
-CI is defined in `.github/workflows/ci.yml` and enforces:
-
-- `ai-studio lint-repo`
-- Validation of all `templates/specs/*.json`
-
-To run the same checks locally:
+Run the same checks as CI:
 
 ```bash
 ai-studio lint-repo --repo-root .
-for spec in templates/specs/*.json; do
-  ai-studio validate --spec "$spec" --out generated-ci
-done
 ```
+
+## Adding or Updating a Plugin
+
+Typical plugin layout:
+
+- `.claude-plugin/plugin.json` — manifest
+- `skills/<name>/SKILL.md` — skills (keep concise)
+- `commands/<name>.md` — slash commands
+- `agents/<name>.md` — sub-agents
+
+When adding a new plugin:
+
+1. Add the plugin folder (keep names lowercase with `-`).
+2. Register it in `.claude-plugin/marketplace.json`.
+3. If you add a new orchestrator subagent, update `zx-orchestrator/skills/agent-registry/SKILL.md`.
+4. Run `ai-studio lint-repo --repo-root .` and fix any missing references.
+
+## Adding a New Asset Type
+
+Asset specs, schemas, validators, presets, and examples live in **`ai-studio-core`**.
+
+- Follow the core repo contributing guide in `ai-studio-core/CONTRIBUTING.md`.
+

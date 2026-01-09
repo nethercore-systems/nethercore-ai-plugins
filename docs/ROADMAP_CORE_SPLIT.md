@@ -1,11 +1,11 @@
 # ROADMAP: Split “AI Asset Studio Core” from Plugin Packs
 
-This repo currently mixes:
+Historically this repo mixed:
 
 - **Plugin packs** (Claude Code/Codex skills/commands/agents; mostly Markdown/JSON)
-- **A project scaffold + pipeline code** (the canonical `.studio/` scaffold under `ai_studio_core/templates/project/studio/`)
+- **A project scaffold + pipeline code**
 
-Goal: incrementally separate a stable, versioned **core** (library + CLI) from the fast-iterating **plugin ecosystem**, without breaking existing workflows.
+It is now split into a stable, versioned **core** repo (`ai-studio-core`) and this fast-iterating **plugin ecosystem** repo (`nethercore-ai-plugins`).
 
 ## 1) Inventory: What Exists Today
 
@@ -24,8 +24,8 @@ Top-level plugin folders:
 
 The “real” pipeline implementation shipped as files is the `.studio/` scaffold:
 
-- `ai_studio_core/templates/project/studio/generate.py` — unified generator entrypoint
-- `ai_studio_core/templates/project/studio/parsers/**` — category parsers (textures, normals, sounds, music, meshes, characters, animations)
+- `ai_studio_core/templates/project/studio/generate.py` — unified generator entrypoint (in `ai-studio-core`)
+- `ai_studio_core/templates/project/studio/parsers/**` — category parsers (textures, normals, sounds, music, meshes, characters, animations) (in `ai-studio-core`)
 
 This scaffold is copied into user projects via `ai-studio init` (preferred) or the legacy `init-procgen` command and becomes the executable pipeline inside the project.
 
@@ -74,23 +74,23 @@ No heavy coupling; avoid requiring engine installs.
 This is the *desired* end state; migration is incremental.
 
 ```
-nethercore-ai-plugins/
-  ai_studio_core/               # Python package (stable library)
-  templates/
-    project/.studio/            # canonical scaffold (versioned with core)
-    specs/                      # example AssetSpecs (1 per asset type)
-  tools/
-    repo_lint/                  # internal checks (optional, can live in core initially)
-  plugins/                      # plugin packs (eventual)
-    zx-procgen/                 # wrappers + prompts only (no pipeline logic)
-    zx-dev/
-    ...
+ai-studio-core/                 # Repo A (standalone core)
+  ai_studio_core/               # Python package (stable library + CLI)
+  templates/                    # scaffolds + example specs/presets
+  docs/                         # SPEC_REFERENCE, etc.
+  .github/workflows/            # core CI
+
+nethercore-ai-plugins/          # Repo B (plugins)
+  zx-procgen/                   # wrappers + prompts only
+  zx-dev/
+  ...
   docs/
     ROADMAP_CORE_SPLIT.md
-    SPEC_REFERENCE.md
+    SPEC_REFERENCE.md           # pointer to core docs
+  .github/workflows/            # plugin CI (installs pinned core)
 ```
 
-Near-term we **do not move existing plugin directories**. We introduce `ai_studio_core/` + `templates/` and gradually route workflows through them.
+Near-term we **do not move existing plugin directories**. Plugins route workflows through the core CLI (`ai-studio`) installed from a pinned release.
 
 ## 4) Migration Strategy (No Big-Bang)
 
@@ -134,7 +134,7 @@ Near-term we **do not move existing plugin directories**. We introduce `ai_studi
 **Work:**
 - Add `templates/project/.studio/**` as the canonical scaffold.
 - Implement `ai-studio init` to install/upgrade `.studio/` deterministically.
-- Keep legacy plugin commands working, but treat `ai_studio_core/templates/project/studio/` as the canonical scaffold source.
+- Keep legacy plugin commands working, but treat the `ai-studio-core` repo as the canonical scaffold source.
 
 **DoD:**
 - `ai-studio init` installs `.studio/` and creates expected `generated/` subfolders.
