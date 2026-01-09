@@ -6,8 +6,10 @@ description: |
   **Outputs:** `.studio/specs/**/<id>.spec.py`
 
   **Run:**
-  - Python categories: `python .studio/generate.py`
-  - Blender categories: `blender --background --python .studio/generate.py -- --only <category>`
+  - Preferred: `ai-studio generate` (from project root)
+  - Legacy (still supported):
+    - Python categories: `python .studio/generate.py`
+    - Blender categories: `blender --background --python .studio/generate.py -- --only <category>`
 
 model: sonnet
 color: cyan

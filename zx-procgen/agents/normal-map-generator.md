@@ -18,5 +18,11 @@ You generate normal maps from NORMAL specs.
 2. Run the generator:
 
 ```bash
+ai-studio generate --only normals
+```
+
+Legacy equivalent:
+
+```bash
 python .studio/generate.py --only normals
 ```

@@ -8,7 +8,7 @@ description: |
   **Workflow:**
   1. Design sound spec with layers, envelope, filters
   2. Write `.spec.py` file to `.studio/specs/sounds/`
-  3. User runs `python .studio/generate.py --only sounds`
+  3. User runs `ai-studio generate --only sounds` (legacy: `python .studio/generate.py --only sounds`)
 
   Triggers: "design a sound", "what layers for", "SFX specification", "plan this sound effect", "how should this sound"
 
@@ -82,7 +82,8 @@ Save to `.studio/specs/sounds/[name].spec.py`:
 
 ```python
 # [Sound Name] SFX Specification
-# Run: python .studio/generate.py --only sounds
+# Run: ai-studio generate --only sounds
+# Legacy: python .studio/generate.py --only sounds
 
 SOUND = {
     "sound": {
@@ -134,7 +135,7 @@ See `zx-procgen/skills/procedural-sounds/references/sound-spec-format.md` for co
 - [ ] If request is vague → ask about material, weight, context
 - [ ] Write spec to .studio/specs/sounds/[name].spec.py
 - [ ] Verify spec file was created
-- [ ] Tell user how to run: `python .studio/generate.py --only sounds`
+- [ ] Tell user how to run: `ai-studio generate --only sounds` (legacy: `python .studio/generate.py --only sounds`)
 
 ### What Files To Write
 **ONLY write these file types:**

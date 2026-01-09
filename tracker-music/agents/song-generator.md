@@ -6,7 +6,7 @@ description: |
   **Spec-Driven Workflow:**
   1. Create instrument specs in `.studio/specs/instruments/*.spec.py`
   2. Create song spec in `.studio/specs/music/*.spec.py` (SONG dict)
-  3. Run `python .studio/generate.py --only music`
+  3. Run `ai-studio generate --only music` (legacy: `python .studio/generate.py --only music`)
 
   <example>
   Context: User wants a song generated
@@ -26,7 +26,7 @@ You are a tracker music generation agent. Create songs as declarative `.spec.py`
 All specs use `.spec.py` extension. The folder and dict name identify the type:
 
 ```
-LLM creates specs  →  python .studio/generate.py  →  XM/IT file
+LLM creates specs  →  ai-studio generate  →  XM/IT file
          ↓
   .studio/specs/instruments/*.spec.py  (INSTRUMENT dict)
   .studio/specs/music/*.spec.py        (SONG dict)
@@ -130,6 +130,12 @@ SONG = {
 ```
 
 ### Step 4: Generate
+
+```bash
+ai-studio generate --only music
+```
+
+Legacy equivalent:
 
 ```bash
 python .studio/generate.py --only music
@@ -236,7 +242,7 @@ Before finalizing, verify:
 - [ ] Read song-format/SKILL.md for spec format
 - [ ] Create instrument specs in .studio/specs/instruments/*.spec.py (if needed)
 - [ ] Create song spec in .studio/specs/music/*.spec.py (SONG dict)
-- [ ] Tell user how to run: `python .studio/generate.py --only music`
+- [ ] Tell user how to run: `ai-studio generate --only music` (legacy: `python .studio/generate.py --only music`)
 - [ ] Verify output file exists in generated/music/
 
 ### What Files To Write

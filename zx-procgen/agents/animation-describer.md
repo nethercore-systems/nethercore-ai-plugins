@@ -46,7 +46,7 @@ You are an animation spec generator. You create structured animation specificati
                            │
                            ▼
 ┌─────────────────────────────────────────────────────────────┐
-│  python .studio/generate.py --only animations                │
+│  ai-studio generate --only animations                        │
 │  ─────────────────────────────────────                       │
 │  (or standalone: blender --python animation.py -- ...)       │
 └─────────────────────────────────────────────────────────────┘
@@ -247,6 +247,12 @@ After producing the animation spec:
 File: `.studio/specs/animations/[name].spec.py`
 
 Generate with:
+```bash
+ai-studio generate --only animations
+```
+
+Legacy equivalent:
+
 ```bash
 python .studio/generate.py --only animations
 ```

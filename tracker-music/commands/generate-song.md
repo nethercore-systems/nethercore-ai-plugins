@@ -19,10 +19,12 @@ Generate a complete tracker song (XM or IT format) from a mood/style description
 This command creates `.spec.py` files (with SONG dict) that are parsed to XM/IT modules:
 
 ```
-User description → song spec (.spec.py) → python .studio/generate.py --only music → .xm/.it
+User description → song spec (.spec.py) → ai-studio generate --only music → .xm/.it
 ```
 
 All specs use `.spec.py` extension. The folder and dict name identify the type.
+
+> Legacy equivalent: `python .studio/generate.py --only music` (still supported).
 
 ## Arguments
 
@@ -64,7 +66,7 @@ Task tool:
     Requirements:
     - Create instrument specs in .studio/specs/instruments/*.spec.py if needed
     - Create song spec in .studio/specs/music/[name].spec.py
-    - Generation instruction: python .studio/generate.py --only music
+    - Generation instruction: ai-studio generate --only music (legacy: python .studio/generate.py --only music)
     - Output: generated/music/
 
     Parameters:

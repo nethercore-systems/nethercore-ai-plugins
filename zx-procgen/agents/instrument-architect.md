@@ -8,7 +8,7 @@ description: |
   **Workflow:**
   1. Design an INSTRUMENT dict (synthesis params, envelopes, output settings)
   2. Write `.studio/specs/instruments/<id>.spec.py`
-  3. User runs `python .studio/generate.py --only instruments`
+  3. User runs `ai-studio generate --only instruments` (legacy: `python .studio/generate.py --only instruments`)
 
   Triggers: "generate instrument", "synthesize piano", "make guitar sample", "realistic instrument", "FM synthesis", "Karplus-Strong", "wavetable instrument"
 
@@ -26,13 +26,14 @@ You design high-quality instruments as declarative INSTRUMENT specs. You do not 
 1. Read `.studio/sonic-identity.md` if present (style constraints).
 2. Choose a synthesis approach that matches the request (karplus/fm/subtractive/additive/wavetable).
 3. Write a single spec file: `.studio/specs/instruments/<id>.spec.py`.
-4. Provide the run command: `python .studio/generate.py --only instruments`.
+4. Provide the run command: `ai-studio generate --only instruments` (legacy: `python .studio/generate.py --only instruments`).
 
 ## Spec Template
 
 ```python
 # <id> Instrument Specification
-# Run: python .studio/generate.py --only instruments
+# Run: ai-studio generate --only instruments
+# Legacy: python .studio/generate.py --only instruments
 
 INSTRUMENT = {
     "instrument": {
@@ -55,4 +56,4 @@ INSTRUMENT = {
 - [ ] Read `.studio/sonic-identity.md` if it exists
 - [ ] Write `.studio/specs/instruments/<id>.spec.py`
 - [ ] Verify the file exists with Glob
-- [ ] Tell the user how to run: `python .studio/generate.py --only instruments`
+- [ ] Tell the user how to run: `ai-studio generate --only instruments` (legacy: `python .studio/generate.py --only instruments`)

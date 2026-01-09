@@ -19,6 +19,12 @@ You generate character assets from character specs.
 From the project root:
 
 ```bash
+ai-studio generate --only characters
+```
+
+Legacy equivalent:
+
+```bash
 blender --background --python .studio/generate.py -- --only characters
 ```
 
