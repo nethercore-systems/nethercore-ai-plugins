@@ -372,10 +372,14 @@ The `agent-registry` skill provides a single source of truth for all Task tool `
 
 ### `.studio/` Directory Structure
 
-All plugins write specifications and reports to the `.studio/` directory (committed to git):
+All plugins write specifications and reports to the `.studio/` directory for session continuity (commit it if you want the state shared in git):
 
 ```
 .studio/
+├── project-status.md            # Project progress tracking (ai-game-studio, zx-orchestrator)
+├── dispatch-queue.md            # Pending tasks (ai-game-studio, optional)
+├── creative-direction.md        # Vision + pillars (creative-direction)
+├── sonic-identity.md            # Audio direction (sound-design)
 ├── generate.py                   # Unified asset generator
 ├── parsers/                      # Parser modules (installed via `ai-studio init` / `zx-procgen:init-procgen`)
 │   ├── texture.py
@@ -385,11 +389,8 @@ All plugins write specifications and reports to the `.studio/` directory (commit
 │   ├── normal.py
 │   └── music.py                  # XM/IT writer (optional)
 │
-├── direction/                    # Creative direction (Markdown)
-│   ├── creative.md               # Vision, pillars, audience
-│   ├── visual.md                 # Art style, palette, spectrums
-│   ├── sonic.md                  # Audio identity, music style
-│   └── tech.md                   # Architecture, constraints
+├── direction/                    # Optional split direction docs (Markdown)
+│   └── visual.md                 # Example: used by some procgen skills
 │
 ├── specs/                        # Parsable specifications (*.spec.py)
 │   ├── characters/               # Character meshes + rigs
@@ -405,13 +406,11 @@ All plugins write specifications and reports to the `.studio/` directory (commit
 │   ├── levels/                   # Level layouts, flow
 │   └── systems/                  # Inventory, dialogue, etc.
 │
-├── analysis/                     # Generated reports
+└── analysis/                     # Generated reports
 │   ├── scope.md                  # Scope assessment
 │   ├── coverage.md               # GDD implementation tracking
 │   └── quality.md                # Asset quality audit
 │
-└── status.md                     # Project progress tracking
-
 generated/                        # Procedural assets (gitignored, regenerable)
 ├── textures/
 ├── meshes/
@@ -430,7 +429,7 @@ assets/                           # Human-made assets (committed to git)
 |--------|----------|---------|
 | `specs/` | `*.spec.py` | Machine-parsable Python dicts fed to parsers |
 | `designs/` | `*.md` | Human-readable design docs for reference |
-| `direction/` | `*.md` | Global creative vision documents |
+| `direction/` | `*.md` | Optional split direction docs (some workflows prefer per-file direction) |
 | `parsers/` | `*.py` | Generation code (copied from plugin) |
 
 **Usage:**

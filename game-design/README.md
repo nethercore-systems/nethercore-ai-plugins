@@ -100,39 +100,41 @@ Comprehensive frameworks for run-based design, meta-progression, emergent system
 
 ## Commands
 
-### /worldbuild [scope]
+Commands are documented in `plugin:command` form (e.g. `game-design:worldbuild`). Depending on your Claude/Codex client, they may also appear as slash commands (e.g. `/worldbuild`).
+
+### game-design:worldbuild [scope]
 Interactive world building wizard. Generates a structured world design document.
 
 ```
-/worldbuild           # Interactive scope selection
-/worldbuild small     # Contained world (single location)
-/worldbuild medium    # Regional world (multiple areas)
-/worldbuild large     # Expansive world (multiple regions)
+game-design:worldbuild           # Interactive scope selection
+game-design:worldbuild small     # Contained world (single location)
+game-design:worldbuild medium    # Regional world (multiple areas)
+game-design:worldbuild large     # Expansive world (multiple regions)
 ```
 
-### /character [type]
+### game-design:character [type]
 Character design worksheet wizard.
 
 ```
-/character player      # Player character design
-/character npc         # NPC design
-/character antagonist  # Villain/antagonist design
-/character party       # Party/companion design
+game-design:character player      # Player character design
+game-design:character npc         # NPC design
+game-design:character antagonist  # Villain/antagonist design
+game-design:character party       # Party/companion design
 ```
 
-### /design-loop
+### game-design:design-loop
 Core loop analysis and design tool. Maps your game's core loop, progression systems, and feedback mechanisms.
 
 ```
-/design-loop
+game-design:design-loop
 ```
 
-### /balance-review [target]
+### game-design:balance-review [target]
 Game balance review framework. Analyzes difficulty curves, stat scaling, and economy balance.
 
 ```
-/balance-review                           # Review current project
-/balance-review docs/design/game.md       # Review specific document
+game-design:balance-review                           # Review current project
+game-design:balance-review docs/design/game.md       # Review specific document
 ```
 
 ## Agents

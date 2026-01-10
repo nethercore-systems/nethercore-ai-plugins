@@ -96,29 +96,31 @@ Save/load patterns and state serialization for ZX games.
 
 ## Commands
 
-### /design-game [perspective]
+Commands are documented in `plugin:command` form (e.g. `zx-game-design:design-game`). Depending on your Claude/Codex client, they may also appear as slash commands (e.g. `/design-game`).
+
+### zx-game-design:design-game [perspective]
 Interactive GDD builder wizard. Walks through the full design process and outputs to `docs/design/`.
 
 ```
-/design-game side-scroller
-/design-game third-person
-/design-game  # Interactive selection
+zx-game-design:design-game side-scroller
+zx-game-design:design-game third-person
+zx-game-design:design-game  # Interactive selection
 ```
 
-### /validate-design [file-path]
+### zx-game-design:validate-design [file-path]
 Check a game design against ZX constraints. Defaults to `docs/design/game-design.md`.
 
 ```
-/validate-design
-/validate-design docs/design/my-game.md
+zx-game-design:validate-design
+zx-game-design:validate-design docs/design/my-game.md
 ```
 
-### /plan-assets [gdd-path]
+### zx-game-design:plan-assets [gdd-path]
 Extract asset requirements from GDD and generate specs for the procgen plugin.
 
 ```
-/plan-assets
-/plan-assets docs/design/game-design.md
+zx-game-design:plan-assets
+zx-game-design:plan-assets docs/design/game-design.md
 ```
 
 ## Agents

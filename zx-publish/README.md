@@ -58,13 +58,15 @@ For nethercore contributors, add to `.claude/settings.local.json`:
 
 ### Slash Commands
 
-#### `/publish-game` - Guided Publishing Workflow
+Commands are documented in `plugin:command` form (e.g. `zx-publish:publish-game`). Depending on your Claude/Codex client, they may also appear as slash commands (e.g. `/publish-game`).
+
+#### `zx-publish:publish-game` - Guided Publishing Workflow
 
 Walk through the complete publishing process:
 
 ```
-/publish-game              # Use current directory
-/publish-game ./my-game    # Specify project path
+zx-publish:publish-game              # Use current directory
+zx-publish:publish-game ./my-game    # Specify project path
 ```
 
 This command:
@@ -74,13 +76,13 @@ This command:
 4. Runs pre-release verification
 5. Provides upload instructions for nethercore.systems
 
-#### `/prepare-platform-assets` - Create Marketing Assets
+#### `zx-publish:prepare-platform-assets` - Create Marketing Assets
 
 Prepare visual assets for your game's platform page:
 
 ```
-/prepare-platform-assets           # Use current directory
-/prepare-platform-assets ./my-game # Specify project path
+zx-publish:prepare-platform-assets           # Use current directory
+zx-publish:prepare-platform-assets ./my-game # Specify project path
 ```
 
 This command helps you create:

@@ -16,8 +16,8 @@ For audio assets, this plugin handles **synthesis** - converting design specs in
 ```
 
 **Audio commands:**
-- `/generate-sfx` - Quick SFX generation from type
-- `/generate-instrument` - Instrument sample synthesis
+- `zx-procgen:generate-sfx` - Quick SFX generation from type
+- `zx-procgen:generate-instrument` - Instrument sample synthesis
 
 **Audio agents:**
 - `instrument-architect` - Designs and implements instrument synthesis
@@ -42,7 +42,7 @@ See [Audio Pipeline Guide](../docs/audio-pipeline.md) for complete workflows.
 - **Procedural Instruments**: High-quality instrument samples via Karplus-Strong, FM, wavetable, additive synthesis
 - **Procedural Characters**: Full character generation with meshes, rigs, and animations
 - **Spec-Driven Parsers**: Declarative `.spec.py` files + reusable parsers for textures, sounds, characters, animations, normals
-- **10 Commands**: `/init-procgen` (⚡ recommended), `/new-asset-project`, `/generate-asset`, `/generate-sfx`, `/generate-instrument`, `/improve-assets`, `/establish-visual-style`, `/generate-all`, `/setup-spec-workflow`, `/migrate-to-specs`
+- **10 Commands**: `zx-procgen:init-procgen` (⚡ recommended), `zx-procgen:new-asset-project`, `zx-procgen:generate-asset`, `zx-procgen:generate-sfx`, `zx-procgen:generate-instrument`, `zx-procgen:improve-assets`, `zx-procgen:establish-visual-style`, `zx-procgen:generate-all`, `zx-procgen:setup-spec-workflow`, `zx-procgen:migrate-to-specs`
 - **11 Agents**: Creative pipeline + character generation + animation specs + normal maps + unified quality review + enhancement + instrument design
 - **Python-Based Generators**: Use Python with PIL, Blender bpy, numpy/scipy, or any tool that outputs standard formats
 
@@ -95,7 +95,7 @@ Add to `.claude/settings.local.json`:
 **Best for:** New projects, token-conscious workflows, fast setup
 
 ```
-/init-procgen
+zx-procgen:init-procgen
 ```
 
 Installs/updates the unified `.studio/` scaffold (wrapper around `ai-studio init`):
@@ -111,7 +111,7 @@ Installs/updates the unified `.studio/` scaffold (wrapper around `ai-studio init
 **Best for:** Complete project with game integration, viewer, build system
 
 ```
-/new-asset-project my-game-assets
+zx-procgen:new-asset-project my-game-assets
 ```
 
 This scaffolds a complete project with:
@@ -122,9 +122,9 @@ This scaffolds a complete project with:
 ### Generate Single Assets
 
 ```
-/generate-asset texture "mossy stone wall"
-/generate-asset mesh "low-poly spaceship"
-/generate-asset sound "retro coin pickup"
+zx-procgen:generate-asset texture "mossy stone wall"
+zx-procgen:generate-asset mesh "low-poly spaceship"
+zx-procgen:generate-asset sound "retro coin pickup"
 ```
 
 ### Ask About Techniques
@@ -381,14 +381,16 @@ Five specialized agents for end-to-end asset creation:
 
 ## Commands
 
-### `/init-procgen [project-dir]` ⚡ (Recommended)
+Commands are documented in `plugin:command` form (e.g. `zx-procgen:init-procgen`). Depending on your Claude/Codex client, they may also appear as slash commands (e.g. `/init-procgen`).
+
+### `zx-procgen:init-procgen [project-dir]` ⚡ (Recommended)
 
 **Token-efficient infrastructure setup** - Installs/updates the `.studio/` scaffold via `ai-studio init` (fast local file copy).
 
 **Usage:**
 ```bash
-/init-procgen                    # Set up in current directory
-/init-procgen ./my-project       # Set up in specific directory
+zx-procgen:init-procgen                    # Set up in current directory
+zx-procgen:init-procgen ./my-project       # Set up in specific directory
 ```
 
 **What it does:**
@@ -403,41 +405,41 @@ Five specialized agents for end-to-end asset creation:
 - ✅ Setting up a new project (fast, efficient)
 - ✅ Default configuration is acceptable
 
-**When to use `/setup-spec-workflow` instead:**
+**When to use `zx-procgen:setup-spec-workflow` instead:**
 - Interactive setup with customization
 - Need to review parser code before copying
 - Educational/learning context
 
-### `/new-asset-project [name]`
+### `zx-procgen:new-asset-project [name]`
 Scaffold a complete procedural asset project with generator code and ZX viewer.
 
-### `/generate-asset [type] [description]`
+### `zx-procgen:generate-asset [type] [description]`
 Quick single-asset generation (texture, mesh, or sound) with inline code.
 
-### `/generate-sfx <type> [output-path]`
+### `zx-procgen:generate-sfx <type> [output-path]`
 Quick SFX generation with NumPy/SciPy. Types: laser, explosion, coin, jump, hit, powerup, footstep, click. Generates a Python script with customizable parameters.
 
-### `/generate-instrument <instrument> [style]`
+### `zx-procgen:generate-instrument <instrument> [style]`
 Generate high-quality instrument samples using advanced synthesis. Examples:
-- `/generate-instrument guitar acoustic` - Karplus-Strong acoustic guitar
-- `/generate-instrument piano electric` - FM synthesis Rhodes
-- `/generate-instrument bass punchy` - Subtractive synth bass
-- `/generate-instrument pad warm` - Wavetable string pad
-- `/generate-instrument bell tubular` - FM tubular bell
+- `zx-procgen:generate-instrument guitar acoustic` - Karplus-Strong acoustic guitar
+- `zx-procgen:generate-instrument piano electric` - FM synthesis Rhodes
+- `zx-procgen:generate-instrument bass punchy` - Subtractive synth bass
+- `zx-procgen:generate-instrument pad warm` - Wavetable string pad
+- `zx-procgen:generate-instrument bell tubular` - FM tubular bell
 
-### `/improve-assets [target-tier]`
+### `zx-procgen:improve-assets [target-tier]`
 Interactive quality improvement workflow. Scans assets, assesses current tiers, and guides upgrades to the target tier (Temp, Final, or Hero).
 
-### `/establish-visual-style`
+### `zx-procgen:establish-visual-style`
 Interactive wizard to establish the visual style for a game project. Creates a style guide specification with color palettes, material presets, and aesthetic guidelines.
 
-### `/generate-all`
+### `zx-procgen:generate-all`
 Run all procedural generators in a project. Scans for generator scripts and executes them in dependency order.
 
-### `/setup-spec-workflow [asset-type]`
+### `zx-procgen:setup-spec-workflow [asset-type]`
 Compatibility alias for installing the unified `.studio/` scaffold (preferred: `ai-studio init`).
 
-### `/migrate-to-specs [generator.py]`
+### `zx-procgen:migrate-to-specs [generator.py]`
 Convert existing Python generator code to the spec-driven format. Analyzes code, extracts parameters into `.spec.py` files, and creates wrappers that use the parsers.
 
 ## Spec-Driven Parsers
@@ -461,7 +463,7 @@ The unified generator uses parsers installed into `.studio/parsers/` (canonical 
 
 **Locations:**
 - Canonical source (core repo): `ai-studio-core/ai_studio_core/templates/project/studio/parsers/`
-- Installed into projects: `.studio/parsers/` (via `ai-studio init` or `/init-procgen`)
+- Installed into projects: `.studio/parsers/` (via `ai-studio init` or `zx-procgen:init-procgen`)
 - Examples: `skills/procedural-*/examples/*.spec.py`
 
 See [PARSER_ROADMAP.md](PARSER_ROADMAP.md) for planned enhancements.

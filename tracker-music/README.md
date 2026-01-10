@@ -16,14 +16,14 @@ This plugin handles **music composition** - creating complete tracker files from
 ```
 
 **Use this plugin to:**
-- Generate complete .xm/.it tracker files (`/generate-song`, `song-generator`)
+- Generate complete .xm/.it tracker files (`tracker-music:generate-song`, `song-generator`)
 - Understand tracker polish techniques (`tracker-fundamentals` skill)
 - Learn XM/IT format specifics (`xm-format`, `it-format` skills)
 
 **Prerequisites (optional but recommended):**
-- Audio style from `sound-design:/establish-sonic-identity`
-- Music spec from `sound-design:/design-soundtrack`
-- Instrument samples from `zx-procgen:/generate-instrument`
+- Audio style from `sound-design:establish-sonic-identity`
+- Music spec from `sound-design:design-soundtrack`
+- Instrument samples from `zx-procgen:generate-instrument`
 
 See [Audio Pipeline Guide](../docs/audio-pipeline.md) for complete workflows.
 
@@ -58,7 +58,7 @@ This plugin enables Claude to generate complete, polished tracker music autonomo
 
 | Command | Description | Token Efficiency |
 |---------|-------------|------------------|
-| `/generate-song` | Interactive song generation wizard | Standard |
+| `tracker-music:generate-song` | Interactive song generation wizard | Standard |
 
 ## Quick Start
 
@@ -70,7 +70,7 @@ This plugin enables Claude to generate complete, polished tracker music autonomo
 ai-studio init [project-dir]
 
 # Claude wrapper (still supported):
-/init-procgen [project-dir]
+zx-procgen:init-procgen [project-dir]
 ```
 
 This installs/updates:
@@ -94,7 +94,7 @@ Ask: "Generate a dark, mysterious boss battle theme"
 Or use the command:
 
 ```
-/generate-song "exploration theme for a haunted forest"
+tracker-music:generate-song "exploration theme for a haunted forest"
 ```
 
 **Best for:** Quick one-off songs, experimenting with styles, learning tracker music

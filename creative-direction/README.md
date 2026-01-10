@@ -34,7 +34,9 @@ This plugin provides four specialized directors, each with their own vision skil
 
 | Command | Purpose |
 |---------|---------|
-| `/establish-vision` | Interactive wizard to establish project vision |
+| `creative-direction:establish-vision` | Interactive wizard to establish project vision |
+
+Depending on your Claude/Codex client, commands may also appear as slash commands (e.g. `/establish-vision`).
 
 ## Usage
 

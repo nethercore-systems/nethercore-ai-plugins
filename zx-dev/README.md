@@ -9,7 +9,7 @@ A Claude Code plugin providing comprehensive game development guidance for the N
 - **Asset Pipeline** - Guidance for textures, meshes, sounds, and XM tracker files
 - **CLI Tooling** - Full documentation for `nether` CLI and `cargo xtask` commands
 - **Working Examples** - Complete hello-world and game-with-assets examples
-- **Project Scaffolding** - `/new-game` command creates complete starter projects
+- **Project Scaffolding** - `zx-dev:new-game` creates complete starter projects
 - **Rollback Safety Review** - Agent analyzes code for netcode/determinism issues
 - **Replay Debugging** - Generate NCRS scripts to reproduce bugs, run tests, and analyze results
 
@@ -60,15 +60,17 @@ For nethercore contributors, add to `.claude/settings.local.json`:
 
 ### Slash Commands
 
-#### `/new-game` - Create a New Project
+Commands are documented in `plugin:command` form (e.g. `zx-dev:new-game`). Depending on your Claude/Codex client, they may also appear as slash commands (e.g. `/new-game`).
+
+#### `zx-dev:new-game` - Create a New Project
 
 Scaffold a complete ZX game project with working starter code:
 
 ```
-/new-game rust my-game     # Create a Rust project named "my-game"
-/new-game c platformer     # Create a C project
-/new-game zig shooter      # Create a Zig project
-/new-game                  # Interactive mode - asks for language and name
+zx-dev:new-game rust my-game     # Create a Rust project named "my-game"
+zx-dev:new-game c platformer     # Create a C project
+zx-dev:new-game zig shooter      # Create a Zig project
+zx-dev:new-game                  # Interactive mode - asks for language and name
 ```
 
 Creates a ready-to-build project with:
@@ -100,35 +102,35 @@ The plugin includes an agent that analyzes your game code for determinism issues
 
 Debug games using scriptable replay tests:
 
-#### `/replay-test` - Generate Test Script
+#### `zx-dev:replay-test` - Generate Test Script
 
 Create a minimal NCRS script from a bug description:
 
 ```
-/replay-test jump not working     # Generate test for jump issues
-/replay-test player clips through walls
-/replay-test                       # Interactive - asks for description
+zx-dev:replay-test jump not working     # Generate test for jump issues
+zx-dev:replay-test player clips through walls
+zx-dev:replay-test                       # Interactive - asks for description
 ```
 
-#### `/replay-analyze` - Analyze Test Report
+#### `zx-dev:replay-analyze` - Analyze Test Report
 
 Parse a replay report to identify root causes:
 
 ```
-/replay-analyze report.json       # Analyze specific report
-/replay-analyze                   # Find and analyze most recent report
+zx-dev:replay-analyze report.json       # Analyze specific report
+zx-dev:replay-analyze                   # Find and analyze most recent report
 ```
 
-#### `/replay-template` - Generate Template
+#### `zx-dev:replay-template` - Generate Template
 
 Create starter templates for common test scenarios:
 
 ```
-/replay-template jump             # Jump mechanics template
-/replay-template collision        # Collision detection template
-/replay-template movement         # Movement template
-/replay-template physics          # Frame-by-frame physics
-/replay-template input            # Input handling template
+zx-dev:replay-template jump             # Jump mechanics template
+zx-dev:replay-template collision        # Collision detection template
+zx-dev:replay-template movement         # Movement template
+zx-dev:replay-template physics          # Frame-by-frame physics
+zx-dev:replay-template input            # Input handling template
 ```
 
 ### Replay Debugger Agent

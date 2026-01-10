@@ -16,14 +16,14 @@ This plugin handles **audio design** - the "what" and "why" of game audio. It pr
 ```
 
 **Use this plugin to:**
-- Establish your game's audio style (`/establish-sonic-identity`)
-- Design sound effect specifications (`/design-sfx`, `sfx-architect`)
-- Design music track specifications (`/design-soundtrack`, `music-architect`)
+- Establish your game's audio style (`sound-design:establish-sonic-identity`)
+- Design sound effect specifications (`sound-design:design-sfx`, `sfx-architect`)
+- Design music track specifications (`sound-design:design-soundtrack`, `music-architect`)
 
 **Then use other plugins to:**
-- Generate actual .wav files → `zx-procgen:/generate-sfx`
-- Generate instrument samples → `zx-procgen:/generate-instrument`
-- Create tracker music files → `tracker-music:/generate-song`
+- Generate actual .wav files → `zx-procgen:generate-sfx`
+- Generate instrument samples → `zx-procgen:generate-instrument`
+- Create tracker music files → `tracker-music:generate-song`
 
 See [Audio Pipeline Guide](../docs/audio-pipeline.md) for complete workflows.
 
@@ -54,9 +54,9 @@ This plugin provides the **audio style guide** framework for game audio design, 
 
 | Command | Description |
 |---------|-------------|
-| `/establish-sonic-identity` | Interactive wizard to create audio style specification for a game |
-| `/design-soundtrack` | Design music tracks with structure and chord progressions |
-| `/design-sfx` | Design sound effects with layering and synthesis specs |
+| `sound-design:establish-sonic-identity` | Interactive wizard to create audio style specification for a game |
+| `sound-design:design-soundtrack` | Design music tracks with structure and chord progressions |
+| `sound-design:design-sfx` | Design sound effects with layering and synthesis specs |
 
 ### Agents (4)
 
@@ -74,7 +74,7 @@ This plugin provides the **audio style guide** framework for game audio design, 
 Run the wizard to create your game's audio direction:
 
 ```
-/establish-sonic-identity "dark fantasy RPG"
+sound-design:establish-sonic-identity "dark fantasy RPG"
 ```
 
 This creates `.studio/sonic-identity.md` with:
@@ -89,7 +89,7 @@ This creates `.studio/sonic-identity.md` with:
 Create track specifications:
 
 ```
-/design-soundtrack "boss battle"
+sound-design:design-soundtrack "boss battle"
 ```
 
 Outputs a music specification in conversation with:
@@ -107,7 +107,7 @@ Then immediately offers to generate with `song-generator` agent.
 Create sound effect specifications:
 
 ```
-/design-sfx "sword impact"
+sound-design:design-sfx "sword impact"
 ```
 
 Outputs an SFX specification in conversation with:

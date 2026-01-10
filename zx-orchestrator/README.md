@@ -61,19 +61,21 @@ Phase 6: PUBLISH (zx-publish, zx-cicd)
 
 ## Commands
 
-### /orchestrate
+Commands are documented in `plugin:command` form (e.g. `zx-orchestrator:orchestrate`). Depending on your Claude/Codex client, they may also appear as slash commands (e.g. `/orchestrate`).
+
+### zx-orchestrator:orchestrate
 
 Launch the orchestrator with optional action:
 
 ```bash
-/orchestrate           # Check status or start
-/orchestrate start     # Begin new project
-/orchestrate continue  # Resume existing project
-/orchestrate status    # Show progress
-/orchestrate review    # Run quality checkpoints
-/orchestrate design    # Jump to design phase
-/orchestrate audio     # Jump to audio phase
-/orchestrate publish   # Jump to publish phase
+zx-orchestrator:orchestrate           # Check status or start
+zx-orchestrator:orchestrate start     # Begin new project
+zx-orchestrator:orchestrate continue  # Resume existing project
+zx-orchestrator:orchestrate status    # Show progress
+zx-orchestrator:orchestrate review    # Run quality checkpoints
+zx-orchestrator:orchestrate design    # Jump to design phase
+zx-orchestrator:orchestrate audio     # Jump to audio phase
+zx-orchestrator:orchestrate publish   # Jump to publish phase
 ```
 
 ## Agents
