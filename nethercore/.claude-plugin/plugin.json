@@ -1,0 +1,21 @@
+{
+  "name": "nethercore",
+  "version": "1.0.0",
+  "description": "Platform tooling for Nethercore game development - build, test, optimize, publish",
+  "author": {
+    "name": "Nethercore Systems"
+  },
+  "repository": "https://github.com/nethercore-systems/nethercore-ai-plugins",
+  "keywords": [
+    "nethercore",
+    "nether",
+    "build",
+    "test",
+    "optimize",
+    "publish",
+    "ci",
+    "determinism",
+    "rollback",
+    "wasm"
+  ]
+}

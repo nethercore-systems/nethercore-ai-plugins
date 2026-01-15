@@ -1,0 +1,19 @@
+{
+  "name": "zx",
+  "version": "1.0.0",
+  "description": "ZX fantasy console FFI reference and specifications",
+  "author": {
+    "name": "Nethercore Systems"
+  },
+  "repository": "https://github.com/nethercore-systems/nethercore-ai-plugins",
+  "keywords": [
+    "zx",
+    "nethercore",
+    "ffi",
+    "console",
+    "fantasy-console",
+    "rendering",
+    "camera",
+    "stencil"
+  ]
+}
