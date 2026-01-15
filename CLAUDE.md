@@ -1,6 +1,6 @@
 # Nethercore AI Plugins
 
-Claude Code plugins for Nethercore game development.
+This repo contains prompt packs for Nethercore game development (skills + task agents).
 
 ## Plugins
 
@@ -44,3 +44,7 @@ Add to `.claude/settings.local.json`:
 
 - Asset generation: Use **speccade** (separate repo)
 - FFI source: `nethercore/include/zx.rs`
+
+## Authoring Note
+
+Keep `skills/` and `agents/` content assistant-agnostic (avoid vendor/tool-specific wording). The `.claude-plugin/` folders are just the loader format.

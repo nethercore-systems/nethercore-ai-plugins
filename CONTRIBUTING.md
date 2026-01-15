@@ -1,47 +1,44 @@
 # Contributing (nethercore-ai-plugins)
 
-This repo contains **plugin packs** (skills, commands, agents) that wrap the standalone `ai-studio-core` CLI/library.
+This repo contains **prompt packs** (skills + task agents) for Nethercore development.
+Most changes are Markdown-only and should be written so they can be reused across different AI coding assistants.
 
-- Core repo (schemas/validators/CLI/templates): `ai-studio-core`
-- Plugin repo (orchestration/prompts): `nethercore-ai-plugins`
+## Repo Layout
 
-## Local Setup
+- `nethercore/` — console-agnostic Nethercore workflow skills + agents
+- `zx/` — ZX console-specific specs + FFI reference skills
 
-Install the pinned core dependency:
+Each plugin pack contains:
 
-```bash
-python3 -m pip install -r requirements-core.txt
-ai-studio --help
-```
+- `.claude-plugin/plugin.json` — plugin metadata
+- `skills/<skill>/SKILL.md` — short entrypoint instructions
+- `skills/<skill>/references/*.md` — deeper reference docs
+- `agents/*.md` — task-focused agents
 
-## Validate Changes
+## Local Validation
 
 Run the same checks as CI:
 
 ```bash
-ai-studio lint-repo --repo-root .
+python3 scripts/lint_repo.py
 ```
 
-## Adding or Updating a Plugin
+## Adding or Updating a Skill
 
-Typical plugin layout:
+1. Create a folder: `skills/<skill-name>/`
+2. Add `skills/<skill-name>/SKILL.md`:
+   - Include YAML front matter (`name`, `description`, `version`).
+   - Keep it concise; link to `references/` for deep dives.
+3. Add optional `skills/<skill-name>/references/*.md` for longer tables/examples.
 
-- `.claude-plugin/plugin.json` — manifest
-- `skills/<name>/SKILL.md` — skills (keep concise)
-- `commands/<name>.md` — slash commands
-- `agents/<name>.md` — sub-agents
+## Adding or Updating an Agent
 
-When adding a new plugin:
+1. Add a new file under `agents/` (example: `agents/build-analyzer.md`).
+2. Keep the body assistant-agnostic:
+   - Avoid naming specific vendors/tools in the instructions.
+   - Prefer concrete steps and output formats.
+3. If the front matter needs a model/tool selector for a specific loader, keep it minimal.
 
-1. Add the plugin folder (keep names lowercase with `-`).
-2. Register it in `.claude-plugin/marketplace.json`.
-3. If you add a new orchestrator subagent, update `zx-orchestrator/skills/agent-registry/SKILL.md`.
-4. Run `ai-studio lint-repo --repo-root .` and fix any missing references.
+## Versioning
 
-## Adding a New Asset Type
-
-Asset specs, schemas, validators, presets, and examples live in **`ai-studio-core`**.
-
-- Follow the core repo contributing guide:
-  - Workspace: `../ai-studio-core/CONTRIBUTING.md`
-  - GitHub: `https://github.com/RobDavenport/ai-studio-core`
+Bump the version in the relevant plugin’s `.claude-plugin/plugin.json` when you make a meaningful change to prompts/behavior.

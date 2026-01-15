@@ -1,6 +1,6 @@
 # Nethercore AI Plugins
 
-Claude Code plugins for Nethercore fantasy console game development.
+Prompt packs (skills + task agents) for Nethercore fantasy console game development.
 
 ## Plugins
 
@@ -25,7 +25,9 @@ nether build --release
 
 ## Installation
 
-Add to your Claude Code settings:
+### Claude Code
+
+Add to your settings (example: `.claude/settings.local.json`):
 
 ```json
 {
@@ -35,6 +37,13 @@ Add to your Claude Code settings:
   }
 }
 ```
+
+### Other AI coding assistants
+
+Open the relevant `SKILL.md` (and optional `references/*.md`) and paste the guidance into your assistant when needed:
+
+- `nethercore/skills/*/SKILL.md`
+- `zx/skills/*/SKILL.md`
 
 ## Skills Overview
 
