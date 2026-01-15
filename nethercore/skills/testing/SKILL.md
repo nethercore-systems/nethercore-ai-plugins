@@ -67,3 +67,33 @@ nether run --replay replay.bin  # Playback
 2. Add `log()` calls around suspicious code
 3. Check for forbidden patterns
 4. Verify all state is in static variables
+
+## Debug Actions (Efficient Testing)
+
+Instead of recording long input sequences, use debug actions to skip directly to test scenarios:
+
+```toml
+# Skip to level 3 boss
+[[frames]]
+f = 0
+action = "Load Level"
+action_params = { level = 3 }
+
+[[frames]]
+f = 1
+snap = true
+assert = "$boss_health > 0"
+```
+
+Games register actions in `init()`:
+
+```rust
+debug_action_begin(b"Load Level".as_ptr(), 10, b"debug_load_level".as_ptr(), 16);
+debug_action_param_i32(b"level".as_ptr(), 5, 1);
+debug_action_end();
+```
+
+**When to use:**
+- Testing specific levels without playing through earlier ones
+- Setting up edge-case scenarios (low health, specific enemy spawns)
+- Regression tests that need consistent starting state

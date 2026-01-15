@@ -30,6 +30,7 @@ The ZX console provides 250+ FFI functions. **Always read `nethercore/include/zx
 | Audio | `load_sound`, `play_sound`, `music_play` | Search "sound" |
 | 2D Drawing | `draw_sprite`, `draw_text`, `draw_rect` | Search "draw_" |
 | Environment | `draw_env`, `env_gradient` | Search "env_" |
+| Debug | `debug_register_*`, `debug_watch_*`, `debug_group_*` | Search "debug_" |
 
 ## Init-Only Functions
 

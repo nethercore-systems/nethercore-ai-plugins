@@ -54,6 +54,17 @@ id = "player"
 path = "assets/player.png"
 ```
 
+## Netcode (What You DON'T Do)
+
+The Nethercore player handles **all networking automatically**:
+- GGRS rollback synchronization
+- State snapshots
+- Input transmission
+- Desync detection
+
+**Your only responsibility:** Make `update()` deterministic.
+**Never write:** Networking code, rollback logic, state sync, or input transmission.
+
 ## Determinism (Rollback Safety)
 
 The `update()` function must be deterministic for rollback netcode. Given identical inputs, all clients must produce identical state.

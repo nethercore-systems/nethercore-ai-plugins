@@ -7,10 +7,11 @@ This repo contains prompt packs for Nethercore game development (skills + task a
 ### nethercore
 
 Platform tooling (console-agnostic):
-- **development** - nether CLI, nether.toml, determinism rules
-- **testing** - sync testing, replay testing, benchmarking
+- **development** - nether CLI, nether.toml, determinism rules, netcode disclaimer
+- **testing** - sync testing, replay testing, benchmarking, debug actions
 - **optimization** - WASM, texture, mesh, audio optimization
 - **publishing** - ROM packaging, platform upload, CI/CD
+- **debugging** - F4 Debug Inspector, live value editing, frame control (all consoles)
 
 Agents: `build-analyzer`, `replay-debugger`
 
@@ -19,7 +20,7 @@ Agents: `build-analyzer`, `replay-debugger`
 ZX fantasy console specifics:
 - **ffi-reference** - ZX FFI bindings (250+ functions)
 - **console-specs** - Resolution, memory limits, render modes
-- **rendering** - Cameras, stencil effects, particles, fonts
+- **rendering** - Cameras, stencil effects, particles, fonts, 2D vs 3D guide
 
 ## Installation
 

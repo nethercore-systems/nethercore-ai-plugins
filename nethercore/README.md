@@ -16,6 +16,9 @@ Size optimization: WASM, textures, meshes, audio, state.
 ### publishing
 Release workflow: ROM packaging, platform upload, CI/CD automation.
 
+### debugging
+F4 Debug Inspector, live value editing, frame control (all consoles).
+
 ## Agents
 
 ### build-analyzer

@@ -1,5 +1,9 @@
 # ZX Input API
 
+## Determinism Note
+
+All input functions return **deterministic values** synchronized by the netcode. Call them in `update()` - the values are identical across all clients for the same frame. Never cache input state across frames.
+
 ## Button Functions
 
 | Function | Returns | Purpose |

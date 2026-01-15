@@ -1,11 +1,12 @@
 ---
 name: ZX Rendering
 description: |
-  ZX rendering techniques: cameras, stencil effects, particles, fonts. Triggers on "ZX camera", "orbit camera", "stencil buffer", "portal", "billboard", "particles", "custom font", "render pass".
+  ZX rendering techniques: cameras, stencil effects, particles, fonts, 2D/3D. Triggers on "ZX camera", "orbit camera", "stencil buffer", "portal", "billboard", "particles", "custom font", "render pass", "2D vs 3D", "screen space", "world space".
 
   **Load references when:**
   - Camera implementations -> `references/camera-systems.md`
   - Stencil/portal effects -> `references/effects.md`
+  - 2D vs 3D decisions -> `references/2d-vs-3d.md`
 version: 1.0.0
 ---
 

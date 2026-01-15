@@ -11,7 +11,7 @@ ZX FFI bindings: rendering, input, audio, transforms. Reference for 250+ functio
 Hardware specifications: resolution, memory limits, render modes, audio system.
 
 ### rendering
-Rendering techniques: cameras, stencil effects, particles, custom fonts.
+Rendering techniques: cameras, stencil effects, particles, custom fonts, 2D vs 3D.
 
 ## ZX Specifications
 
