@@ -23,6 +23,18 @@ Each plugin pack typically contains:
 - Prefer workspace-relative paths when referencing other repos (example: `nethercore/include/zx.rs`).
 - Don’t assume network access; instructions should work offline.
 
+### SKILL.md Standard
+
+All skills must comply with the [SKILL.md open standard](https://agentskills.io/specification):
+
+1. `name` — lowercase-hyphenated, matches parent directory name exactly
+2. `description` — explains WHAT + WHEN to use, max 1024 chars
+3. `license` — `Apache-2.0` for this repo
+4. `metadata.author` — `nethercore-systems`
+5. `metadata.version` — semver string (e.g., `"1.0.0"`)
+6. Body under 500 lines; move long content to `references/`
+7. Run `python3 scripts/lint_repo.py --strict` before committing
+
 ## Validation
 
 - Run `python3 scripts/lint_repo.py` before sending changes.

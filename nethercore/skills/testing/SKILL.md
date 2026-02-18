@@ -1,12 +1,15 @@
 ---
-name: Nethercore Testing
-description: |
-  Testing Nethercore games for determinism and correctness. Triggers on "sync test", "replay test", "determinism test", "desync", "checksums", "test my game".
-
-  **Load references when:**
-  - Replay format details -> `references/replay-format.md`
-  - Performance benchmarking -> `references/benchmarking.md`
-version: 1.0.0
+name: testing
+description: >-
+  Testing Nethercore games for determinism and correctness. Covers sync testing,
+  replay recording and playback, debug actions, and desync diagnosis. Use when
+  running sync tests, setting up replay-based regression tests, or diagnosing
+  determinism failures.
+license: Apache-2.0
+compatibility: Requires nether CLI. Works offline.
+metadata:
+  author: nethercore-systems
+  version: "1.0.0"
 ---
 
 # Nethercore Testing

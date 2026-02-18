@@ -14,6 +14,11 @@ FORBIDDEN_ASSISTANT_WORDS = (
     "anthropic",
 )
 
+SKILL_NAME_PATTERN = re.compile(r"^[a-z0-9]([a-z0-9-]*[a-z0-9])?$")
+SKILL_NAME_MAX_LEN = 64
+SKILL_DESCRIPTION_MAX_LEN = 1024
+SKILL_BODY_LINE_WARN = 500
+
 
 def _read_text(path: Path) -> str:
     return path.read_text(encoding="utf-8")
@@ -35,6 +40,11 @@ def _extract_front_matter(text: str) -> str | None:
     if end == -1:
         return None
     return text[len("---\n") : end]
+
+
+def _extract_fm_value(front_matter: str, key: str) -> str | None:
+    m = re.search(rf"(?m)^{re.escape(key)}\s*:\s*(.+)$", front_matter)
+    return m.group(1).strip() if m else None
 
 
 def _front_matter_has_keys(front_matter: str, keys: tuple[str, ...]) -> list[str]:
@@ -80,9 +90,21 @@ def _check_plugin_metadata(plugin_dir: Path) -> list[str]:
     return errors
 
 
-def lint_repo(repo_root: Path) -> int:
+def _body_line_count(text: str) -> int:
+    """Return the number of lines in the body (after front matter closing ---)."""
+    if not text.startswith("---\n"):
+        return len(text.splitlines())
+    end = text.find("\n---\n", len("---\n"))
+    if end == -1:
+        return 0
+    body = text[end + len("\n---\n") :]
+    return len(body.splitlines())
+
+
+def lint_repo(repo_root: Path, *, strict: bool = False) -> int:
     repo_root = repo_root.resolve()
     errors: list[str] = []
+    warnings: list[str] = []
 
     plugin_dirs = [repo_root / "nethercore", repo_root / "zx"]
     for plugin_dir in plugin_dirs:
@@ -101,9 +123,48 @@ def lint_repo(repo_root: Path) -> int:
                 errors.append(f"Missing/invalid YAML front matter: {skill_file}")
                 continue
 
-            missing = _front_matter_has_keys(fm, ("name", "description", "version"))
+            # Required keys: name and description (version is now optional)
+            required_keys = ("name", "description")
+            if strict:
+                required_keys = ("name", "description", "license", "metadata")
+            missing = _front_matter_has_keys(fm, required_keys)
             if missing:
                 errors.append(f"Missing front matter keys {missing} in {skill_file}")
+
+            # Name format validation
+            name_val = _extract_fm_value(fm, "name")
+            if name_val is not None:
+                if len(name_val) > SKILL_NAME_MAX_LEN:
+                    errors.append(
+                        f"Skill name exceeds {SKILL_NAME_MAX_LEN} chars in {skill_file}"
+                    )
+                if "--" in name_val:
+                    errors.append(
+                        f"Skill name contains consecutive hyphens in {skill_file}"
+                    )
+                if not SKILL_NAME_PATTERN.match(name_val):
+                    errors.append(
+                        f"Skill name {name_val!r} does not match pattern "
+                        f"{SKILL_NAME_PATTERN.pattern!r} in {skill_file}"
+                    )
+
+                # Name-directory match validation
+                expected_dir_name = skill_file.parent.name
+                if name_val != expected_dir_name:
+                    errors.append(
+                        f"Skill name {name_val!r} does not match directory "
+                        f"name {expected_dir_name!r} in {skill_file}"
+                    )
+
+            # Description length validation
+            desc_val = _extract_fm_value(fm, "description")
+            if desc_val is not None:
+                if len(desc_val) == 0:
+                    errors.append(f"Skill description is empty in {skill_file}")
+                elif len(desc_val) > SKILL_DESCRIPTION_MAX_LEN:
+                    errors.append(
+                        f"Skill description exceeds {SKILL_DESCRIPTION_MAX_LEN} chars in {skill_file}"
+                    )
 
             forbidden_hits = _check_forbidden_words(skill_file, text)
             if forbidden_hits:
@@ -113,6 +174,13 @@ def lint_repo(repo_root: Path) -> int:
                 ref_path = skill_file.parent / rel
                 if not ref_path.exists():
                     errors.append(f"Missing reference {rel!r} referenced by {skill_file}")
+
+            # Body line count warning
+            body_lines = _body_line_count(text)
+            if body_lines > SKILL_BODY_LINE_WARN:
+                warnings.append(
+                    f"Skill body is {body_lines} lines (>{SKILL_BODY_LINE_WARN}): {skill_file}"
+                )
 
         # Agents
         for agent_file in sorted(plugin_dir.glob("agents/*.md")):
@@ -130,6 +198,9 @@ def lint_repo(repo_root: Path) -> int:
             if forbidden_hits:
                 errors.append(f"Forbidden assistant words {forbidden_hits} in {agent_file}")
 
+    for warn in warnings:
+        print(f"WARNING: {warn}", file=sys.stderr)
+
     if errors:
         for err in errors:
             print(f"ERROR: {err}", file=sys.stderr)
@@ -146,8 +217,14 @@ def main() -> int:
         default=str(Path(__file__).resolve().parents[1]),
         help="Path to repo root (default: auto-detected)",
     )
+    parser.add_argument(
+        "--strict",
+        action="store_true",
+        default=False,
+        help="Strict mode: also require license and metadata keys in skill frontmatter",
+    )
     args = parser.parse_args()
-    return lint_repo(Path(args.repo_root))
+    return lint_repo(Path(args.repo_root), strict=args.strict)
 
 
 if __name__ == "__main__":

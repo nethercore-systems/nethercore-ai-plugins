@@ -1,13 +1,15 @@
 ---
-name: Nethercore Development
-description: |
-  Core development workflow for Nethercore games. Triggers on "nether build", "nether.toml", "asset handles", "determinism", "rollback rules", "WASM game".
-
-  **Load references when:**
-  - Full nether.toml examples -> `references/nether-toml.md`
-  - CLI command details -> `references/cli-commands.md`
-  - Determinism patterns -> `references/determinism-rules.md`
-version: 1.0.0
+name: development
+description: >-
+  Core development workflow for Nethercore WASM games. Covers the nether CLI
+  (build, run, pack), nether.toml manifest authoring, required WASM exports,
+  and determinism rules for rollback netcode. Use when building, configuring,
+  or structuring a Nethercore game project.
+license: Apache-2.0
+compatibility: Requires nether CLI. Works offline.
+metadata:
+  author: nethercore-systems
+  version: "1.0.0"
 ---
 
 # Nethercore Development

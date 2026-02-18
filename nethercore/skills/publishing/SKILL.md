@@ -1,12 +1,15 @@
 ---
-name: Nethercore Publishing
-description: |
-  Publishing Nethercore games. Triggers on "publish game", "release", "upload", "ROM packaging", "nether pack", "CI/CD", "GitHub Actions".
-
-  **Load references when:**
-  - ROM packaging details -> `references/rom-packaging.md`
-  - CI workflow templates -> `references/ci-workflows.md`
-version: 1.0.0
+name: publishing
+description: >-
+  Publishing Nethercore games to nethercore.systems. Covers ROM packaging with
+  nether pack, release builds, platform upload requirements, versioning, and
+  CI/CD pipeline setup with GitHub Actions. Use when preparing a game for
+  release or setting up automated builds.
+license: Apache-2.0
+compatibility: Requires nether CLI. Needs network for upload.
+metadata:
+  author: nethercore-systems
+  version: "1.0.0"
 ---
 
 # Nethercore Publishing

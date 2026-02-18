@@ -1,14 +1,15 @@
 ---
-name: ZX FFI Reference
-description: |
-  ZX console FFI bindings reference. Triggers on "ZX FFI", "zx.rs", "ZX API", "ZX functions", "ZX rendering", "ZX input", "ZX audio".
-
-  **Load references when:**
-  - Render API details -> `references/render-api.md`
-  - Input API details -> `references/input-api.md`
-  - Audio API details -> `references/audio-api.md`
-  - Full FFI -> Read `nethercore/include/zx.rs` directly
-version: 1.0.0
+name: ffi-reference
+description: >-
+  ZX fantasy console FFI bindings reference. Documents 250+ functions for
+  rendering, input, audio, camera, transforms, textures, materials, and debug.
+  Includes init-only vs render-only call rules and the coordinate system. Use
+  when writing or debugging ZX FFI calls in game code.
+license: Apache-2.0
+compatibility: ZX console only. Requires nethercore/include/zx.rs for full signatures.
+metadata:
+  author: nethercore-systems
+  version: "1.0.0"
 ---
 
 # ZX FFI Reference

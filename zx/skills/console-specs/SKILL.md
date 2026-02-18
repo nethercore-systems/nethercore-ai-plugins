@@ -1,11 +1,15 @@
 ---
-name: ZX Console Specs
-description: |
-  ZX console hardware specifications and resource budgets. Triggers on "ZX specs", "ZX resolution", "ZX limits", "ROM size", "RAM limit", "VRAM", "render mode", "ZX capabilities".
-
-  **Load references when:**
-  - Budget planning -> `references/resource-budgets.md`
-version: 1.0.0
+name: console-specs
+description: >-
+  ZX fantasy console hardware specifications and resource budgets. Covers
+  resolution (960x540), memory limits (4 MB RAM/VRAM, 16 MB ROM), render
+  modes, audio system (22 kHz, 16 channels), and input layout. Use when
+  planning resource budgets or checking console capabilities.
+license: Apache-2.0
+compatibility: ZX console only.
+metadata:
+  author: nethercore-systems
+  version: "1.0.0"
 ---
 
 # ZX Console Specifications

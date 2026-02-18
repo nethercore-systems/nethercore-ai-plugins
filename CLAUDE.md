@@ -46,6 +46,14 @@ Add to `.claude/settings.local.json`:
 - Asset generation: Use **speccade** (separate repo)
 - FFI source: `nethercore/include/zx.rs`
 
+## Standards
+
+Skills follow the [SKILL.md open standard](https://agentskills.io/specification):
+- `name` must be lowercase-hyphenated, matching the parent directory name
+- `description` must explain WHAT + WHEN, max 1024 chars
+- `version` goes under `metadata.version` (not top-level)
+- `license` and `metadata.author` recommended for all skills
+
 ## Authoring Note
 
 Keep `skills/` and `agents/` content assistant-agnostic (avoid vendor/tool-specific wording). The `.claude-plugin/` folders are just the loader format.

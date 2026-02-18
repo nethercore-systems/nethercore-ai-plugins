@@ -60,6 +60,13 @@ Open the relevant `SKILL.md` (and optional `references/*.md`) and paste the guid
 - **console-specs** - 960x540 resolution, 16MB ROM, 4MB RAM/VRAM
 - **rendering** - Cameras, stencil effects, particles, custom fonts
 
+## Index
+
+For a complete catalog of skills, agents, and their trigger keywords:
+
+- [nethercore/INDEX.md](nethercore/INDEX.md) — 5 skills, 2 agents
+- [zx/INDEX.md](zx/INDEX.md) — 3 skills
+
 ## Asset Generation
 
 For procedural asset generation, use **speccade** (separate repository).
@@ -69,6 +76,8 @@ For procedural asset generation, use **speccade** (separate repository).
 - **nethercore** handles all console-agnostic platform tooling
 - **zx** (and future consoles) contain console-specific FFI and specs
 - All consoles share the same WASM core, so determinism is universal
+
+Skills follow the [SKILL.md open standard](https://agentskills.io/specification) for cross-platform compatibility.
 
 ## License
 

@@ -1,13 +1,15 @@
 ---
-name: ZX Rendering
-description: |
-  ZX rendering techniques: cameras, stencil effects, particles, fonts, 2D/3D. Triggers on "ZX camera", "orbit camera", "stencil buffer", "portal", "billboard", "particles", "custom font", "render pass", "2D vs 3D", "screen space", "world space".
-
-  **Load references when:**
-  - Camera implementations -> `references/camera-systems.md`
-  - Stencil/portal effects -> `references/effects.md`
-  - 2D vs 3D decisions -> `references/2d-vs-3d.md`
-version: 1.0.0
+name: rendering
+description: >-
+  ZX rendering techniques and patterns. Covers camera systems (follow, orbit),
+  stencil buffer effects (portals, masks), billboard particles, custom fonts,
+  and render pass management. Use when implementing cameras, visual effects,
+  particle systems, or choosing between 2D and 3D rendering approaches.
+license: Apache-2.0
+compatibility: ZX console only.
+metadata:
+  author: nethercore-systems
+  version: "1.0.0"
 ---
 
 # ZX Rendering Techniques

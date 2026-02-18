@@ -1,11 +1,15 @@
 ---
-name: Nethercore Debugging
-description: |
-  Debug inspector and runtime debugging tools (all consoles). Triggers on "debug", "F4 inspector", "debug_register", "debug panel", "live editing", "watch values", "frame stepping", "pause game".
-
-  **Load references when:**
-  - Full debug API details -> `references/inspector-api.md`
-version: 1.0.0
+name: debugging
+description: >-
+  Runtime debugging tools for Nethercore games on all consoles. Covers the F4
+  Debug Inspector, live value editing, watch variables, frame stepping, and
+  time-scale controls. Use when tuning game parameters at runtime, tracking
+  state over time, or stepping through frames to find bugs.
+license: Apache-2.0
+compatibility: Debug Inspector available in all Nethercore consoles. Works offline.
+metadata:
+  author: nethercore-systems
+  version: "1.0.0"
 ---
 
 # Nethercore Debugging

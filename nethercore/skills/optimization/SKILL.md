@@ -1,11 +1,15 @@
 ---
-name: Nethercore Optimization
-description: |
-  Optimization techniques for Nethercore games. Triggers on "optimize", "reduce size", "wasm-opt", "compress", "LTO", "asset compression", "state size".
-
-  **Load references when:**
-  - Detailed techniques -> `references/optimization-techniques.md`
-version: 1.0.0
+name: optimization
+description: >-
+  Optimization techniques for Nethercore WASM games. Covers WASM binary size
+  reduction (LTO, wasm-opt), texture and mesh compression, audio optimization,
+  and state size minimization. Use when a ROM exceeds size limits or when
+  reducing build output size.
+license: Apache-2.0
+compatibility: Requires wasm-opt for post-build optimization. Works offline.
+metadata:
+  author: nethercore-systems
+  version: "1.0.0"
 ---
 
 # Nethercore Optimization
