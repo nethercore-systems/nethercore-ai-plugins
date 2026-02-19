@@ -44,7 +44,23 @@ def _extract_front_matter(text: str) -> str | None:
 
 def _extract_fm_value(front_matter: str, key: str) -> str | None:
     m = re.search(rf"(?m)^{re.escape(key)}\s*:\s*(.+)$", front_matter)
-    return m.group(1).strip() if m else None
+    if not m:
+        return None
+    first_line = m.group(1).strip()
+    # Handle YAML folded/literal block scalars (>-, >, |, |-)
+    if first_line in (">-", ">", "|", "|-"):
+        lines = front_matter[m.end() :].split("\n")
+        value_lines = []
+        for line in lines:
+            if line and not line[0].isspace():
+                break  # Next top-level key
+            stripped = line.strip()
+            if stripped:
+                value_lines.append(stripped)
+            elif value_lines:
+                break  # Blank line ends folded scalar
+        return " ".join(value_lines)
+    return first_line
 
 
 def _front_matter_has_keys(front_matter: str, keys: tuple[str, ...]) -> list[str]:
@@ -130,6 +146,13 @@ def lint_repo(repo_root: Path, *, strict: bool = False) -> int:
             missing = _front_matter_has_keys(fm, required_keys)
             if missing:
                 errors.append(f"Missing front matter keys {missing} in {skill_file}")
+
+            # Strict mode: validate metadata sub-keys
+            if strict and "metadata" not in missing:
+                if not re.search(r"(?m)^\s+author\s*:", fm):
+                    errors.append(f"Missing metadata.author in {skill_file}")
+                if not re.search(r"(?m)^\s+version\s*:", fm):
+                    errors.append(f"Missing metadata.version in {skill_file}")
 
             # Name format validation
             name_val = _extract_fm_value(fm, "name")
