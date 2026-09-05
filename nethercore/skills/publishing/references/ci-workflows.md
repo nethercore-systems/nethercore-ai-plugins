@@ -1,94 +1,32 @@
-# CI Workflow Templates
+# CI workflow guidance
 
-## Basic Build Workflow
+Adapt the project's existing CI; do not paste an unverified install/release workflow. A package named `nether-cli` on a registry is not proof it is the selected platform build. Pin the authorized Nethercore revision/tool artifact and provision its native dependencies explicitly.
 
-`.github/workflows/build.yml`:
+## Small build job
 
-```yaml
-name: Build
+After checkout, native toolchain setup, installation of `wasm32-unknown-unknown`, and provisioning the selected `nether` executable:
 
-on:
-  push:
-    branches: [main]
-  pull_request:
-    branches: [main]
-
-jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Install Rust
-        uses: dtolnay/rust-action@stable
-        with:
-          targets: wasm32-unknown-unknown
-
-      - name: Install nether CLI
-        run: cargo install nether-cli
-
-      - name: Format check
-        run: cargo fmt --check
-
-      - name: Lint
-        run: cargo clippy -- -D warnings
-
-      - name: Test
-        run: cargo test
-
-      - name: Build
-        run: nether build --release
-
-      - name: Sync test
-        run: nether run --sync-test --frames 1000
+```bash
+cargo fmt --check
+cargo clippy --target wasm32-unknown-unknown -- -D warnings
+nether build
 ```
 
-## Release Workflow
+Run native simulation tests with the actual host target if the game defaults to WASM. `cargo test` must not silently exercise zero useful tests or just fake FFI.
 
-`.github/workflows/release.yml`:
+`nether build` is release by default. There is no `build --release` or `build --verbose` in the audited CLI. Keep generated assets and exact `[build].wasm` aligned with the packaging step.
 
-```yaml
-name: Release
+## Runtime gates
 
-on:
-  push:
-    tags: ['v*']
+On a runner with verified display/GPU/player support:
 
-jobs:
-  release:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Install Rust
-        uses: dtolnay/rust-action@stable
-        with:
-          targets: wasm32-unknown-unknown
-
-      - name: Install tools
-        run: |
-          cargo install nether-cli
-          cargo install wasm-opt
-
-      - name: Build release
-        run: |
-          nether build --release
-          wasm-opt -Oz game.wasm -o game.wasm
-
-      - name: Create release
-        uses: softprops/action-gh-release@v1
-        with:
-          files: |
-            game.nczx
-            CHANGELOG.md
+```bash
+nether run --no-build --sync-test --check-distance 2 --players 1 --exit-after-frames 1000
+nether run --no-build --replay tests/smoke.ncrs
 ```
 
-## Quality Gates
+Provide the existing script, outer timeouts, input scenarios and actual error/completion/capture checks. These are **not** drop-in headless jobs. The current simplified headless replay report does not prove game execution; use an existing real runtime harness when rendering is unavailable.
 
-Run in order for best results:
+## Release artifacts
 
-1. `cargo fmt --check` - Fast, catches style issues
-2. `cargo clippy -- -D warnings` - Catches common bugs
-3. `cargo test` - Unit tests
-4. `nether build --release` - Full build
-5. `nether run --sync-test` - Determinism verification
+Optimize WASM before packaging if justified; modifying it after `nether build` does not alter the already-packed ROM. Upload the verified final ROM under the real manifest game ID, not a guessed `game.nczx`. Release/tag/upload steps require explicit authorization and current provider configuration; verify the resulting remote artifact. Do not include automated publishing in a build-only job.

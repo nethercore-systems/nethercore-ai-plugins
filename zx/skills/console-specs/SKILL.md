@@ -9,7 +9,7 @@ license: Apache-2.0
 compatibility: ZX console only.
 metadata:
   author: nethercore-systems
-  version: "1.0.0"
+  version: "1.0.1"
 ---
 
 # ZX Console Specifications
@@ -20,16 +20,16 @@ metadata:
 |------|-------|
 | Resolution | 960x540 fixed (16:9) |
 | Color depth | 32-bit RGBA8 |
-| ROM | 16 MB max |
-| RAM | 4 MB |
-| VRAM | 4 MB |
-| Tick rate | 24/30/60/120 fps |
+| ROM | 16 MiB total (WASM code + assets) |
+| RAM | 4 MiB WASM linear memory |
+| VRAM | 4 MiB GPU textures and mesh buffers |
+| Tick rate | 30/60/120 Hz netplay; console spec also advertises 24 Hz local-only (verify the pack/runtime path before using 24) |
 | Max players | 4 |
 | Alpha | 2-bit Bayer 4x4 |
 
 ## Render Modes
 
-Choose ONE in `init()` - cannot change at runtime.
+Choose ONE in `nether.toml`; it is not a runtime FFI call.
 
 | Mode | Name | Best For |
 |------|------|----------|
@@ -47,7 +47,11 @@ Choose ONE in `init()` - cannot change at runtime.
 | Sound channels | 16 simultaneous |
 | Music channel | 1 dedicated |
 
-## Input (6th-gen Controller)
+## Input (Native Controller State)
+
+The FFI reads the host's native controller state for players 0-3. Physical
+devices are mapped to those player slots by the host; games consume the
+deterministic button/axis queries rather than a keyboard or gamepad library.
 
 | Input | Type |
 |-------|------|

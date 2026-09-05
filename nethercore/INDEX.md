@@ -4,7 +4,7 @@
 
 | Name | Trigger Keywords | References |
 |------|-----------------|------------|
-| [development](skills/development/SKILL.md) | nether build, nether.toml, determinism, WASM exports | 3 |
+| [development](skills/development/SKILL.md) | nether build, nether.toml, determinism, WASM exports | 4 |
 | [testing](skills/testing/SKILL.md) | sync test, replay, benchmark, debug actions | 2 |
 | [optimization](skills/optimization/SKILL.md) | ROM size, WASM binary, texture compression | 1 |
 | [publishing](skills/publishing/SKILL.md) | nether pack, platform upload, CI/CD | 2 |

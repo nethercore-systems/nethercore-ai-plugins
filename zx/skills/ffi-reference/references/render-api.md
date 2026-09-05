@@ -18,8 +18,7 @@
 | `push_rotate_z(deg)` | Rotate around Z |
 | `push_scale(x, y, z)` | Non-uniform scale |
 | `push_scale_uniform(s)` | Uniform scale |
-| `push_identity()` | Reset to identity |
-| `push_matrix(m0..m15)` | Custom 4x4 matrix |
+| `push_identity()` | Reset current model matrix |
 
 ## Mesh Drawing
 
@@ -39,6 +38,9 @@
 | `material_normal(tex)` | 3 | Normal map |
 | `set_color(rgba)` | - | Vertex color tint |
 
+`material_normal()` uses material slot 3; do not substitute a generic texture
+slot. Normal-mapped meshes also need UVs and tangents.
+
 ## Render Passes
 
 | Function | Purpose |
@@ -52,18 +54,29 @@
 
 | Function | Purpose |
 |----------|---------|
-| `draw_sprite(x,y, w,h)` | Draw textured quad |
-| `draw_rect(x,y, w,h)` | Draw colored rectangle |
-| `draw_text_str(text, x,y, size, color)` | Draw text |
-| `draw_circle(x, y, radius)` | Draw filled circle |
+| `draw_sprite(x,y, w,h)` | Draw the currently bound texture |
+| `draw_rect(x,y, w,h)` | Draw a rectangle in the current color |
+| `draw_text(ptr,len,x,y,size)` | Draw UTF-8 bytes in the current color |
+| `draw_circle(x, y, radius)` | Draw a filled circle in the current color |
 
 ## Billboards
 
 | Function | Purpose |
 |----------|---------|
-| `draw_billboard(w, h, mode, color)` | Camera-facing quad |
+| `draw_billboard(w, h, mode)` | Camera-facing quad in current color |
 | `draw_billboard_region(...)` | Billboard with UV region |
 
 Billboard modes:
 - 1 = SPHERICAL (faces camera fully)
 - 2 = CYLINDRICAL_Y (upright, rotates around Y)
+
+Bind the texture with `texture_bind(handle)` and set tint with
+`set_color(rgba)` before drawing.
+
+## EPU Environment
+
+`epu_set()` reads a 128-byte configuration containing 16 `u64` values.
+Choose the source with `epu_set(config_ptr)`, `epu_textures(px, nx, py, ny,
+pz, nz)`, or `epu_asset(id_ptr, id_len)` before geometry draws. Call
+`draw_epu()` afterward to draw the environment background. There is no time
+setter; drive animated parameters from deterministic game state.

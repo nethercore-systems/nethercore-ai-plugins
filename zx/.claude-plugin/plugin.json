@@ -1,6 +1,6 @@
 {
   "name": "zx",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "ZX fantasy console FFI reference and specifications",
   "author": {
     "name": "Nethercore Systems"

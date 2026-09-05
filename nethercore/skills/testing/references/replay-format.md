@@ -1,60 +1,38 @@
-# Replay Format (NCRS)
+# Replay scripts and verification
 
-## Overview
+Authority: `nethercore/core/src/replay/script/{ast,compiler}.rs` plus actual player and CLI callers. NCRS scripts are TOML; NCRP is the compiled binary format.
 
-Nethercore replays use the NCRS format to record input sequences for deterministic playback.
+```toml
+console = "zx"
+seed = 12345
+players = 1
 
-## Recording
+[[frames]]
+f = 0
+screenshot = true
 
-```bash
-nether run --record my_replay.bin
+[[frames]]
+f = 1
+p1 = "right"
+
+[[frames]]
+f = 2
+p1 = "right+a"
+
+[[frames]]
+f = 8
+screenshot = true
 ```
 
-Records:
-- Initial random seed
-- Frame-by-frame input state
-- Player configurations
-
-## Playback
+Right is held for two ticks, not through frame 8. Missing frames/players are idle; last frame determines script length. Avoid duplicate frame entries; construct the intended frame's full input rather than assuming entries merge.
 
 ```bash
-nether run --replay my_replay.bin
+nether replay compile smoke.ncrs -o smoke.ncrp
+nether run --no-build --replay smoke.ncrs
 ```
 
-Replays inputs exactly, producing identical game state if code is deterministic.
+Use the same cart/input/seed for a comparison. Read exact screenshot paths from runtime logs and inspect them; do not assume output goes next to the script. Delete only task-owned captures.
 
-## Regression Testing Workflow
+Parser-supported `snap`, `assert`, `action`, `action_params` are not proof of runtime execution. The audited CLI headless path uses a simplified runner without game WASM. Inspect assertion/action call sites before using them as gates; otherwise use native rule assertions and real-player input/rendering probes.
 
-1. **Record golden replay** on known-good build:
-   ```bash
-   git checkout v1.0.0
-   nether run --record golden.bin
-   # Play through test scenario
-   ```
-
-2. **Test new build** against golden replay:
-   ```bash
-   git checkout feature-branch
-   nether run --replay golden.bin
-   # Should produce identical results
-   ```
-
-3. **Automate in CI**:
-   ```yaml
-   - name: Replay regression
-     run: nether run --replay tests/golden.bin --frames 1000
-   ```
-
-## Debug Replay
-
-For debugging specific issues:
-
-```bash
-# Record bug reproduction
-nether run --record bug_repro.bin
-# Play until bug manifests
-
-# Replay to debug
-nether run --replay bug_repro.bin
-# Add logging, breakpoints as needed
-```
+No `nether run --record` or `run --frames` in the audited CLI. Inspect `nether replay --help` and implementation before using recording or binary-playback commands. Do not use graphical player commands on a bare headless CI runner without verified display/GPU support.

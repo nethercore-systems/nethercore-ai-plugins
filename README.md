@@ -20,7 +20,7 @@ nether run
 nether run --sync-test
 
 # Release
-nether build --release
+nether build # release by default
 ```
 
 ## Installation

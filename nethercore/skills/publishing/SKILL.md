@@ -9,69 +9,28 @@ license: Apache-2.0
 compatibility: Requires nether CLI. Needs network for upload.
 metadata:
   author: nethercore-systems
-  version: "1.0.0"
+  version: "1.0.1"
 ---
 
 # Nethercore Publishing
 
-## Build Commands
+Prepare a verified release artifact; publishing/upload is a separate externally visible action requiring user authorization.
 
-| Command | Purpose |
-|---------|---------|
-| `nether build` | compile + pack (development) |
-| `nether build --release` | Optimized release build |
-| `nether pack` | Bundle WASM + assets into ROM |
-
-## Upload to nethercore.systems
-
-**Required:**
-| File | Format |
-|------|--------|
-| Game | `.wasm` or `.nczx` |
-| Icon | 64x64 PNG |
-
-**Optional:**
-- Screenshots (PNG, up to 5)
-- Banner (1280x720 PNG)
-
-**Process:**
-1. Create account at nethercore.systems
-2. Dashboard -> "Upload New Game"
-3. Fill metadata, upload files
-4. Publish
-
-## Pre-Release Checklist
-
-- [ ] `nether build --release` succeeds
-- [ ] `nether run --sync-test` passes
-- [ ] ROM under 16MB
-- [ ] Icon is 64x64 PNG
-- [ ] Description is compelling
-- [ ] Version updated in nether.toml
-
-## Versioning
-
-Semantic versioning in `nether.toml`:
-
-```toml
-[game]
-version = "1.2.3"
+```bash
+nether build              # release by default: compile + pack
+nether run --no-build     # verify the resulting cart
 ```
 
-**Update process:**
-1. Bump version in nether.toml
-2. Update CHANGELOG.md
-3. Commit, tag, push
-4. Re-upload to platform
+Use `nether build --debug` only for a diagnostic build, not `--release` (unsupported). `nether pack` does not compile: use it after a deliberate external WASM/asset preparation step.
 
-## CI/CD Quick Reference
+## Release checks
 
-| Gate | Command | Purpose |
-|------|---------|---------|
-| Format | `cargo fmt --check` | Code style |
-| Lint | `cargo clippy -- -D warnings` | Static analysis |
-| Test | `cargo test` | Logic correctness |
-| Build | `nether build --release` | WASM compilation |
-| Sync | `nether run --sync-test --frames 1000` | Determinism |
+- Explicit manifest version, build output, player count, tick rate and netplay intent.
+- Actual console ROM/RAM/VRAM budgets and required resources verified; ZX ROM ceiling is 16 MiB.
+- Native rule tests, real input/render/audio path, and relevant rollback checks against the exact final cart.
+- Metadata/screenshots and asset rights checked. Read the current platform upload UI/backend contract before asserting icon/banner dimensions, accepted file types or screenshot counts; old prompt-pack values are not release requirements.
+- Preserve required debugging/provenance information, not build caches. A successful build is not proof an upload was published.
 
-See `references/ci-workflows.md` for GitHub Actions templates.
+Version in `[game].version`; update the project's existing changelog/tag workflow as requested. Do not auto-tag, release or upload merely because a game was built.
+
+See [ROM packaging](references/rom-packaging.md) and [CI workflow guidance](references/ci-workflows.md).

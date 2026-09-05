@@ -22,17 +22,21 @@
 fn render_scoped_view() {
     // Create circular mask
     begin_pass_stencil_write(1, 0);
+    set_color(0xFFFFFFFF);
     draw_circle(SCREEN_CX, SCREEN_CY, 200.0);
 
     // World only visible inside circle
     begin_pass_stencil_test(1, 0);
     camera_set(cam_x, cam_y, cam_z, tx, ty, tz);
-    draw_env();
+    // EPU source selection uses 16 u64 values; draw the background afterward.
+    epu_set(EPU_CONFIG.as_ptr());
     draw_mesh(WORLD_MESH);
+    draw_epu();
 
     // Return to normal, draw scope overlay
     begin_pass(0);
     texture_bind(SCOPE_OVERLAY);
+    set_color(0xFFFFFFFF);
     draw_sprite(0.0, 0.0, 960.0, 540.0);
 }
 ```
@@ -42,7 +46,7 @@ fn render_scoped_view() {
 ```rust
 fn render_portal() {
     // Draw main world
-    camera_set(main_cam...);
+    camera_set(main_x, main_y, main_z, main_tx, main_ty, main_tz);
     draw_mesh(MAIN_WORLD);
 
     // Create portal mask
@@ -53,7 +57,7 @@ fn render_portal() {
 
     // Other world inside portal (clear_depth=1)
     begin_pass_stencil_test(1, 1);
-    camera_set(other_cam...);
+    camera_set(other_x, other_y, other_z, other_tx, other_ty, other_tz);
     draw_mesh(OTHER_WORLD);
 
     begin_pass(0);
@@ -66,8 +70,9 @@ fn render_portal() {
 fn render_fps() {
     // Draw world
     camera_set(player_x, player_y, player_z, look_x, look_y, look_z);
-    draw_env();
+    epu_set(ENV_CONFIG.as_ptr()); // 16 u64 values
     draw_mesh(LEVEL);
+    draw_epu();
 
     // New pass with depth clear - viewmodel always on top
     begin_pass(1);

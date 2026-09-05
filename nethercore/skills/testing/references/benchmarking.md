@@ -1,37 +1,17 @@
 # Benchmarking
 
-## State Snapshot Performance
-
-For rollback netcode, state snapshot size affects performance:
-
-| Size | Frame Budget | Status |
-|------|--------------|--------|
-| < 50 KB | < 1ms | Excellent |
-| 50-100 KB | 1-2ms | Good |
-| 100-200 KB | 2-4ms | Acceptable |
-| > 200 KB | > 4ms | **Optimize** |
-
-## Build Analysis
+Measure on the actual target player/configuration and separate cold startup, update, render and rollback catch-up costs. There is no universal snapshot-bytes-to-milliseconds table.
 
 ```bash
-nether build --verbose
+nether build
 ```
 
-Shows:
-- WASM binary size
-- Asset pack size
-- Individual asset sizes
+Inspect actual WASM/ROM sizes and resource usage. `nether build --verbose` is not supported. Use the selected console's specification (`nethercore/shared/src/console.rs`) rather than an invented 2 MiB WASM or 200 KiB snapshot ceiling.
 
-## Performance Checklist
+- ZX specifies 16 MiB ROM, 4 MiB linear RAM, 4 MiB VRAM and a 4 ms/tick CPU budget. Specification, enforcement and measurements are different claims.
+- A state struct's size is not the whole snapshot: core saves linear memory plus explicit host/input/console state.
+- `delta_time()` is a fixed simulation timestep, not elapsed CPU/GPU time. Use host instrumentation/stats for spikes.
+- File size, decoded texture/mesh GPU cost and sample memory are separate quantities.
+- Record workload, player count, tick rate, debug/release configuration and capture/profiling overhead. Compare the same scenario before/after one optimization.
 
-- [ ] State snapshot under 200 KB
-- [ ] WASM binary under 2 MB
-- [ ] Total ROM under 16 MB
-- [ ] Sync test passes at 60fps
-- [ ] No frame drops during gameplay
-
-## Profiling Tips
-
-1. **Measure state size**: Log size of your game state struct
-2. **Track frame time**: Use `delta_time()` to detect spikes
-3. **Asset audit**: Check largest textures/meshes in build output
+Accept when the actual workload fits the chosen console budget and retains game behavior/rollback correctness; no performance claims from a parser-only replay.

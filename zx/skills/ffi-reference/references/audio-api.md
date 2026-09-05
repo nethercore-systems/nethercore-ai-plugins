@@ -6,20 +6,20 @@
 |----------|---------|
 | `load_sound(data, len)` | Load sound from bytes |
 | `rom_sound_str(id)` | Get sound handle from ROM |
-| `play_sound(handle)` | Play sound once |
-| `play_sound_ex(handle, vol, pan, pitch)` | Play with parameters |
-| `stop_sound(handle)` | Stop playing sound |
+| `play_sound(handle, volume, pan)` | Play sound once |
+| `channel_play(channel, handle, volume, pan, looping)` | Play on a channel |
+| `channel_set(channel, volume, pan)` | Update a channel |
+| `channel_stop(channel)` | Stop a channel |
 
 ## Music
 
 | Function | Purpose |
 |----------|---------|
-| `rom_music_str(id)` | Get music handle from ROM |
-| `music_play(handle)` | Start music (loops) |
+| `rom_tracker_str(id)` | Get tracker music handle from ROM |
+| `music_play(handle, volume, looping)` | Start music |
 | `music_stop()` | Stop music |
-| `music_pause()` | Pause music |
-| `music_resume()` | Resume paused music |
-| `music_volume(vol)` | Set music volume (0.0-1.0) |
+| `music_pause(paused)` | Pause (`1`) or resume (`0`) music |
+| `music_set_volume(vol)` | Set music volume (0.0-1.0) |
 
 ## Parameters
 
@@ -45,16 +45,15 @@ static mut THEME: u32 = 0;
 fn init() {
     unsafe {
         JUMP_SFX = rom_sound_str("jump");
-        THEME = rom_music_str("theme");
-        music_play(THEME);
+        THEME = rom_tracker_str("theme");
+        music_play(THEME, 1.0, 1); // volume, looping
     }
 }
 
 fn play_jump() {
     unsafe {
-        // Play with slight pitch variation
-        let pitch = 0.9 + random_f32() * 0.2;
-        play_sound_ex(JUMP_SFX, 1.0, 0.0, pitch);
+        // Play with the current volume and pan
+        play_sound(JUMP_SFX, 1.0, 0.0);
     }
 }
 ```

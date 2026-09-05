@@ -1,111 +1,22 @@
-# Optimization Techniques
+# Optimization techniques
 
-## WASM Size Reduction
+## Optimize the real artifact
 
-### Cargo Settings (Full)
+1. Record baseline WASM/ROM sizes, decoded resource costs and host frame/rollback measurements.
+2. Reuse release profile/LTO and measure `opt-level = "s"` versus `"z"` where worthwhile.
+3. If an existing Binaryen `wasm-opt` is justified, write a distinct candidate WASM, verify its required exports/imports, point `[build].wasm` at it and run `nether pack`. Do not run `nether build` afterward and silently replace the optimized artifact with a fresh compile.
+4. Verify the exact packed cart in the player and relevant sync/native checks. No promised percentage savings.
 
-```toml
-[profile.release]
-lto = true
-opt-level = "z"
-codegen-units = 1
-panic = "abort"
-strip = true
+## Texture size
 
-[profile.release.package."*"]
-opt-level = "z"
-```
+RGBA8: `width * height * 4` bytes. BC7: `ceil(width/4) * ceil(height/4) * 16` bytes (format block payload; inspect other allocation/mipmap overhead separately). On aligned dimensions this is one byte/pixel, a 4:1 reduction from RGBA8. PNG file size is not VRAM.
 
-### Post-Processing
+Set `[game].compress_textures` deliberately. Use the smallest texture that meets the visual brief; preserve atlas borders, UVs, alpha and material channel layout. Do not impose one universal 256x256 default or assume an atlas always reduces draw calls.
 
-```bash
-# Install wasm-opt
-cargo install wasm-opt
+## Mesh/state/audio
 
-# Optimize binary
-wasm-opt -Oz target/wasm32-unknown-unknown/release/game.wasm -o game_opt.wasm
+Use packed stride helpers from `zx-common`, not float-input stride assumptions. Inspect actual mesh attributes and the imported object/material scope. Animated rigs must fit the packed animation ceiling (currently 255), even though skeletons support 256.
 
-# Compare sizes
-ls -la game.wasm game_opt.wasm
-```
+Bound allocations when useful; measure total linear memory, not only `size_of` the main state. Stable snapshot-covered vectors can be correct. Integer compaction needs range/overflow/scaling tests.
 
-### Code Size Tips
-
-- Avoid `format!()` and string formatting
-- Use `#[inline(never)]` on cold paths
-- Minimize generic instantiations
-- Prefer `core` over `std` where possible
-
-## Texture Optimization
-
-### Size Calculation
-
-```
-Compressed size = width * height * 0.5 bytes (BC7)
-```
-
-### Resolution Guidelines
-
-| Asset Type | Max Resolution | Typical |
-|------------|---------------|---------|
-| UI icons | 64x64 | 32x32 |
-| Character | 512x512 | 256x256 |
-| Environment | 256x256 | 128x128 |
-| Skybox | 512x512 | 256x256 |
-
-### Texture Atlas
-
-Combine small textures into atlas:
-- Reduces draw calls
-- Better cache utilization
-- Single load operation
-
-## State Optimization
-
-### Compact Data Types
-
-```rust
-// Before: 24 bytes per entity
-struct Entity {
-    x: f64,      // 8 bytes
-    y: f64,      // 8 bytes
-    health: i32, // 4 bytes
-    _pad: i32,   // 4 bytes
-}
-
-// After: 8 bytes per entity
-struct Entity {
-    x: i16,      // 2 bytes (fixed-point)
-    y: i16,      // 2 bytes
-    health: u16, // 2 bytes
-    flags: u16,  // 2 bytes
-}
-```
-
-### Fixed Arrays
-
-```rust
-// Bad: Vec allocates on heap, size varies
-entities: Vec<Entity>,
-
-// Good: Fixed size, predictable snapshot
-entities: [Entity; MAX_ENTITIES],
-active_count: u16,
-```
-
-## Audio Optimization
-
-### Format Comparison
-
-| Format | Size per second |
-|--------|----------------|
-| WAV 44.1kHz stereo | 176 KB |
-| WAV 22kHz mono | 44 KB |
-| XM module | 5-20 KB |
-
-### Music Strategy
-
-Use XM/IT tracker format for music:
-- 95%+ size savings
-- Procedural variation
-- Looping built-in
+WAV memory depends on sample count/channels/width; tracker size depends on patterns and sample library, not song length alone. Deduplicate intentional shared samples, preserve names/loop behavior, and audition before accepting a smaller encoding. Do not resample twice without a reason.

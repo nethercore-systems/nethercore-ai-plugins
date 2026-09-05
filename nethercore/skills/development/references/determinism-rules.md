@@ -1,54 +1,18 @@
-# Determinism Rules
+# Determinism rules
 
-## Core Requirement
+Given identical initial state and input, simulation must produce identical state. Source anchors: `nethercore/core/src/rollback/state/snapshot.rs`, `core/src/wasm/instance.rs`, and the console FFI implementations.
 
-The `update()` function must be **deterministic** for GGRS rollback netcode. Given identical inputs, all clients must produce identical state.
-
-## Rules
-
-1. **All state in WASM memory** - Use static variables (auto-snapshotted)
-2. **Use FFI `random()` functions** - Never external randomness
-3. **Use `tick_count()` not system time** - Frame-based logic only
-4. **render() is display-only** - Never modify game state in render
-
-## Forbidden Patterns
-
-| Pattern | Problem | Correct Alternative |
-|---------|---------|---------------------|
-| `rand::thread_rng()` | External RNG | FFI `random()`, `random_range()` |
-| `SystemTime::now()` | System clock | FFI `elapsed_time()`, `tick_count()` |
-| `HashMap` iteration | Unordered | Arrays, `BTreeMap` |
-| State changes in render() | Skipped during rollback | Move to update() |
-| File I/O in update() | Non-deterministic | Load in init() |
-
-## Allowed in update()
-
-- FFI `random()`, `random_range()`, `random_f32()`
-- FFI `delta_time()`, `elapsed_time()`, `tick_count()`
-- FFI `button_pressed()`, `left_stick_x()` (input)
-- Static variable mutations
-- Array/BTreeMap with consistent iteration
-
-## Allowed in render() Only
-
-- All `draw_*` functions
-- `camera_set()`, `camera_fov()`
-- `push_translate()`, `push_rotate_y()`, `push_scale()`
-- `texture_bind()`, `font_bind()`
-- Reading (not writing) game state
-
-## Testing
+- Keep mutable simulation state, allocator and RNG state in rollback-covered memory. Core snapshots cover linear memory plus explicit host/input/console rollback state; not arbitrary host resources or every WASM global.
+- Host `random`, `random_range`, `random_f32` use deterministic RNG. Alternatively use an explicitly seeded, snapshotted game RNG with stable call ordering.
+- `tick_count`, `delta_time`, `elapsed_time` are simulation time, not wall time or profiling clocks.
+- Stable array/map iteration and tie-breaking matter. Avoid unordered iteration, OS entropy/time, uninitialized values and non-finite math.
+- `render` reads simulation state; never advance gameplay, consume gameplay RNG or store gameplay-affecting render caches. It is skipped on rollback.
+- Keep asset loading/creation in the allowed init phase. Guest filesystem APIs are not implied by a native Rust example. Save data/local-player identity must not desynchronize shared rules.
+- Fixed-point can help authoritative collision; floats are not universally forbidden. Verify your actual math and do not assume NaN canonicalization.
+- Debug pause/time-scale are host development controls; do not multiply game simulation time by local debug controls or early-return from shared simulation based on them.
 
 ```bash
-# Quick test
-nether run --sync-test
-
-# Extended test
-nether run --sync-test --frames 3000
+nether run --no-build --sync-test --check-distance 2 --players 2 --exit-after-frames 3000
 ```
 
-If sync test fails, search for:
-1. Non-deterministic RNG
-2. HashMap/HashSet usage
-3. System time reads
-4. State mutations in render()
+Provide representative input and verify real completion/desync logs with an outer timeout. Idle sync, normal replay and native rule assertions prove different things. Native FFI stubs are not emulator evidence.

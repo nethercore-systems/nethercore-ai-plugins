@@ -25,18 +25,21 @@ Screen-space functions ignore camera and transforms.
 ```rust
 fn render() {
     // Always draws at screen coordinates
-    draw_sprite(tex, 10.0, 10.0, 64.0, 64.0, 0xFFFFFFFF);
-    draw_text_str("SCORE: 100", 20.0, 20.0, 16.0, 0xFFFFFFFF);
-    draw_rect(0.0, 0.0, 100.0, 10.0, 0xFF0000FF); // Health bar
+    texture_bind(tex);
+    set_color(0xFFFFFFFF);
+    draw_sprite(10.0, 10.0, 64.0, 64.0);
+    draw_text_str("SCORE: 100", 20.0, 20.0, 16.0);
+    set_color(0xFF0000FF);
+    draw_rect(0.0, 0.0, 100.0, 10.0); // Health bar
 }
 ```
 
 **Key functions:**
-- `draw_sprite(tex, x, y, w, h, color)`
-- `draw_text_str(str, x, y, size, color)`
-- `draw_rect(x, y, w, h, color)`
-- `draw_line(x1, y1, x2, y2, color)`
-- `draw_circle(x, y, radius, color)`
+- `texture_bind(handle)` then `draw_sprite(x, y, w, h)`
+- `draw_text(ptr, len, x, y, size)` (or the `draw_text_str` helper)
+- `set_color(rgba)` then `draw_rect(x, y, w, h)`
+- `set_color(rgba)` then `draw_line(x1, y1, x2, y2, thickness)`
+- `set_color(rgba)` then `draw_circle(x, y, radius)`
 - `z_index(n)` - Layer ordering (0-255)
 
 ## 3D Drawing
@@ -79,15 +82,12 @@ fn render() {
         push_identity();
     }
 
-    // 3. Disable depth testing for UI
-    depth_test(false);
-
-    // 4. Draw 2D UI overlay (screen space)
-    draw_sprite(HUD_TEX, 10.0, 10.0, 200.0, 50.0, 0xFFFFFFFF);
-    draw_text_str("HP: 100", 20.0, 25.0, 16.0, 0xFFFFFFFF);
-
-    // 5. Re-enable depth testing
-    depth_test(true);
+    // 3. Draw 2D UI overlay in screen space
+    z_index(255);
+    texture_bind(HUD_TEX);
+    set_color(0xFFFFFFFF);
+    draw_sprite(10.0, 10.0, 200.0, 50.0);
+    draw_text_str("HP: 100", 20.0, 25.0, 16.0);
 }
 ```
 
@@ -106,16 +106,19 @@ fn render() {
 ```rust
 fn render() {
     // Background
-    draw_sprite(BG, 0.0, 0.0, 960.0, 540.0, 0xFFFFFFFF);
+    texture_bind(BG);
+    set_color(0xFFFFFFFF);
+    draw_sprite(0.0, 0.0, 960.0, 540.0);
 
     // Entities (sorted by Y for depth)
     for entity in sorted_by_y(entities) {
-        draw_sprite(entity.tex, entity.x, entity.y, 64.0, 64.0, 0xFFFFFFFF);
+        texture_bind(entity.tex);
+        draw_sprite(entity.x, entity.y, 64.0, 64.0);
     }
 
     // UI on top
     z_index(255);
-    draw_text_str("SCORE", 10.0, 10.0, 16.0, 0xFFFFFFFF);
+    draw_text_str("SCORE", 10.0, 10.0, 16.0);
 }
 ```
 
@@ -145,8 +148,8 @@ fn render() {
         player_x, player_y, player_z
     );
 
-    // World geometry
-    draw_env(ENV_HANDLE);
+    // Select the EPU environment source (16 u64 configuration values)
+    epu_set(ENV_CONFIG.as_ptr());
 
     // Dynamic entities
     for entity in entities {
@@ -155,6 +158,7 @@ fn render() {
         draw_mesh(entity.mesh);
         push_identity();
     }
+    draw_epu(); // Environment background is drawn after geometry
 }
 ```
 
@@ -164,4 +168,4 @@ fn render() {
 |---------|--------|
 | 2D sprites | `z_index(0-255)` - Higher draws on top |
 | 3D meshes | Depth buffer (automatic) |
-| 2D on 3D | `depth_test(false)` for overlay |
+| 2D on 3D | Draw after 3D and use `z_index` for layer ordering |

@@ -1,65 +1,17 @@
-# ROM Packaging
+# ROM packaging
 
-## Package Contents
-
-A Nethercore ROM (`.nczx`) contains:
-- Compiled WASM binary
-- Packed assets (textures, meshes, audio)
-- Game manifest metadata
-
-## Build Process
+ZX `.nczx` contains WASM, packed assets and game metadata. Source: `nethercore/tools/nether-cli/src/pack/` and `zx-common`.
 
 ```bash
-# Development build
-nether build
-
-# Release build (optimized)
-nether build --release
-
-# Just pack (skip compile)
-nether pack
+nether build --debug  # diagnostic compile + pack
+nether build          # release compile + pack (default)
+nether pack           # existing WASM + assets only
 ```
 
-## Release Optimization
+Set `[build].wasm` to the exact artifact. Do not let a renamed crate's stale WASM win discovery. If external optimization is needed, optimize first, pack second, verify the final cart third. Do not rebuild over the optimized file before packing.
 
-For release builds:
+Use the project's release profile (`lto`, appropriate size optimization, `panic = "abort"`) and measure instead of assuming fixed savings. Keep required game assets in the datapack rather than embedding them in snapshotted RAM without need.
 
-1. **Cargo optimization**:
-   ```toml
-   [profile.release]
-   lto = true
-   opt-level = "z"
-   ```
+ZX specification is 16 MiB ROM, 4 MiB linear RAM and 4 MiB VRAM; actual allocated/decoded resources differ from compressed file sizes. The larger file-reader safety cap is not cartridge capacity.
 
-2. **Post-process WASM**:
-   ```bash
-   wasm-opt -Oz game.wasm -o game.wasm
-   ```
-
-3. **Verify size**:
-   ```bash
-   nether build --verbose
-   # Check total ROM size < 16 MB
-   ```
-
-## Platform Assets
-
-For nethercore.systems upload:
-
-| Asset | Size | Format |
-|-------|------|--------|
-| Icon | 64x64 | PNG |
-| Screenshot | 960x540 | PNG |
-| Banner | 1280x720 | PNG |
-
-## Manifest Example
-
-```toml
-[game]
-id = "my-game"
-title = "My Game"
-author = "Developer Name"
-version = "1.0.0"
-description = "A brief, compelling description"
-tags = ["action", "multiplayer", "arcade"]
-```
+Current upload requirements belong to the platform UI/backend, not a stale table here. ZX gameplay screenshots are captured at its 960x540 framebuffer; that alone does not establish the platform's icon/banner/upload rules. Verify intended accepted formats, dimensions, metadata and rights before an authorized upload.

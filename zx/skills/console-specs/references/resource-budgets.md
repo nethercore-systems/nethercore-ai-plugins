@@ -2,52 +2,64 @@
 
 ## Console Limits
 
+These are console resource budgets, not file-ingestion safety caps.
+
 | Resource | Hard Limit | Typical | Warning |
 |----------|------------|---------|---------|
-| **ROM Total** | 16 MB | 8-12 MB | > 12 MB |
-| **WASM Code** | 4 MB | 0.5-2 MB | > 2 MB |
-| **Data Pack** | 12 MB | 4-10 MB | > 10 MB |
-| **RAM** | 4 MB | 1-3 MB | > 3 MB |
-| **VRAM** | 4 MB | 2-4 MB | > 3.5 MB |
+| **ROM Total** | 16 MiB (WASM code + assets) | 8-12 MiB | > 12 MiB |
+| **WASM Code + Data Pack** | Share the 16 MiB ROM budget | Measure the packed cart | Leave headroom |
+| **RAM** | 4 MiB WASM linear memory | 1-3 MiB | > 3 MiB |
+| **VRAM** | 4 MiB GPU textures and mesh buffers | 2-4 MiB | > 3.5 MiB |
 | **State Snapshot** | - | 50-150 KB | > 200 KB |
 
-## Data Pack Budget (12 MB max)
+## File Read Safety Caps (not gameplay budgets)
 
-| Asset Type | Percentage | Budget |
-|------------|------------|--------|
-| Textures | 40-60% | 4.8-7.2 MB |
-| Meshes | 20-30% | 2.4-3.6 MB |
-| Audio | 10-20% | 1.2-2.4 MB |
-| Animations | 5-15% | 0.6-1.8 MB |
+The host uses larger caps while reading files defensively. They do not expand
+the ZX ROM/RAM/VRAM limits above.
+
+| File class | Read cap |
+|------------|----------|
+| ROM file | 512 MiB |
+| WASM file | 128 MiB |
+| PNG file | 32 MiB |
+
+## Content Planning
+
+`shared/src/console.rs` defines a shared 16 MiB ROM budget; it does not impose
+a 4 MiB-code/12 MiB-data split. The separate 4 MiB RAM limit is linear memory,
+not a WASM file-size cap. Keep headroom; measure loaded VRAM separately.
+
+The typical/warning figures and genre examples below are planning heuristics,
+not measured guarantees or extra platform limits.
 
 ## Genre Budget Examples
 
-**Fighting Game (~12 MB):**
-- Characters (8): ~6 MB
-- Stages (4): ~3 MB
-- Audio: ~2 MB
-- Effects, UI, code: ~1 MB
+**Fighting Game (~12 MiB):**
+- Characters (8): ~6 MiB
+- Stages (4): ~3 MiB
+- Audio: ~2 MiB
+- Effects, UI, code: ~1 MiB
 
-**3D Platformer (~10 MB):**
-- Player + animations: ~500 KB
-- Levels (20): ~5 MB
-- Enemies/NPCs: ~2 MB
-- Audio: ~2 MB
-- Code: ~500 KB
+**3D Platformer (~10 MiB):**
+- Player + animations: ~500 KiB
+- Levels (20): ~5 MiB
+- Enemies/NPCs: ~2 MiB
+- Audio: ~2 MiB
+- Code: ~500 KiB
 
-**Racing Game (~8 MB):**
-- Vehicles (12): ~2 MB
-- Tracks (6): ~4 MB
-- Audio: ~1.5 MB
-- Effects, UI, code: ~500 KB
+**Racing Game (~8 MiB):**
+- Vehicles (12): ~2 MiB
+- Tracks (6): ~4 MiB
+- Audio: ~1.5 MiB
+- Effects, UI, code: ~500 KiB
 
 ## Quick Size Estimation
 
 ```
-Texture: width x height x 0.5 bytes (BC7)
+Texture: width x height x ~1 byte (BC7), plus metadata/alignment
 Mesh: vertices x 12-40 bytes (format dependent)
 Audio: seconds x 44100 bytes (22050Hz mono)
-XM Music: 50-200 KB per song
+XM Music: 50-200 KiB per song
 ```
 
 ## State Snapshot Performance

@@ -2,34 +2,36 @@
 
 ## Determinism Note
 
-All input functions return **deterministic values** synchronized by the netcode. Call them in `update()` - the values are identical across all clients for the same frame. Never cache input state across frames.
+Input FFI reads the host-mapped native controller state. In netplay, the
+sampled values are synchronized for the same simulation frame. Call these
+queries in `update()` and do not cache input state across frames.
 
 ## Button Functions
 
-| Function | Returns | Purpose |
+| Function | Returns (`u32`) | Purpose |
 |----------|---------|---------|
-| `button_held(player, btn)` | bool | Button currently down |
-| `button_pressed(player, btn)` | bool | Button just pressed this frame |
-| `button_released(player, btn)` | bool | Button just released this frame |
+| `button_held(player, btn)` | `1`/`0` | Button currently down |
+| `button_pressed(player, btn)` | `1`/`0` | Button just pressed this frame |
+| `button_released(player, btn)` | `1`/`0` | Button just released this frame |
 
 ## Button Constants
 
 | Button | Value | Physical |
 |--------|-------|----------|
-| `BTN_A` | 0 | A / Cross |
-| `BTN_B` | 1 | B / Circle |
-| `BTN_X` | 2 | X / Square |
-| `BTN_Y` | 3 | Y / Triangle |
-| `BTN_L1` | 4 | Left bumper |
-| `BTN_R1` | 5 | Right bumper |
-| `BTN_L3` | 6 | Left stick click |
-| `BTN_R3` | 7 | Right stick click |
-| `BTN_START` | 8 | Start/Menu |
-| `BTN_SELECT` | 9 | Select/Back |
-| `BTN_UP` | 10 | D-pad up |
-| `BTN_DOWN` | 11 | D-pad down |
-| `BTN_LEFT` | 12 | D-pad left |
-| `BTN_RIGHT` | 13 | D-pad right |
+| `button::UP` | 0 | D-pad up |
+| `button::DOWN` | 1 | D-pad down |
+| `button::LEFT` | 2 | D-pad left |
+| `button::RIGHT` | 3 | D-pad right |
+| `button::A` | 4 | A / Cross |
+| `button::B` | 5 | B / Circle |
+| `button::X` | 6 | X / Square |
+| `button::Y` | 7 | Y / Triangle |
+| `button::L1` | 8 | Left bumper |
+| `button::R1` | 9 | Right bumper |
+| `button::L3` | 10 | Left stick click |
+| `button::R3` | 11 | Right stick click |
+| `button::START` | 12 | Start/Menu |
+| `button::SELECT` | 13 | Select/Back |
 
 ## Analog Functions
 
@@ -39,8 +41,8 @@ All input functions return **deterministic values** synchronized by the netcode.
 | `left_stick_y(player)` | -1.0 to 1.0 | Left stick vertical |
 | `right_stick_x(player)` | -1.0 to 1.0 | Right stick horizontal |
 | `right_stick_y(player)` | -1.0 to 1.0 | Right stick vertical |
-| `left_trigger(player)` | 0.0 to 1.0 | L2 trigger |
-| `right_trigger(player)` | 0.0 to 1.0 | R2 trigger |
+| `trigger_left(player)` | 0.0 to 1.0 | L2 trigger |
+| `trigger_right(player)` | 0.0 to 1.0 | R2 trigger |
 
 ## Player Info
 
@@ -56,7 +58,7 @@ fn update() {
     let p = 0; // Player 0
 
     // Digital input
-    if button_pressed(p, BTN_A) {
+    if button_pressed(p, button::A) != 0 {
         jump();
     }
 
@@ -65,6 +67,6 @@ fn update() {
     let move_y = left_stick_y(p);
 
     // Trigger
-    let accel = right_trigger(p);
+    let accel = trigger_right(p);
 }
 ```

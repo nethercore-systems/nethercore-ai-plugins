@@ -1,7 +1,7 @@
 {
   "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
   "name": "nethercore-ai-plugins",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "AI plugins for Nethercore game development - platform tooling and ZX console reference",
   "owner": {
     "name": "Nethercore Systems"
@@ -10,7 +10,7 @@
     {
       "name": "nethercore",
       "description": "Platform tooling for Nethercore game development - build, test, optimize, publish",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "author": {
         "name": "Nethercore Systems"
       },
@@ -20,7 +20,7 @@
     {
       "name": "zx",
       "description": "ZX fantasy console FFI reference and specifications",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "author": {
         "name": "Nethercore Systems"
       },

@@ -9,7 +9,7 @@ license: Apache-2.0
 compatibility: ZX console only.
 metadata:
   author: nethercore-systems
-  version: "1.0.0"
+  version: "1.0.1"
 ---
 
 # ZX Rendering Techniques
@@ -72,8 +72,8 @@ begin_pass(0);
 
 | Function | Mode | Use |
 |----------|------|-----|
-| `draw_billboard(w, h, 1, color)` | Spherical | Particles |
-| `draw_billboard(w, h, 2, color)` | Cylindrical | Trees |
+| `draw_billboard(w, h, 1)` | Spherical | Particles |
+| `draw_billboard(w, h, 2)` | Cylindrical | Trees |
 
 ### Particle System Core
 
@@ -85,10 +85,11 @@ static mut PARTICLES: [Particle; 256] = [...];
 
 fn render_particles(tex: u32) {
     texture_bind(tex);
+    set_color(0xFFFFFFFF);
     for p in unsafe { PARTICLES.iter() } {
         if p.life > 0.0 {
             push_translate(p.x, p.y, p.z);
-            draw_billboard(1.0, 1.0, 1, 0xFFFFFFFF);
+            draw_billboard(1.0, 1.0, 1);
             push_identity();
         }
     }
@@ -103,7 +104,8 @@ let font = load_font(tex, 8, 12, 32, 96);  // 8x12 glyphs
 
 // In render:
 font_bind(font);
-draw_text_str("SCORE", 10.0, 10.0, 24.0, 0xFFFFFFFF);
+set_color(0xFFFFFFFF);
+draw_text_str("SCORE", 10.0, 10.0, 24.0);
 font_bind(0);  // Back to default
 ```
 

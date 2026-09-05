@@ -1,40 +1,23 @@
-# nether CLI Commands
+# nether CLI commands
 
-## Build Commands
-
-| Command | Purpose |
-|---------|---------|
-| `nether init` | Create new nether.toml in current directory |
-| `nether compile` | Compile WASM from source (runs build.script) |
-| `nether pack` | Bundle WASM + assets into ROM |
-| `nether build` | compile + pack combined |
-| `nether build --release` | Optimized release build |
-| `nether build --verbose` | Show detailed build output |
-
-## Run Commands
+Authority: `nethercore/tools/nether-cli/src/main.rs` and the selected executable's `--help`. These commands describe the audited CLI, not hypothetical future console tooling.
 
 | Command | Purpose |
-|---------|---------|
-| `nether run` | Build and launch in player |
-| `nether run --sync-test` | Run determinism verification |
-| `nether run --sync-test --frames N` | Test N frames |
-| `nether run --record FILE` | Record replay |
-| `nether run --replay FILE` | Playback replay |
+|---|---|
+| `nether init` | Create `nether.toml` |
+| `nether compile` | Run build script, locate WASM |
+| `nether pack` | Pack existing WASM and manifest assets |
+| `nether build` | Compile + pack, release by default |
+| `nether build --debug` | Debug build |
+| `nether run --no-build` | Launch existing cart |
+| `nether run --watch` | Watch/rebuild/relaunch |
+| `nether run --no-build --sync-test --check-distance 2 --players 1 --exit-after-frames 120` | Bounded sync smoke |
+| `nether run --no-build --replay smoke.ncrs` | Real-player scripted input/captures |
+| `nether preview` | Asset inspection; inspect its help for arguments |
+| `nether replay compile smoke.ncrs -o smoke.ncrp` | Script-to-binary compilation, not game execution |
 
-## Examples
+Use `-p <game-dir>` when outside the project. Keep an outer timeout and inspect runtime errors and actual completion. The frame limit counts advanced input frames, not all rollback re-simulation ticks.
 
-```bash
-# Development cycle
-nether build
-nether run
+Do not use old `build --release`, `build --verbose`, `run --frames`, `run --record`, or `nether test`. Do not treat `.bin` as interchangeable with `.ncrs` scripts or `.ncrp` binary replays. Discover recording/binary playback support through `nether replay --help` and actual implementation before promising it.
 
-# Release build
-nether build --release
-
-# Test determinism
-nether run --sync-test --frames 3000
-
-# Record and replay
-nether run --record test.bin
-nether run --replay test.bin
-```
+The audited `nether replay run` path reports simplified headless execution without loading game WASM. A success report is not a game test; see [known contradictions](known-contradictions.md).

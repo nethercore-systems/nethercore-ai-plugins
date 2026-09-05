@@ -32,12 +32,15 @@ Rendering techniques: cameras, stencil effects, particles, custom fonts, 2D vs 3
 #[no_mangle] pub extern "C" fn render() { }
 
 // Asset loading (in init)
-let tex = rom_texture_str("player");
-let mesh = rom_mesh_str("character");
+let tex = unsafe { rom_texture(b"player".as_ptr(), 6) };
+let mesh = unsafe { rom_mesh(b"character".as_ptr(), 9) };
+// Store handles in game state; these are raw ABI calls, not `_str` wrappers.
 
 // Drawing (in render)
-camera_set(0.0, 5.0, 10.0, 0.0, 0.0, 0.0);
-push_translate(x, y, z);
-draw_mesh(mesh);
-push_identity();
+unsafe {
+    camera_set(0.0, 5.0, 10.0, 0.0, 0.0, 0.0);
+    push_translate(x, y, z);
+    draw_mesh(mesh);
+    // draw_mesh consumes pending pushes; push_identity is not a pop/reset.
+}
 ```

@@ -1,6 +1,6 @@
-# nether.toml Reference
+# nether.toml reference
 
-## Full Example
+Source: `nethercore/tools/nether-cli/src/manifest.rs`. IDs are explicit authored keys; asset paths are relative to the manifest. Unknown/deprecated fields can be silently ignored, so spelling and table placement matter.
 
 ```toml
 [game]
@@ -9,59 +9,51 @@ title = "Space Fighter"
 author = "Your Name"
 version = "1.0.0"
 description = "A space combat game"
-tags = ["arcade", "shooter", "multiplayer"]
+tags = ["arcade", "multiplayer"]
+render_mode = 0
+tick_rate = 60
+max_players = 2
+compress_textures = true
+
+[netplay]
+enabled = true
 
 [build]
 script = "cargo build --target wasm32-unknown-unknown --release"
 wasm = "target/wasm32-unknown-unknown/release/space_fighter.wasm"
 
-# Textures - auto-compressed to BC7
 [[assets.textures]]
-id = "player_ship"
-path = "assets/textures/player.png"
+id = "ship"
+path = "assets/ship.png"
 
-[[assets.textures]]
-id = "enemy_ship"
-path = "assets/textures/enemy.png"
-
-[[assets.textures]]
-id = "bullet"
-path = "assets/textures/bullet.png"
-
-# Meshes - GLB/GLTF format
 [[assets.meshes]]
-id = "ship_model"
-path = "assets/meshes/ship.glb"
+id = "ship_mesh"
+path = "assets/ship.glb"
 
-# Audio - 22050Hz mono WAV
 [[assets.sounds]]
 id = "laser"
-path = "assets/audio/laser.wav"
+path = "assets/laser.wav"
 
-[[assets.sounds]]
-id = "explosion"
-path = "assets/audio/explosion.wav"
-
-# Music - XM/IT tracker format
-[[assets.music]]
+[[assets.trackers]]
 id = "battle_theme"
-path = "assets/music/battle.xm"
+path = "assets/battle.xm"
 ```
 
-## Asset Handle Usage
+- `compress_textures` explicitly chooses RGBA8 vs BC7; choosing a lit render mode does not automatically enable compression.
+- Raw WAV packing currently assumes mono 16-bit PCM at 22050 Hz; it does not implement the resample/downmix promised by its comment. Validate source audio before packing.
+- Music uses `assets.trackers`, not `assets.music`. XM/IT embedded samples are extracted; names must resolve without collisions. `patterns = false` deliberately imports only a sample library.
+- GLB/glTF mesh import selects first mesh/primitive, not the whole scene. Skinned exports need corresponding `assets.skeletons` and `assets.keyframes` (`animations` alias) entries. Use `skin_name`/`animation_name` selectors when required; wildcard clips need collision-safe `id_prefix`.
+- Runtime skeleton capacity is 256 bones, but packed animation export accepts at most 255. Use the tighter limit for animated content.
+- EPU face entries are `[[assets.epu_environments]]` with `id, px, nx, py, ny, pz, nz`.
 
-In code, use `rom_*_str()` to get handles:
+Load exact IDs in `init` with the console bindings; do not invent `_str` helpers:
 
 ```rust
-let tex = rom_texture_str("player_ship");
-let mesh = rom_mesh_str("ship_model");
-let sfx = rom_sound_str("laser");
-let music = rom_music_str("battle_theme");
+unsafe {
+    let id = b"ship";
+    let texture = rom_texture(id.as_ptr(), id.len() as u32);
+    // Store the handle in game state for later drawing.
+}
 ```
 
-## Asset Path Conventions
-
-- Textures: PNG (auto-compressed to BC7)
-- Meshes: GLB or GLTF
-- Audio: WAV (22050Hz mono)
-- Music: XM or IT tracker format
+ZX tracker loading is `rom_tracker`, not `rom_music`. Check the canonical bindings for signatures and init guards. A successful pack does not prove correct downstream playback or budgets.

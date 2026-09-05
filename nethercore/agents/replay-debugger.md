@@ -30,11 +30,12 @@ You help debug Nethercore games using replay files (NCRS format).
 
 ## Process
 
-1. Confirm replay file exists and is valid
-2. Run `nether run --replay <file>` to reproduce the issue
+1. Confirm the exact cart, seed and `.ncrs` script; omitted frames are idle inputs.
+2. Build the cart, then run `nether run --no-build --replay <file>`. Verify real player progress/captures; parser success or the current simplified headless report is not game execution.
 3. If needed, add strategic `log()` calls:
    ```rust
-   log(&format!("frame {} pos: {},{}", tick_count(), x, y));
+   let msg = b"entered suspect state";
+   unsafe { log(msg.as_ptr(), msg.len() as u32); }
    ```
 4. Narrow down to the specific frame/function
 5. Identify root cause

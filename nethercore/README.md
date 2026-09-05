@@ -30,7 +30,7 @@ Debugs issues using replay files (NCRS format).
 ## Quick Start
 
 ```bash
-# Create new project
+# Create a manifest in an existing project
 nether init
 
 # Build and run
@@ -41,5 +41,5 @@ nether run
 nether run --sync-test
 
 # Release build
-nether build --release
+nether build # release by default
 ```

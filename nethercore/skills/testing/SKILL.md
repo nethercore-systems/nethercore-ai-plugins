@@ -9,94 +9,44 @@ license: Apache-2.0
 compatibility: Requires nether CLI. Works offline.
 metadata:
   author: nethercore-systems
-  version: "1.0.0"
+  version: "1.0.1"
 ---
 
 # Nethercore Testing
 
-## Sync Testing
+Use a focused native rule test, actual player behavior, and a rollback check where simulation changed. Do not turn parser success, a zero exit code or dummy FFI stubs into game acceptance.
 
-Runs two identical instances, compares checksums each frame.
+## Sync testing
 
-```bash
-nether run --sync-test
-nether run --sync-test --frames 3000  # Specific duration
-```
-
-**Pass criteria:** Identical checksums for 1000+ frames.
-
-## Replay Testing
-
-Record and replay for regression testing:
+GGRS sync-test mode replays/checks saved state; it is not the same as launching two connected network players.
 
 ```bash
-nether run --record replay.bin  # Record
-nether run --replay replay.bin  # Playback
+nether run --no-build --sync-test --check-distance 2 --players 1 --exit-after-frames 120
 ```
 
-**Workflow:**
-1. Record on known-good build
-2. Replay on new build
-3. Compare outcomes
+Build first. Use product-relevant inputs/player counts and longer runs when needed. Verify progress/completion and absence of game/desync errors; enforce an outer timeout. `--exit-after-frames` counts advanced input frames, not every rollback replay. A failure may be a load/runtime/tool error rather than nondeterminism.
 
-## Determinism Rules
+## Real-player replay
 
-| Do | Don't |
-|---|---|
-| `random()` FFI | `rand::thread_rng()` |
-| `BTreeMap`, `BTreeSet` | `HashMap`, `HashSet` |
-| Frame counter | `Instant::now()` |
-| Fixed-point math | Floating-point accumulation |
-
-## Test Organization
-
-| Type | Tool | Purpose |
-|------|------|---------|
-| Unit | `cargo test` | Pure logic |
-| Sync | `nether run --sync-test` | Runtime determinism |
-| Replay | `--record`/`--replay` | Cross-build validation |
-
-## Common Desync Causes
-
-1. **Non-deterministic RNG** - Using rand crate instead of FFI
-2. **HashMap iteration** - Order varies between runs
-3. **System time** - Reading wall clock
-4. **Uninitialized memory** - Undefined values
-5. **State in render()** - Skipped during rollback
-
-## Debugging Desyncs
-
-1. Run sync test to confirm failure
-2. Add `log()` calls around suspicious code
-3. Check for forbidden patterns
-4. Verify all state is in static variables
-
-## Debug Actions (Efficient Testing)
-
-Instead of recording long input sequences, use debug actions to skip directly to test scenarios:
-
-```toml
-# Skip to level 3 boss
-[[frames]]
-f = 0
-action = "Load Level"
-action_params = { level = 3 }
-
-[[frames]]
-f = 1
-snap = true
-assert = "$boss_health > 0"
+```bash
+nether replay compile smoke.ncrs -o smoke.ncrp
+nether run --no-build --replay smoke.ncrs
 ```
 
-Games register actions in `init()`:
+The first command verifies script syntax/encoding. The second runs the cart with scripted input and capture requests. `.ncrs` is TOML; `.ncrp` is binary. The old `nether run --record replay.bin` and `--frames` examples are not supported by this CLI.
 
-```rust
-debug_action_begin(b"Load Level".as_ptr(), 10, b"debug_load_level".as_ptr(), 16);
-debug_action_param_i32(b"level".as_ptr(), 5, 1);
-debug_action_end();
-```
+Every omitted frame/player is idle. A held input must appear on each intended tick. Inspect actual captured output or measured game state; changed game rules need not reproduce old outcomes unless that is the regression contract. See [replay format](references/replay-format.md).
 
-**When to use:**
-- Testing specific levels without playing through earlier ones
-- Setting up edge-case scenarios (low health, specific enemy spawns)
-- Regression tests that need consistent starting state
+## Avoid false greens
+
+The audited `nether replay run` implementation is a simplified headless runner that does not load game WASM. Its report is **not** a game regression result. Graphical replay must not be assumed to run assertions/debug actions merely because the parser exposes them; trace current callers before relying on them. See the development skill's known-contradictions reference.
+
+For numerical checks use the game's native simulation tests or an existing real runtime harness. `Runtime::run_scripted_sync_test` is an available core path for scripted rollback without rendering, not a claim that the public replay command uses it.
+
+Debug Inspector actions can set up a local scenario, but export/callback registration and execution must be verified. Do not ship a test whose assertions/actions silently never execute.
+
+## Diagnose
+
+Check simulation RNG, stable iteration/tie-breaking, wall-clock reads, invalid math, rollback-covered state, and render mutations. Do not assume all statics are in linear memory or that every float causes a desync.
+
+See [benchmarking](references/benchmarking.md). Fixed `delta_time()` is not a frame-time profiler.
