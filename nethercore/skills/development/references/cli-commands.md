@@ -20,4 +20,11 @@ Use `-p <game-dir>` when outside the project. Keep an outer timeout and inspect 
 
 Do not use old `build --release`, `build --verbose`, `run --frames`, `run --record`, or `nether test`. Do not treat `.bin` as interchangeable with `.ncrs` scripts or `.ncrp` binary replays. Discover recording/binary playback support through `nether replay --help` and actual implementation before promising it.
 
-The audited `nether replay run` path reports simplified headless execution without loading game WASM. A success report is not a game test; see [known contradictions](known-contradictions.md).
+For semantic regression, use matching `nether` and `nethercore-zx` builds:
+
+```bash
+nether replay validate tests/smoke.ncrs
+nether replay run tests/smoke.ncrs --rom game.nczx --headless --report replay-report.json --timeout 30
+```
+
+Replace `game.nczx` with the actual packed cart. Require zero exit, completed `PASSED` report, meaningful snapshots/assertions, and a deliberate failing control. Older binaries used a false-green placeholder. Rendered replay accepts inputs/screenshots only and rejects actions/assertions/semantic snapshots; headless rejects screenshots. See the testing skill for frame and state semantics.

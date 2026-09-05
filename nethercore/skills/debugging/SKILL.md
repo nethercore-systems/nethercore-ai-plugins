@@ -44,4 +44,4 @@ Do not claim zero release overhead without checking the build/registration path.
 
 ## Evidence
 
-Log with pointer and byte length, inspect actual player state and reproduce with controlled inputs. Replay parser support does not prove assertions/actions are executed. Use the testing skill's real-player/native/runtime distinction, not a simplified headless report as a pass.
+Log with pointer and byte length, inspect actual player state and reproduce with controlled inputs. The testing skill documents real ROM-backed headless assertions/actions/semantic snapshots with matching binaries. Require live values, completed reports and failing controls; parser success alone is not gameplay execution. Use a separate inputs/screenshots-only rendered replay for presentation checks.

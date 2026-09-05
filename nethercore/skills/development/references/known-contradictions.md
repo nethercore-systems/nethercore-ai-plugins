@@ -8,11 +8,11 @@ Source snapshot: Nethercore `b1d589ce4915ec63700be0520970c94be4ffbe34` (2026-09-
 
 Workaround: author and verify **22050 Hz mono 16-bit PCM** before raw packing. The existing `tools/nether-export/src/audio.rs::convert_wav` provides a decoder/conversion starting point, not a guarantee of hardened malformed/empty input handling. A separately authorized fix should cover preservation, conversion, malformed/truncated input and both callers with a small regression.
 
-## False-positive headless replay (high)
+## Resolved: false-positive headless replay
 
-`tools/nether-cli/src/replay/run.rs` constructs a simplified `HeadlessRunner` without game WASM. An assertion-free success report does not establish that any cart ran. Inspect `core/src/replay/runtime/headless.rs` and real executor callers before trusting assertion/action fields.
+The initial audit found placeholder execution without game WASM. The real ROM-backed runner now executes seeded scripts, registered actions, typed semantic snapshots and assertions, with nonzero failure exits. Build matching `nether-cli` and `nethercore-zx` from the replay implementation; older binaries may retain the defect.
 
-Use the real player for input/captures, native rule tests for numerical checks, and the existing real sync harness for determinism. A separately scoped fix should reject unsupported testing or wire actual game execution, with impossible/valid assertions, missing/invalid carts and timeout checks. Do not implement another runtime before inspecting `core/src/runtime/sync_test.rs`.
+Use the testing skill and `scripts/verify_agent_workflow.py --rebuild-games` for executable cross-game checks and negative controls. Rendered replay is inputs/screenshots-only; semantic snapshots are observations, not restorable checkpoints. Reuse `Runtime::run_scripted_sync_test` for rollback checks instead of adding another runtime.
 
 ## Animated rig ceiling (medium)
 

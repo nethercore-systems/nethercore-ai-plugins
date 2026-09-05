@@ -25,7 +25,14 @@ nether run --no-build --sync-test --check-distance 2 --players 1 --exit-after-fr
 nether run --no-build --replay tests/smoke.ncrs
 ```
 
-Provide the existing script, outer timeouts, input scenarios and actual error/completion/capture checks. These are **not** drop-in headless jobs. The current simplified headless replay report does not prove game execution; use an existing real runtime harness when rendering is unavailable.
+Provide the existing script, outer timeouts, input scenarios and actual error/completion/capture checks. These rendered commands are **not** drop-in headless jobs. For semantic CI without a display, provision matching `nether` and `nethercore-zx` binaries and run:
+
+```bash
+nether replay validate tests/smoke.ncrs
+nether replay run tests/smoke.ncrs --rom game.nczx --headless --report replay-report.json --timeout 30
+```
+
+Use the actual cart filename. Require zero exit, a completed `PASSED` report and meaningful assertions/nonempty state snapshots. Check a deliberate false assertion exits nonzero when establishing the gate. Use fresh report paths, and never accept an old report after an error. Keep rendered scripts inputs/screenshots-only; actions/assertions/semantic snapshots belong in headless scripts. Headless success does not assess graphics, sound or game feel.
 
 ## Release artifacts
 

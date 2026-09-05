@@ -1,0 +1,30 @@
+# Sports-game semantics: menu -> serve, points for both players.
+console = "zx"
+seed = 4401
+players = 2
+
+[[frames]]
+f = 0
+snap = true
+assert = "$match_phase == 0"
+
+[[frames]]
+f = 1
+p1 = "a"
+snap = true
+assert = "$match_phase == 1"
+
+[[frames]]
+f = 2
+p1 = "idle"
+action = "Force Point"
+action_params = { scorer = 0 }
+snap = true
+assert = "$match_score_p1 == 1"
+
+[[frames]]
+f = 3
+action = "Force Point"
+action_params = { scorer = 1 }
+snap = true
+assert = "$match_score_p2 == 1"

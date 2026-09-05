@@ -1,52 +1,76 @@
 ---
 name: testing
 description: >-
-  Testing Nethercore games for determinism and correctness. Covers sync testing,
-  replay recording and playback, debug actions, and desync diagnosis. Use when
-  running sync tests, setting up replay-based regression tests, or diagnosing
-  determinism failures.
+  Test Nethercore games with real ROM-backed replay assertions, semantic state
+  snapshots, debug actions, and bounded rollback sync tests. Use for regression
+  testing, automated game verification, and desync diagnosis.
 license: Apache-2.0
-compatibility: Requires nether CLI. Works offline.
+compatibility: Requires matching nether and nethercore-zx binaries. Works offline.
 metadata:
   author: nethercore-systems
-  version: "1.0.1"
+  version: "1.1.0"
 ---
 
 # Nethercore Testing
 
-Use a focused native rule test, actual player behavior, and a rollback check where simulation changed. Do not turn parser success, a zero exit code or dummy FFI stubs into game acceptance.
+## Real replay regression
 
-## Sync testing
-
-GGRS sync-test mode replays/checks saved state; it is not the same as launching two connected network players.
+From a game project with `nether.toml` and an authored `tests/smoke.ncrs`:
 
 ```bash
-nether run --no-build --sync-test --check-distance 2 --players 1 --exit-after-frames 120
+nether build
+nether replay validate tests/smoke.ncrs
+nether replay run tests/smoke.ncrs --rom game.nczx --headless --report replay-report.json --timeout 30
 ```
 
-Build first. Use product-relevant inputs/player counts and longer runs when needed. Verify progress/completion and absence of game/desync errors; enforce an outer timeout. `--exit-after-frames` counts advanced input frames, not every rollback replay. A failure may be a load/runtime/tool error rather than nondeterminism.
+Replace `game.nczx` with the ROM produced from `[game].id`. The matching
+`nethercore-zx` executable must be alongside `nether` or discoverable by its
+player lookup. Validation checks syntax only; **only ROM-backed execution tests
+actual gameplay**. No recording command is provided: author `.ncrs` text scripts.
 
-## Real-player replay
+Require both a zero exit status and a completed `PASSED` report. A timeout,
+missing action/variable, trap, failed assertion, or desync is not a pass. Keep
+an intentionally false assertion as a negative control when establishing CI.
+Use fresh report paths; never interpret an old report after a failed invocation.
+
+## Expose meaningful state
+
+Register `debug_watch_*` or `debug_register_*` pointers in `init()` for stable,
+rollback-backed fields: phase, health, position, score, current rule state.
+The runner reads these through the existing debug registry. Use group-qualified
+names shown in the report, not guessed names or fixed WASM addresses. Keep
+pointers valid; for movable game structs use stable shadow statics refreshed
+in `update()` and after debug actions. Actions set up scenarios; inputs must
+still test the actual rules. Discover available names with a `snap = true`
+frame before writing assertions.
+
+See `references/replay-format.md` for a complete discovery script and frame
+semantics. Check sound, readability, and game feel through rendered playback
+and human review separately; headless success is not an artistic verdict.
+
+## Rollback determinism
 
 ```bash
-nether replay compile smoke.ncrs -o smoke.ncrp
-nether run --no-build --replay smoke.ncrs
+nether run --sync-test --exit-after-frames 1000
 ```
 
-The first command verifies script syntax/encoding. The second runs the cart with scripted input and capture requests. `.ncrs` is TOML; `.ncrp` is binary. The old `nether run --record replay.bin` and `--frames` examples are not supported by this CLI.
+This uses GGRS to restore/re-simulate and compare checksums; it is not two
+independent rendered game instances. The command above requires a display.
+A bounded successful run proves only that tested sequence, not every game path
+or cross-platform determinism. Test input-rich game scenarios as well as idle.
 
-Every omitted frame/player is idle. A held input must appear on each intended tick. Inspect actual captured output or measured game state; changed game rules need not reproduce old outcomes unless that is the regression contract. See [replay format](references/replay-format.md).
+State belongs in WASM linear memory plus the engine's rollback state. Mutable
+WASM globals/tables are not snapshotted; avoid memory growth after init. Use
+engine RNG/time/input and keep simulation mutations out of `render()`.
 
-## Avoid false greens
+## Executable cross-game check
 
-The audited `nether replay run` implementation is a simplified headless runner that does not load game WASM. Its report is **not** a game regression result. Graphical replay must not be assumed to run assertions/debug actions merely because the parser exposes them; trace current callers before relying on them. See the development skill's known-contradictions reference.
+From this plugin repository, with the sibling engine binaries and game ROMs built:
 
-For numerical checks use the game's native simulation tests or an existing real runtime harness. `Runtime::run_scripted_sync_test` is an available core path for scripted rollback without rendering, not a claim that the public replay command uses it.
+```bash
+python scripts/verify_agent_workflow.py
+```
 
-Debug Inspector actions can set up a local scenario, but export/callback registration and execution must be verified. Do not ship a test whose assertions/actions silently never execute.
-
-## Diagnose
-
-Check simulation RNG, stable iteration/tie-breaking, wall-clock reads, invalid math, rollback-covered state, and render mutations. Do not assume all statics are in linear memory or that every float causes a desync.
-
-See [benchmarking](references/benchmarking.md). Fixed `delta_time()` is not a frame-time profiler.
+This runs semantic scenarios for Volley Fighter and Scrapheap Saints, repeats
+them to compare state snapshots, and checks deliberate failures. Missing game
+ROMs fail rather than skip. Pass explicit paths with `--help` for other layouts.

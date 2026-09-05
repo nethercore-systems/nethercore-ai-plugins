@@ -6,7 +6,7 @@ Measure on the actual target player/configuration and separate cold startup, upd
 nether build
 ```
 
-Inspect actual WASM/ROM sizes and resource usage. `nether build --verbose` is not supported. Use the selected console's specification (`nethercore/shared/src/console.rs`) rather than an invented 2 MiB WASM or 200 KiB snapshot ceiling.
+Inspect actual WASM/ROM sizes and resource usage. `build --verbose` is not supported by `nether`. Use the selected console's specification (`nethercore/shared/src/console.rs`) rather than an invented 2 MiB WASM or 200 KiB snapshot ceiling.
 
 - ZX specifies 16 MiB ROM, 4 MiB linear RAM, 4 MiB VRAM and a 4 ms/tick CPU budget. Specification, enforcement and measurements are different claims.
 - A state struct's size is not the whole snapshot: core saves linear memory plus explicit host/input/console state.

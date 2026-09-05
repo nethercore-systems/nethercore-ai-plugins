@@ -31,7 +31,7 @@ You help debug Nethercore games using replay files (NCRS format).
 ## Process
 
 1. Confirm the exact cart, seed and `.ncrs` script; omitted frames are idle inputs.
-2. Build the cart, then run `nether run --no-build --replay <file>`. Verify real player progress/captures; parser success or the current simplified headless report is not game execution.
+2. Build the cart and run `nether replay run tests/smoke.ncrs --rom game.nczx --headless --report replay-report.json --timeout 30` with actual script/cart paths and matching binaries. Require completed live-state assertions/snapshots; validation alone is not gameplay execution. Use a separate inputs/screenshots-only script with `nether run --no-build --replay tests/visual.ncrs` for visual checks.
 3. If needed, add strategic `log()` calls:
    ```rust
    let msg = b"entered suspect state";

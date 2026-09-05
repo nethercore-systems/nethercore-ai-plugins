@@ -1,0 +1,28 @@
+# Mech-combat semantics: training, damage setup, restore health.
+console = "zx"
+seed = 12345
+players = 1
+
+[[frames]]
+f = 0
+action = "Start Training"
+snap = true
+assert = "$app_app_state == 3"
+
+[[frames]]
+f = 1
+action = "Set HP"
+action_params = { player = 0, hp = 100 }
+snap = true
+assert = "$p1_hp > 0"
+
+[[frames]]
+f = 2
+action = "Reset Positions"
+snap = true
+assert = "$p1_hp > 0"
+
+[[frames]]
+f = 60
+snap = true
+assert = "$app_app_state == 3"
